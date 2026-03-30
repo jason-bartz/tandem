@@ -351,7 +351,6 @@ function arePropsEqual(prevProps, nextProps) {
     prevProps.isDragging === nextProps.isDragging &&
     prevProps.touchDragThreshold === nextProps.touchDragThreshold &&
     prevProps.disableAnimations === nextProps.disableAnimations &&
-    prevProps.onLongPress === nextProps.onLongPress &&
     prevProps.fromPartner === nextProps.fromPartner
   );
 }

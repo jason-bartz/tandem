@@ -33,7 +33,6 @@ import {
   CONGRATS_MESSAGES,
   COOP_CONGRATS_MESSAGES,
   GAME_OVER_MESSAGES,
-  HINT_PHRASES,
 } from '@/lib/daily-alchemy.constants';
 import {
   serializeSaveData,
@@ -81,14 +80,17 @@ function getFormattedDate(dateString) {
 }
 
 /**
- * Get a random hint phrase with element name interpolated
- * @param {string} elementName - The element to hint about
+ * Format a hint message showing the recipe for an element
+ * @param {string} elementName - The element to create
+ * @param {string} elementA - First ingredient
+ * @param {string} elementB - Second ingredient
  * @returns {string} Formatted hint message
  */
-function getRandomHintPhrase(elementName) {
-  const template = HINT_PHRASES[Math.floor(Math.random() * HINT_PHRASES.length)];
-  return template.replace('{element}', elementName);
+function formatHintMessage(elementName, elementA, elementB) {
+  return `Combine ${elementA} + ${elementB} to create ${elementName}`;
 }
+
+const HINT_COOLDOWN_MS = 15000;
 
 /**
  * Custom hook for Daily Alchemy game logic
@@ -137,8 +139,9 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
   // Favorites and usage tracking state
   // Favorites are now per-slot in creative mode, empty in daily mode
   const [favoriteElements, setFavoriteElements] = useState(new Set());
-  const [elementUsageCount, setElementUsageCount] = useState(() => {
-    // Load usage counts from localStorage on init
+  // Usage counts as ref (not state) to avoid re-renders on every combination.
+  // A version counter triggers sortedElementBank recalculation only when sort mode is 'Most Used'.
+  const elementUsageCount = useRef(() => {
     try {
       const saved = localStorage.getItem(SOUP_STORAGE_KEYS.ELEMENT_USAGE);
       return saved ? JSON.parse(saved) : {};
@@ -146,6 +149,11 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
       return {};
     }
   });
+  // Lazy-init the ref (useRef doesn't support initializer functions like useState)
+  if (typeof elementUsageCount.current === 'function') {
+    elementUsageCount.current = elementUsageCount.current();
+  }
+  const [usageCountVersion, setUsageCountVersion] = useState(0);
   const [showFavoritesPanel, setShowFavoritesPanel] = useState(false);
 
   // Selection state
@@ -189,7 +197,14 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
   const [hintsUsed, setHintsUsed] = useState(0);
   const [currentHintMessage, setCurrentHintMessage] = useState(null);
   const [currentHintElement, setCurrentHintElement] = useState(null); // Track which element the hint is suggesting
+  const [hintCooldown, setHintCooldown] = useState(false);
+  const hintCooldownTimer = useRef(null);
   const [solutionPath, setSolutionPath] = useState([]);
+
+  // Clean up hint cooldown timer on unmount
+  useEffect(() => {
+    return () => clearTimeout(hintCooldownTimer.current);
+  }, []);
 
   // Creative Mode save state
   const [isSavingCreative, setIsSavingCreative] = useState(false);
@@ -202,6 +217,8 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
   const [autoSaveComplete, setAutoSaveComplete] = useState(false);
   const lastAutoSaveDiscoveryCount = useRef(0); // Track discoveries at last autosave
   const lastAutoSaveFirstDiscoveryCount = useRef(0); // Track first discoveries at last autosave
+  const autoSaveAbortController = useRef(null); // AbortController to cancel stale autosaves
+  const autoSaveTimeoutRef = useRef(null); // Debounce timer for autosave
 
   // Multi-slot Creative Mode state
   const [activeSaveSlot, setActiveSaveSlot] = useState(() => {
@@ -557,6 +574,8 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
           setHintsUsed(0); // Reset hints for fresh start
           setCurrentHintMessage(null);
           setCurrentHintElement(null);
+          setHintCooldown(false);
+          clearTimeout(hintCooldownTimer.current);
           setGameState(SOUP_GAME_STATES.WELCOME);
         }
 
@@ -731,6 +750,8 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
     setHintsUsed(0);
     setCurrentHintMessage(null);
     setCurrentHintElement(null);
+    setHintCooldown(false);
+    clearTimeout(hintCooldownTimer.current);
 
     // Start timer for daily puzzle
     setStartTime(Date.now());
@@ -1003,6 +1024,8 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
     setHintsUsed(0);
     setCurrentHintMessage(null);
     setCurrentHintElement(null);
+    setHintCooldown(false);
+    clearTimeout(hintCooldownTimer.current);
     setCompletionStats(null);
 
     // Start timer (same as startGame)
@@ -1472,6 +1495,8 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
 
   /**
    * Autosave for Creative Mode
+   * Debounced (3s) to batch rapid discoveries into a single save.
+   * Uses AbortController to cancel stale in-flight requests.
    * Triggers on:
    * - Every 5 new discoveries
    * - Every first discovery
@@ -1484,17 +1509,31 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
     // This prevents saving stale/previous user data during the load phase
     if (!creativeLoadComplete) return;
 
-    // Don't autosave if already saving
-    if (isSavingCreative || isAutoSaving) return;
+    // Don't autosave if a manual save is in progress
+    if (isSavingCreative) return;
 
     // Check if we should trigger autosave
     const discoveryCountSinceLastSave = newDiscoveries - lastAutoSaveDiscoveryCount.current;
     const shouldSaveEveryFive = discoveryCountSinceLastSave >= 5 && newDiscoveries > 0;
     const hasNewFirstDiscovery = firstDiscoveries > lastAutoSaveFirstDiscoveryCount.current;
 
-    if (shouldSaveEveryFive || hasNewFirstDiscovery) {
-      // Trigger autosave
+    if (!shouldSaveEveryFive && !hasNewFirstDiscovery) return;
+
+    // Debounce: clear any pending autosave and schedule a new one in 3s
+    // This batches rapid discoveries (e.g. 5 in quick succession) into one request
+    if (autoSaveTimeoutRef.current) {
+      clearTimeout(autoSaveTimeoutRef.current);
+    }
+
+    autoSaveTimeoutRef.current = setTimeout(() => {
       const doAutoSave = async () => {
+        // Abort any in-flight autosave before starting a new one
+        if (autoSaveAbortController.current) {
+          autoSaveAbortController.current.abort();
+        }
+        const controller = new AbortController();
+        autoSaveAbortController.current = controller;
+
         setIsAutoSaving(true);
         setAutoSaveComplete(false);
 
@@ -1518,9 +1557,13 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
                 firstDiscoveryElements,
                 favorites: [...favoriteElements],
               }),
+              signal: controller.signal,
             },
             true
           );
+
+          // Bail out if this request was aborted (superseded by a newer one)
+          if (controller.signal.aborted) return;
 
           if (response.ok) {
             logger.info('[DailyAlchemy] Creative Mode autosaved', {
@@ -1531,6 +1574,8 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
             lastAutoSaveFirstDiscoveryCount.current = firstDiscoveries;
           }
         } catch (err) {
+          // Ignore abort errors — they're expected when superseding stale saves
+          if (err.name === 'AbortError') return;
           logger.error('[DailyAlchemy] Autosave failed', { error: err.message });
         }
 
@@ -1542,7 +1587,13 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
       };
 
       doAutoSave();
-    }
+    }, 3000); // 3s debounce
+
+    return () => {
+      if (autoSaveTimeoutRef.current) {
+        clearTimeout(autoSaveTimeoutRef.current);
+      }
+    };
   }, [
     freePlayMode,
     user,
@@ -1554,7 +1605,6 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
     elementBank,
     movesCount,
     isSavingCreative,
-    isAutoSaving,
     favoriteElements,
     activeSaveSlot,
   ]);
@@ -1576,14 +1626,17 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
   useEffect(() => {
     const timeout = setTimeout(() => {
       try {
-        localStorage.setItem(SOUP_STORAGE_KEYS.ELEMENT_USAGE, JSON.stringify(elementUsageCount));
+        localStorage.setItem(
+          SOUP_STORAGE_KEYS.ELEMENT_USAGE,
+          JSON.stringify(elementUsageCount.current)
+        );
       } catch (err) {
         logger.error('[DailyAlchemy] Failed to save usage counts', { error: err.message });
       }
     }, 1000); // Debounce 1 second
 
     return () => clearTimeout(timeout);
-  }, [elementUsageCount]);
+  }, [usageCountVersion]);
 
   /**
    * Toggle favorite status for an element
@@ -1819,25 +1872,26 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
         setLastMoveIncrement(Date.now()); // Signal for co-op broadcast
       }
 
-      // Track element usage for "Most Used" sorting
-      setElementUsageCount((prev) => ({
-        ...prev,
-        [selectedA.name]: (prev[selectedA.name] || 0) + 1,
-        [selectedB.name]: (prev[selectedB.name] || 0) + 1,
-      }));
+      // Track element usage for "Most Used" sorting (mutate ref, bump version for sort)
+      elementUsageCount.current[selectedA.name] =
+        (elementUsageCount.current[selectedA.name] || 0) + 1;
+      elementUsageCount.current[selectedB.name] =
+        (elementUsageCount.current[selectedB.name] || 0) + 1;
+      setUsageCountVersion((v) => v + 1);
 
-      // Add to combination path
-      setCombinationPath((prev) => [
-        ...prev,
-        {
+      // Add to combination path (cap at 100 entries to prevent memory bloat in long sessions)
+      setCombinationPath((prev) => {
+        const entry = {
           step: prev.length + 1,
           elementA: selectedA.name,
           elementB: selectedB.name,
           result: element,
           isDuplicate: !isFirstTimeCombination,
           operator: currentMode === 'subtract' ? '-' : '+',
-        },
-      ]);
+        };
+        const next = [...prev, entry];
+        return next.length > 100 ? next.slice(-100) : next;
+      });
 
       // Handle new element discovery
       if (isNew) {
@@ -2196,6 +2250,8 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
     setHintsUsed(0); // Reset hints
     setCurrentHintMessage(null);
     setCurrentHintElement(null);
+    setHintCooldown(false);
+    clearTimeout(hintCooldownTimer.current);
     setStartTime(Date.now());
     setElapsedTime(0);
     setRemainingTime(0); // Reset countdown
@@ -2225,7 +2281,7 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
    */
   const useHint = useCallback(() => {
     if (!solutionPath || solutionPath.length === 0) return;
-    if (freePlayMode || isComplete || isCombining || isAnimating) return;
+    if (freePlayMode || isComplete || isCombining || isAnimating || hintCooldown) return;
 
     // Play the hint sound
     playHintSound();
@@ -2249,7 +2305,7 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
         );
       });
 
-    let hintElementName = null;
+    let hintStep = null;
 
     if (availableSteps.length > 0) {
       // Prioritize steps later in the solution path (closer to target)
@@ -2267,7 +2323,7 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
         return aStarterCount - bStarterCount;
       });
 
-      hintElementName = sortedSteps[0].result;
+      hintStep = sortedSteps[0];
     } else {
       // No steps where player has both inputs - find the LAST step in the path
       // where the result isn't discovered (closest to target) and work backwards
@@ -2296,21 +2352,29 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
           });
 
           if (earlierStep) {
-            hintElementName = earlierStep.result;
+            hintStep = earlierStep;
           }
         }
       }
     }
 
-    // Set the hint message with a random phrase and track the hinted element
-    if (hintElementName) {
-      setCurrentHintMessage(getRandomHintPhrase(hintElementName));
-      setCurrentHintElement(hintElementName); // Track which element we're hinting about
+    // Set the hint message showing the actual recipe and track the hinted element
+    if (hintStep) {
+      setCurrentHintMessage(
+        formatHintMessage(hintStep.result, hintStep.elementA, hintStep.elementB)
+      );
+      setCurrentHintElement(hintStep.result);
     }
 
     // Increment hints used counter
     setHintsUsed((prev) => prev + 1);
-  }, [solutionPath, freePlayMode, isComplete, isCombining, isAnimating]);
+
+    // Start cooldown
+    setHintCooldown(true);
+    hintCooldownTimer.current = setTimeout(() => {
+      setHintCooldown(false);
+    }, HINT_COOLDOWN_MS);
+  }, [solutionPath, freePlayMode, isComplete, isCombining, isAnimating, hintCooldown]);
 
   /**
    * Clear the current hint message and tracked hint element
@@ -2341,8 +2405,10 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
       sorted.sort((a, b) => (isAsc ? 1 : -1) * a.name.localeCompare(b.name));
     } else if (sortOrder === SORT_OPTIONS.FIRST_DISCOVERIES) {
       // First discoveries pinned to top, direction affects within-group ordering
-      const firsts = sorted.filter((el) => firstDiscoveryElements.includes(el.name));
-      const others = sorted.filter((el) => !firstDiscoveryElements.includes(el.name));
+      // Use Set for O(1) lookups instead of O(n) array.includes()
+      const firstDiscoverySet = new Set(firstDiscoveryElements);
+      const firsts = sorted.filter((el) => firstDiscoverySet.has(el.name));
+      const others = sorted.filter((el) => !firstDiscoverySet.has(el.name));
       if (isAsc) {
         firsts.reverse();
         others.reverse();
@@ -2350,8 +2416,8 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
       sorted = [...firsts, ...others];
     } else if (sortOrder === SORT_OPTIONS.MOST_USED) {
       sorted.sort((a, b) => {
-        const usageA = elementUsageCount[a.name] || 0;
-        const usageB = elementUsageCount[b.name] || 0;
+        const usageA = elementUsageCount.current[a.name] || 0;
+        const usageB = elementUsageCount.current[b.name] || 0;
         if (usageA !== usageB) return isAsc ? usageA - usageB : usageB - usageA;
         return a.name.localeCompare(b.name);
       });
@@ -2381,7 +2447,7 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
     sortDirection,
     randomSeed,
     firstDiscoveryElements,
-    elementUsageCount,
+    usageCountVersion,
   ]);
 
   return {
@@ -2484,6 +2550,7 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
     useHint,
     currentHintMessage,
     clearHintMessage,
+    hintCooldown,
 
     // Solution path (for reveal on game over)
     solutionPath,

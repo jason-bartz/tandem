@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search, X, ChevronDown, ArrowUp, ArrowDown, Shuffle } from 'lucide-react';
 import Image from 'next/image';
@@ -246,6 +246,63 @@ export function ElementBank({
     },
     [favoriteElements, maxFavorites, onToggleFavorite, mediumTap]
   );
+
+  // Memoize Set from firstDiscoveryElements array for O(1) lookups in render loop
+  const firstDiscoverySet = useMemo(
+    () => new Set(firstDiscoveryElements),
+    [firstDiscoveryElements]
+  );
+
+  // Memoize enriched elements with isFirstDiscovery baked in.
+  // This avoids creating { ...element, isFirstDiscovery } on every render,
+  // which would defeat React.memo on ElementChip.
+  const enrichedElements = useMemo(() => {
+    return elements.map((el) => {
+      const isFirstDiscovery = firstDiscoverySet.has(el.name);
+      // Only create a new object if the flag actually changed
+      if (el.isFirstDiscovery === isFirstDiscovery) return el;
+      return { ...el, isFirstDiscovery };
+    });
+  }, [elements, firstDiscoverySet]);
+
+  // Progressive rendering: only mount a limited number of elements to keep DOM size small.
+  // Expands automatically as user scrolls, resets when elements change (sort/search).
+  const RENDER_BATCH_SIZE = 60;
+  const [renderLimit, setRenderLimit] = useState(RENDER_BATCH_SIZE);
+  const sentinelRef = useRef(null);
+
+  // Reset render limit when the element list changes (new sort, search, etc.)
+  const elementsKey = elements.length + '-' + searchQuery + '-' + sortOrder;
+  const prevElementsKey = useRef(elementsKey);
+  useEffect(() => {
+    if (prevElementsKey.current !== elementsKey) {
+      setRenderLimit(RENDER_BATCH_SIZE);
+      prevElementsKey.current = elementsKey;
+    }
+  }, [elementsKey]);
+
+  // IntersectionObserver to load more elements as user scrolls near bottom
+  useEffect(() => {
+    const sentinel = sentinelRef.current;
+    if (!sentinel) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          setRenderLimit((prev) => prev + RENDER_BATCH_SIZE);
+        }
+      },
+      { rootMargin: '200px' }
+    );
+    observer.observe(sentinel);
+    return () => observer.disconnect();
+  }, [elementsKey]); // Re-attach when list identity changes
+
+  const visibleElements =
+    enrichedElements.length > renderLimit
+      ? enrichedElements.slice(0, renderLimit)
+      : enrichedElements;
+  const hasMore = enrichedElements.length > renderLimit;
 
   return (
     <div className="flex flex-col gap-2 flex-1 min-h-0">
@@ -544,7 +601,7 @@ export function ElementBank({
             {searchQuery ? 'No elements match your search' : 'No elements yet'}
           </div>
         ) : (
-          elements.map((element) => {
+          visibleElements.map((element) => {
             const isSelected =
               (selectedA && selectedA.id === element.id) ||
               (selectedB && selectedB.id === element.id);
@@ -552,15 +609,13 @@ export function ElementBank({
               targetElement && element.name.toLowerCase() === targetElement.toLowerCase();
             // Only show NEW badge for elements in the recent list (last 5 discovered)
             const showNewBadge = recentElements.includes(element.name);
-            // Check if this element was a first discovery
-            const isFirstDiscovery = firstDiscoveryElements.includes(element.name);
             const isDragging = draggedElementName === element.name;
             const isFavorite = favoriteElements.has(element.name);
 
             return (
               <ElementChip
                 key={element.id}
-                element={{ ...element, isFirstDiscovery }}
+                element={element}
                 isSelected={isSelected}
                 isNew={showNewBadge}
                 isTarget={isTarget}
@@ -583,6 +638,8 @@ export function ElementBank({
             );
           })
         )}
+        {/* Sentinel element for infinite scroll — triggers loading more when visible */}
+        {hasMore && <div ref={sentinelRef} className="w-full h-1" aria-hidden="true" />}
       </div>
     </div>
   );
