@@ -56,35 +56,32 @@ export default function AnnouncementBanner() {
         animate={reduceMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
         exit={reduceMotion ? { opacity: 0 } : { opacity: 0, y: -10 }}
         transition={{ duration: 0.35, ease: [0.25, 0.1, 0.25, 1] }}
-        className={`relative mb-2 ${
-          highContrast ? 'text-hc-text' : 'text-gray-700 dark:text-gray-300'
+        className={`relative mb-4 rounded-2xl px-4 pt-3 pb-3 ${
+          highContrast
+            ? 'bg-hc-surface text-hc-text'
+            : 'bg-amber-50/80 dark:bg-amber-900/20 text-gray-700 dark:text-gray-300'
         }`}
         role="status"
         aria-live="polite"
       >
-        <div className="flex items-center justify-center gap-2 px-3 py-2">
-          <p
-            className={`text-sm text-center leading-snug ${
-              highContrast ? 'text-hc-text opacity-90' : ''
-            }`}
-          >
-            <span className="mr-1.5" aria-hidden="true">
-              ✨
-            </span>
-            {announcement.text}
-          </p>
-          <button
-            onClick={handleDismiss}
-            className={`flex-shrink-0 p-1 rounded-full transition-colors ${
-              highContrast
-                ? 'text-hc-text hover:bg-hc-text/10'
-                : 'text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300'
-            }`}
-            aria-label="Dismiss announcement"
-          >
-            <X size={14} />
-          </button>
-        </div>
+        <button
+          onClick={handleDismiss}
+          className={`absolute top-2 right-2 p-1 rounded-full transition-colors ${
+            highContrast
+              ? 'text-hc-text hover:bg-hc-text/10'
+              : 'text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300'
+          }`}
+          aria-label="Dismiss announcement"
+        >
+          <X size={14} />
+        </button>
+        <p
+          className={`text-sm text-center leading-relaxed pr-6 ${
+            highContrast ? 'text-hc-text opacity-90' : ''
+          }`}
+        >
+          {announcement.text}
+        </p>
       </motion.div>
     </AnimatePresence>
   );
