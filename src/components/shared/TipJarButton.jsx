@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Capacitor } from '@capacitor/core';
+import Image from 'next/image';
 import subscriptionService from '@/services/subscriptionService';
 import { useHaptics } from '@/hooks/useHaptics';
 import logger from '@/lib/logger';
@@ -12,7 +13,7 @@ import logger from '@/lib/logger';
  * On iOS: Triggers a consumable in-app purchase
  * On web: Links to Buy Me A Coffee
  */
-export default function TipJarButton({ className = '', compact = false }) {
+export default function TipJarButton({ className = '' }) {
   const [purchasing, setPurchasing] = useState(false);
   const [tipPrice, setTipPrice] = useState(null);
   const [showThankYou, setShowThankYou] = useState(false);
@@ -82,7 +83,14 @@ export default function TipJarButton({ className = '', compact = false }) {
         'Processing...'
       ) : (
         <>
-          <span>{compact ? 'Tip' : 'Leave a Tip'}</span>
+          <Image
+            src="/ui/shared/coffee.png"
+            alt="Coffee cup"
+            width={20}
+            height={20}
+            className="w-5 h-5"
+          />
+          <span>Buy me a coffee</span>
           {tipPrice && <span className="opacity-80">({tipPrice})</span>}
         </>
       )}

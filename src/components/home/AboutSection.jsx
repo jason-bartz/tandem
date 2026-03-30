@@ -33,7 +33,7 @@ export default function AboutSection() {
       </p>
 
       <div className="mt-4">
-        <TipJarButton compact />
+        <TipJarButton />
       </div>
 
       {!Capacitor.isNativePlatform() && (
