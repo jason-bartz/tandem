@@ -56,7 +56,7 @@ const nextConfig = {
     unoptimized: isCapacitorBuild,
   },
   eslint: {
-    ignoreDuringBuilds: true,
+    ignoreDuringBuilds: false,
   },
   // Webpack configuration to handle Capacitor modules
   webpack: (config) => {

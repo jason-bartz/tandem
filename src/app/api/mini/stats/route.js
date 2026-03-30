@@ -129,16 +129,15 @@ export async function POST(request) {
     }
 
     const body = await request.json();
-    // eslint-disable-next-line no-unused-vars
     const {
       puzzle_date,
-      completed,
+      completed: _completed,
       time_taken,
       checks_used = 0,
       reveals_used = 0,
       mistakes = 0,
       perfect_solve = false,
-      is_daily = true,
+      is_daily: _is_daily = true,
     } = body;
 
     if (!puzzle_date || time_taken === undefined) {
@@ -235,7 +234,8 @@ async function updateAggregateStats(supabase, userId) {
     const totalReveals = allStats.reduce((sum, s) => sum + (s.reveals_used || 0), 0);
 
     const times = allStats.map((s) => s.time_taken).filter((t) => t > 0);
-    const averageTime = times.length > 0 ? Math.round(times.reduce((a, b) => a + b, 0) / times.length) : 0;
+    const averageTime =
+      times.length > 0 ? Math.round(times.reduce((a, b) => a + b, 0) / times.length) : 0;
     const bestTime = times.length > 0 ? Math.min(...times) : 0;
 
     // Calculate current streak (only daily puzzles)
@@ -248,10 +248,7 @@ async function updateAggregateStats(supabase, userId) {
       .eq('user_id', userId)
       .single();
 
-    const longestStreak = Math.max(
-      currentUserStats?.longest_streak || 0,
-      currentStreak
-    );
+    const longestStreak = Math.max(currentUserStats?.longest_streak || 0, currentStreak);
 
     const lastPlayedDate = allStats[0]?.puzzle_date;
 
@@ -314,7 +311,10 @@ function calculateStreak(stats) {
 
   if (dailyPuzzles.length === 0) return 0;
 
-  const dates = dailyPuzzles.map((s) => s.puzzle_date).sort().reverse();
+  const dates = dailyPuzzles
+    .map((s) => s.puzzle_date)
+    .sort()
+    .reverse();
   const today = new Date().toISOString().split('T')[0];
   const todayDate = new Date(today);
 

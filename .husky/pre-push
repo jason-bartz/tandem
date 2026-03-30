@@ -1,0 +1,12 @@
+echo "Running build check before push..."
+npm run build
+
+if [ $? -ne 0 ]; then
+  echo ""
+  echo "BUILD FAILED - Push aborted."
+  echo "Fix the build errors above before pushing."
+  echo "The same errors would cause your Vercel deployment to fail."
+  exit 1
+fi
+
+echo "Build succeeded! Pushing..."
