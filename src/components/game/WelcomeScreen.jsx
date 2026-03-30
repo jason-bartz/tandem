@@ -17,6 +17,7 @@ import Greeting from '@/components/home/Greeting';
 import GameCard from '@/components/home/GameCard';
 import Footer from '@/components/home/Footer';
 import AboutSection from '@/components/home/AboutSection';
+import AnnouncementBanner from '@/components/home/AnnouncementBanner';
 import { useHaptics } from '@/hooks/useHaptics';
 import { useTheme } from '@/contexts/ThemeContext';
 import { Capacitor } from '@capacitor/core';
@@ -240,6 +241,9 @@ export default function WelcomeScreen({
             reelPlayed={reelPlayed}
             isLoading={(!puzzle && !tandemError) || miniLoading || soupLoading || reelLoading}
           />
+
+          {/* Announcement Banner */}
+          <AnnouncementBanner />
 
           {/* Game Cards */}
           <div className="space-y-4">
