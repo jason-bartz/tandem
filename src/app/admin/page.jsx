@@ -12,10 +12,10 @@ import ConnectionTracker from '@/components/admin/reel-connections/ConnectionTra
 import DailyAlchemyPuzzleEditor from '@/components/admin/daily-alchemy/DailyAlchemyPuzzleEditor';
 import ElementManager from '@/components/admin/daily-alchemy/ElementManager';
 import FeedbackDashboard from '@/components/admin/feedback/FeedbackDashboard';
-import SubmissionsDashboard from '@/components/admin/submissions/SubmissionsDashboard';
 import BotLeaderboardManager from '@/components/admin/BotLeaderboardManager';
 import AvatarManager from '@/components/admin/AvatarManager';
 import UserManagement from '@/components/admin/users/UserManagement';
+import AnnouncementManager from '@/components/admin/AnnouncementManager';
 import authService from '@/services/auth.service';
 import logger from '@/lib/logger';
 import { ASSET_VERSION } from '@/lib/constants';
@@ -25,9 +25,6 @@ export default function AdminDashboard() {
   const [calendarSubTab, setCalendarSubTab] = useState('calendar'); // 'calendar', 'themes'
   const [showBulkImport, setShowBulkImport] = useState(false);
   const [feedbackCounts, setFeedbackCounts] = useState(null);
-  const [submissionCounts, setSubmissionCounts] = useState(null);
-  // eslint-disable-next-line no-unused-vars
-  const [importedSubmission, setImportedSubmission] = useState(null);
 
   // Game selector modal state
   const [showGameSelector, setShowGameSelector] = useState(false);
@@ -408,25 +405,6 @@ export default function AdminDashboard() {
             <span className="hidden sm:inline">Elements</span>
           </button>
           <button
-            onClick={() => setActiveTab('submissions')}
-            className={`
-              py-3 px-2 sm:px-4 border-b-[3px] font-bold text-sm sm:text-base whitespace-nowrap transition-all flex items-center gap-1 sm:gap-2 relative
-              ${
-                activeTab === 'submissions'
-                  ? 'border-accent-green text-text-primary bg-accent-green/20'
-                  : 'border-transparent text-text-secondary hover:text-text-primary hover:border-text-muted'
-              }
-            `}
-          >
-            <Image src="/ui/games/movie.png" alt="" width={20} height={20} />
-            <span className="hidden sm:inline">Submissions</span>
-            {submissionCounts?.pending > 0 && (
-              <span className="absolute -top-1 -right-1 flex items-center justify-center min-w-[20px] h-5 px-1.5 bg-accent-red text-white text-xs font-bold rounded-full border-[2px] border-white">
-                {submissionCounts.pending}
-              </span>
-            )}
-          </button>
-          <button
             onClick={() => setActiveTab('feedback')}
             className={`
               py-3 px-2 sm:px-4 border-b-[3px] font-bold text-sm sm:text-base whitespace-nowrap transition-all flex items-center gap-1 sm:gap-2 relative
@@ -487,6 +465,20 @@ export default function AdminDashboard() {
             <Image src="/ui/shared/users.png" alt="" width={20} height={20} />
             <span className="hidden sm:inline">Users</span>
           </button>
+          <button
+            onClick={() => setActiveTab('announcements')}
+            className={`
+              py-3 px-2 sm:px-4 border-b-[3px] font-bold text-sm sm:text-base whitespace-nowrap transition-all flex items-center gap-1 sm:gap-2
+              ${
+                activeTab === 'announcements'
+                  ? 'border-accent-blue text-text-primary bg-accent-blue/20'
+                  : 'border-transparent text-text-secondary hover:text-text-primary hover:border-text-muted'
+              }
+            `}
+          >
+            <span className="text-base">📢</span>
+            <span className="hidden sm:inline">Announce</span>
+          </button>
         </nav>
       </div>
 
@@ -541,41 +533,10 @@ export default function AdminDashboard() {
         )}
         {activeTab === 'elements' && <ElementManager />}
         {activeTab === 'feedback' && <FeedbackDashboard onCountsChange={setFeedbackCounts} />}
-        {activeTab === 'submissions' && (
-          <SubmissionsDashboard
-            onCountsChange={setSubmissionCounts}
-            onImportToEditor={(submission) => {
-              // Convert submission to editor format and open Reel editor
-              setImportedSubmission(submission);
-              setActiveTab('calendar');
-              setSelectedDate(null); // No date pre-selected for imported submissions
-              setEditingPuzzle({
-                // Convert submission groups to editor format
-                groups: submission.groups.map((group) => ({
-                  connection: group.connection,
-                  difficulty: group.difficulty,
-                  order: group.order,
-                  movies: group.movies.map((movie) => ({
-                    imdbId: movie.imdbId,
-                    title: movie.title,
-                    year: movie.year,
-                    poster: movie.poster,
-                    order: movie.order,
-                  })),
-                })),
-                // Include creator info for attribution
-                creatorName: submission.isAnonymous
-                  ? 'An anonymous member'
-                  : submission.displayName,
-                isUserSubmitted: true,
-              });
-              setActiveEditor('reel');
-            }}
-          />
-        )}
         {activeTab === 'leaderboards' && <BotLeaderboardManager />}
         {activeTab === 'avatars' && <AvatarManager />}
         {activeTab === 'users' && <UserManagement />}
+        {activeTab === 'announcements' && <AnnouncementManager />}
       </div>
 
       {/* Game selector modal */}

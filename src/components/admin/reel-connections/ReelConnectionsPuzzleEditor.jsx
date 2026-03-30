@@ -226,24 +226,12 @@ export default function ReelConnectionsPuzzleEditor({
   const [generatingAll, setGeneratingAll] = useState(false);
   const [generateAllContext, setGenerateAllContext] = useState('');
 
-  // Track creator attribution for user-submitted puzzles
-  const [creatorName, setCreatorName] = useState(puzzle?.creatorName || null);
-  const [isUserSubmitted, setIsUserSubmitted] = useState(puzzle?.isUserSubmitted || false);
-
   // Update selected date when prop changes
   useEffect(() => {
     if (date) {
       setSelectedDate(date);
     }
   }, [date]);
-
-  // Update creator info when puzzle changes
-  useEffect(() => {
-    if (puzzle) {
-      setCreatorName(puzzle.creatorName || null);
-      setIsUserSubmitted(puzzle.isUserSubmitted || false);
-    }
-  }, [puzzle]);
 
   useEffect(() => {
     if (puzzle && puzzle.groups) {
@@ -335,11 +323,6 @@ export default function ReelConnectionsPuzzleEditor({
           order: movieIndex + 1,
         })),
       })),
-      // Include creator attribution if this is from a user submission
-      ...(isUserSubmitted && {
-        creatorName,
-        isUserSubmitted: true,
-      }),
     };
 
     onSave(puzzleData);
@@ -572,11 +555,6 @@ export default function ReelConnectionsPuzzleEditor({
             <h3 className="text-lg font-bold text-text-primary">
               {puzzle ? 'Edit Puzzle' : 'Create New Puzzle'}
             </h3>
-            {isUserSubmitted && (
-              <span className="px-2 py-1 bg-accent-green/20 text-accent-green text-xs font-bold rounded-lg border-[2px] border-accent-green">
-                User Submission
-              </span>
-            )}
           </div>
           {selectedDate ? (
             <div className="flex items-center gap-2">
@@ -607,11 +585,6 @@ export default function ReelConnectionsPuzzleEditor({
                 className="px-3 py-1 border-[2px] border-black dark:border-white rounded-lg bg-bg-card text-text-primary font-medium text-sm"
               />
             </div>
-          )}
-          {isUserSubmitted && creatorName && (
-            <p className="text-xs text-text-secondary mt-1">
-              Submitted by: <span className="font-bold">{creatorName}</span>
-            </p>
           )}
         </div>
         <div className="flex gap-2 flex-shrink-0">
