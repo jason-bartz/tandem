@@ -180,8 +180,8 @@ export default function AboutPage() {
                       <div className="mt-8 pt-6 border-t-[3px] border-black dark:border-white">
                         <p className="text-sm text-gray-600 dark:text-gray-400 text-center mb-4">
                           {isStandaloneAlchemy
-                            ? 'Generous supporters help keep this game ad-free and the daily puzzle free for everyone. Your support helps cover our servers and the AI that powers the alchemy.'
-                            : 'Generous supporters help keep every game free to play and ad-free for everyone. Your support helps cover our servers and the AI that powers the puzzles.'}
+                            ? 'Generous supporters help keep this game ad-free and the daily puzzle free for everyone. Your support helps cover our servers and keep the games running.'
+                            : 'Generous supporters help keep every game free to play and ad-free for everyone. Your support helps cover our servers and keep the games running.'}
                         </p>
                         <TipJarButton className="rounded-2xl py-3 px-6" />
                       </div>

@@ -521,8 +521,7 @@ export default function SidebarMenu({
                   <div className="p-4 rounded-2xl border-[3px] border-border-main bg-surface-primary shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)]">
                     <p className="text-xs text-text-secondary leading-relaxed mb-3">
                       Generous supporters help keep every game free to play and ad-free for
-                      everyone. Your support helps cover our servers and the AI that powers the
-                      puzzles.
+                      everyone. Your support helps cover our servers and keep the games running.
                     </p>
                     <TipJarButton />
                   </div>
@@ -552,8 +551,7 @@ export default function SidebarMenu({
                   <div className="p-4 rounded-2xl border-[3px] border-border-main bg-surface-primary shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)]">
                     <p className="text-xs text-text-secondary leading-relaxed mb-3">
                       Generous supporters help keep this game ad-free and the daily puzzle free for
-                      everyone. Your support helps cover our servers and the AI that powers the
-                      alchemy.
+                      everyone. Your support helps cover our servers and keep the games running.
                     </p>
                     <a
                       href="https://buymeacoffee.com/jasonbartz"
