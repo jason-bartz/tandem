@@ -232,7 +232,7 @@ function ElementChipInner({
         // Prevent Safari's native long-press callout/drag preview (causes double-image ghost)
         WebkitTouchCallout: 'none',
       }}
-      whileTap={!disabled && !reduceMotion && !disableAnimations ? { scale: 0.95 } : undefined}
+      whileTap={!disabled && !reduceMotion && !disableAnimations ? { scale: 0.98 } : undefined}
       initial={isNew && !reduceMotion && !disableAnimations ? { scale: 0.3, opacity: 0 } : false}
       animate={
         // Long press "pop" animation for favorites feedback (bigger pop)
@@ -247,7 +247,7 @@ function ElementChipInner({
       }
       transition={
         isLongPressPop
-          ? { type: 'spring', stiffness: 500, damping: 12 }
+          ? { type: 'spring', stiffness: 400, damping: 15 }
           : isHoldReady
             ? { type: 'spring', stiffness: 400, damping: 15 }
             : isNew && !disableAnimations
@@ -256,7 +256,7 @@ function ElementChipInner({
                   opacity: { duration: 0.1 },
                 }
               : !disableAnimations
-                ? { type: 'spring', stiffness: 500, damping: 25 }
+                ? { type: 'spring', stiffness: 300, damping: 20 }
                 : undefined
       }
       aria-label={`${element.name}${isSelected ? ' (selected)' : ''}${isNew ? ' (new)' : ''}`}

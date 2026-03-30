@@ -119,7 +119,7 @@ function CombineIconCycler({ isActive }) {
           initial={{ opacity: 0, rotate: -180, scale: 0.5 }}
           animate={{ opacity: 1, rotate: 0, scale: 1 }}
           exit={{ opacity: 0, rotate: 180, scale: 0.5 }}
-          transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1] }}
+          transition={{ duration: 0.2, ease: [0.4, 0, 0.6, 1] }}
           className="absolute inset-0"
         >
           <img

@@ -200,8 +200,8 @@ export default function SidebarMenu({
             exit={{ x: '100%' }}
             transition={{
               type: reduceMotion ? 'tween' : 'spring',
-              damping: 25,
-              stiffness: 200,
+              damping: 20,
+              stiffness: 300,
               duration: reduceMotion ? 0.2 : undefined,
             }}
             className={`fixed top-0 right-0 bottom-0 w-[22rem] max-w-[85vw] z-50 overflow-y-auto font-sans ${

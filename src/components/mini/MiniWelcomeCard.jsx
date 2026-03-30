@@ -153,13 +153,13 @@ export default function MiniWelcomeCard({ currentStreak = 0 }) {
         </div>
 
         {/* Title skeleton */}
-        <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded-[12px] mx-auto mb-3 w-48 animate-pulse"></div>
+        <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded-[12px] mx-auto mb-3 w-48 skeleton-shimmer"></div>
 
         {/* Info skeleton */}
-        <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded-[8px] mx-auto mb-8 w-32 animate-pulse"></div>
+        <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded-[8px] mx-auto mb-8 w-32 skeleton-shimmer"></div>
 
         {/* Button skeleton */}
-        <div className="h-14 bg-gray-200 dark:bg-gray-700 rounded-[20px] w-full animate-pulse"></div>
+        <div className="h-14 bg-gray-200 dark:bg-gray-700 rounded-[20px] w-full skeleton-shimmer"></div>
       </div>
     );
   }

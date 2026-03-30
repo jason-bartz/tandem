@@ -97,7 +97,7 @@ export default function HintEarnedToast({ isSmallPhone = false, isMobilePhone = 
               className={isSmallPhone ? 'text-xl' : isMobilePhone ? 'text-2xl' : 'text-2xl'}
               animate={reduceMotion ? {} : { scale: [1, 1.1, 1] }}
               transition={{
-                duration: 0.6,
+                duration: 0.5,
                 times: [0, 0.5, 1],
                 ease: 'easeInOut',
               }}
@@ -137,7 +137,7 @@ export default function HintEarnedToast({ isSmallPhone = false, isMobilePhone = 
                     }
               }
               transition={{
-                duration: 0.8,
+                duration: 0.5,
                 times: [0, 0.33, 0.66, 1],
                 ease: 'easeInOut',
               }}

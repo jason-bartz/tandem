@@ -132,17 +132,17 @@ export function CoopLobbyScreen({
                 <motion.div
                   className="absolute inset-0 rounded-full border-2 border-amber-400/40"
                   animate={{ scale: [1, 2.2], opacity: [0.6, 0] }}
-                  transition={{ duration: 2, repeat: Infinity, ease: 'easeOut' }}
+                  transition={{ duration: 1.5, repeat: Infinity, ease: 'easeOut' }}
                 />
                 <motion.div
                   className="absolute inset-0 rounded-full border-2 border-amber-400/40"
                   animate={{ scale: [1, 2.2], opacity: [0.6, 0] }}
-                  transition={{ duration: 2, repeat: Infinity, ease: 'easeOut', delay: 0.7 }}
+                  transition={{ duration: 1.5, repeat: Infinity, ease: 'easeOut', delay: 0.5 }}
                 />
                 <motion.div
                   className="absolute inset-0 rounded-full border-2 border-amber-400/40"
                   animate={{ scale: [1, 2.2], opacity: [0.6, 0] }}
-                  transition={{ duration: 2, repeat: Infinity, ease: 'easeOut', delay: 1.4 }}
+                  transition={{ duration: 1.5, repeat: Infinity, ease: 'easeOut', delay: 1.0 }}
                 />
               </>
             )}
@@ -186,7 +186,7 @@ export function CoopLobbyScreen({
             className="text-4xl mb-4"
             initial={!reduceMotion ? { scale: 0 } : false}
             animate={{ scale: 1 }}
-            transition={{ type: 'spring', stiffness: 400, damping: 10, delay: 0.1 }}
+            transition={{ type: 'spring', stiffness: 300, damping: 20, delay: 0.1 }}
           >
             🎉
           </motion.div>
@@ -304,7 +304,7 @@ export function CoopLobbyScreen({
                 <span>Today&apos;s Puzzle</span>
                 {targetElement && (
                   <span className="text-sm font-normal opacity-90 mt-1">
-                    {targetEmoji} {targetElement} · Par: {parMoves} moves · 10:00 limit
+                    {targetEmoji} {targetElement} · Par: {parMoves} moves
                   </span>
                 )}
               </button>
@@ -619,7 +619,7 @@ export function CoopLobbyScreen({
                         <span>Today&apos;s Puzzle</span>
                         {targetElement && (
                           <span className="text-sm font-normal opacity-90 mt-1">
-                            {targetEmoji} {targetElement} · Par: {parMoves} moves · 10:00 limit
+                            {targetEmoji} {targetElement} · Par: {parMoves} moves
                           </span>
                         )}
                       </>

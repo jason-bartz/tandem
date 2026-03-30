@@ -98,9 +98,9 @@ function TypingIndicator({ reduceMotion }) {
           className="w-1 h-1 rounded-full bg-indigo-400 dark:bg-indigo-500"
           animate={!reduceMotion ? { y: [0, -3, 0] } : undefined}
           transition={{
-            duration: 0.6,
+            duration: 0.5,
             repeat: Infinity,
-            delay: i * 0.15,
+            delay: i * 0.05,
             ease: 'easeInOut',
           }}
         />

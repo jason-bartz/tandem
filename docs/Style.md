@@ -258,35 +258,112 @@ All modals use `LeftSidePanel` from `src/components/shared/LeftSidePanel.jsx`:
 
 ### Timing
 
-| Token         | Duration | Usage                                 |
-| ------------- | -------- | ------------------------------------- |
-| `instant`     | 100ms    | Micro-interactions (toggle, checkbox) |
-| `fast`        | 200ms    | Hover states, small transitions       |
-| `standard`    | 300ms    | Panel slides, modal transitions       |
-| `prominent`   | 350ms    | Entry animations, page transitions    |
-| `celebration` | 500ms    | Achievement unlocks, game completion  |
+| Token         | Duration | Tailwind Class | Usage                                     |
+| ------------- | -------- | -------------- | ----------------------------------------- |
+| `instant`     | 100ms    | `duration-100` | Micro-interactions (toggle, checkbox)     |
+| `micro`       | 150ms    | `duration-150` | Button hover/active, inline state changes |
+| `fast`        | 200ms    | `duration-200` | Hover states, small transitions           |
+| `standard`    | 300ms    | `duration-300` | Panel slides, modal transitions           |
+| `prominent`   | 350ms    | `duration-350` | Entry animations, page transitions        |
+| `celebration` | 500ms    | `duration-500` | Achievement unlocks, game completion      |
+
+**Allowed durations only.** Do not use durations outside this table (e.g., 250ms, 400ms, 600ms, 800ms). Repeating/looping animations (radar pulses, shimmers) may use longer durations but should stay under 2s.
 
 ### Easing
 
-| Token         | Curve                               | Usage                             |
-| ------------- | ----------------------------------- | --------------------------------- |
-| `ios-default` | `cubic-bezier(0.25, 0.1, 0.25, 1)`  | General UI transitions            |
-| `spring`      | `cubic-bezier(0.34, 1.56, 0.64, 1)` | Bouncy entrances, button feedback |
-| `sharp`       | `cubic-bezier(0.4, 0, 0.6, 1)`      | Quick, decisive movements         |
+| Token         | CSS Curve                           | Framer Motion Array     | Usage                             |
+| ------------- | ----------------------------------- | ----------------------- | --------------------------------- |
+| `ios-default` | `cubic-bezier(0.25, 0.1, 0.25, 1)`  | `[0.25, 0.1, 0.25, 1]`  | General UI transitions            |
+| `spring`      | `cubic-bezier(0.34, 1.56, 0.64, 1)` | `[0.34, 1.56, 0.64, 1]` | Bouncy entrances, button feedback |
+| `sharp`       | `cubic-bezier(0.4, 0, 0.6, 1)`      | `[0.4, 0, 0.6, 1]`      | Quick, decisive movements         |
+
+**Use only these three curves.** Do not introduce custom cubic-bezier values. When using Framer Motion's named easings (`easeOut`, `easeInOut`), these are acceptable for simple keyframe animations but prefer the named curves above for consistency.
 
 ### Framer Motion Conventions
 
-- Entry: `initial` + `animate` with variants object
-- Tap feedback: `whileTap={{ scale: 0.98 }}`
-- Spring physics: `type: "spring", stiffness: 300, damping: 20`
-- List stagger: 50ms delay per item
-- Use `AnimatePresence` for exit animations
+**Entry animations:**
+
+- Use `initial` + `animate` with variants object
+- Always gate on `reduceMotion`: `initial={!reduceMotion ? { opacity: 0 } : false}`
+
+**Tap feedback:**
+
+- Standard: `whileTap={{ scale: 0.98 }}`
+- Always use `scale: 0.98` — do not add x/y translation or shadow changes to whileTap
+- Gate on reduceMotion: `whileTap={!reduceMotion ? { scale: 0.98 } : undefined}`
+
+**Spring physics:**
+
+- Default: `type: "spring", stiffness: 300, damping: 20`
+- Snappy variant (drag feedback, hold-to-drag pop): `type: "spring", stiffness: 400, damping: 15`
+- Use the default for all general UI springs. Only use the snappy variant for drag interactions and tactile feedback on touch-hold gestures.
+
+**List stagger:**
+
+- 50ms (0.05s) delay per item via `staggerChildren: 0.05`
+- Do not exceed 50ms per item
+
+**Exit animations:**
+
+- Always wrap conditionally rendered `motion.*` elements with `<AnimatePresence>`
+- Exit transitions should be faster than entrance (use `fast` or `instant` timing)
+
+### Interactive Shadow Press Pattern
+
+Buttons and interactive cards follow a proportional press pattern based on their shadow size:
+
+**Primary buttons (4px shadow):**
+
+```
+Default:  shadow-[4px_4px_0px_...]  translate(0, 0)
+Hover:    shadow-[2px_2px_0px_...]  translate(2px, 2px)
+Active:   shadow-none               translate(4px, 4px)
+```
+
+**Secondary/small elements (2–3px shadow):**
+
+```
+Default:  shadow-[2px_2px_0px_...]  translate(0, 0)
+Hover:    shadow-[1px_1px_0px_...]  translate(1px, 1px)
+Active:   shadow-none               translate(2px, 2px)
+```
+
+**Rule:** Shadow reduction + translation must always equal the original shadow offset. Never use upward (`-y`) translations on hover — movement is always downward/right to simulate pressing in.
+
+### Reduce Motion
+
+**Every animation must respect `reduceMotion`.**
+
+There are two layers of reduce-motion support:
+
+1. **CSS layer (automatic):** `globals.css` includes `@media (prefers-reduced-motion: reduce)` and `.reduce-motion` rules that set `animation-duration: 0.01ms !important` on all elements. This covers CSS animations (`animate-backdrop-enter`, `animate-slide-in-left`, `skeleton-shimmer`, etc.) automatically — no per-component checks needed for CSS-only animations.
+
+2. **Framer Motion layer (manual):** Framer Motion animations bypass CSS and must be gated explicitly using `reduceMotion` from `useTheme()`:
+
+```jsx
+const { reduceMotion } = useTheme();
+
+// Gate initial/animate
+initial={!reduceMotion ? { opacity: 0, y: 20 } : false}
+
+// Gate whileTap
+whileTap={!reduceMotion ? { scale: 0.98 } : undefined}
+
+// Gate spring duration
+transition={{ duration: reduceMotion ? 0 : 0.3 }}
+
+// Gate repeating animations
+animate={!reduceMotion ? { y: [0, -3, 0] } : undefined}
+```
 
 ### Rules
 
-- Respect `reduceMotion` from ThemeContext — skip non-essential animations
+- Respect `reduceMotion` from ThemeContext — skip non-essential Framer Motion animations
+- CSS animations are handled automatically via `prefers-reduced-motion` and `.reduce-motion` class
 - Prefer Tailwind animation classes for simple transitions
 - Use Framer Motion for complex, multi-step, or physics-based animations
+- Use `skeleton-shimmer` class for loading skeletons — never `animate-pulse`
+- All Tailwind transition durations must use a value from the Timing table above
 
 ---
 
@@ -524,6 +601,12 @@ When `reduceMotion` is true:
 - Use Tailwind's `animate-pulse` for skeletons (use `skeleton-shimmer` class)
 - Disable a button during loading without changing its text and adding a spinner
 - Use `opacity-50` for disabled/loading states (use `opacity-70`)
-- Skip `reduceMotion` checks on any animation, skeleton, or spinner
+- Skip `reduceMotion` checks on any Framer Motion animation
 - Use different skeleton background colors across pages (always `bg-gray-200 dark:bg-gray-700`)
 - Create layout-shifting loading states (skeleton dimensions must match content dimensions)
+- Use `whileTap` with anything other than `{ scale: 0.98 }` (no x/y translation, no shadow changes)
+- Use custom `cubic-bezier` curves — only use the three defined easing tokens
+- Use spring physics other than `stiffness: 300, damping: 20` (default) or `stiffness: 400, damping: 15` (snappy/drag) without discussion
+- Use Tailwind `duration-*` values outside the timing table (100, 150, 200, 300, 350, 500)
+- Use upward (`-y`) hover translations on buttons — press direction is always down/right
+- Use stagger delays other than 50ms per item

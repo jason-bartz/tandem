@@ -56,7 +56,7 @@ export default function GameCard({
       transition: {
         duration: reduceMotion ? 0 : 0.4,
         delay: reduceMotion ? 0 : animationDelay,
-        ease: [0.25, 0.46, 0.45, 0.94],
+        ease: [0.25, 0.1, 0.25, 1],
       },
     },
   };
@@ -66,8 +66,6 @@ export default function GameCard({
       ? {}
       : {
           scale: 0.98,
-          x: 2,
-          y: 2,
         },
   };
 
@@ -77,7 +75,7 @@ export default function GameCard({
       : {
           rotate: [0, -6, 6, -6, 6, 0],
           transition: {
-            duration: 0.6,
+            duration: 0.5,
             repeat: Infinity,
             repeatDelay: 3,
             ease: 'easeInOut',

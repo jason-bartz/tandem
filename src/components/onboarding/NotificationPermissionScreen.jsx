@@ -178,7 +178,7 @@ export default function NotificationPermissionScreen({ onContinue, onSkip }) {
             className={`w-full py-4 rounded-xl font-bold text-base transition-all ${
               highContrast
                 ? 'bg-hc-primary text-white border-[4px] border-hc-border hover:bg-hc-focus disabled:opacity-50 shadow-[4px_4px_0px_rgba(0,0,0,1)]'
-                : 'bg-sky-500 text-white border-[3px] border-black shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_rgba(0,0,0,1)] active:translate-y-0 active:shadow-none disabled:opacity-50'
+                : 'bg-sky-500 text-white border-[3px] border-black shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)] active:translate-x-[4px] active:translate-y-[4px] active:shadow-none disabled:opacity-50'
             }`}
             style={{
               WebkitTapHighlightColor: 'transparent',
@@ -216,7 +216,7 @@ export default function NotificationPermissionScreen({ onContinue, onSkip }) {
             className={`w-full py-4 rounded-xl font-bold text-base transition-all ${
               highContrast
                 ? 'bg-hc-surface text-hc-text border-[4px] border-hc-border hover:bg-hc-focus/10 disabled:opacity-50 shadow-[4px_4px_0px_rgba(0,0,0,1)]'
-                : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-[3px] border-black dark:border-gray-600 shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(0,0,0,0.5)] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_rgba(0,0,0,1)] active:translate-y-0 active:shadow-none disabled:opacity-50'
+                : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-[3px] border-black dark:border-gray-600 shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(0,0,0,0.5)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)] active:translate-x-[4px] active:translate-y-[4px] active:shadow-none disabled:opacity-50'
             }`}
             style={{
               WebkitTapHighlightColor: 'transparent',

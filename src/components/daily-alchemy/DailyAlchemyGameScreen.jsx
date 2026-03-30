@@ -225,7 +225,7 @@ function ResultAnimation({ result, onComplete, onSelectElement, isAnonymous, onS
         y: 0,
         opacity: 1,
         scale: 1,
-        transition: { type: 'spring', stiffness: 400, damping: 25 },
+        transition: { type: 'spring', stiffness: 300, damping: 20 },
       });
     }
   };
@@ -359,7 +359,7 @@ function ResultAnimation({ result, onComplete, onSelectElement, isAnonymous, onS
               boxShadow: '3px 3px 0px rgba(0,0,0,1)',
               backgroundColor: '#ca8a04', // yellow-600
             }}
-            whileTap={{ y: 0, boxShadow: 'none' }}
+            whileTap={{ scale: 0.98 }}
             transition={{ delay: 0.5 }}
           >
             {isSharing ? (
@@ -523,7 +523,7 @@ export function DailyAlchemyGameScreen({
   parMoves,
 
   // Timer & Stats
-  remainingTime,
+  elapsedTime,
   movesCount,
   formatTime,
 
@@ -643,7 +643,7 @@ export function DailyAlchemyGameScreen({
       {/* Stats and Target Row - hidden in free play mode */}
       {!freePlayMode && (
         <StatsAndTargetRow
-          time={remainingTime}
+          time={elapsedTime}
           moves={movesCount}
           formatTime={formatTime}
           targetElement={targetElement}
@@ -652,7 +652,7 @@ export function DailyAlchemyGameScreen({
           isTargetFound={isTargetFound}
           onUseHint={onUseHint}
           hintDisabled={isCombining || isAnimating || isComplete}
-          isCountdown={true}
+          isCountdown={false}
           centered={true}
         />
       )}

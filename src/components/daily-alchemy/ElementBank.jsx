@@ -349,7 +349,7 @@ export function ElementBank({
                   initial={{ opacity: 0, scale: 0.95, y: -4 }}
                   animate={{ opacity: 1, scale: 1, y: 0 }}
                   exit={{ opacity: 0, scale: 0.95, y: -4 }}
-                  transition={{ type: 'spring', stiffness: 500, damping: 25 }}
+                  transition={{ type: 'spring', stiffness: 300, damping: 20 }}
                   role="listbox"
                   aria-label="Sort options"
                 >
@@ -470,10 +470,10 @@ export function ElementBank({
                   }
             }
             transition={{
-              width: { type: 'spring', stiffness: 400, damping: 25 },
-              paddingLeft: { type: 'spring', stiffness: 400, damping: 25 },
-              paddingRight: { type: 'spring', stiffness: 400, damping: 25 },
-              scale: { type: 'spring', stiffness: 500, damping: 20 },
+              width: { type: 'spring', stiffness: 300, damping: 20 },
+              paddingLeft: { type: 'spring', stiffness: 300, damping: 20 },
+              paddingRight: { type: 'spring', stiffness: 300, damping: 20 },
+              scale: { type: 'spring', stiffness: 300, damping: 20 },
             }}
             aria-label="Open favorites"
             aria-expanded={showFavoritesPanel}
