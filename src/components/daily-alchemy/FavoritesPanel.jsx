@@ -103,18 +103,9 @@ export function FavoritesPanel({
       >
         {/* Header */}
         <div className="flex items-center justify-between p-3 border-b-2">
-          <div className="flex items-center gap-2">
-            <Image
-              src="/ui/shared/favorites.png"
-              alt=""
-              width={20}
-              height={20}
-              className="w-5 h-5"
-            />
-            <h3 className="font-bold text-sm dark:text-white">
-              Favorites ({favoriteElements.size}/{maxFavorites})
-            </h3>
-          </div>
+          <h3 className="font-bold text-sm dark:text-white">
+            Favorites ({favoriteElements.size}/{maxFavorites})
+          </h3>
           <div className="flex items-center gap-1">
             {/* Clear all button */}
             {favoriteElements.size > 0 && (
@@ -156,17 +147,10 @@ export function FavoritesPanel({
           {favoritesList.length === 0 ? (
             <div className="text-center py-4">
               <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">No favorites yet</p>
-              <p className="text-xs text-gray-400 dark:text-gray-500 flex items-center justify-center gap-1">
-                <span>
-                  {isTouchDevice ? 'Long press any element to add to' : 'Drag any element to'}
-                </span>
-                <Image
-                  src="/ui/shared/favorites.png"
-                  alt="favorites"
-                  width={16}
-                  height={16}
-                  className="w-4 h-4 inline-block"
-                />
+              <p className="text-xs text-gray-400 dark:text-gray-500">
+                {isTouchDevice
+                  ? 'Long press any element to add to favorites'
+                  : 'Drag any element to favorites'}
               </p>
             </div>
           ) : (

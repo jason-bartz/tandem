@@ -605,7 +605,7 @@ const ReelConnectionsGame = ({ titleFont = '' }) => {
                     {/* Connection name overlay - centered across posters */}
                     <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                       <div
-                        className={`${groupColor} px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg sm:rounded-xl border-2`}
+                        className={`${groupColor} px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg sm:rounded-xl`}
                       >
                         <h3
                           className={`text-center font-bold text-xs sm:text-sm ${highContrast ? 'text-white' : group.textColor}`}
@@ -795,7 +795,7 @@ const ReelConnectionsGame = ({ titleFont = '' }) => {
                     {/* Connection name overlay - centered across posters */}
                     <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                       <div
-                        className={`${groupColor} px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg sm:rounded-xl border-2`}
+                        className={`${groupColor} px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg sm:rounded-xl`}
                       >
                         <h3
                           className={`text-center font-bold text-xs sm:text-sm ${highContrast ? 'text-white' : 'text-black'}`}
@@ -1490,7 +1490,7 @@ const ReelConnectionsGame = ({ titleFont = '' }) => {
                   {/* Connection name overlay - centered across posters */}
                   <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                     <div
-                      className={`${groupColor} px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg sm:rounded-xl border-2`}
+                      className={`${groupColor} px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg sm:rounded-xl`}
                     >
                       <h3
                         className={`text-center font-bold text-xs sm:text-sm ${highContrast ? 'text-white' : group.textColor}`}

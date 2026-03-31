@@ -14,7 +14,7 @@ import Settings from '@/components/Settings';
 import FeedbackPane from '@/components/FeedbackPane';
 import { ASSET_VERSION } from '@/lib/constants';
 import { isStandaloneAlchemy, homePath } from '@/lib/standalone';
-import ReducedMotionImage from '@/components/shared/ReducedMotionImage';
+import AlchemyDemo from '@/components/demos/AlchemyDemo';
 
 export default function Support() {
   useTheme();
@@ -963,15 +963,8 @@ export default function Support() {
               </li>
             </ol>
           </div>
-          {/* Demo GIF */}
-          <div className="rounded-lg overflow-hidden border-2 border-gray-300 dark:border-gray-600">
-            <ReducedMotionImage
-              src="/game/daily-alchemy/howto.gif"
-              staticSrc="/game/daily-alchemy/howto/1.webp"
-              alt="Daily Alchemy gameplay demo"
-              className="w-full h-auto"
-            />
-          </div>
+          {/* Animated gameplay demo */}
+          <AlchemyDemo />
           <div>
             <h4 className="font-semibold mb-2">Game Features</h4>
             <ul className="list-disc list-inside text-sm space-y-1">

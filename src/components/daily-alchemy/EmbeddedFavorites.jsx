@@ -127,18 +127,9 @@ export function EmbeddedFavorites({
     >
       {/* Header */}
       <div className="flex items-center justify-between px-3 py-2 border-b-2 flex-shrink-0">
-        <div className="flex items-center gap-2">
-          <Image
-            src="/ui/shared/favorites.png"
-            alt=""
-            width={18}
-            height={18}
-            className="w-[18px] h-[18px]"
-          />
-          <h3 className="font-bold text-sm dark:text-white">
-            Favorites ({favoriteElements.size}/{maxFavorites})
-          </h3>
-        </div>
+        <h3 className="font-bold text-sm dark:text-white">
+          Favorites ({favoriteElements.size}/{maxFavorites})
+        </h3>
         {/* Clear all button */}
         {favoriteElements.size > 0 && (
           <button
@@ -184,13 +175,6 @@ export function EmbeddedFavorites({
                 : 'border-gray-200 dark:border-gray-700'
             )}
           >
-            <Image
-              src="/ui/shared/favorites.png"
-              alt=""
-              width={32}
-              height={32}
-              className={cn('w-8 h-8 mb-2', isOverAddZone ? 'opacity-100' : 'opacity-30')}
-            />
             <p
               className={cn(
                 'text-sm mb-1',

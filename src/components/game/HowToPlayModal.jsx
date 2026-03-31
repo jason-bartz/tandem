@@ -3,8 +3,11 @@ import { useState, useEffect } from 'react';
 import { useTheme } from '@/contexts/ThemeContext';
 import Image from 'next/image';
 import LeftSidePanel from '@/components/shared/LeftSidePanel';
-import ReducedMotionImage from '@/components/shared/ReducedMotionImage';
 import { isStandaloneAlchemy } from '@/lib/standalone';
+import TandemDemo from '@/components/demos/TandemDemo';
+import MiniDemo from '@/components/demos/MiniDemo';
+import AlchemyDemo from '@/components/demos/AlchemyDemo';
+import ReelConnectionsDemo from '@/components/demos/ReelConnectionsDemo';
 
 export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' }) {
   const { highContrast } = useTheme();
@@ -122,16 +125,9 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
             </ul>
           </div>
 
-          {/* Demo GIF */}
+          {/* Animated gameplay demo */}
           <div className="max-w-xs">
-            <div className="rounded-lg overflow-hidden border-2 border-gray-300 dark:border-gray-600">
-              <ReducedMotionImage
-                src="/game/tandem/howto.gif"
-                staticSrc="/game/tandem/howto/1.webp"
-                alt="Tandem gameplay demo"
-                className="w-full h-auto"
-              />
-            </div>
+            <TandemDemo />
           </div>
 
           <div
@@ -343,16 +339,9 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
             </ul>
           </div>
 
-          {/* Demo GIF */}
+          {/* Animated gameplay demo */}
           <div className="max-w-xs">
-            <div className="rounded-lg overflow-hidden border-2 border-gray-300 dark:border-gray-600">
-              <ReducedMotionImage
-                src="/game/daily-mini/howto.gif"
-                staticSrc="/game/daily-mini/howto/1.webp"
-                alt="Daily Mini gameplay demo"
-                className="w-full h-auto"
-              />
-            </div>
+            <MiniDemo />
           </div>
 
           <div
@@ -453,16 +442,9 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
             </ul>
           </div>
 
-          {/* Demo GIF */}
+          {/* Animated gameplay demo */}
           <div className="max-w-xs">
-            <div className="rounded-lg overflow-hidden border-2 border-gray-300 dark:border-gray-600">
-              <ReducedMotionImage
-                src="/game/daily-alchemy/howto.gif"
-                staticSrc="/game/daily-alchemy/howto/1.webp"
-                alt="Daily Alchemy gameplay demo"
-                className="w-full h-auto"
-              />
-            </div>
+            <AlchemyDemo />
           </div>
 
           <div>
@@ -831,16 +813,9 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
             </ul>
           </div>
 
-          {/* Demo GIF */}
+          {/* Animated gameplay demo */}
           <div className="max-w-xs">
-            <div className="rounded-lg overflow-hidden border-2 border-gray-300 dark:border-gray-600">
-              <ReducedMotionImage
-                src="/game/reel-connections/howto.gif"
-                staticSrc="/game/reel-connections/howto/1.webp"
-                alt="Reel Connections gameplay demo"
-                className="w-full h-auto"
-              />
-            </div>
+            <ReelConnectionsDemo />
           </div>
 
           <div

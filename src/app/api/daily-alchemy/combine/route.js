@@ -5,6 +5,7 @@ import logger from '@/lib/logger';
 import aiService from '@/services/ai.service';
 import { normalizeKey } from '@/lib/daily-alchemy.constants';
 import { notifyFirstDiscovery } from '@/lib/discord';
+import { withRateLimit } from '@/lib/security/rateLimiter';
 
 // Check if KV is available
 const isKvAvailable = !!(
@@ -95,6 +96,10 @@ async function releaseDiscoveryLock(cacheKey) {
  * - userId: string (optional) - User ID for first discovery tracking
  */
 export async function POST(request) {
+  // Rate limit AI generation calls
+  const rateLimitResponse = await withRateLimit(request, 'ai_generation');
+  if (rateLimitResponse) return rateLimitResponse;
+
   try {
     const body = await request.json();
     const { elementA, elementB, userId, mode = 'combine' } = body;

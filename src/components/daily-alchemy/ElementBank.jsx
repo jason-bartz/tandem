@@ -3,7 +3,6 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search, X, ChevronDown, ArrowUp, ArrowDown, Shuffle } from 'lucide-react';
-import Image from 'next/image';
 import { cn } from '@/lib/utils';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useHaptics } from '@/hooks/useHaptics';
@@ -486,8 +485,8 @@ export function ElementBank({
             onDrop={handleFavoritesDrop}
             className={cn(
               'flex-shrink-0',
-              'h-10',
-              'flex items-center justify-center gap-2',
+              'h-10 px-3',
+              'flex items-center justify-center gap-1',
               'dark:border-gray-600',
               'rounded-xl',
               'dark:',
@@ -509,52 +508,18 @@ export function ElementBank({
               touchOverFavorites && 'bg-yellow-100 dark:bg-yellow-900/30 ring-2 ring-yellow-500',
               highContrast && 'border-2 border-hc-border'
             )}
-            // Animate width expansion when touch dragging over
+            // Animate scale when touch dragging over
             initial={false}
-            animate={
-              touchOverFavorites
-                ? {
-                    width: 'auto',
-                    paddingLeft: 12,
-                    paddingRight: 14,
-                    scale: 1.05,
-                  }
-                : {
-                    width: 40,
-                    paddingLeft: 0,
-                    paddingRight: 0,
-                    scale: 1,
-                  }
-            }
+            animate={touchOverFavorites ? { scale: 1.05 } : { scale: 1 }}
             transition={{
-              width: { type: 'spring', stiffness: 300, damping: 20 },
-              paddingLeft: { type: 'spring', stiffness: 300, damping: 20 },
-              paddingRight: { type: 'spring', stiffness: 300, damping: 20 },
               scale: { type: 'spring', stiffness: 300, damping: 20 },
             }}
             aria-label="Open favorites"
             aria-expanded={showFavoritesPanel}
           >
-            <Image
-              src="/ui/shared/favorites.png"
-              alt=""
-              width={24}
-              height={24}
-              className="w-6 h-6 flex-shrink-0"
-            />
-            <AnimatePresence>
-              {touchOverFavorites && (
-                <motion.span
-                  initial={{ opacity: 0, width: 0 }}
-                  animate={{ opacity: 1, width: 'auto' }}
-                  exit={{ opacity: 0, width: 0 }}
-                  transition={{ duration: 0.2, ease: 'easeOut' }}
-                  className="text-sm font-semibold text-gray-700 dark:text-gray-200 whitespace-nowrap overflow-hidden"
-                >
-                  Favorites
-                </motion.span>
-              )}
-            </AnimatePresence>
+            <span className="text-sm font-semibold text-gray-700 dark:text-gray-200 whitespace-nowrap">
+              Favorites
+            </span>
           </motion.button>
         )}
 
@@ -585,10 +550,10 @@ export function ElementBank({
           'flex flex-row flex-wrap gap-2 content-start items-start',
           'overflow-y-auto overflow-x-hidden',
           'scrollable',
-          'pt-2 p-0 md:p-2',
-          'md:bg-gray-50 md:dark:bg-gray-900/50',
-          'border-0 md:border-[2px] md:border-gray-200 md:dark:border-gray-700',
-          'md:rounded-xl',
+          'p-2',
+          'bg-bg-surface dark:bg-gray-900/50',
+          'border-[2px] border-border-main dark:border-gray-700',
+          'rounded-xl',
           highContrast && 'md:border-hc-border'
         )}
         ref={gridContainerRef}
