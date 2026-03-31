@@ -14,9 +14,9 @@ export default function ServiceOutage() {
   return (
     <div className="fixed inset-0 w-full h-full flex items-center justify-center bg-bg-primary px-4">
       <div
-        className={`rounded-3xl p-8 max-w-md text-center ${
+        className={`rounded-lg p-8 max-w-md text-center ${
           highContrast
-            ? 'bg-hc-surface border-4 border-hc-border'
+            ? 'bg-hc-surface border-2 border-hc-border'
             : 'bg-ghost-white dark:bg-gray-800'
         }`}
       >

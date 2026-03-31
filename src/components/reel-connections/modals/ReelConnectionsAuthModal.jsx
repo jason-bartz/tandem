@@ -298,7 +298,7 @@ export default function ReelConnectionsAuthModal({
           disabled={loading}
           type="button"
           aria-label={mode === 'signup' ? 'Sign up with Google' : 'Sign in with Google'}
-          className={`w-full p-4 rounded-xl border-[3px] transition-all flex items-center justify-center gap-3 ${
+          className={`w-full p-4 rounded-xl border-2 transition-all flex items-center justify-center gap-3 ${
             loading ? 'opacity-50 cursor-not-allowed' : ' hover:'
           } bg-ghost-white text-gray-700`}
         >
@@ -338,7 +338,7 @@ export default function ReelConnectionsAuthModal({
             disabled={loading}
             type="button"
             aria-label="Sign in with Apple"
-            className={`w-full p-4 rounded-xl border-[3px] transition-all flex items-center justify-center gap-3 ${
+            className={`w-full p-4 rounded-xl border-2 transition-all flex items-center justify-center gap-3 ${
               loading ? 'opacity-50 cursor-not-allowed' : ' hover:'
             } bg-ghost-white text-black`}
           >
@@ -367,7 +367,7 @@ export default function ReelConnectionsAuthModal({
           disabled={loading}
           type="button"
           aria-label={mode === 'signup' ? 'Sign up with Discord' : 'Sign in with Discord'}
-          className={`w-full p-4 rounded-xl border-[3px] transition-all flex items-center justify-center gap-3 ${
+          className={`w-full p-4 rounded-xl border-2 transition-all flex items-center justify-center gap-3 ${
             loading ? 'opacity-50 cursor-not-allowed' : ' hover:'
           } bg-[#5865F2] text-white`}
         >
@@ -414,7 +414,7 @@ export default function ReelConnectionsAuthModal({
                     const sanitized = e.target.value.replace(/[^a-zA-Z0-9_]/g, '');
                     setUsername(sanitized);
                   }}
-                  className="flex-1 px-4 py-3 bg-ghost-white/10 border-2 border-white/20 rounded-xl text-white placeholder-white/40 focus:border-[#ffce00] focus:outline-none transition-colors"
+                  className="flex-1 px-4 py-3 bg-ghost-white/10 border-2 border-white/20 rounded-xl text-white placeholder-white/40 focus:border-accent-yellow focus:outline-none transition-colors"
                   placeholder="your_username"
                   minLength={3}
                   maxLength={20}
@@ -423,7 +423,7 @@ export default function ReelConnectionsAuthModal({
                 <button
                   type="button"
                   onClick={handleGenerateUsername}
-                  className="w-12 h-12 flex items-center justify-center bg-ghost-white/10 border-2 border-white/20 rounded-xl hover:bg-ghost-white/20 hover:border-[#ffce00] transition-all"
+                  className="w-12 h-12 flex items-center justify-center bg-ghost-white/10 border-2 border-white/20 rounded-xl hover:bg-ghost-white/20 hover:border-accent-yellow transition-all"
                   aria-label="Generate random username"
                   title="Generate random username"
                 >
@@ -445,7 +445,7 @@ export default function ReelConnectionsAuthModal({
               id="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-3 bg-ghost-white/10 border-2 border-white/20 rounded-xl text-white placeholder-white/40 focus:border-[#ffce00] focus:outline-none transition-colors"
+              className="w-full px-4 py-3 bg-ghost-white/10 border-2 border-white/20 rounded-xl text-white placeholder-white/40 focus:border-accent-yellow focus:outline-none transition-colors"
               placeholder="you@example.com"
               required
             />
@@ -466,7 +466,7 @@ export default function ReelConnectionsAuthModal({
                       setSuccessMessage(null);
                       setPassword('');
                     }}
-                    className="text-xs font-medium text-[#ffce00] hover:text-[#ffce00]/80 transition-colors"
+                    className="text-xs font-medium text-accent-yellow hover:text-accent-yellow/80 transition-colors"
                   >
                     Forgot password?
                   </button>
@@ -477,7 +477,7 @@ export default function ReelConnectionsAuthModal({
                 id="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-4 py-3 bg-ghost-white/10 border-2 border-white/20 rounded-xl text-white placeholder-white/40 focus:border-[#ffce00] focus:outline-none transition-colors"
+                className="w-full px-4 py-3 bg-ghost-white/10 border-2 border-white/20 rounded-xl text-white placeholder-white/40 focus:border-accent-yellow focus:outline-none transition-colors"
                 placeholder="••••••••"
                 minLength={6}
                 required
@@ -497,7 +497,7 @@ export default function ReelConnectionsAuthModal({
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-4 bg-[#ffce00] rounded-xl hover: active: transform hover:-translate-y-0.5 active:translate-y-0 transition-all text-[#2c2c2c] font-black text-lg tracking-wide gold-glow disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+            className="w-full py-4 bg-accent-yellow rounded-xl hover:scale-105 transition-all text-gray-800 font-black text-lg tracking-wide disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
           >
             {loading
               ? 'Please wait...'
@@ -518,14 +518,14 @@ export default function ReelConnectionsAuthModal({
                 setError(null);
                 setSuccessMessage(null);
               }}
-              className="text-sm font-semibold text-white/70 hover:text-[#ffce00] transition-colors"
+              className="text-sm font-semibold text-white/70 hover:text-accent-yellow transition-colors"
             >
               Back to sign in
             </button>
           ) : (
             <button
               onClick={toggleMode}
-              className="text-sm font-semibold text-white/70 hover:text-[#ffce00] transition-colors"
+              className="text-sm font-semibold text-white/70 hover:text-accent-yellow transition-colors"
             >
               {mode === 'signup'
                 ? 'Already have an account? Sign in'

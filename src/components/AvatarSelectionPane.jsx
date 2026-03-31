@@ -158,7 +158,7 @@ export default function AvatarSelectionPane({
       {/* Error Message */}
       {error && (
         <div
-          className={`mb-4 p-4 rounded-2xl border-[2px] ${
+          className={`mb-4 p-4 rounded-lg border-2 ${
             highContrast
               ? 'bg-hc-error/10 border-hc-error'
               : 'bg-red-50 dark:bg-red-900/20 border-red-500 dark:border-red-700'
@@ -193,7 +193,7 @@ export default function AvatarSelectionPane({
                 <button
                   key={avatar.id}
                   onClick={() => handleAvatarClick(avatar.id)}
-                  className={`py-3 px-2 rounded-2xl border-[3px] transition-all cursor-pointer hover:scale-[1.05] ${
+                  className={`py-3 px-2 rounded-lg border-2 transition-all cursor-pointer hover:scale-[1.05] ${
                     isSelected
                       ? highContrast
                         ? 'bg-hc-primary border-hc-border'
@@ -206,7 +206,7 @@ export default function AvatarSelectionPane({
                 >
                   <div className="flex flex-col items-center justify-center gap-2">
                     {/* Avatar Image */}
-                    <div className="relative w-16 h-16 rounded-2xl overflow-hidden flex-shrink-0 dark:">
+                    <div className="relative w-16 h-16 rounded-lg overflow-hidden flex-shrink-0 dark:">
                       <Image
                         src={avatar.image_path}
                         alt={avatar.display_name}
@@ -241,7 +241,7 @@ export default function AvatarSelectionPane({
       {!loading && expandedAvatar && expandedAvatarData && (
         <div className="flex flex-col items-center text-center px-4 py-6">
           {/* Avatar Image */}
-          <div className="relative w-48 h-48 mb-6 rounded-3xl overflow-hidden dark:">
+          <div className="relative w-48 h-48 mb-6 rounded-lg overflow-hidden dark:">
             <Image
               src={expandedAvatarData.image_path}
               alt={expandedAvatarData.display_name}
@@ -266,7 +266,7 @@ export default function AvatarSelectionPane({
             <button
               onClick={handleBack}
               disabled={saving}
-              className={`flex-1 py-4 px-6 rounded-2xl border-[3px] font-bold text-base transition-all ${
+              className={`flex-1 py-4 px-6 rounded-lg border-2 font-bold text-base transition-all ${
                 saving ? 'opacity-50 cursor-not-allowed' : ''
               } ${
                 highContrast
@@ -281,7 +281,7 @@ export default function AvatarSelectionPane({
             <button
               onClick={handleConfirm}
               disabled={saving}
-              className={`flex-1 py-4 px-6 rounded-2xl border-[3px] font-bold text-base transition-all ${
+              className={`flex-1 py-4 px-6 rounded-lg border-2 font-bold text-base transition-all ${
                 saving ? 'opacity-50 cursor-not-allowed' : ''
               } ${
                 highContrast
@@ -308,7 +308,7 @@ export default function AvatarSelectionPane({
           <p className="text-gray-600 dark:text-gray-400 mb-4">No avatars available</p>
           <button
             onClick={loadAvatars}
-            className={`py-2 px-4 rounded-xl border-[2px] font-medium text-sm transition-all ${
+            className={`py-2 px-4 rounded-xl border-2 font-medium text-sm transition-all ${
               highContrast
                 ? 'bg-hc-primary text-white border-hc-border hover:bg-hc-focus'
                 : 'bg-sky-500 text-white'

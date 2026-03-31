@@ -45,10 +45,10 @@ export default function AboutPageSkeleton() {
           </div>
 
           {/* Founder Image and Info skeleton */}
-          <div className="flex flex-col items-center pt-6 mt-6 border-t-[3px] border-gray-300 dark:border-gray-600">
+          <div className="flex flex-col items-center pt-6 mt-6 border-t border-gray-300 dark:border-gray-600">
             {/* Profile image skeleton */}
             <div
-              className={`w-32 h-32 rounded-full bg-gray-200 dark:bg-gray-700 border-[3px] border-gray-300 dark:border-gray-600 mb-4 ${!reduceMotion ? 'skeleton-shimmer' : ''}`}
+              className={`w-32 h-32 rounded-full bg-gray-200 dark:bg-gray-700 mb-4 ${!reduceMotion ? 'skeleton-shimmer' : ''}`}
             />
 
             {/* Name skeleton */}
@@ -63,9 +63,9 @@ export default function AboutPageSkeleton() {
           </div>
 
           {/* Call to Action button skeleton */}
-          <div className="mt-8 pt-6 border-t-[3px] border-gray-300 dark:border-gray-600">
+          <div className="mt-8 pt-6 border-t border-gray-300 dark:border-gray-600">
             <div
-              className={`h-12 bg-gray-200 dark:bg-gray-700 rounded-2xl ${!reduceMotion ? 'skeleton-shimmer' : ''}`}
+              className={`h-12 bg-gray-200 dark:bg-gray-700 rounded-lg ${!reduceMotion ? 'skeleton-shimmer' : ''}`}
             />
           </div>
         </div>

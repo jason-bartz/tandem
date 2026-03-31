@@ -72,7 +72,7 @@ export default function HowToPlayPage() {
               incorrectly, any letters in the correct position turn green and stay locked. Just fill
               in the remaining blanks.
             </p>
-            <div className="bg-gray-100 dark:bg-gray-900 rounded-2xl p-4">
+            <div className="bg-gray-100 dark:bg-gray-900 rounded-lg p-4">
               <p className="font-semibold mb-2">Example: Answer is PLAN</p>
               <div className="space-y-2 font-mono text-sm">
                 <p>
@@ -115,7 +115,7 @@ export default function HowToPlayPage() {
               <span className="text-2xl">🏜️🌡️</span>
               <span className="font-mono font-bold">= DESERT</span>
             </div>
-            <div className="mt-4 p-3 bg-[#ff5757] text-white rounded-2xl text-center font-bold">
+            <div className="mt-4 p-3 bg-[#ff5757] text-white rounded-lg text-center font-bold">
               Theme Revealed: Things That Are Hot
             </div>
           </div>
@@ -507,7 +507,7 @@ export default function HowToPlayPage() {
                       className={`flex-1 py-3 px-4 flex items-center justify-center gap-2 font-semibold text-sm transition-all ${
                         activeTab === tab.id
                           ? 'bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white'
-                          : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700'
+                          : 'bg-bg-card dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700'
                       }`}
                       style={{
                         borderBottom: activeTab === tab.id ? `3px solid ${tab.color}` : 'none',
@@ -521,7 +521,7 @@ export default function HowToPlayPage() {
                 </div>
 
                 {/* Quick Start Card */}
-                <div className="mx-6 mt-6 mb-6 p-4 bg-ghost-white dark:bg-gray-900 rounded-2xl">
+                <div className="mx-6 mt-6 mb-6 p-4 bg-ghost-white dark:bg-gray-900 rounded-lg">
                   <h3 className="font-semibold mb-3 text-gray-800 dark:text-gray-200">
                     Quick Start
                   </h3>
@@ -532,7 +532,7 @@ export default function HowToPlayPage() {
                 <div className="p-6 pt-0">
                   <div className="space-y-2">
                     {sections.map((section) => (
-                      <div key={section.id} className="rounded-2xl overflow-hidden">
+                      <div key={section.id} className="rounded-lg overflow-hidden">
                         <button
                           onClick={() =>
                             setActiveSection(activeSection === section.id ? null : section.id)
@@ -577,7 +577,7 @@ export default function HowToPlayPage() {
                     <div className="flex gap-3 flex-wrap">
                       <Link
                         href={getPlayLink()}
-                        className="inline-flex items-center gap-2 px-4 py-2 hover:opacity-90 font-semibold rounded-2xl transition-all"
+                        className="inline-flex items-center gap-2 px-4 py-2 hover:opacity-90 font-semibold rounded-lg transition-all"
                         style={{
                           backgroundColor: getThemeColor(),
                           color: activeTab === 'mini' ? '#1f2937' : 'white',

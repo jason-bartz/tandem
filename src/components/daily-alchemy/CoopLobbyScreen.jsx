@@ -242,7 +242,7 @@ export function CoopLobbyScreen({
             onClick={onFallbackToCreate}
             className={cn(
               'w-full flex items-center justify-center gap-2 py-3 mb-3',
-              'bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200',
+              'bg-bg-card dark:bg-gray-800 text-gray-800 dark:text-gray-200',
               'dark:border-gray-600',
               'rounded-xl font-bold',
               '',
@@ -315,7 +315,7 @@ export function CoopLobbyScreen({
               onClick={() => onSelectMatchmakingMode('creative')}
               className={cn(
                 'w-full flex flex-col items-center py-4 mb-3',
-                'bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200',
+                'bg-bg-card dark:bg-gray-800 text-gray-800 dark:text-gray-200',
                 'dark:border-gray-600',
                 'rounded-xl font-bold',
                 '',
@@ -399,9 +399,9 @@ export function CoopLobbyScreen({
               'w-full p-6 mb-6',
               'bg-indigo-50 dark:bg-indigo-950/30',
               'dark:border-gray-600',
-              'rounded-2xl',
+              'rounded-lg',
               '',
-              highContrast && 'border-[4px] border-hc-border'
+              highContrast && 'border-2 border-hc-border'
             )}
           >
             <div className="text-center mb-4">
@@ -503,7 +503,7 @@ export function CoopLobbyScreen({
                 ' hover:',
                 'active:translate-y-0',
                 'transition-all duration-150',
-                highContrast && 'border-[4px]'
+                highContrast && 'border-2'
               )}
             >
               Create Game
@@ -514,7 +514,7 @@ export function CoopLobbyScreen({
               onClick={() => setMode('join')}
               className={cn(
                 'w-full flex items-center justify-center gap-3 py-4 mb-3',
-                'bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200',
+                'bg-bg-card dark:bg-gray-800 text-gray-800 dark:text-gray-200',
                 'dark:border-gray-600',
                 'rounded-xl font-bold text-lg',
                 'dark:',
@@ -522,7 +522,7 @@ export function CoopLobbyScreen({
                 ' hover:',
                 'active:translate-y-0',
                 'transition-all duration-150',
-                highContrast && 'border-[4px] border-hc-border'
+                highContrast && 'border-2 border-hc-border'
               )}
             >
               Join with Code
@@ -541,12 +541,12 @@ export function CoopLobbyScreen({
                 ' hover:',
                 'active:translate-y-0',
                 'transition-all duration-150',
-                highContrast && 'border-[4px]'
+                highContrast && 'border-2'
               )}
             >
               <CoopIcon className="w-5 h-5" />
               Matchmaking
-              <span className="text-[10px] font-bold bg-white/25 px-1.5 py-0.5 rounded-full uppercase tracking-wide">
+              <span className="text-[10px] font-bold bg-ghost-white/25 px-1.5 py-0.5 rounded-full uppercase tracking-wide">
                 Beta
               </span>
             </button>
@@ -633,7 +633,7 @@ export function CoopLobbyScreen({
                   disabled={isCreating}
                   className={cn(
                     'w-full flex flex-col items-center py-4 mb-3',
-                    'bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200',
+                    'bg-bg-card dark:bg-gray-800 text-gray-800 dark:text-gray-200',
                     'dark:border-gray-600',
                     'rounded-xl font-bold',
                     '',
@@ -678,7 +678,7 @@ export function CoopLobbyScreen({
                   disabled={isCreating}
                   className={cn(
                     'w-full flex items-center justify-center gap-3 py-4 mb-3',
-                    'bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200',
+                    'bg-bg-card dark:bg-gray-800 text-gray-800 dark:text-gray-200',
                     'dark:border-gray-600',
                     'rounded-xl font-bold',
                     '',
@@ -708,7 +708,7 @@ export function CoopLobbyScreen({
                           className={cn(
                             'w-full p-3 text-left',
                             'bg-gray-50 dark:bg-gray-800',
-                            'border-[2px] border-gray-300 dark:border-gray-600',
+                            'border-2 border-gray-300 dark:border-gray-600',
                             'rounded-lg',
                             'transition-colors',
                             slot.hasSave
@@ -795,7 +795,7 @@ export function CoopLobbyScreen({
               maxLength={6}
               className={cn(
                 'w-full text-center text-3xl font-mono font-bold tracking-[0.3em] py-4 mb-4',
-                'bg-white dark:bg-gray-800',
+                'bg-bg-card dark:bg-gray-800',
                 'dark:border-gray-600',
                 'rounded-xl',
                 '',

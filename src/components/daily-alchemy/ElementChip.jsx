@@ -2,7 +2,7 @@
 
 import { memo, useRef, useCallback, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Star } from 'lucide-react';
+
 import { useTheme } from '@/contexts/ThemeContext';
 import { cn } from '@/lib/utils';
 
@@ -207,7 +207,7 @@ function ElementChipInner({
       className={cn(
         'relative inline-flex items-center justify-center flex-nowrap whitespace-nowrap',
         sizeClasses[size],
-        !isSelected && !isTarget && 'bg-white dark:bg-gray-800',
+        !isSelected && !isTarget && 'bg-bg-card dark:bg-gray-800',
         'dark:border-gray-600',
         'rounded-lg',
         'dark:',
@@ -216,11 +216,11 @@ function ElementChipInner({
         !disabled && !draggable && 'cursor-pointer',
         draggable && !disabled && 'cursor-grab active:cursor-grabbing',
         !disabled && ' hover:',
-        isSelected && 'bg-[#ffce00] dark:bg-[#ffce00]/70',
+        isSelected && 'bg-accent-yellow dark:bg-accent-yellow/70',
         isTarget && 'bg-yellow-100 dark:bg-yellow-900/40 border-yellow-500 ring-2 ring-yellow-400',
         disabled && 'opacity-50 cursor-not-allowed',
         isDragging && 'opacity-50',
-        highContrast && 'border-[3px]',
+        highContrast && 'border-2',
         // Prevent text selection during touch drag
         draggable && 'select-none'
       )}
@@ -265,7 +265,7 @@ function ElementChipInner({
       {/* Golden gradient background for first discoveries (light mode only) */}
       {element.isFirstDiscovery && !isSelected && !isTarget && (
         <span
-          className="absolute inset-0 rounded-lg pointer-events-none bg-gradient-to-br from-amber-100/60 to-yellow-50/80 shadow-[inset_0_0_6px_rgba(234,179,8,0.3)] dark:bg-none dark:shadow-none"
+          className="absolute inset-0 rounded-lg pointer-events-none bg-gradient-to-br from-amber-100/60 to-yellow-50/80 dark:bg-none"
           aria-hidden="true"
         />
       )}
@@ -294,19 +294,16 @@ function ElementChipInner({
         </span>
       )}
 
-      {/* Favorite star indicator - takes precedence over NEW badge */}
+      {/* Favorite indicator - takes precedence over NEW badge */}
       {isFavorite && (
         <span
           className={cn(
             'absolute -top-1 -right-1',
             'w-4 h-4 rounded-full',
-            'bg-yellow-400 border border-yellow-600',
-            'flex items-center justify-center',
-            'shadow-sm'
+            'bg-accent-green',
+            'flex items-center justify-center'
           )}
-        >
-          <Star className="w-2.5 h-2.5 text-yellow-700 fill-yellow-700" />
-        </span>
+        />
       )}
       {/* NEW badge for recently discovered elements (only if not a favorite) */}
       {isNew && !isFavorite && (
@@ -317,8 +314,7 @@ function ElementChipInner({
             'bg-purple-500 text-white',
             'text-[9px] font-bold leading-none',
             'rounded',
-            'border border-purple-700',
-            'shadow-sm'
+            'border border-purple-700'
           )}
         >
           NEW

@@ -251,7 +251,7 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
           {showAppBanner && !Capacitor.isNativePlatform() && (
             <div className="mb-6">
               <div
-                className={`rounded-2xl border-[3px] p-5 dark: ${
+                className={`rounded-lg border-2 p-5 dark: ${
                   highContrast
                     ? 'bg-hc-primary border-hc-border'
                     : 'bg-gradient-to-br from-sky-50 to-blue-50 dark:from-sky-900/30 dark:to-blue-900/30'
@@ -298,7 +298,7 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
                     </a>
                     <button
                       onClick={handleAppBannerDismiss}
-                      className={`px-4 py-2 rounded-xl font-medium text-sm transition-all border-[3px] whitespace-nowrap ${
+                      className={`px-4 py-2 rounded-xl font-medium text-sm transition-all border-2 whitespace-nowrap ${
                         highContrast
                           ? 'bg-hc-surface text-hc-text border-hc-border hover:bg-hc-focus hover:text-white'
                           : 'bg-ghost-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:'
@@ -316,13 +316,13 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
           <div className="mb-8">
             {/* Section Card */}
             <div
-              className={`rounded-2xl border-[3px] overflow-hidden dark: ${
-                highContrast ? 'border-hc-border bg-hc-surface' : 'bg-ghost-white dark:bg-gray-800'
+              className={`rounded-lg border-2 overflow-hidden dark: ${
+                highContrast ? 'border-hc-border bg-hc-surface' : 'bg-bg-card dark:bg-gray-800'
               }`}
             >
               {/* Section Header */}
               <div
-                className={`px-5 py-3 border-b-[3px] ${
+                className={`px-5 py-3 border-b-2 ${
                   highContrast ? 'border-hc-border' : 'border-gray-300 dark:border-gray-600'
                 }`}
               >
@@ -395,15 +395,13 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
             <div className="mb-8">
               {/* Section Card */}
               <div
-                className={`rounded-2xl border-[3px] overflow-hidden dark: ${
-                  highContrast
-                    ? 'border-hc-border bg-hc-surface'
-                    : 'bg-ghost-white dark:bg-gray-800'
+                className={`rounded-lg border-2 overflow-hidden dark: ${
+                  highContrast ? 'border-hc-border bg-hc-surface' : 'bg-bg-card dark:bg-gray-800'
                 }`}
               >
                 {/* Section Header */}
                 <div
-                  className={`px-5 py-3 border-b-[3px] ${
+                  className={`px-5 py-3 border-b-2 ${
                     highContrast ? 'border-hc-border' : 'border-gray-300 dark:border-gray-600'
                   }`}
                 >
@@ -528,15 +526,13 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
             <div className="mb-8">
               {/* Section Card */}
               <div
-                className={`rounded-2xl border-[3px] overflow-hidden dark: ${
-                  highContrast
-                    ? 'border-hc-border bg-hc-surface'
-                    : 'bg-ghost-white dark:bg-gray-800'
+                className={`rounded-lg border-2 overflow-hidden dark: ${
+                  highContrast ? 'border-hc-border bg-hc-surface' : 'bg-bg-card dark:bg-gray-800'
                 }`}
               >
                 {/* Section Header */}
                 <div
-                  className={`px-5 py-3 border-b-[3px] ${
+                  className={`px-5 py-3 border-b-2 ${
                     highContrast ? 'border-hc-border' : 'border-gray-300 dark:border-gray-600'
                   }`}
                 >
@@ -647,13 +643,13 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
           <div className="mb-8">
             {/* Section Card */}
             <div
-              className={`rounded-2xl border-[3px] overflow-hidden dark: ${
-                highContrast ? 'border-hc-border bg-hc-surface' : 'bg-ghost-white dark:bg-gray-800'
+              className={`rounded-lg border-2 overflow-hidden dark: ${
+                highContrast ? 'border-hc-border bg-hc-surface' : 'bg-bg-card dark:bg-gray-800'
               }`}
             >
               {/* Section Header */}
               <div
-                className={`px-5 py-3 border-b-[3px] ${
+                className={`px-5 py-3 border-b-2 ${
                   highContrast ? 'border-hc-border' : 'border-gray-300 dark:border-gray-600'
                 }`}
               >
@@ -791,7 +787,7 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
                   <div className="grid grid-cols-3 gap-2">
                     <button
                       onClick={() => handleKeyboardLayoutChange('QWERTY')}
-                      className={`px-2 py-1.5 rounded-lg text-xs font-bold text-center transition-all border-[2px] ${
+                      className={`px-2 py-1.5 rounded-lg text-xs font-bold text-center transition-all border-2 ${
                         highContrast
                           ? keyboardLayout === 'QWERTY'
                             ? 'bg-hc-primary text-white border-hc-border'
@@ -805,7 +801,7 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
                     </button>
                     <button
                       onClick={() => handleKeyboardLayoutChange('QWERTZ')}
-                      className={`px-2 py-1.5 rounded-lg text-xs font-bold text-center transition-all border-[2px] ${
+                      className={`px-2 py-1.5 rounded-lg text-xs font-bold text-center transition-all border-2 ${
                         highContrast
                           ? keyboardLayout === 'QWERTZ'
                             ? 'bg-hc-primary text-white border-hc-border'
@@ -819,7 +815,7 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
                     </button>
                     <button
                       onClick={() => handleKeyboardLayoutChange('AZERTY')}
-                      className={`px-2 py-1.5 rounded-lg text-xs font-bold text-center transition-all border-[2px] ${
+                      className={`px-2 py-1.5 rounded-lg text-xs font-bold text-center transition-all border-2 ${
                         highContrast
                           ? keyboardLayout === 'AZERTY'
                             ? 'bg-hc-primary text-white border-hc-border'

@@ -260,10 +260,10 @@ export default function MiniGameScreen({
         {/* Bottom padding accounts for fixed keyboard (~220px) */}
         <div className="flex flex-col max-w-md w-full mx-auto pt-1 pt-safe-ios pb-[220px] px-4">
           <div
-            className={`rounded-lg border-[3px] overflow-hidden flex flex-col relative ${
+            className={`rounded-lg border-2 overflow-hidden flex flex-col relative ${
               highContrast
                 ? 'bg-hc-surface border-hc-border'
-                : 'bg-ghost-white dark:bg-bg-card border-border-main'
+                : 'bg-bg-card dark:bg-bg-card border-border-main'
             }`}
           >
             {/* Header - back button, title/date, and hamburger menu - ALWAYS VISIBLE */}
@@ -315,7 +315,7 @@ export default function MiniGameScreen({
 
             {/* Content Area - BLURRED when not started */}
             <div
-              className={`flex flex-col p-4 sm:p-6 relative ${!gameStarted ? 'blur-md pointer-events-none select-none' : ''}`}
+              className={`flex flex-col p-4 sm:p-6 relative ${!gameStarted ? 'opacity-10 pointer-events-none select-none' : ''}`}
             >
               {/* Timer and Check/Reveal Buttons */}
               <div className="flex items-center justify-between mb-2">
@@ -445,7 +445,7 @@ export default function MiniGameScreen({
 
       {/* Fixed Keyboard at Bottom - Outside Card */}
       <div
-        className={`fixed bottom-0 left-0 right-0 pb-safe bg-bg-main pt-3 z-10 ${!gameStarted ? 'blur-md pointer-events-none select-none' : ''}`}
+        className={`fixed bottom-0 left-0 right-0 pb-safe bg-bg-main pt-3 z-10 ${!gameStarted ? 'opacity-10 pointer-events-none select-none' : ''}`}
       >
         <OnScreenKeyboard
           onKeyPress={handleKeyPress}
@@ -499,10 +499,10 @@ export default function MiniGameScreen({
             className={`
               fixed bottom-0 left-0 right-0
               rounded-t-[32px]
-              border-t-[3px] border-l-[3px] border-r-[3px]
+              border-t-2 border-l-2 border-r-2
               p-6 pb-8
               max-w-md mx-auto
-              ${highContrast ? 'bg-hc-surface' : 'bg-ghost-white dark:bg-gray-800'}
+              ${highContrast ? 'bg-hc-surface' : 'bg-bg-card dark:bg-gray-800'}
               ${reduceMotion ? '' : 'animate-slide-up'}
             `}
             onClick={(e) => e.stopPropagation()}
@@ -592,10 +592,10 @@ export default function MiniGameScreen({
             className={`
               fixed bottom-0 left-0 right-0
               rounded-t-[32px]
-              border-t-[3px] border-l-[3px] border-r-[3px]
+              border-t-2 border-l-2 border-r-2
               p-6 pb-8
               max-w-md mx-auto
-              ${highContrast ? 'bg-hc-surface' : 'bg-ghost-white dark:bg-gray-800'}
+              ${highContrast ? 'bg-hc-surface' : 'bg-bg-card dark:bg-gray-800'}
               ${reduceMotion ? '' : 'animate-slide-up'}
             `}
             onClick={(e) => e.stopPropagation()}

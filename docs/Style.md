@@ -171,7 +171,7 @@ The project uses Tailwind's default 4px base unit. The most common spacing value
 | Context                | Width | Token      |
 | ---------------------- | ----- | ---------- |
 | Input focus state      | 2px   | `border-2` |
-| Outline buttons (bold) | 4px   | `border-4` |
+| High contrast outlines | 2px   | `border-2` |
 | Subtle dividers        | 1px   | `border`   |
 | Generally              | none  | No border  |
 
@@ -448,8 +448,9 @@ focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500
 - Add new font families without discussion
 - Use responsive text sizing (`sm:text-lg md:text-xl`) — mobile-first with consistent sizing
 - Use arbitrary spacing values (`p-[13px]`) — stick to the Tailwind scale
-- Use thick borders (`border-[3px]`, `border-[4px]`) for decoration — borders are subtle or absent
+- Use thick borders (`border-2`, `border-[3px]`, `border-[4px]`) for decoration — borders are subtle (1px) or absent. Reserve `border-2` for input focus states and high contrast mode only
 - Use `border-black` — our borders use `border-main` / `border-light` tokens
+- Use borders on cards, containers, or skeleton elements — use background color blocks to define structure instead
 - Use neo-brutalist offset shadows or translate-based press effects
 - Skip dark mode support on any visible element
 - Skip high contrast conditional rendering where colors are used

@@ -95,7 +95,7 @@ export default function AchievementsModal({ isOpen, onClose }) {
       {/* Not Authenticated State */}
       {!user && (
         <div
-          className={`p-6 rounded-2xl border-[3px] text-center ${
+          className={`p-6 rounded-lg border-2 text-center ${
             highContrast
               ? 'bg-hc-surface border-hc-border'
               : 'bg-amber-50 dark:bg-amber-900/20 border-amber-500'
@@ -132,7 +132,7 @@ export default function AchievementsModal({ isOpen, onClose }) {
       {/* Error State */}
       {user && error && !loading && (
         <div
-          className={`p-4 rounded-2xl border-[3px] mb-4 ${
+          className={`p-4 rounded-lg border-2 mb-4 ${
             highContrast
               ? 'bg-hc-surface border-hc-border'
               : 'bg-red-50 dark:bg-red-900/20 border-red-500'
@@ -153,7 +153,7 @@ export default function AchievementsModal({ isOpen, onClose }) {
         <>
           {/* Summary Stats */}
           <div
-            className={`rounded-2xl border-[3px] p-4 mb-4 ${
+            className={`rounded-lg border-2 p-4 mb-4 ${
               highContrast
                 ? 'bg-hc-primary text-white border-hc-border'
                 : 'bg-accent-blue text-white dark:'
@@ -187,7 +187,7 @@ export default function AchievementsModal({ isOpen, onClose }) {
           <div className="flex gap-2 mb-4">
             <button
               onClick={() => handleTabChange('tandem')}
-              className={`flex-1 py-2 px-2 rounded-xl border-[3px] font-bold text-xs transition-all ${
+              className={`flex-1 py-2 px-2 rounded-xl border-2 font-bold text-xs transition-all ${
                 activeTab === 'tandem'
                   ? highContrast
                     ? 'bg-hc-primary text-hc-text border-hc-border'
@@ -201,7 +201,7 @@ export default function AchievementsModal({ isOpen, onClose }) {
             </button>
             <button
               onClick={() => handleTabChange('mini')}
-              className={`flex-1 py-2 px-2 rounded-xl border-[3px] font-bold text-xs transition-all ${
+              className={`flex-1 py-2 px-2 rounded-xl border-2 font-bold text-xs transition-all ${
                 activeTab === 'mini'
                   ? highContrast
                     ? 'bg-hc-primary text-hc-text border-hc-border'
@@ -215,7 +215,7 @@ export default function AchievementsModal({ isOpen, onClose }) {
             </button>
             <button
               onClick={() => handleTabChange('reel')}
-              className={`flex-1 py-2 px-2 rounded-xl border-[3px] font-bold text-xs transition-all ${
+              className={`flex-1 py-2 px-2 rounded-xl border-2 font-bold text-xs transition-all ${
                 activeTab === 'reel'
                   ? highContrast
                     ? 'bg-hc-primary text-hc-text border-hc-border'
@@ -229,7 +229,7 @@ export default function AchievementsModal({ isOpen, onClose }) {
             </button>
             <button
               onClick={() => handleTabChange('alchemy')}
-              className={`flex-1 py-2 px-2 rounded-xl border-[3px] font-bold text-xs transition-all ${
+              className={`flex-1 py-2 px-2 rounded-xl border-2 font-bold text-xs transition-all ${
                 activeTab === 'alchemy'
                   ? highContrast
                     ? 'bg-hc-primary text-hc-text border-hc-border'

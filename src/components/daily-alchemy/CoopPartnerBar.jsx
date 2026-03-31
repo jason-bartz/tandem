@@ -167,7 +167,7 @@ function CoopPartnerBarInner({
       className={cn(
         'relative flex flex-col',
         'bg-indigo-50/50 dark:bg-indigo-950/20',
-        'border-[2px] border-indigo-200 dark:border-indigo-800/50',
+        'border-2 border-indigo-200 dark:border-indigo-800/50',
         'rounded-xl',
         ' dark:',
         highContrast && 'border-hc-border'

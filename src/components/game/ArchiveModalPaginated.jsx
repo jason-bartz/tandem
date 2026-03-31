@@ -50,7 +50,7 @@ const PuzzleItem = memo(
     return (
       <button
         onClick={() => onClick(puzzle)}
-        className={`w-full p-3 rounded-2xl transition-all text-left transform border-[3px] dark: ${
+        className={`w-full p-3 rounded-lg transition-all text-left transform border-2 dark: ${
           highContrast
             ? actuallyLocked
               ? 'bg-hc-surface border-hc-error opacity-75 hover:opacity-100'
@@ -131,7 +131,7 @@ const SkeletonLoader = ({ count = 3, highContrast }) => (
     {Array.from({ length: count }).map((_, index) => (
       <div
         key={index}
-        className={`w-full p-3 rounded-2xl mb-2 border-[3px] ${
+        className={`w-full p-3 rounded-lg mb-2 border-2 ${
           highContrast
             ? 'bg-hc-surface border-hc-border'
             : 'bg-ghost-white dark:bg-bg-card border-border-main'
@@ -516,7 +516,7 @@ export default function ArchiveModalPaginated({ isOpen, onClose, onSelectPuzzle 
         footer={
           <button
             onClick={onClose}
-            className={`w-full py-3 text-white font-semibold text-base sm:text-lg rounded-2xl transition-all border-[3px] ${
+            className={`w-full py-3 text-white font-semibold text-base sm:text-lg rounded-lg transition-all border-2 ${
               highContrast
                 ? 'bg-hc-primary border-hc-border hover:bg-hc-focus'
                 : 'bg-accent-blue dark: hover:dark:hover:'

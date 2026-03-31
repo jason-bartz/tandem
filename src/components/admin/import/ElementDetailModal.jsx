@@ -156,7 +156,7 @@ export default function ElementDetailModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-      <div className="bg-white rounded-2xl border-4 w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col">
+      <div className="bg-bg-card rounded-lg border-2 w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col">
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b-2 bg-gray-50">
           <div className="flex items-center gap-3">
@@ -224,7 +224,7 @@ export default function ElementDetailModal({
             )}
             <button
               onClick={onClose}
-              className="p-2 rounded-lg border-2 bg-white hover:bg-gray-100"
+              className="p-2 rounded-lg border-2 bg-bg-card hover:bg-gray-100"
             >
               <X className="w-5 h-5" />
             </button>
@@ -301,7 +301,7 @@ export default function ElementDetailModal({
                         {pathData.path.map((step, index) => (
                           <div
                             key={index}
-                            className="flex items-center gap-2 text-sm p-2 bg-white rounded-lg border border-purple-200"
+                            className="flex items-center gap-2 text-sm p-2 bg-bg-card rounded-lg border border-purple-200"
                           >
                             <span className="text-purple-500 font-mono text-xs w-6">
                               {index + 1}.
@@ -407,7 +407,7 @@ export default function ElementDetailModal({
         {/* Delete Confirmation Modal */}
         {showDeleteConfirm && (
           <div className="absolute inset-0 bg-black/50 flex items-center justify-center p-4">
-            <div className="bg-white rounded-xl border-4 p-6 max-w-md">
+            <div className="bg-bg-card rounded-lg border-2 p-6 max-w-md">
               <div className="flex items-center gap-3 mb-4">
                 <div className="p-2 bg-red-100 rounded-full">
                   <AlertTriangle className="w-6 h-6 text-red-600" />

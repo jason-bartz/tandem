@@ -63,10 +63,10 @@ export default function MiniAdmireScreen({
         {/* Main game card */}
         <div className="flex-1 flex flex-col justify-center max-w-md w-full mx-auto pt-safe">
           <div
-            className={`rounded-lg border-[3px] overflow-hidden flex flex-col m-4 ${
+            className={`rounded-lg border-2 overflow-hidden flex flex-col m-4 ${
               highContrast
                 ? 'bg-hc-surface border-hc-border'
-                : 'bg-ghost-white dark:bg-bg-card border-border-main'
+                : 'bg-bg-card dark:bg-bg-card border-border-main'
             }`}
           >
             {/* Header - back button, title/date, and hamburger menu */}

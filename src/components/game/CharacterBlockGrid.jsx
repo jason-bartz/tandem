@@ -331,22 +331,7 @@ export default function CharacterBlockGrid({
     );
   }
 
-  // Determine outer border color - always keep black outline
-  const getOuterBorderColor = () => {
-    // Always use black outline for all states (correct, wrong, neutral)
-    return highContrast ? 'border-hc-border' : 'border-gray-800 dark:border-gray-600';
-  };
-
-  // Determine shadow for outer container
-  const getShadow = () => {
-    if (isCorrect) {
-      return '';
-    }
-    if (isWrong) {
-      return '';
-    }
-    return ' dark:';
-  };
+  // No outer border or shadow — tiles define structure via background color and gaps
 
   // Determine if we need horizontal scrolling
   const needsScroll = answerLength > 8;
@@ -386,16 +371,12 @@ export default function CharacterBlockGrid({
             role="region"
             aria-label="Scrollable answer input"
           >
-            {/* Character blocks grid - crossword style with outer border */}
+            {/* Character blocks grid - tile style with gaps */}
             <div
               ref={gridRef}
               className={`
                 inline-flex
-                ${getOuterBorderColor()}
-                ${getShadow()}
-                border-[3px]
-                rounded-xl
-                overflow-hidden
+                gap-1
                 transition-all
                 duration-200
               `}
@@ -439,11 +420,7 @@ export default function CharacterBlockGrid({
           ref={gridRef}
           className={`
             inline-flex
-            ${getOuterBorderColor()}
-            ${getShadow()}
-            border-[3px]
-            rounded-xl
-            overflow-hidden
+            gap-1
             transition-all
             duration-200
           `}

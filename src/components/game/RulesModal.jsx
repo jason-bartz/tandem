@@ -15,10 +15,10 @@ export default function RulesModal({ isOpen, onClose }) {
       footer={
         <button
           onClick={onClose}
-          className={`w-full py-3 font-semibold rounded-xl transition-all border-[3px] ${
+          className={`w-full py-3 font-semibold rounded-xl transition-all border-2 ${
             highContrast
               ? 'bg-hc-primary text-white border-hc-border hover:bg-hc-focus'
-              : 'bg-gradient-to-r from-sky-500 to-teal-400 text-white border-transparent hover:shadow-lg'
+              : 'bg-primary text-white border-transparent hover:scale-105'
           }`}
         >
           Got it!

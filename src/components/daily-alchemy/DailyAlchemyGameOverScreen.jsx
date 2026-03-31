@@ -48,7 +48,7 @@ export function DailyAlchemyGameOverScreen({
           'rounded-xl',
           '',
           'w-full max-w-sm',
-          highContrast && 'border-[3px]'
+          highContrast && 'border-2'
         )}
         initial={!reduceMotion ? { opacity: 0, y: 20 } : false}
         animate={{ opacity: 1, y: 0 }}
@@ -81,7 +81,7 @@ export function DailyAlchemyGameOverScreen({
               ' hover:',
               'active:translate-y-0',
               'transition-all duration-150',
-              highContrast && 'border-[4px]'
+              highContrast && 'border-2'
             )}
           >
             Reveal Solution
@@ -109,7 +109,7 @@ export function DailyAlchemyGameOverScreen({
               ' hover:',
               '',
               'transition-all duration-150',
-              highContrast && 'border-[4px]'
+              highContrast && 'border-2'
             )}
           >
             Play Archive
@@ -142,7 +142,7 @@ export function DailyAlchemyGameOverScreen({
           ' hover:',
           'active:translate-y-0',
           'transition-all duration-150',
-          highContrast && 'border-[4px] border-hc-border'
+          highContrast && 'border-2 border-hc-border'
         )}
         initial={!reduceMotion ? { opacity: 0, scale: 0.95 } : false}
         animate={{ opacity: 1, scale: 1 }}

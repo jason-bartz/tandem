@@ -45,7 +45,7 @@ export default function AchievementCard({ achievement, index = 0 }) {
 
   return (
     <div
-      className={`relative rounded-2xl border-[3px] p-4 transition-all ${animationClass} ${delayClass} ${
+      className={`relative rounded-lg border-2 p-4 transition-all ${animationClass} ${delayClass} ${
         isUnlocked
           ? highContrast
             ? 'bg-hc-surface border-hc-border'
@@ -57,7 +57,7 @@ export default function AchievementCard({ achievement, index = 0 }) {
     >
       {/* Locked Overlay */}
       {!isUnlocked && (
-        <div className="absolute inset-0 rounded-2xl bg-black/20 dark:bg-black/40 backdrop-blur-[1px] z-10 flex items-center justify-center">
+        <div className="absolute inset-0 rounded-lg bg-black/20 dark:bg-black/40 z-10 flex items-center justify-center">
           <img src="/ui/shared/lock.png" alt="Locked" className="w-8 h-8 opacity-60" />
         </div>
       )}
@@ -66,7 +66,7 @@ export default function AchievementCard({ achievement, index = 0 }) {
         {/* Achievement Emoji */}
         <div className="flex-shrink-0">
           <div
-            className={`relative w-16 h-16 rounded-xl border-[2px] flex items-center justify-center ${
+            className={`relative w-16 h-16 rounded-xl border-2 flex items-center justify-center ${
               isUnlocked
                 ? highContrast
                   ? 'border-hc-border bg-hc-surface'

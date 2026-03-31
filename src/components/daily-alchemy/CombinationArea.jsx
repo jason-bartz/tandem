@@ -274,16 +274,14 @@ function SelectionSlot({
       className={cn(
         'w-24 h-24 sm:w-28 sm:h-28 shrink-0',
         'flex flex-col items-center justify-center',
-        'bg-white dark:bg-gray-800',
-        'dark:border-gray-600',
-        'rounded-xl',
-        // Only show shadow when element is present
-        element && 'dark:',
-        !element && 'border-dashed hover:border-soup-primary/70 hover:bg-soup-light/30',
+        'bg-bg-card dark:bg-gray-800',
+        'rounded-lg',
+        !element &&
+          'border border-dashed border-border-main hover:border-soup-primary/70 hover:bg-soup-light/30',
         isDragOver && !element && 'border-soup-primary bg-soup-light/50 scale-105',
         // Active slot highlight
-        isActive && 'ring-[3px] ring-soup-primary ring-offset-1',
-        highContrast && 'border-[4px]'
+        isActive && 'ring-2 ring-soup-primary ring-offset-1',
+        highContrast && 'border-2 border-hc-border'
       )}
       animate={
         !reduceMotion && isShaking
@@ -372,10 +370,8 @@ export function CombinationArea({
       className={cn(
         'p-4 sm:p-6',
         'bg-soup-light/50 dark:bg-soup-primary/10',
-        'dark:border-gray-600',
-        'rounded-2xl',
-        'dark:',
-        highContrast && 'border-[4px] border-hc-border'
+        'rounded-lg',
+        highContrast && 'border-2 border-hc-border'
       )}
     >
       {/* Inline Error Message */}
@@ -411,8 +407,7 @@ export function CombinationArea({
             <div
               className={cn(
                 'px-3 py-2 sm:px-4 sm:py-3',
-                'rounded-xl sm:rounded-2xl',
-                'border-[3px]',
+                'rounded-lg',
                 highContrast
                   ? 'bg-hc-warning border-hc-warning'
                   : 'bg-accent-yellow dark:bg-yellow-600 border-accent-yellow dark:border-yellow-700',
@@ -478,11 +473,10 @@ export function CombinationArea({
           className={cn(
             'flex items-center shrink-0',
             'rounded-lg',
-            'dark:',
             'overflow-hidden',
             // Force GPU compositing so Safari maintains overflow clip during color transitions
             '[backface-visibility:hidden]',
-            highContrast && 'border-[4px]'
+            highContrast && 'border-2 border-hc-border'
           )}
         >
           <button
@@ -498,7 +492,7 @@ export function CombinationArea({
               'w-8 h-8 flex items-center justify-center transition-colors duration-200',
               !isSubtractMode
                 ? 'bg-soup-primary text-black'
-                : 'bg-white dark:bg-gray-700 text-gray-400 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-600',
+                : 'bg-bg-card dark:bg-gray-700 text-gray-400 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-600',
               'disabled:cursor-not-allowed'
             )}
             aria-label="Switch to combine mode"
@@ -520,7 +514,7 @@ export function CombinationArea({
               'w-8 h-8 flex items-center justify-center transition-colors duration-200',
               isSubtractMode
                 ? 'bg-red-400 dark:bg-red-500 text-white'
-                : 'bg-white dark:bg-gray-700 text-gray-400 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-600',
+                : 'bg-bg-card dark:bg-gray-700 text-gray-400 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-600',
               'disabled:cursor-not-allowed'
             )}
             aria-label="Switch to subtract mode"
@@ -560,7 +554,7 @@ export function CombinationArea({
             'active:translate-y-0',
             'disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:hover:',
             'text-gray-900 dark:text-white',
-            highContrast && 'border-[4px]'
+            highContrast && 'border-2 border-hc-border'
           )}
           aria-label="Clear selections"
         >
@@ -586,7 +580,7 @@ export function CombinationArea({
             isSubtractMode
               ? 'bg-red-400 dark:bg-red-500 text-white hover:bg-red-500 dark:hover:bg-red-600 disabled:hover:bg-red-400 dark:disabled:hover:bg-red-500'
               : 'bg-soup-primary text-black hover:bg-soup-hover disabled:hover:bg-soup-primary',
-            highContrast && 'border-[4px]'
+            highContrast && 'border-2 border-hc-border'
           )}
           animate={{ scale: 1 }}
           whileTap={canCombine && !reduceMotion ? { scale: 0.98 } : undefined}

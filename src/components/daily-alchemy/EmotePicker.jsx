@@ -64,11 +64,11 @@ export function EmotePicker({ isOpen, onClose, onSelectEmote, cooldownActive = f
           className={cn(
             'absolute right-0 top-full mt-2 z-50',
             'p-3',
-            'bg-white dark:bg-gray-800',
+            'bg-bg-card dark:bg-gray-800',
             'dark:border-gray-600',
             'rounded-xl',
             '',
-            highContrast && 'border-[4px] border-hc-border'
+            highContrast && 'border-2 border-hc-border'
           )}
           initial={!reduceMotion ? { opacity: 0, scale: 0.9, y: -8 } : false}
           animate={{ opacity: 1, scale: 1, y: 0 }}

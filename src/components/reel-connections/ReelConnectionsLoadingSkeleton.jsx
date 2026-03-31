@@ -83,13 +83,13 @@ export default function ReelConnectionsLoadingSkeleton() {
         </div>
 
         {/* Cinematic Marquee Header Skeleton */}
-        <div className="relative cinema-gradient rounded-2xl border-[4px] border-[#ffce00]/30 p-6 mb-6 overflow-hidden">
+        <div className="relative cinema-gradient rounded-lg p-6 mb-6 overflow-hidden">
           {/* Top Marquee Lights - dim placeholder */}
           <div className="absolute top-0 left-0 right-0 flex justify-around py-2">
             {[...Array(12)].map((_, i) => (
               <div
                 key={`top-${i}`}
-                className={`w-4 h-4 rounded-full bg-[#ffce00]/20 ${shimmer}`}
+                className={`w-4 h-4 rounded-full bg-accent-yellow/20 ${shimmer}`}
                 style={{ animationDelay: `${i * 50}ms` }}
               />
             ))}
@@ -104,7 +104,7 @@ export default function ReelConnectionsLoadingSkeleton() {
                 style={{ animationDelay: '100ms' }}
               />
               <div
-                className={`h-5 w-12 bg-[#ffce00]/20 rounded-md ${shimmer}`}
+                className={`h-5 w-12 bg-accent-yellow/20 rounded-md ${shimmer}`}
                 style={{ animationDelay: '200ms' }}
               />
             </div>
@@ -142,7 +142,7 @@ export default function ReelConnectionsLoadingSkeleton() {
             {[...Array(12)].map((_, i) => (
               <div
                 key={`bottom-${i}`}
-                className={`w-4 h-4 rounded-full bg-[#ffce00]/20 ${shimmer}`}
+                className={`w-4 h-4 rounded-full bg-accent-yellow/20 ${shimmer}`}
                 style={{ animationDelay: `${i * 50 + 25}ms` }}
               />
             ))}
@@ -167,7 +167,7 @@ export default function ReelConnectionsLoadingSkeleton() {
 
         {/* Centered Loading Message - fixed to screen like ready modal */}
         <div className="fixed inset-0 flex items-center justify-center z-10 pointer-events-none">
-          <div className="bg-gradient-to-b from-[#1a1a2e] to-[#0f0f1e] rounded-2xl border-[3px] border-[#ffce00] px-8 py-6 text-center mx-4">
+          <div className="bg-gradient-to-b from-[#1a1a2e] to-[#0f0f1e] rounded-lg px-8 py-6 text-center mx-4">
             <p
               className={`text-white text-lg font-bold drop-shadow-lg transition-opacity duration-150 ${
                 isVisible ? 'opacity-100' : 'opacity-0'
@@ -180,15 +180,13 @@ export default function ReelConnectionsLoadingSkeleton() {
 
         {/* Controls Skeleton */}
         <div className="flex gap-3 justify-center mb-6">
+          <div className={`h-11 w-24 bg-ghost-white/10 rounded-xl ${shimmer}`} />
           <div
-            className={`h-11 w-24 bg-ghost-white/10 border-[3px] border-white/10 rounded-xl ${shimmer}`}
-          />
-          <div
-            className={`h-11 w-20 bg-ghost-white/10 border-[3px] border-white/10 rounded-xl ${shimmer}`}
+            className={`h-11 w-20 bg-ghost-white/10 rounded-xl ${shimmer}`}
             style={{ animationDelay: '100ms' }}
           />
           <div
-            className={`h-11 w-24 bg-ghost-white/10 border-[3px] border-white/10 rounded-xl ${shimmer}`}
+            className={`h-11 w-24 bg-ghost-white/10 rounded-xl ${shimmer}`}
             style={{ animationDelay: '200ms' }}
           />
         </div>

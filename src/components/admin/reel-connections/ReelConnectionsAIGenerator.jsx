@@ -74,14 +74,14 @@ export default function ReelConnectionsAIGenerator({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 "
       onClick={onClose}
       role="dialog"
       aria-labelledby="ai-generator-title"
       aria-modal="true"
     >
       <div
-        className="bg-ghost-white dark:bg-gray-800 rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+        className="bg-ghost-white dark:bg-gray-800 rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}

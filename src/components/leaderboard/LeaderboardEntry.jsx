@@ -26,8 +26,8 @@ export default function LeaderboardEntry({
       className={`flex items-center gap-3 p-3 rounded-xl transition-all ${
         isCurrentUser
           ? highContrast
-            ? 'bg-hc-primary/20 border-[2px] border-hc-border'
-            : 'bg-sky-50 dark:bg-sky-900/20 border-[2px] border-sky-200 dark:border-sky-800'
+            ? 'bg-hc-primary/20 border-2 border-hc-border'
+            : 'bg-sky-50 dark:bg-sky-900/20 border-2 border-sky-200 dark:border-sky-800'
           : highContrast
             ? 'bg-hc-surface/50'
             : 'bg-gray-50 dark:bg-gray-800/50 hover:bg-gray-100 dark:hover:bg-gray-800'
@@ -38,22 +38,22 @@ export default function LeaderboardEntry({
         className={`w-8 h-8 rounded-lg flex items-center justify-center font-bold text-sm flex-shrink-0 ${
           rank === 1
             ? highContrast
-              ? 'bg-hc-warning text-black border-[2px] border-hc-border'
-              : 'bg-yellow-400 text-yellow-900 border-[2px] border-yellow-500'
+              ? 'bg-hc-warning text-black border-2 border-hc-border'
+              : 'bg-yellow-400 text-yellow-900 border-2 border-yellow-500'
             : rank === 2
               ? highContrast
-                ? 'bg-gray-300 text-black border-[2px] border-hc-border'
-                : 'bg-gray-300 text-gray-700 border-[2px] border-gray-400'
+                ? 'bg-gray-300 text-black border-2 border-hc-border'
+                : 'bg-gray-300 text-gray-700 border-2 border-gray-400'
               : rank === 3
                 ? highContrast
-                  ? 'bg-orange-400 text-black border-[2px] border-hc-border'
-                  : 'bg-amber-600 text-white border-[2px] border-amber-700'
+                  ? 'bg-orange-400 text-black border-2 border-hc-border'
+                  : 'bg-amber-600 text-white border-2 border-amber-700'
                 : isCurrentUser
                   ? highContrast
                     ? 'bg-hc-primary text-white'
                     : 'bg-sky-500 text-white'
                   : highContrast
-                    ? 'bg-hc-surface text-hc-text border-[2px] border-hc-border'
+                    ? 'bg-hc-surface text-hc-text border-2 border-hc-border'
                     : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
         }`}
       >
@@ -61,7 +61,7 @@ export default function LeaderboardEntry({
       </div>
 
       {/* Avatar */}
-      <div className="relative w-12 h-12 rounded-full overflow-hidden border-[2px] border-gray-200 dark:border-gray-700 flex-shrink-0">
+      <div className="relative w-12 h-12 rounded-full overflow-hidden border-2 border-gray-200 dark:border-gray-700 flex-shrink-0">
         <Image
           src={(entry.avatar_image_path || entry.avatar_url || '/avatars/default.png').replace(
             '/images/avatars/',

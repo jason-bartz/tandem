@@ -397,7 +397,7 @@ export default function DailyAlchemyPuzzleEditor({ puzzle, date, onSave, onCance
   const exactMatch = searchResults.some((el) => el.name.toLowerCase() === searchText.toLowerCase());
 
   return (
-    <div className="bg-ghost-white dark:bg-gray-800 rounded-2xl p-3 sm:p-4 overflow-visible">
+    <div className="bg-ghost-white dark:bg-gray-800 rounded-lg p-3 sm:p-4 overflow-visible">
       <div className="mb-4">
         <h2 className="text-lg font-black text-text-primary">
           {puzzle ? 'Edit puzzle' : 'Create new puzzle'}
@@ -490,7 +490,7 @@ export default function DailyAlchemyPuzzleEditor({ puzzle, date, onSave, onCance
                 }
               }}
               placeholder="Search for an element..."
-              className={`w-full px-3 py-1.5 pl-8 text-sm rounded-lg border-[2px] ${
+              className={`w-full px-3 py-1.5 pl-8 text-sm rounded-lg border-2 ${
                 formData.targetElement
                   ? 'border-green-500 bg-green-50 dark:bg-green-900/20'
                   : 'bg-ghost-white dark:bg-gray-700'
@@ -570,7 +570,7 @@ export default function DailyAlchemyPuzzleEditor({ puzzle, date, onSave, onCance
 
           {/* Search Results Dropdown */}
           {showDropdown && !formData.targetElement && (
-            <div className="absolute z-[100] w-full mt-1 bg-white dark:bg-gray-800 rounded-lg max-h-80 overflow-y-auto">
+            <div className="absolute z-[100] w-full mt-1 bg-bg-card dark:bg-gray-800 rounded-lg max-h-80 overflow-y-auto">
               {isSearching && searchResults.length === 0 ? (
                 <div className="px-4 py-3 text-text-secondary flex items-center gap-2">
                   <div className="w-4 h-4 border-2 border-green-500 border-t-transparent rounded-full animate-spin" />
@@ -647,7 +647,7 @@ export default function DailyAlchemyPuzzleEditor({ puzzle, date, onSave, onCance
         </div>
 
         {/* Generate Path Button */}
-        <div className="p-3 sm:p-4 bg-gradient-to-br from-orange-50 to-amber-50 dark:from-orange-900/20 dark:to-amber-900/20 rounded-lg border-[3px] border-orange-500">
+        <div className="p-3 sm:p-4 bg-gradient-to-br from-orange-50 to-amber-50 dark:from-orange-900/20 dark:to-amber-900/20 rounded-lg border-2 border-orange-500">
           <div className="flex items-center justify-between gap-2">
             <h3 className="text-base sm:text-lg font-bold text-text-primary flex items-center gap-2">
               <Route className="w-4 h-4 sm:w-5 sm:h-5 text-orange-500" />
@@ -688,7 +688,7 @@ export default function DailyAlchemyPuzzleEditor({ puzzle, date, onSave, onCance
                   Path Generated ({formData.solutionPath.length} steps)
                 </span>
               </div>
-              <div className="bg-white dark:bg-gray-800 border-[2px] border-orange-300 dark:border-orange-700 rounded-lg p-3 max-h-[200px] overflow-y-auto">
+              <div className="bg-bg-card dark:bg-gray-800 border-2 border-orange-300 dark:border-orange-700 rounded-lg p-3 max-h-[200px] overflow-y-auto">
                 <div className="space-y-2">
                   {formData.solutionPath.map((step, i) => (
                     <div
@@ -780,7 +780,7 @@ export default function DailyAlchemyPuzzleEditor({ puzzle, date, onSave, onCance
       {/* Add Element Modal */}
       {showAddModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 max-w-md w-full">
+          <div className="bg-bg-card dark:bg-gray-800 rounded-lg p-6 max-w-md w-full">
             <h3 className="text-xl font-black text-text-primary mb-4">Add New Element</h3>
             <p className="text-sm text-text-secondary mb-4">
               This element doesn't exist yet. Add it with an emoji to use as a target.

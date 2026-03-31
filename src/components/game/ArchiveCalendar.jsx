@@ -319,7 +319,7 @@ export default function ArchiveCalendar({ isOpen, onClose, onSelectPuzzle }) {
           onClick={(e) => e.stopPropagation()}
           className={`
             rounded-lg
-            border-[3px]
+            border-2
             p-6
             w-full max-w-md
             animate-modal-enter
@@ -336,7 +336,7 @@ export default function ArchiveCalendar({ isOpen, onClose, onSelectPuzzle }) {
               className={`
                 w-8 h-8
                 rounded-xl
-                border-[2px]
+                border-2
                 flex items-center justify-center
                 text-lg font-bold
                 transition-all
@@ -364,7 +364,7 @@ export default function ArchiveCalendar({ isOpen, onClose, onSelectPuzzle }) {
               className={`
                 w-10 h-10
                 rounded-xl
-                border-[2px]
+                border-2
                 flex items-center justify-center
                 text-xl
                 transition-all
@@ -390,7 +390,7 @@ export default function ArchiveCalendar({ isOpen, onClose, onSelectPuzzle }) {
               className={`
                 px-4 py-2
                 rounded-xl
-                border-[2px]
+                border-2
                 font-semibold
                 transition-all
                 ${
@@ -414,7 +414,7 @@ export default function ArchiveCalendar({ isOpen, onClose, onSelectPuzzle }) {
               className={`
                 w-10 h-10
                 rounded-xl
-                border-[2px]
+                border-2
                 flex items-center justify-center
                 text-xl
                 transition-all
@@ -474,8 +474,8 @@ export default function ArchiveCalendar({ isOpen, onClose, onSelectPuzzle }) {
             onClick={onClose}
             className={`
               w-full py-3
-              rounded-2xl
-              border-[3px]
+              rounded-lg
+              border-2
               font-semibold text-white
               transition-all
               ${

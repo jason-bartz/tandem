@@ -49,7 +49,7 @@ export default function StatsOverview() {
   };
 
   const StatCard = ({ title, value, color = 'plum' }) => (
-    <div className="bg-ghost-white dark:bg-gray-800 rounded-lg shadow p-4 sm:p-6">
+    <div className="bg-bg-card dark:bg-gray-800 rounded-lg p-4 sm:p-6">
       <div className="text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
         {title}
       </div>
@@ -165,7 +165,7 @@ export default function StatsOverview() {
         <button
           onClick={exportToCSV}
           disabled={exporting || loading}
-          className="w-full sm:w-auto px-3 sm:px-4 py-2 text-sm sm:text-base bg-gradient-to-r from-sky-500 to-sky-600 text-white rounded-lg hover:shadow-lg transform hover:-translate-y-0.5 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
+          className="w-full sm:w-auto px-3 sm:px-4 py-2 text-sm sm:text-base bg-primary text-white rounded-lg hover:scale-105 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
         >
           <svg
             className="w-4 h-4 sm:w-5 sm:h-5"
@@ -197,7 +197,7 @@ export default function StatsOverview() {
         <StatCard title="Perfect Games" value={stats.perfectGames} color="amber" />
       </div>
 
-      <div className="bg-ghost-white dark:bg-gray-800 rounded-lg shadow p-4 sm:p-6">
+      <div className="bg-bg-card dark:bg-gray-800 rounded-lg p-4 sm:p-6">
         <h3 className="text-base sm:text-lg font-medium text-gray-900 dark:text-white mb-3 sm:mb-4">
           Daily Activity (Last 7 Days)
         </h3>
@@ -210,7 +210,7 @@ export default function StatsOverview() {
         )}
       </div>
 
-      <div className="bg-ghost-white dark:bg-gray-800 rounded-lg shadow p-4 sm:p-6">
+      <div className="bg-bg-card dark:bg-gray-800 rounded-lg p-4 sm:p-6">
         <h3 className="text-base sm:text-lg font-medium text-gray-900 dark:text-white mb-3 sm:mb-4">
           Top Performing Puzzles
         </h3>

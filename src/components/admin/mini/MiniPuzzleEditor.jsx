@@ -986,7 +986,7 @@ export default function MiniPuzzleEditor({ puzzle, date, onSave, onCancel, loadi
 
   // ─── Render ────────────────────────────────────────────────────
   return (
-    <div className="bg-ghost-white dark:bg-gray-800 rounded-2xl p-3 sm:p-4">
+    <div className="bg-ghost-white dark:bg-gray-800 rounded-lg p-3 sm:p-4">
       {/* Header + Status */}
       <div className="mb-3">
         <h2 className="text-lg font-black text-text-primary">
@@ -1283,7 +1283,7 @@ export default function MiniPuzzleEditor({ puzzle, date, onSave, onCancel, loadi
                                 ? 'bg-accent-blue text-white ring-2 ring-yellow-400 ring-inset'
                                 : isInWord
                                   ? 'bg-blue-100 dark:bg-blue-900/40'
-                                  : 'bg-white dark:bg-gray-800'
+                                  : 'bg-bg-card dark:bg-gray-800'
                           }`}
                           style={previewLetter && !cell ? { color: 'transparent' } : undefined}
                           disabled={loading}

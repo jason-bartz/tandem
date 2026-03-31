@@ -72,7 +72,7 @@ class ErrorBoundary extends React.Component {
       // Default fallback UI
       return (
         <div className="min-h-screen flex items-center justify-center p-4 bg-bg-primary">
-          <div className="max-w-md w-full bg-bg-surface dark:bg-bg-card rounded-2xl p-8">
+          <div className="max-w-md w-full bg-bg-surface dark:bg-bg-card rounded-lg p-8">
             <div className="text-center">
               <div className="mb-4">
                 <svg

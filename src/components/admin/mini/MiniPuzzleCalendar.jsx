@@ -149,7 +149,7 @@ export default function MiniPuzzleCalendar({ puzzles = [], onSelectDate, selecte
   const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
   return (
-    <div className="bg-ghost-white dark:bg-gray-800 rounded-2xl p-4 sm:p-6">
+    <div className="bg-ghost-white dark:bg-gray-800 rounded-lg p-4 sm:p-6">
       {/* Header */}
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl sm:text-2xl font-black text-text-primary">

@@ -168,7 +168,7 @@ export default function BotLeaderboardManager() {
           {/* Message */}
           {message && (
             <div
-              className={`px-4 py-3 rounded-lg border-[3px] ${
+              className={`px-4 py-3 rounded-lg border-2 ${
                 message.type === 'success'
                   ? 'bg-accent-green/20 border-accent-green text-accent-green'
                   : message.type === 'error'

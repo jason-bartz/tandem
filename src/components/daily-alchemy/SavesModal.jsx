@@ -207,15 +207,15 @@ export function SavesModal({
           exit={{ opacity: 0 }}
         >
           {/* Backdrop */}
-          <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" onClick={onClose} />
+          <div className="absolute inset-0 bg-black/50" onClick={onClose} />
 
           {/* Modal Card */}
           <motion.div
             className={cn(
               'relative z-10 flex flex-col w-full max-w-sm mx-4',
-              'bg-white dark:bg-gray-800',
+              'bg-bg-card dark:bg-gray-800',
               'dark:border-gray-600',
-              'rounded-2xl',
+              'rounded-lg',
               '',
               highContrast && 'border-hc-border'
             )}
@@ -265,7 +265,7 @@ export function SavesModal({
                         !isSavedSlot && [
                           'bg-soup-primary/10 dark:bg-soup-primary/20',
                           'dark:',
-                          highContrast && 'border-[3px] border-hc-border',
+                          highContrast && 'border-2 border-hc-border',
                         ],
                       !isActive &&
                         !isSavedSlot &&
@@ -308,8 +308,8 @@ export function SavesModal({
                           maxLength={30}
                           className={cn(
                             'flex-1 px-2 py-0.5 text-sm font-bold',
-                            'bg-white dark:bg-gray-700',
-                            'border-[2px] border-soup-primary',
+                            'bg-bg-card dark:bg-gray-700',
+                            'border-2 border-soup-primary',
                             'rounded-lg outline-none',
                             'text-gray-900 dark:text-white'
                           )}
@@ -406,7 +406,7 @@ export function SavesModal({
 
                     {/* Switching indicator */}
                     {isSwitchingToThis && (
-                      <div className="absolute inset-0 flex items-center justify-center bg-white/60 dark:bg-gray-800/60 rounded-xl">
+                      <div className="absolute inset-0 flex items-center justify-center bg-bg-card/60 dark:bg-gray-800/60 rounded-lg">
                         <Loader2 className="w-5 h-5 animate-spin text-soup-primary" />
                       </div>
                     )}
@@ -468,9 +468,9 @@ export function SavesModal({
                 <motion.div
                   className={cn(
                     'relative z-10 flex flex-col gap-4 p-6 mx-4 max-w-sm',
-                    'bg-white dark:bg-gray-800',
+                    'bg-bg-card dark:bg-gray-800',
                     'dark:border-gray-600',
-                    'rounded-2xl',
+                    'rounded-lg',
                     ''
                   )}
                   initial={{ scale: 0.9, opacity: 0 }}
@@ -551,9 +551,9 @@ export function SavesModal({
                 <motion.div
                   className={cn(
                     'relative z-10 flex flex-col gap-4 p-6 mx-4 max-w-sm',
-                    'bg-white dark:bg-gray-800',
+                    'bg-bg-card dark:bg-gray-800',
                     'dark:border-gray-600',
-                    'rounded-2xl',
+                    'rounded-lg',
                     ''
                   )}
                   initial={{ scale: 0.9, opacity: 0 }}
@@ -632,9 +632,9 @@ export function SavesModal({
                 <motion.div
                   className={cn(
                     'relative z-10 flex flex-col gap-4 p-6 mx-4 max-w-sm',
-                    'bg-white dark:bg-gray-800',
+                    'bg-bg-card dark:bg-gray-800',
                     'dark:border-gray-600',
-                    'rounded-2xl',
+                    'rounded-lg',
                     ''
                   )}
                   initial={{ scale: 0.9, opacity: 0 }}

@@ -293,7 +293,7 @@ export default function FeedbackDashboard({ onCountsChange }) {
       {loading && <FeedbackDashboardSkeleton />}
 
       {error && (
-        <div className="rounded-xl border-[3px] border-accent-red bg-accent-red/10 dark:bg-accent-red/20 p-4">
+        <div className="rounded-xl border-2 border-accent-red bg-accent-red/10 dark:bg-accent-red/20 p-4">
           <div className="flex items-start gap-3">
             <div className="flex-1">
               <p className="text-sm font-bold text-accent-red mb-1">Error Loading Feedback</p>
@@ -358,7 +358,7 @@ export default function FeedbackDashboard({ onCountsChange }) {
               </div>
 
               {/* Content Grid */}
-              <div className="grid grid-cols-1 lg:grid-cols-[1fr,1fr] divide-y-[3px] lg:divide-y-0 lg:divide-x-[3px] divide-black dark:divide-white">
+              <div className="grid grid-cols-1 lg:grid-cols-[1fr,1fr] divide-y-2 lg:divide-y-0 lg:divide-x-2 divide-black dark:divide-white">
                 {/* User Section */}
                 <div className="p-4 sm:p-5 space-y-4">
                   <div>

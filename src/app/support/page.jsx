@@ -120,29 +120,29 @@ export default function Support() {
           <div>
             <h4 className="font-semibold mb-2">Difficulty Scale</h4>
             <div className="space-y-3 text-sm">
-              <div className="p-3 bg-[#7ed957]/20 border-[3px] border-[#7ed957] rounded-2xl">
+              <div className="p-3 bg-[#7ed957]/20 border-2 border-[#7ed957] rounded-lg">
                 <p className="font-semibold mb-1">⭐ Easy</p>
                 <p>
                   Straightforward connections with common vocabulary and clear emojis. Most players
                   solve these quickly.
                 </p>
               </div>
-              <div className="p-3 bg-[#7ed957]/10 border-[3px] border-[#7ed957]/60 rounded-2xl">
+              <div className="p-3 bg-[#7ed957]/10 border-2 border-[#7ed957]/60 rounded-lg">
                 <p className="font-semibold mb-1">⭐ Medium-Easy</p>
                 <p>Some thinking required, but vocabulary and connections are mostly familiar.</p>
               </div>
-              <div className="p-3 bg-[#ffce00]/20 border-[3px] border-[#ffce00] rounded-2xl">
+              <div className="p-3 bg-[#ffce00]/20 border-2 border-[#ffce00] rounded-lg">
                 <p className="font-semibold mb-1">⭐ Medium</p>
                 <p>
                   Balanced challenge requiring creative thinking. Connections may not be immediately
                   obvious.
                 </p>
               </div>
-              <div className="p-3 bg-[#ff751f]/20 border-[3px] border-[#ff751f] rounded-2xl">
+              <div className="p-3 bg-[#ff751f]/20 border-2 border-[#ff751f] rounded-lg">
                 <p className="font-semibold mb-1">⭐ Medium-Hard</p>
                 <p>Clever connections with wordplay. Requires lateral thinking and persistence.</p>
               </div>
-              <div className="p-3 bg-[#ff5757]/20 border-[3px] border-[#ff5757] rounded-2xl">
+              <div className="p-3 bg-[#ff5757]/20 border-2 border-[#ff5757] rounded-lg">
                 <p className="font-semibold mb-1">⭐ Hard</p>
                 <p>
                   Abstract themes, challenging vocabulary, or obscure connections. These puzzles
@@ -250,7 +250,7 @@ export default function Support() {
             <p className="text-sm mb-3">
               Hard Mode adds a challenging twist to the classic Tandem gameplay.
             </p>
-            <div className="bg-[#ff5757]/20 border-[3px] border-[#ff5757] rounded-2xl p-4">
+            <div className="bg-[#ff5757]/20 border-2 border-[#ff5757] rounded-lg p-4">
               <h5 className="font-semibold mb-2">Hard Mode Rules:</h5>
               <ul className="list-disc list-inside text-sm space-y-1">
                 <li>
@@ -964,7 +964,7 @@ export default function Support() {
             </ol>
           </div>
           {/* Demo GIF */}
-          <div className="rounded-2xl overflow-hidden border-[3px] border-gray-300 dark:border-gray-600">
+          <div className="rounded-lg overflow-hidden border-2 border-gray-300 dark:border-gray-600">
             <ReducedMotionImage
               src="/game/daily-alchemy/howto.gif"
               staticSrc="/game/daily-alchemy/howto/1.webp"
@@ -1221,7 +1221,7 @@ export default function Support() {
             <p className="text-sm mb-3">
               Creative Mode lets you explore element combinations without any restrictions.
             </p>
-            <div className="bg-purple-50 dark:bg-purple-900/20 border-[3px] border-purple-400 rounded-2xl p-4">
+            <div className="bg-purple-50 dark:bg-purple-900/20 border-2 border-purple-400 rounded-lg p-4">
               <h5 className="font-semibold mb-2">Creative Mode Features:</h5>
               <ul className="list-disc list-inside text-sm space-y-1">
                 <li>
@@ -1480,7 +1480,7 @@ export default function Support() {
   return (
     <>
       <div
-        className={`fixed inset-0 w-full h-full overflow-y-auto overflow-x-hidden ${isStandaloneAlchemy ? 'bg-white dark:bg-gray-900' : 'bg-bg-primary'}`}
+        className={`fixed inset-0 w-full h-full overflow-y-auto overflow-x-hidden ${isStandaloneAlchemy ? 'bg-bg-card dark:bg-gray-900' : 'bg-bg-primary'}`}
       >
         {/* Scrollable content container */}
         <div className="min-h-screen flex items-center justify-center pt-safe pb-6">
@@ -1531,7 +1531,7 @@ export default function Support() {
                             setActiveGame('tandem');
                             setActiveSection(null);
                           }}
-                          className={`px-2 py-3 rounded-2xl border-[3px] font-bold text-sm transition-all ${
+                          className={`px-2 py-3 rounded-lg border-2 font-bold text-sm transition-all ${
                             activeGame === 'tandem'
                               ? 'bg-ghost-white text-black'
                               : 'bg-ghost-white/50 text-black/60 hover:bg-ghost-white/70'
@@ -1553,7 +1553,7 @@ export default function Support() {
                             setActiveGame('mini');
                             setActiveSection(null);
                           }}
-                          className={`px-2 py-3 rounded-2xl border-[3px] font-bold text-sm transition-all ${
+                          className={`px-2 py-3 rounded-lg border-2 font-bold text-sm transition-all ${
                             activeGame === 'mini'
                               ? 'bg-ghost-white text-black'
                               : 'bg-ghost-white/50 text-black/60 hover:bg-ghost-white/70'
@@ -1575,7 +1575,7 @@ export default function Support() {
                             setActiveGame('soup');
                             setActiveSection(null);
                           }}
-                          className={`px-2 py-3 rounded-2xl border-[3px] font-bold text-sm transition-all ${
+                          className={`px-2 py-3 rounded-lg border-2 font-bold text-sm transition-all ${
                             activeGame === 'soup'
                               ? 'bg-ghost-white text-black'
                               : 'bg-ghost-white/50 text-black/60 hover:bg-ghost-white/70'
@@ -1597,7 +1597,7 @@ export default function Support() {
                             setActiveGame('reel');
                             setActiveSection(null);
                           }}
-                          className={`px-2 py-3 rounded-2xl border-[3px] font-bold text-sm transition-all ${
+                          className={`px-2 py-3 rounded-lg border-2 font-bold text-sm transition-all ${
                             activeGame === 'reel'
                               ? 'bg-ghost-white text-black'
                               : 'bg-ghost-white/50 text-black/60 hover:bg-ghost-white/70'
@@ -1622,7 +1622,7 @@ export default function Support() {
                   <div className="p-6 pt-0">
                     <div className="space-y-2">
                       {currentSections.map((section) => (
-                        <div key={section.id} className="rounded-2xl overflow-hidden">
+                        <div key={section.id} className="rounded-lg overflow-hidden">
                           <button
                             onClick={() =>
                               setActiveSection(activeSection === section.id ? null : section.id)

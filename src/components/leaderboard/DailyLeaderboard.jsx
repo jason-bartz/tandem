@@ -142,7 +142,7 @@ export default function DailyLeaderboard({ gameType }) {
       {/* User's rank if not in top 10 */}
       {userRank && userRank.rank > 10 && (
         <div
-          className={`mt-6 p-4 rounded-xl border-[3px] ${
+          className={`mt-6 p-4 rounded-xl border-2 ${
             highContrast
               ? 'bg-hc-primary/20 border-hc-border'
               : 'bg-sky-50 dark:bg-sky-900/20 border-sky-200 dark:border-sky-800'
@@ -178,7 +178,7 @@ export default function DailyLeaderboard({ gameType }) {
       {/* Call to action if user hasn't played */}
       {!userRank && user && (
         <div
-          className={`mt-6 p-4 rounded-xl border-[3px] ${
+          className={`mt-6 p-4 rounded-xl border-2 ${
             highContrast
               ? 'bg-hc-surface border-hc-border'
               : 'bg-purple-50 dark:bg-purple-900/20 border-purple-200 dark:border-purple-800'

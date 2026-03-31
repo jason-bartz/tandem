@@ -280,7 +280,7 @@ export default function AvatarManager() {
           {/* Message */}
           {message && (
             <div
-              className={`px-4 py-3 rounded-lg border-[3px] mb-4 ${
+              className={`px-4 py-3 rounded-lg border-2 mb-4 ${
                 message.type === 'success'
                   ? 'bg-accent-green/20 border-accent-green text-accent-green'
                   : message.type === 'error'
@@ -315,7 +315,7 @@ export default function AvatarManager() {
                           />
                         </div>
                       ) : (
-                        <div className="w-24 h-24 rounded-full border-[3px] border-dashed border-text-muted flex items-center justify-center text-text-muted">
+                        <div className="w-24 h-24 rounded-full border-2 border-dashed border-text-muted flex items-center justify-center text-text-muted">
                           No image
                         </div>
                       )}

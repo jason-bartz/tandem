@@ -25,10 +25,10 @@ export default function SupportPageSkeleton() {
         <div className="p-6 pb-4">
           <div className="flex gap-2">
             <div
-              className={`h-12 flex-1 bg-gray-200 dark:bg-gray-700 rounded-2xl ${!reduceMotion ? 'skeleton-shimmer' : ''}`}
+              className={`h-12 flex-1 bg-gray-200 dark:bg-gray-700 rounded-lg ${!reduceMotion ? 'skeleton-shimmer' : ''}`}
             />
             <div
-              className={`h-12 flex-1 bg-gray-200 dark:bg-gray-700 rounded-2xl ${!reduceMotion ? 'skeleton-shimmer' : ''}`}
+              className={`h-12 flex-1 bg-gray-200 dark:bg-gray-700 rounded-lg ${!reduceMotion ? 'skeleton-shimmer' : ''}`}
             />
           </div>
         </div>
@@ -39,7 +39,7 @@ export default function SupportPageSkeleton() {
             {[1, 2, 3, 4, 5, 6].map((i) => (
               <div
                 key={i}
-                className={`border-[3px] border-gray-300 dark:border-gray-600 rounded-2xl overflow-hidden ${!reduceMotion ? 'skeleton-shimmer' : ''}`}
+                className={`rounded-lg overflow-hidden ${!reduceMotion ? 'skeleton-shimmer' : ''}`}
               >
                 <div className="h-12 bg-gray-200 dark:bg-gray-700" />
               </div>
@@ -47,7 +47,7 @@ export default function SupportPageSkeleton() {
           </div>
 
           {/* System Requirements skeleton */}
-          <div className="mt-8 pt-6 border-t-[3px] border-gray-300 dark:border-gray-600">
+          <div className="mt-8 pt-6 border-t border-gray-300 dark:border-gray-600">
             <div
               className={`h-5 w-48 bg-gray-200 dark:bg-gray-700 rounded mb-3 ${!reduceMotion ? 'skeleton-shimmer' : ''}`}
             />

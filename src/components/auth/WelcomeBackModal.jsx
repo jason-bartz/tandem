@@ -49,8 +49,8 @@ export default function WelcomeBackModal({ isOpen, onClose }) {
             onClick={onClose}
             className={`w-full p-4 rounded-md text-base font-bold cursor-pointer transition-all ${
               highContrast
-                ? 'bg-hc-surface text-hc-text border-[3px] border-hc-border hover:'
-                : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 border-[3px] border-gray-300 dark:border-gray-600 dark: hover:dark:hover:'
+                ? 'bg-hc-surface text-hc-text border-2 border-hc-border hover:'
+                : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 border-2 border-gray-300 dark:border-gray-600 dark: hover:dark:hover:'
             }`}
           >
             Start Playing
@@ -72,7 +72,7 @@ export default function WelcomeBackModal({ isOpen, onClose }) {
 
       {/* Success message */}
       <div
-        className={`mb-6 p-4 rounded-2xl border-[3px] ${
+        className={`mb-6 p-4 rounded-lg border-2 ${
           highContrast
             ? 'bg-hc-surface border-hc-border'
             : 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800'

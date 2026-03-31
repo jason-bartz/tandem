@@ -327,7 +327,7 @@ export default function UserManagement() {
         </div>
 
         {error && (
-          <div className="bg-accent-red/20 border-[3px] border-accent-red rounded-lg p-3">
+          <div className="bg-accent-red/20 border-2 border-accent-red rounded-lg p-3">
             <p className="text-accent-red font-bold text-sm">{error}</p>
           </div>
         )}
@@ -454,7 +454,7 @@ export default function UserManagement() {
                         <tr key={`${user.id}-detail`}>
                           <td colSpan="8" className="p-0">
                             <div className="border-t border-border-light bg-bg-card p-8 text-center">
-                              <div className="inline-block w-6 h-6 border-[3px] border-orange-500 border-t-transparent rounded-full animate-spin" />
+                              <div className="inline-block w-6 h-6 border-2 border-orange-500 border-t-transparent rounded-full animate-spin" />
                               <p className="text-sm text-text-secondary mt-2 font-medium">
                                 Loading user details...
                               </p>
@@ -491,7 +491,7 @@ export default function UserManagement() {
         {/* Loading overlay for page changes */}
         {loading && users.length > 0 && (
           <div className="text-center py-2">
-            <div className="inline-block w-5 h-5 border-[3px] border-orange-500 border-t-transparent rounded-full animate-spin" />
+            <div className="inline-block w-5 h-5 border-2 border-orange-500 border-t-transparent rounded-full animate-spin" />
           </div>
         )}
 

@@ -92,13 +92,13 @@ export function FavoritesPanel({
       <div
         className={cn(
           'absolute left-0 right-0 top-full mt-2 z-50',
-          'bg-white dark:bg-gray-800',
+          'bg-bg-card dark:bg-gray-800',
           'dark:border-gray-600',
           'rounded-xl',
           'dark:',
           'overflow-hidden flex flex-col',
           'max-h-[50vh]',
-          highContrast && 'border-[3px] border-hc-border'
+          highContrast && 'border-2 border-hc-border'
         )}
       >
         {/* Header */}

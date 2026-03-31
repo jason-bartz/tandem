@@ -282,7 +282,7 @@ function TandemGameContainer({ initialPuzzleData }) {
   if (game.error && game.puzzle) {
     return (
       <div className="fixed inset-0 w-full h-full flex items-center justify-center bg-bg-primary">
-        <div className="bg-ghost-white dark:bg-gray-800 rounded-3xl p-8 max-w-md text-center mx-4">
+        <div className="bg-ghost-white dark:bg-gray-800 rounded-lg p-8 max-w-md text-center mx-4">
           <div className="mb-6">
             <Image
               src="/game/tandem/asleep.png"

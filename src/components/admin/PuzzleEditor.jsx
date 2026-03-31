@@ -608,7 +608,7 @@ export default function PuzzleEditor({ initialPuzzle, onClose, onShowBulkImport,
           <label className="block text-xs sm:text-sm font-bold text-text-primary mb-2">
             Difficulty Assessment
           </label>
-          <div className="bg-accent-pink/10 border-[2px] sm:border-[3px] border-accent-pink rounded-md sm:rounded-lg p-3 sm:p-4 space-y-2 sm:space-y-3">
+          <div className="bg-accent-pink/10 border-[2px] sm:border-2 border-accent-pink rounded-md sm:rounded-lg p-3 sm:p-4 space-y-2 sm:space-y-3">
             <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
               <div className="flex-1">
                 <label className="block text-xs font-bold text-text-primary mb-1.5">Rating</label>
@@ -682,7 +682,7 @@ export default function PuzzleEditor({ initialPuzzle, onClose, onShowBulkImport,
 
         {message && (
           <div
-            className={`p-3 sm:p-4 rounded-lg border-[3px] text-sm sm:text-base font-bold ${
+            className={`p-3 sm:p-4 rounded-lg border-2 text-sm sm:text-base font-bold ${
               message.startsWith('✅')
                 ? 'bg-accent-green/20 border-accent-green text-text-primary'
                 : message.startsWith('❌')

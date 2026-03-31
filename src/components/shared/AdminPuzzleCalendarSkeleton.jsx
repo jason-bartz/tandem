@@ -63,7 +63,7 @@ export default function AdminPuzzleCalendarSkeleton() {
           </div>
           <div className="flex items-center gap-1.5">
             <div
-              className={`w-3 h-3 rounded border-2 bg-gray-200 dark:bg-gray-700 ${!reduceMotion ? 'skeleton-shimmer' : ''}`}
+              className={`w-3 h-3 rounded bg-gray-200 dark:bg-gray-700 ${!reduceMotion ? 'skeleton-shimmer' : ''}`}
             />
             <div
               className={`h-3 w-12 bg-gray-200 dark:bg-gray-700 rounded ${!reduceMotion ? 'skeleton-shimmer' : ''}`}

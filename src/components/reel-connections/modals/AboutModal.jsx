@@ -27,7 +27,7 @@ export default function AboutModal({ isOpen, onClose }) {
 
         {/* Founder Image and Info */}
         <div className="flex flex-col items-center pt-5 border-t border-white/10">
-          <div className="relative w-24 h-24 rounded-full overflow-hidden border-[3px] border-[#ffce00] mb-3">
+          <div className="relative w-24 h-24 rounded-full overflow-hidden border-2 border-accent-yellow mb-3">
             <Image
               src="/branding/jason-bartz.webp"
               alt="Jason Bartz"
@@ -40,7 +40,7 @@ export default function AboutModal({ isOpen, onClose }) {
               href="https://www.jason-bartz.com"
               target="_blank"
               rel="noopener noreferrer"
-              className="hover:text-[#ffce00] transition-colors"
+              className="hover:text-accent-yellow transition-colors"
             >
               Jason Bartz
             </a>
@@ -54,7 +54,7 @@ export default function AboutModal({ isOpen, onClose }) {
             href="https://www.tandemdaily.com"
             target="_blank"
             rel="noopener noreferrer"
-            className="block w-full text-center px-5 py-3 bg-[#ffce00] text-[#0f0f1e] font-bold rounded-xl hover:active: transform hover:-translate-y-0.5 active:translate-y-0 transition-all"
+            className="block w-full text-center px-5 py-3 bg-accent-yellow text-gray-900 font-bold rounded-xl hover:scale-105 transition-all"
           >
             Explore More Puzzles
           </a>

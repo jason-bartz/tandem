@@ -124,10 +124,10 @@ export default function MiniWelcomeCard({ currentStreak = 0 }) {
   if (loading) {
     return (
       <div
-        className={`rounded-lg border-[3px] overflow-hidden p-10 text-center relative ${
+        className={`rounded-lg border-2 overflow-hidden p-10 text-center relative ${
           highContrast
             ? 'bg-hc-surface border-hc-border'
-            : 'bg-ghost-white dark:bg-bg-card border-border-main dark:'
+            : 'bg-bg-card dark:bg-bg-card border-border-main dark:'
         }`}
       >
         <div className="absolute inset-0 flex items-center justify-center z-10">
@@ -173,10 +173,10 @@ export default function MiniWelcomeCard({ currentStreak = 0 }) {
   if (error) {
     return (
       <div
-        className={`rounded-lg border-[3px] overflow-hidden p-10 text-center ${
+        className={`rounded-lg border-2 overflow-hidden p-10 text-center ${
           highContrast
             ? 'bg-hc-surface border-hc-border'
-            : 'bg-ghost-white dark:bg-bg-card border-border-main dark:'
+            : 'bg-bg-card dark:bg-bg-card border-border-main dark:'
         }`}
       >
         <p className="text-text-secondary mb-4">{error}</p>
@@ -192,10 +192,10 @@ export default function MiniWelcomeCard({ currentStreak = 0 }) {
 
   return (
     <div
-      className={`rounded-lg border-[3px] overflow-hidden p-10 text-center ${
+      className={`rounded-lg border-2 overflow-hidden p-10 text-center ${
         highContrast
           ? 'bg-hc-surface border-hc-border'
-          : 'bg-ghost-white dark:bg-bg-card border-border-main dark:'
+          : 'bg-bg-card dark:bg-bg-card border-border-main dark:'
       }`}
     >
       {/* Header with Icon */}
@@ -227,7 +227,7 @@ export default function MiniWelcomeCard({ currentStreak = 0 }) {
       </div>
 
       {/* How to Play Section */}
-      <div className="bg-gray-50 dark:bg-gray-800 rounded-2xl p-6 mb-6 text-left">
+      <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-6 mb-6 text-left">
         <div className="flex items-start">
           <div className="w-10 h-10 bg-ghost-white dark:bg-gray-700 rounded-xl flex items-center justify-center mr-3 flex-shrink-0 p-2">
             <Image src="/ui/games/mini.png" alt="" width={24} height={24} />
@@ -255,7 +255,7 @@ export default function MiniWelcomeCard({ currentStreak = 0 }) {
         className={`w-full h-14 text-white rounded-md text-base font-bold cursor-pointer transition-all tracking-wider disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none
           ${
             highContrast
-              ? 'bg-hc-primary border-[3px] border-hc-border hover:bg-hc-focus'
+              ? 'bg-hc-primary border-2 border-hc-border hover:bg-hc-focus'
               : 'dark: hover:dark:hover:'
           }
         `}

@@ -161,7 +161,7 @@ export default function CompleteScreen({
       <div className="animate-fade-in -mt-16">
         {/* Main completion card */}
         <div
-          className={`rounded-lg border-[3px] overflow-hidden p-10 text-center relative ${
+          className={`rounded-lg border-2 overflow-hidden p-10 text-center relative ${
             highContrast
               ? 'bg-hc-surface border-hc-border'
               : 'bg-ghost-white dark:bg-bg-card border-border-main dark:'
@@ -208,7 +208,7 @@ export default function CompleteScreen({
                   alt="Tandem Logo"
                   width={96}
                   height={96}
-                  className="rounded-2xl"
+                  className="rounded-lg"
                 />
               </button>
             )}
@@ -239,7 +239,7 @@ export default function CompleteScreen({
 
             {puzzleTheme && (
               <div
-                className={`rounded-2xl p-5 mb-6 relative overflow-hidden border-[3px] dark:${
+                className={`rounded-lg p-5 mb-6 relative overflow-hidden border-2 dark:${
                   highContrast
                     ? 'bg-hc-surface border-hc-border'
                     : won
@@ -262,7 +262,7 @@ export default function CompleteScreen({
 
             <div className="grid grid-cols-3 gap-4 mb-6">
               <div
-                className={`rounded-2xl p-4 text-center border-[3px] dark:animate-scale-fade-in stagger-1 ${
+                className={`rounded-lg p-4 text-center border-2 dark:animate-scale-fade-in stagger-1 ${
                   highContrast
                     ? 'bg-hc-surface border-hc-border'
                     : isHardMode
@@ -280,7 +280,7 @@ export default function CompleteScreen({
                 <div className="text-xs text-gray-600 dark:text-gray-400 mt-1">Time</div>
               </div>
               <div
-                className={`rounded-2xl p-4 text-center border-[3px] dark:animate-scale-fade-in stagger-2 ${
+                className={`rounded-lg p-4 text-center border-2 dark:animate-scale-fade-in stagger-2 ${
                   highContrast
                     ? 'bg-hc-surface border-hc-border'
                     : 'bg-accent-orange/20 dark:bg-orange-900/50'
@@ -296,7 +296,7 @@ export default function CompleteScreen({
                 <div className="text-xs text-gray-600 dark:text-gray-400 mt-1">Mistakes</div>
               </div>
               <div
-                className={`rounded-2xl p-4 text-center border-[3px] dark:flex flex-col items-center justify-center animate-scale-fade-in stagger-3 ${
+                className={`rounded-lg p-4 text-center border-2 dark:flex flex-col items-center justify-center animate-scale-fade-in stagger-3 ${
                   highContrast
                     ? 'bg-hc-surface border-hc-border'
                     : 'bg-accent-pink/20 dark:bg-pink-900/50'
@@ -346,7 +346,7 @@ export default function CompleteScreen({
                   lightTap();
                   setShowRevealAnswers(true);
                 }}
-                className={`w-full py-4 rounded-2xl font-bold text-white transition-all mb-6 border-[3px] ${
+                className={`w-full py-4 rounded-lg font-bold text-white transition-all mb-6 border-2 ${
                   highContrast
                     ? 'bg-hc-primary border-hc-border hover:bg-hc-focus'
                     : 'bg-accent-orange text-white dark: hover:dark:hover:'
@@ -373,7 +373,7 @@ export default function CompleteScreen({
                 lightTap();
                 setShowLeaderboard(true);
               }}
-              className={`w-full py-3 px-4 rounded-2xl font-semibold transition-all border-[3px] animate-fade-in-up delay-300 ${
+              className={`w-full py-3 px-4 rounded-lg font-semibold transition-all border-2 animate-fade-in-up delay-300 ${
                 highContrast
                   ? 'bg-hc-primary text-white border-hc-border hover:bg-hc-focus'
                   : 'bg-accent-blue text-white dark: hover:dark:hover:'
@@ -388,7 +388,7 @@ export default function CompleteScreen({
                 lightTap();
                 setShowArchive(true);
               }}
-              className={`w-full py-3 px-4 rounded-2xl font-semibold transition-all border-[3px] animate-fade-in-up delay-400 ${
+              className={`w-full py-3 px-4 rounded-lg font-semibold transition-all border-2 animate-fade-in-up delay-400 ${
                 highContrast
                   ? 'bg-hc-primary text-white border-hc-border hover:bg-hc-focus'
                   : 'bg-accent-blue text-white dark: hover:dark:hover:'
@@ -423,8 +423,8 @@ export default function CompleteScreen({
               rel="noopener noreferrer"
               className={`w-full mt-8 p-4 flex items-center gap-3 rounded-xl transition-colors cursor-pointer text-left ${
                 highContrast
-                  ? 'bg-hc-surface border-[3px] border-hc-border hover:bg-hc-focus'
-                  : 'bg-gray-50 dark:bg-gray-800 border-[3px] border-gray-300 dark:border-gray-600 dark: hover:bg-gray-100 dark:hover:bg-gray-700 hover:border-gray-400 dark:hover:border-gray-500'
+                  ? 'bg-hc-surface border-2 border-hc-border hover:bg-hc-focus'
+                  : 'bg-gray-50 dark:bg-gray-800 border-2 border-gray-300 dark:border-gray-600 dark: hover:bg-gray-100 dark:hover:bg-gray-700 hover:border-gray-400 dark:hover:border-gray-500'
               }`}
             >
               {/* Discord Logo */}

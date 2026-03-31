@@ -9,7 +9,7 @@ function SectionSkeleton({ themeColor, reduceMotion, highContrast, index }) {
   // Define theme-specific colors matching StatsSection
   const getBackgroundColors = () => {
     if (highContrast) {
-      return 'bg-hc-surface border-hc-border';
+      return 'bg-hc-surface border border-hc-border';
     }
 
     if (themeColor === 'blue') {
@@ -34,7 +34,7 @@ function SectionSkeleton({ themeColor, reduceMotion, highContrast, index }) {
   };
 
   return (
-    <div className={`rounded-2xl border-[3px] overflow-hidden mb-4 ${getBackgroundColors()}`}>
+    <div className={`rounded-lg overflow-hidden mb-4 ${getBackgroundColors()}`}>
       {/* Section Header */}
       <div className="px-4 py-3">
         <div className="flex items-center">
@@ -88,8 +88,10 @@ export default function StatsModalSkeleton() {
       <>
         {/* Stats card (no header) */}
         <div
-          className={`rounded-2xl border-[3px] overflow-hidden mb-4 ${
-            highContrast ? 'bg-hc-surface border-hc-border' : 'bg-soup-primary dark:bg-soup-hover'
+          className={`rounded-lg overflow-hidden mb-4 ${
+            highContrast
+              ? 'bg-hc-surface border border-hc-border'
+              : 'bg-soup-primary dark:bg-soup-hover'
           }`}
         >
           <div className="px-4 pt-4 pb-4">
@@ -117,8 +119,8 @@ export default function StatsModalSkeleton() {
 
         {/* Discoveries card */}
         <div
-          className={`rounded-2xl border-[3px] overflow-hidden mb-4 ${
-            highContrast ? 'bg-hc-surface border-hc-border' : 'bg-white dark:bg-gray-800'
+          className={`rounded-lg overflow-hidden mb-4 ${
+            highContrast ? 'bg-hc-surface border border-hc-border' : 'bg-bg-card dark:bg-gray-800'
           }`}
         >
           <div className="px-4 py-4">
@@ -139,8 +141,8 @@ export default function StatsModalSkeleton() {
               />
             </div>
             <div
-              className={`w-full h-11 rounded-md border-[3px] ${
-                highContrast ? 'bg-hc-primary border-hc-border' : 'bg-soup-primary/50'
+              className={`w-full h-11 rounded-md ${
+                highContrast ? 'bg-hc-primary border border-hc-border' : 'bg-soup-primary/50'
               } ${!reduceMotion ? 'skeleton-shimmer' : ''}`}
               style={{ animationDelay: '550ms' }}
             />
@@ -188,8 +190,8 @@ export default function StatsModalSkeleton() {
       <div className="space-y-2 mt-4 pb-4">
         {/* View Achievements Button Skeleton */}
         <div
-          className={`w-full h-12 rounded-md border-[3px] ${
-            highContrast ? 'bg-hc-primary border-hc-border' : 'bg-white'
+          className={`w-full h-12 rounded-md ${
+            highContrast ? 'bg-hc-primary border border-hc-border' : 'bg-bg-card'
           } ${!reduceMotion ? 'skeleton-shimmer' : ''}`}
           style={{ animationDelay: '800ms' }}
         />

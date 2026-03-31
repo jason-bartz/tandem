@@ -102,7 +102,9 @@ export default function MiniGrid({
   };
 
   return (
-    <div className={`w-full max-w-md mx-auto ${blur ? 'filter blur-md' : ''}`}>
+    <div
+      className={`w-full max-w-md mx-auto ${blur ? 'opacity-10 pointer-events-none select-none' : ''}`}
+    >
       {/* Grid container with neo-brutalist border */}
       <div
         className="
@@ -127,7 +129,7 @@ export default function MiniGrid({
                   key={`${rowIndex}-${colIndex}`}
                   className={`
                     aspect-square
-                    border-r-[2px] border-b-[2px]
+                    border-r-2 border-b-2
                     last:border-r-0
                    
                     outline-none focus:outline-none

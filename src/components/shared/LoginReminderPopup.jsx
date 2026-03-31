@@ -127,7 +127,7 @@ export default function LoginReminderPopup({
             onKeyDown={(e) => e.key === 'Enter' && handleClick()}
             className={`
               flex items-center gap-2 px-4 py-2.5
-              rounded-full backdrop-blur-sm
+              rounded-full
               border-2 cursor-pointer
               transition-all active:scale-[0.98]
               hover:scale-[1.02]
@@ -135,25 +135,14 @@ export default function LoginReminderPopup({
                 highContrast
                   ? 'bg-hc-surface border-hc-border hover:bg-hc-primary/10'
                   : isReel
-                    ? 'bg-[#1a1a2e]/95 border-[#ffce00] hover:bg-[#1a1a2e] hover:border-[#ffe44d]'
+                    ? 'bg-[#1a1a2e] border-[#ffce00] hover:bg-[#1a1a2e] hover:border-[#ffe44d]'
                     : isMini
-                      ? 'bg-white/95 dark:bg-gray-800/95 border-amber-400 dark:border-amber-500 hover:bg-white hover:border-amber-500 dark:hover:bg-gray-800 dark:hover:border-amber-400'
+                      ? 'bg-bg-card dark:bg-gray-800 border-amber-400 dark:border-amber-500 hover:bg-bg-card hover:border-amber-500 dark:hover:bg-gray-800 dark:hover:border-amber-400'
                       : isSoup
-                        ? 'bg-white/95 dark:bg-gray-800/95 border-green-500 dark:border-green-400 hover:bg-white hover:border-green-600 dark:hover:bg-gray-800 dark:hover:border-green-300'
-                        : 'bg-white/95 dark:bg-gray-800/95 border-blue-400 dark:border-blue-500 hover:bg-white hover:border-blue-500 dark:hover:bg-gray-800 dark:hover:border-blue-400'
+                        ? 'bg-bg-card dark:bg-gray-800 border-green-500 dark:border-green-400 hover:bg-bg-card hover:border-green-600 dark:hover:bg-gray-800 dark:hover:border-green-300'
+                        : 'bg-bg-card dark:bg-gray-800 border-blue-400 dark:border-blue-500 hover:bg-bg-card hover:border-blue-500 dark:hover:bg-gray-800 dark:hover:border-blue-400'
               }
             `}
-            style={{
-              boxShadow: highContrast
-                ? '0 4px 12px rgba(0,0,0,0.3)'
-                : isReel
-                  ? '0 4px 16px rgba(255, 206, 0, 0.3), 0 2px 8px rgba(0, 0, 0, 0.3)'
-                  : isMini
-                    ? '0 4px 16px rgba(245, 158, 11, 0.25), 0 2px 8px rgba(0, 0, 0, 0.1)'
-                    : isSoup
-                      ? '0 4px 16px rgba(34, 197, 94, 0.25), 0 2px 8px rgba(0, 0, 0, 0.1)'
-                      : '0 4px 16px rgba(59, 130, 246, 0.25), 0 2px 8px rgba(0, 0, 0, 0.1)',
-            }}
           >
             {/* Text - single line, underlined to indicate clickability */}
             <span

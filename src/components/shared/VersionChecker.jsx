@@ -65,7 +65,7 @@ export default function VersionChecker() {
 
   return (
     <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-      <div className="bg-bg-surface dark:bg-bg-card rounded-2xl p-6 max-w-md w-full">
+      <div className="bg-bg-surface dark:bg-bg-card rounded-lg p-6 max-w-md w-full">
         <div className="text-center">
           <div className="w-16 h-16 bg-primary rounded-full flex items-center justify-center mx-auto mb-4">
             <svg

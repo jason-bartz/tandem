@@ -66,7 +66,7 @@ function ErrorDisplay({ error, onGoBack }) {
           '',
           'active:translate-y-0',
           'transition-all duration-150',
-          highContrast && 'border-[4px]'
+          highContrast && 'border-2'
         )}
       >
         <span>Go Back</span>
@@ -537,7 +537,7 @@ export function DailyAlchemyGame({ initialDate = null }) {
   return (
     <>
       <div
-        className="fixed inset-0 flex flex-col overflow-hidden bg-white dark:bg-gray-900"
+        className="fixed inset-0 flex flex-col overflow-hidden bg-bg-card dark:bg-gray-900"
         style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}
       >
         <DailyAlchemyBackground />

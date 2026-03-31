@@ -95,7 +95,7 @@ export default function FeedbackPane({ isOpen, onClose }) {
       >
         <div className="h-full overflow-y-auto">
           {/* Header */}
-          <div className="sticky top-0 z-10 bg-ghost-white dark:bg-bg-surface border-b-[3px] border-border-main p-6 pt-safe">
+          <div className="sticky top-0 z-10 bg-ghost-white dark:bg-bg-surface border-b-2 border-border-main p-6 pt-safe">
             <div className="flex items-center justify-between">
               <h2 className="text-xl font-bold text-gray-800 dark:text-gray-200">Feedback</h2>
               <button
@@ -125,7 +125,7 @@ export default function FeedbackPane({ isOpen, onClose }) {
             {/* Success Message */}
             {submitSuccess && (
               <div
-                className={`p-4 rounded-2xl border-[3px] ${
+                className={`p-4 rounded-lg border-2 ${
                   highContrast
                     ? 'bg-hc-primary/20 border-hc-border'
                     : 'bg-accent-green/20 border-accent-green'
@@ -158,7 +158,7 @@ export default function FeedbackPane({ isOpen, onClose }) {
             {/* Error Message */}
             {error && (
               <div
-                className={`p-4 rounded-2xl border-[3px] ${
+                className={`p-4 rounded-lg border-2 ${
                   highContrast
                     ? 'bg-hc-error/20 border-hc-border'
                     : 'bg-accent-red/20 border-accent-red'
@@ -197,7 +197,7 @@ export default function FeedbackPane({ isOpen, onClose }) {
                       key={category.value}
                       type="button"
                       onClick={() => setFormData((prev) => ({ ...prev, category: category.value }))}
-                      className={`w-full text-left px-4 py-3 rounded-xl border-[3px] font-semibold text-sm transition-all flex items-center gap-3 ${
+                      className={`w-full text-left px-4 py-3 rounded-xl border-2 font-semibold text-sm transition-all flex items-center gap-3 ${
                         formData.category === category.value
                           ? highContrast
                             ? 'bg-hc-primary border-hc-border text-black'
@@ -234,7 +234,7 @@ export default function FeedbackPane({ isOpen, onClose }) {
                   onChange={(event) =>
                     setFormData((prev) => ({ ...prev, message: event.target.value }))
                   }
-                  className={`w-full rounded-2xl border-[3px] px-4 py-3 text-base resize-none transition-all focus:outline-none focus:ring-4 ${
+                  className={`w-full rounded-lg border-2 px-4 py-3 text-base resize-none transition-all focus:outline-none focus:ring-4 ${
                     highContrast
                       ? 'border-hc-border bg-hc-surface text-gray-900 focus:ring-hc-focus/30'
                       : 'border-border-main bg-ghost-white dark:bg-bg-card text-gray-900 dark:text-gray-100 focus:ring-accent-blue/20'
@@ -261,7 +261,7 @@ export default function FeedbackPane({ isOpen, onClose }) {
 
               {/* Contact Permission */}
               <div
-                className={`p-4 rounded-2xl border-[3px] ${
+                className={`p-4 rounded-lg border-2 ${
                   highContrast
                     ? 'border-hc-border bg-hc-surface'
                     : 'border-border-main bg-gray-50 dark:bg-bg-card'
@@ -270,7 +270,7 @@ export default function FeedbackPane({ isOpen, onClose }) {
                 <label className="flex items-start gap-3 select-none cursor-pointer">
                   <input
                     type="checkbox"
-                    className={`mt-0.5 w-5 h-5 rounded border-[2px] transition-all focus:ring-4 focus:ring-accent-blue/20 ${
+                    className={`mt-0.5 w-5 h-5 rounded border-2 transition-all focus:ring-4 focus:ring-accent-blue/20 ${
                       highContrast
                         ? 'border-hc-border'
                         : 'border-gray-400 checked:bg-accent-blue checked:border-accent-blue'
@@ -294,7 +294,7 @@ export default function FeedbackPane({ isOpen, onClose }) {
                       onChange={(event) =>
                         setFormData((prev) => ({ ...prev, email: event.target.value }))
                       }
-                      className={`w-full rounded-xl border-[3px] px-4 py-2.5 text-sm transition-all focus:outline-none focus:ring-4 ${
+                      className={`w-full rounded-xl border-2 px-4 py-2.5 text-sm transition-all focus:outline-none focus:ring-4 ${
                         highContrast
                           ? 'border-hc-border bg-hc-surface text-gray-900 focus:ring-hc-focus/30'
                           : 'border-border-main bg-ghost-white dark:bg-bg-card text-gray-900 dark:text-gray-100 focus:ring-accent-blue/20'
@@ -309,7 +309,7 @@ export default function FeedbackPane({ isOpen, onClose }) {
               <button
                 type="submit"
                 disabled={!canSubmit || submitting}
-                className={`w-full py-4 rounded-2xl border-[3px] font-bold text-base transition-all focus:outline-none focus:ring-4 ${
+                className={`w-full py-4 rounded-lg border-2 font-bold text-base transition-all focus:outline-none focus:ring-4 ${
                   highContrast
                     ? 'bg-hc-primary border-hc-border text-black hover:bg-hc-focus focus:ring-hc-focus/30'
                     : canSubmit && !submitting

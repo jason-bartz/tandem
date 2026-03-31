@@ -15,7 +15,7 @@ export function DailyAlchemyLoadingSkeleton() {
 
   return (
     <div
-      className="fixed inset-0 flex flex-col overflow-hidden bg-white dark:bg-gray-900"
+      className="fixed inset-0 flex flex-col overflow-hidden bg-bg-card dark:bg-gray-900"
       style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}
     >
       <DailyAlchemyBackground />
@@ -52,7 +52,7 @@ export function DailyAlchemyLoadingSkeleton() {
                     'w-full max-w-sm p-5 mb-6',
                     'bg-soup-light/50 dark:bg-soup-primary/10',
                     'dark:border-gray-600',
-                    'rounded-2xl',
+                    'rounded-lg',
                     ''
                   )}
                 >
@@ -97,15 +97,7 @@ export function DailyAlchemyLoadingSkeleton() {
                     />
                   </div>
 
-                  <div
-                    className={cn(
-                      'p-4',
-                      'bg-gray-50 dark:bg-gray-800',
-                      'border-[3px] border-gray-300 dark:border-gray-600',
-                      'rounded-xl',
-                      ' dark:'
-                    )}
-                  >
+                  <div className={cn('p-4', 'bg-gray-50 dark:bg-gray-800', 'rounded-xl', '')}>
                     <div
                       className={`h-3 w-full mb-2 bg-gray-200 dark:bg-gray-700 rounded ${shimmerClass}`}
                     />
@@ -181,9 +173,8 @@ export function DailyAlchemyLoadingSkeleton() {
                     'w-full max-w-sm mt-6 p-4',
                     'flex items-center gap-3',
                     'bg-gray-50 dark:bg-gray-800',
-                    'border-[3px] border-gray-300 dark:border-gray-600',
                     'rounded-xl',
-                    ' dark:'
+                    ''
                   )}
                 >
                   {/* Discord Logo placeholder */}

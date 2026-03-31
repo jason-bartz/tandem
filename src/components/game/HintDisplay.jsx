@@ -93,8 +93,8 @@ export default function HintDisplay({
               className={`
                 flex items-start gap-2
                 ${isSmallPhone ? 'px-2.5 py-1.5' : isMobilePhone ? 'px-3 py-2' : 'px-4 py-3'}
-                ${isSmallPhone ? 'rounded-xl' : 'rounded-2xl'}
-                border-[3px]
+                ${isSmallPhone ? 'rounded-xl' : 'rounded-lg'}
+                border-2
                 ${
                   highContrast
                     ? 'bg-hc-warning border-hc-warning'

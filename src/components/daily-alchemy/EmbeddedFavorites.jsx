@@ -117,12 +117,12 @@ export function EmbeddedFavorites({
     <div
       className={cn(
         'flex flex-col h-full',
-        'bg-white dark:bg-gray-800',
+        'bg-bg-card dark:bg-gray-800',
         'dark:border-gray-600',
         'rounded-xl',
         'dark:',
         'overflow-hidden',
-        highContrast && 'border-[3px] border-hc-border'
+        highContrast && 'border-2 border-hc-border'
       )}
     >
       {/* Header */}

@@ -56,7 +56,7 @@ export default function AnnouncementBanner() {
         animate={reduceMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
         exit={reduceMotion ? { opacity: 0 } : { opacity: 0, y: -10 }}
         transition={{ duration: 0.35, ease: [0.25, 0.1, 0.25, 1] }}
-        className={`relative mb-4 rounded-2xl px-4 pt-3 pb-3 ${
+        className={`relative mb-4 rounded-lg px-4 pt-3 pb-3 ${
           highContrast
             ? 'bg-hc-surface text-hc-text'
             : 'bg-bg-surface dark:bg-bg-card text-text-secondary'

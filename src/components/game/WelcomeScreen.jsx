@@ -340,7 +340,7 @@ export default function WelcomeScreen({
           onClick={() => setShowTandemUnavailable(false)}
         >
           <div
-            className="bg-ghost-white dark:bg-gray-800 rounded-3xl p-8 max-w-md text-center mx-4"
+            className="bg-ghost-white dark:bg-gray-800 rounded-lg p-8 max-w-md text-center mx-4"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="mb-6">

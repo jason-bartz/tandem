@@ -114,7 +114,7 @@ export default function StreakLeaderboard({ gameType }) {
       {/* User's rank if not in top 10 */}
       {userEntry && userEntry.rank > 10 && (
         <div
-          className={`mt-6 p-4 rounded-xl border-[3px] ${
+          className={`mt-6 p-4 rounded-xl border-2 ${
             highContrast
               ? 'bg-hc-primary/20 border-hc-border'
               : 'bg-orange-50 dark:bg-orange-900/20 border-orange-200 dark:border-orange-800'
@@ -146,7 +146,7 @@ export default function StreakLeaderboard({ gameType }) {
       {/* Call to action if user hasn't submitted */}
       {!userEntry && user && (
         <div
-          className={`mt-6 p-4 rounded-xl border-[3px] ${
+          className={`mt-6 p-4 rounded-xl border-2 ${
             highContrast
               ? 'bg-hc-surface border-hc-border'
               : 'bg-purple-50 dark:bg-purple-900/20 border-purple-200 dark:border-purple-800'

@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState, useRef, useCallback } from 'react';
-import { AnimatePresence, motion, useMotionValue, useAnimation } from 'framer-motion';
+import { AnimatePresence, motion, useMotionValue, useAnimation, animate } from 'framer-motion';
 import { Check, Loader2, ChevronUp, ChevronDown, FolderOpen, Save } from 'lucide-react';
 import html2canvas from 'html2canvas';
 import { cn } from '@/lib/utils';
@@ -38,9 +38,13 @@ function ResultAnimation({ result, onComplete, onSelectElement, isAnonymous, onS
   const y = useMotionValue(0);
 
   // Start the entrance animation on mount
+  // After it completes, reset y via the motion value directly so the
+  // animation controller releases ownership of y before the user drags.
   useEffect(() => {
-    controls.start({ scale: 1, rotate: 0, opacity: 1, y: 0 });
-  }, [controls]);
+    controls.start({ scale: 1, rotate: 0, opacity: 1, y: 0 }).then(() => {
+      y.set(0);
+    });
+  }, [controls, y]);
 
   // No auto-dismiss - user must swipe
   // (removed the auto-dismiss timer)
@@ -219,14 +223,11 @@ function ResultAnimation({ result, onComplete, onSelectElement, isAnonymous, onS
     else if (offsetY > 60 || velocityY > 400) {
       await handleClose();
     }
-    // Not enough - spring back
+    // Not enough - spring back using motion value directly
+    // (Using controls.start here would re-claim ownership of y,
+    // causing the next drag attempt to fight the animation controller)
     else {
-      controls.start({
-        y: 0,
-        opacity: 1,
-        scale: 1,
-        transition: { type: 'spring', stiffness: 300, damping: 20 },
-      });
+      animate(y, 0, { type: 'spring', stiffness: 300, damping: 20 });
     }
   };
 
@@ -259,15 +260,14 @@ function ResultAnimation({ result, onComplete, onSelectElement, isAnonymous, onS
       <motion.div
         className={cn(
           'relative flex flex-col items-center gap-2 px-8 pt-6 pb-4',
-          'bg-white dark:bg-gray-800',
-          'border-[4px]',
+          'bg-bg-card dark:bg-gray-800',
           result.isFirstDiscovery && 'bg-yellow-50 dark:bg-gray-800',
-          'rounded-2xl',
+          'rounded-lg',
           '',
           'cursor-grab active:cursor-grabbing',
           'select-none'
         )}
-        style={{ y }}
+        style={{ y, touchAction: 'none' }}
         initial={!reduceMotion ? { scale: 0, rotate: -10, opacity: 0 } : { opacity: 0 }}
         animate={controls}
         exit={{ opacity: 0, scale: 0.8, transition: { duration: 0.15 } }}
@@ -350,13 +350,12 @@ function ResultAnimation({ result, onComplete, onSelectElement, isAnonymous, onS
               'rounded-xl font-bold text-sm',
               'transition-colors duration-150',
               'disabled:opacity-70',
-              highContrast && 'border-[3px]'
+              highContrast && 'border-2 border-hc-border'
             )}
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             whileHover={{
-              y: -1,
-              backgroundColor: '#ca8a04', // yellow-600
+              scale: 1.05,
             }}
             whileTap={{ scale: 0.98 }}
             transition={{ delay: 0.5 }}

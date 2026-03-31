@@ -73,7 +73,7 @@ export default function Footer() {
           {/* TikTok */}
           <button
             onClick={handleTikTokClick}
-            className={`w-10 h-10 rounded-full flex items-center justify-center border-[3px] transition-colors ${
+            className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-colors ${
               highContrast
                 ? 'border-hc-border bg-hc-surface text-hc-text hover:opacity-80'
                 : 'border-border-main bg-bg-surface dark:bg-gray-700 text-text-secondary hover:text-text-primary hover:opacity-80'
@@ -88,7 +88,7 @@ export default function Footer() {
           {/* Instagram */}
           <button
             onClick={handleInstagramClick}
-            className={`w-10 h-10 rounded-full flex items-center justify-center border-[3px] transition-colors ${
+            className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-colors ${
               highContrast
                 ? 'border-hc-border bg-hc-surface text-hc-text hover:opacity-80'
                 : 'border-border-main bg-bg-surface dark:bg-gray-700 text-text-secondary hover:text-text-primary hover:opacity-80'
@@ -103,7 +103,7 @@ export default function Footer() {
           {/* Discord */}
           <button
             onClick={handleDiscordClick}
-            className={`w-10 h-10 rounded-full flex items-center justify-center border-[3px] transition-colors ${
+            className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-colors ${
               highContrast
                 ? 'border-hc-border bg-hc-surface text-hc-text hover:opacity-80'
                 : 'border-border-main bg-bg-surface dark:bg-gray-700 text-text-secondary hover:text-text-primary hover:opacity-80'

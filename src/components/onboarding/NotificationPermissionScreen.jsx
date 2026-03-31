@@ -47,16 +47,16 @@ export default function NotificationPermissionScreen({ onContinue, onSkip }) {
       <div
         className={`w-full max-w-md rounded-lg p-8 ${
           highContrast
-            ? 'bg-hc-surface border-[4px] border-hc-border'
+            ? 'bg-hc-surface border-2 border-hc-border'
             : 'bg-ghost-white dark:bg-gray-900 dark:'
         }`}
       >
         {/* Hero Icon */}
         <div className="flex justify-center mb-8">
           <div
-            className={`w-24 h-24 rounded-2xl flex items-center justify-center ${
+            className={`w-24 h-24 rounded-lg flex items-center justify-center ${
               highContrast
-                ? 'bg-hc-primary/20 border-[4px] border-hc-border'
+                ? 'bg-hc-primary/20 border-2 border-hc-border'
                 : 'bg-sky-100 dark:bg-sky-900/30 dark:'
             }`}
           >
@@ -88,7 +88,7 @@ export default function NotificationPermissionScreen({ onContinue, onSkip }) {
             <div
               className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5 ${
                 highContrast
-                  ? 'bg-hc-primary text-white border-[3px] border-hc-border'
+                  ? 'bg-hc-primary text-white border-2 border-hc-border'
                   : 'bg-sky-500 text-white'
               }`}
             >
@@ -116,7 +116,7 @@ export default function NotificationPermissionScreen({ onContinue, onSkip }) {
             <div
               className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5 ${
                 highContrast
-                  ? 'bg-hc-primary text-white border-[3px] border-hc-border'
+                  ? 'bg-hc-primary text-white border-2 border-hc-border'
                   : 'bg-sky-500 text-white'
               }`}
             >
@@ -144,7 +144,7 @@ export default function NotificationPermissionScreen({ onContinue, onSkip }) {
             <div
               className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5 ${
                 highContrast
-                  ? 'bg-hc-primary text-white border-[3px] border-hc-border'
+                  ? 'bg-hc-primary text-white border-2 border-hc-border'
                   : 'bg-sky-500 text-white'
               }`}
             >
@@ -177,7 +177,7 @@ export default function NotificationPermissionScreen({ onContinue, onSkip }) {
             disabled={requesting}
             className={`w-full py-4 rounded-xl font-bold text-base transition-all ${
               highContrast
-                ? 'bg-hc-primary text-white border-[4px] border-hc-border hover:bg-hc-focus disabled:opacity-50'
+                ? 'bg-hc-primary text-white border-2 border-hc-border hover:bg-hc-focus disabled:opacity-50'
                 : 'bg-sky-500 text-white hover: disabled:opacity-50'
             }`}
             style={{
@@ -215,8 +215,8 @@ export default function NotificationPermissionScreen({ onContinue, onSkip }) {
             disabled={requesting}
             className={`w-full py-4 rounded-xl font-bold text-base transition-all ${
               highContrast
-                ? 'bg-hc-surface text-hc-text border-[4px] border-hc-border hover:bg-hc-focus/10 disabled:opacity-50'
-                : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 dark: hover: disabled:opacity-50'
+                ? 'bg-hc-surface text-hc-text border-2 border-hc-border hover:bg-hc-focus/10 disabled:opacity-50'
+                : 'bg-ghost-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 dark: hover: disabled:opacity-50'
             }`}
             style={{
               WebkitTapHighlightColor: 'transparent',

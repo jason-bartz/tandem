@@ -148,7 +148,7 @@ export default function DeleteAccountModal({
         <>
           <button
             onClick={handleClose}
-            className={`flex-1 py-3 rounded-2xl border-[3px] font-semibold transition-all ${
+            className={`flex-1 py-3 rounded-lg border-2 font-semibold transition-all ${
               highContrast
                 ? 'bg-hc-surface text-hc-text border-hc-border hover:bg-hc-focus'
                 : 'bg-ghost-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:'
@@ -158,7 +158,7 @@ export default function DeleteAccountModal({
           </button>
           <button
             onClick={handleProceedToConfirmation}
-            className={`flex-1 py-3 rounded-2xl border-[3px] font-semibold transition-all ${
+            className={`flex-1 py-3 rounded-lg border-2 font-semibold transition-all ${
               highContrast
                 ? 'bg-hc-error text-white border-hc-border hover:bg-red-700'
                 : 'bg-red-600 text-white hover:'
@@ -176,7 +176,7 @@ export default function DeleteAccountModal({
               setError(null);
             }}
             disabled={loading}
-            className={`flex-1 py-3 rounded-2xl border-[3px] font-semibold transition-all ${
+            className={`flex-1 py-3 rounded-lg border-2 font-semibold transition-all ${
               loading ? 'opacity-50 cursor-not-allowed' : ''
             } ${
               highContrast
@@ -189,7 +189,7 @@ export default function DeleteAccountModal({
           <button
             onClick={handleDelete}
             disabled={loading || (isWeb && confirmationText.trim().toUpperCase() !== 'DELETE')}
-            className={`flex-1 py-3 rounded-2xl border-[3px] font-semibold transition-all ${
+            className={`flex-1 py-3 rounded-lg border-2 font-semibold transition-all ${
               loading || (isWeb && confirmationText.trim().toUpperCase() !== 'DELETE')
                 ? 'opacity-50 cursor-not-allowed'
                 : ''
@@ -265,7 +265,7 @@ export default function DeleteAccountModal({
           </div>
 
           {/* Timeline */}
-          <div className="p-4 bg-gray-50 dark:bg-gray-700 rounded-2xl border-2 border-gray-200 dark:border-gray-600">
+          <div className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg border-2 border-gray-200 dark:border-gray-600">
             <p className="text-sm text-gray-700 dark:text-gray-300">
               <span className="font-bold">Deletion Timeline:</span> Your account will be deleted
               immediately and permanently. You will not be able to recover your data.
@@ -282,7 +282,7 @@ export default function DeleteAccountModal({
           </p>
 
           {/* Account Info */}
-          <div className="mb-6 p-4 bg-gray-50 dark:bg-gray-700 rounded-2xl border-2 border-gray-200 dark:border-gray-600">
+          <div className="mb-6 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg border-2 border-gray-200 dark:border-gray-600">
             <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
               You are about to delete:
             </p>
@@ -303,7 +303,7 @@ export default function DeleteAccountModal({
                 value={confirmationText}
                 onChange={(e) => setConfirmationText(e.target.value)}
                 placeholder="DELETE"
-                className={`w-full px-4 py-3 rounded-xl border-[3px] font-mono font-bold text-lg ${
+                className={`w-full px-4 py-3 rounded-xl border-2 font-mono font-bold text-lg ${
                   highContrast
                     ? 'bg-hc-surface text-hc-text border-hc-border focus:border-hc-focus'
                     : 'bg-ghost-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 border-gray-300 dark:border-gray-600 focus:border-red-500'

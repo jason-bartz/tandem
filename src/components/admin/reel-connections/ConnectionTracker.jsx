@@ -307,7 +307,7 @@ export default function ConnectionTracker({ onEditPuzzle }) {
 
   if (error) {
     return (
-      <div className="bg-accent-red/20 border-[3px] border-accent-red rounded-lg p-4">
+      <div className="bg-accent-red/20 border-2 border-accent-red rounded-lg p-4">
         <p className="text-text-primary font-bold">Error: {error}</p>
         <button
           onClick={fetchAllPuzzles}
@@ -355,7 +355,7 @@ export default function ConnectionTracker({ onEditPuzzle }) {
 
       {/* Filters and Table */}
       <div className="bg-bg-surface rounded-lg">
-        <div className="p-3 sm:p-4 border-b-[3px]">
+        <div className="p-3 sm:p-4 border-b-2">
           <div className="flex flex-col gap-3 sm:gap-4">
             <input
               type="text"
@@ -421,7 +421,7 @@ export default function ConnectionTracker({ onEditPuzzle }) {
         </div>
 
         <div className="overflow-x-auto -mx-3 sm:mx-0">
-          <table className="min-w-full divide-y-[3px] divide-black">
+          <table className="min-w-full divide-y-2 divide-black">
             <thead className="bg-bg-card">
               <tr>
                 <th className="px-3 sm:px-6 py-2 sm:py-3 text-left text-[10px] sm:text-xs font-bold text-text-primary uppercase tracking-wider">

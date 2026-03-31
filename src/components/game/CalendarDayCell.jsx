@@ -106,7 +106,7 @@ const CalendarDayCell = memo(
 
       if (isToday) {
         return highContrast
-          ? 'text-hc-primary-text bg-hc-primary border-[2px] border-hc-border font-bold'
+          ? 'text-hc-primary-text bg-hc-primary border-2 border-hc-border font-bold'
           : 'text-white bg-accent-pink font-bold';
       }
 

@@ -11,7 +11,7 @@ export default function FeedbackDashboardSkeleton() {
   return (
     <div className="space-y-4">
       {/* Sort & Filter Row Skeleton */}
-      <div className="flex items-center justify-between gap-3 py-2 border-b-[2px] dark:border-white/10">
+      <div className="flex items-center justify-between gap-3 py-2 border-b dark:border-white/10">
         <div
           className={`h-5 w-20 bg-gray-200 dark:bg-gray-700 rounded ${!reduceMotion ? 'skeleton-shimmer' : ''}`}
         />
@@ -67,11 +67,11 @@ export default function FeedbackDashboardSkeleton() {
                   </div>
                 </div>
 
-                <div className="pt-3 border-t-[2px] border-gray-200 dark:border-gray-700">
+                <div className="pt-3 border-t border-gray-200 dark:border-gray-700">
                   <div
                     className={`h-3 w-16 bg-gray-200 dark:bg-gray-700 rounded mb-2 ${!reduceMotion ? 'skeleton-shimmer' : ''}`}
                   />
-                  <div className="p-3 bg-gray-50 dark:bg-gray-800/50 border-[2px] border-gray-200 dark:border-gray-700 rounded-lg">
+                  <div className="p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
                     <div className="space-y-2">
                       <div
                         className={`h-3 w-full bg-gray-200 dark:bg-gray-700 rounded ${!reduceMotion ? 'skeleton-shimmer' : ''}`}

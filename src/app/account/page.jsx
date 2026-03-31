@@ -323,7 +323,7 @@ export default function AccountPage() {
   if (authLoading) {
     return (
       <div
-        className={`fixed inset-0 w-full h-full overflow-y-auto overflow-x-hidden ${isStandaloneAlchemy ? 'bg-white dark:bg-gray-900' : 'bg-accent-yellow'}`}
+        className={`fixed inset-0 w-full h-full overflow-y-auto overflow-x-hidden ${isStandaloneAlchemy ? 'bg-bg-card dark:bg-gray-900' : 'bg-accent-yellow'}`}
       >
         <div className="min-h-screen flex items-center justify-center py-6">
           <div className="w-full max-w-2xl mx-auto p-6 relative z-10 my-auto">
@@ -341,7 +341,7 @@ export default function AccountPage() {
                   {/* Profile skeleton */}
                   <div>
                     <div className="w-16 h-7 bg-gray-200 dark:bg-gray-700 rounded-lg animate-pulse mb-4"></div>
-                    <div className="flex items-start gap-4 p-4 bg-gray-50 dark:bg-gray-900/30 rounded-2xl border-2 border-gray-200 dark:border-gray-700">
+                    <div className="flex items-start gap-4 p-4 bg-gray-50 dark:bg-gray-900/30 rounded-lg border-2 border-gray-200 dark:border-gray-700">
                       <div className="w-20 h-20 bg-gray-200 dark:bg-gray-700 rounded-xl animate-pulse"></div>
                       <div className="flex-1 space-y-3">
                         <div className="w-32 h-5 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
@@ -354,7 +354,7 @@ export default function AccountPage() {
                   {/* Subscription skeleton */}
                   <div>
                     <div className="w-32 h-7 bg-gray-200 dark:bg-gray-700 rounded-lg animate-pulse mb-4"></div>
-                    <div className="p-4 bg-gray-50 dark:bg-gray-900/30 rounded-2xl border-2 border-gray-200 dark:border-gray-700 space-y-3">
+                    <div className="p-4 bg-gray-50 dark:bg-gray-900/30 rounded-lg border-2 border-gray-200 dark:border-gray-700 space-y-3">
                       <div className="w-full h-5 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
                       <div className="w-3/4 h-4 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
                       <div className="w-full h-12 bg-gray-200 dark:bg-gray-700 rounded-xl animate-pulse mt-4"></div>
@@ -389,7 +389,7 @@ export default function AccountPage() {
   return (
     <>
       <div
-        className={`fixed inset-0 w-full h-full overflow-y-auto overflow-x-hidden ${isStandaloneAlchemy ? 'bg-white dark:bg-gray-900' : 'bg-accent-yellow'}`}
+        className={`fixed inset-0 w-full h-full overflow-y-auto overflow-x-hidden ${isStandaloneAlchemy ? 'bg-bg-card dark:bg-gray-900' : 'bg-accent-yellow'}`}
       >
         {/* Scrollable content container */}
         <div className="min-h-screen flex items-center justify-center py-6 pt-safe">
@@ -434,7 +434,7 @@ export default function AccountPage() {
                     </h2>
 
                     {/* Profile Card */}
-                    <div className="bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 rounded-2xl p-4 dark:">
+                    <div className="bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 rounded-lg p-4 dark:">
                       <div className="flex items-start gap-4">
                         {/* Avatar */}
                         <div className="flex-shrink-0 flex flex-col items-center gap-2">
@@ -444,7 +444,7 @@ export default function AccountPage() {
                                 setShowAvatarModal(true);
                                 lightTap();
                               }}
-                              className="relative w-20 h-20 rounded-xl overflow-hidden border-[3px] border-purple-500 hover:scale-105 transition-transform"
+                              className="relative w-20 h-20 rounded-xl overflow-hidden border-2 border-purple-500 hover:scale-105 transition-transform"
                               aria-label={
                                 userAvatar?.selected_avatar_id ? 'Change avatar' : 'Select avatar'
                               }
@@ -511,7 +511,7 @@ export default function AccountPage() {
                                   <button
                                     onClick={handleSaveUsername}
                                     disabled={loadingUsername}
-                                    className={`flex-1 py-2 px-3 rounded-xl border-[2px] font-medium text-sm transition-all ${
+                                    className={`flex-1 py-2 px-3 rounded-xl border-2 font-medium text-sm transition-all ${
                                       loadingUsername
                                         ? 'opacity-50 cursor-not-allowed'
                                         : 'bg-purple-500 text-white hover:'
@@ -522,7 +522,7 @@ export default function AccountPage() {
                                   <button
                                     onClick={handleCancelEditUsername}
                                     disabled={loadingUsername}
-                                    className={`flex-1 py-2 px-3 rounded-xl border-[2px] font-medium text-sm transition-all ${
+                                    className={`flex-1 py-2 px-3 rounded-xl border-2 font-medium text-sm transition-all ${
                                       loadingUsername
                                         ? 'opacity-50 cursor-not-allowed'
                                         : 'bg-ghost-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:'
@@ -636,7 +636,7 @@ export default function AccountPage() {
                     {/* Sign Out Button */}
                     <button
                       onClick={handleSignOut}
-                      className="w-full py-3 px-4 rounded-xl border-[3px] font-semibold transition-all bg-ghost-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:"
+                      className="w-full py-3 px-4 rounded-xl border-2 font-semibold transition-all bg-ghost-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:"
                     >
                       Sign Out
                     </button>
@@ -645,7 +645,7 @@ export default function AccountPage() {
                     {!isWeb && !user?.email && (
                       <button
                         onClick={forceLogout}
-                        className="w-full py-3 px-4 rounded-xl border-[3px] font-semibold transition-all bg-orange-500 text-white hover:"
+                        className="w-full py-3 px-4 rounded-xl border-2 font-semibold transition-all bg-orange-500 text-white hover:"
                       >
                         Force Logout (Clear All Data)
                       </button>
@@ -654,7 +654,7 @@ export default function AccountPage() {
                     {/* Delete Account Button */}
                     <button
                       onClick={handleDeleteAccount}
-                      className="w-full py-3 px-4 rounded-xl border-[3px] font-semibold transition-all bg-red-600 text-white hover:"
+                      className="w-full py-3 px-4 rounded-xl border-2 font-semibold transition-all bg-red-600 text-white hover:"
                     >
                       Delete Account
                     </button>
@@ -829,7 +829,7 @@ function IOSSignInPage() {
 
   return (
     <div
-      className={`fixed inset-0 w-full h-full overflow-y-auto overflow-x-hidden ${isStandaloneAlchemy ? 'bg-white dark:bg-gray-900' : 'bg-accent-yellow'}`}
+      className={`fixed inset-0 w-full h-full overflow-y-auto overflow-x-hidden ${isStandaloneAlchemy ? 'bg-bg-card dark:bg-gray-900' : 'bg-accent-yellow'}`}
     >
       <div className="min-h-screen flex items-center justify-center py-6">
         <div className="w-full max-w-md mx-auto p-6">
@@ -881,7 +881,7 @@ function IOSSignInPage() {
               <button
                 onClick={handleGoogleSignIn}
                 disabled={loading}
-                className={`w-full p-4 rounded-xl transition-all flex items-center justify-center gap-3 mb-3 bg-white text-gray-700 ${
+                className={`w-full p-4 rounded-xl transition-all flex items-center justify-center gap-3 mb-3 bg-ghost-white text-gray-700 ${
                   loading ? 'opacity-50 cursor-not-allowed' : ' hover:'
                 }`}
               >

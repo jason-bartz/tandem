@@ -723,7 +723,7 @@ export default function TermsOfUse() {
   return (
     <>
       <div
-        className={`fixed inset-0 w-full h-full overflow-y-auto overflow-x-hidden ${isStandaloneAlchemy ? 'bg-white dark:bg-gray-900' : 'bg-bg-primary'}`}
+        className={`fixed inset-0 w-full h-full overflow-y-auto overflow-x-hidden ${isStandaloneAlchemy ? 'bg-bg-card dark:bg-gray-900' : 'bg-bg-primary'}`}
       >
         {/* Scrollable content container */}
         <div className="min-h-screen flex items-center justify-center pt-safe pb-6">
@@ -765,7 +765,7 @@ export default function TermsOfUse() {
                   </div>
 
                   {/* Summary Card */}
-                  <div className="mx-6 mt-6 mb-6 p-4 bg-ghost-white dark:bg-gray-900 rounded-2xl">
+                  <div className="mx-6 mt-6 mb-6 p-4 bg-ghost-white dark:bg-gray-900 rounded-lg">
                     <h3 className="font-semibold mb-3 text-gray-800 dark:text-gray-200">
                       Key Points
                     </h3>
@@ -797,7 +797,7 @@ export default function TermsOfUse() {
                   <div className="p-6 pt-0">
                     <div className="space-y-2">
                       {sections.map((section) => (
-                        <div key={section.id} className="rounded-2xl overflow-hidden">
+                        <div key={section.id} className="rounded-lg overflow-hidden">
                           <button
                             onClick={() =>
                               setActiveSection(activeSection === section.id ? null : section.id)
@@ -831,7 +831,7 @@ export default function TermsOfUse() {
                     </div>
 
                     {/* Agreement statement */}
-                    <div className="mt-6 p-4 bg-[#ff66c4]/20 rounded-2xl">
+                    <div className="mt-6 p-4 bg-[#ff66c4]/20 rounded-lg">
                       <p className="text-sm text-center text-gray-700 dark:text-gray-300">
                         By playing our games, you agree to these terms
                       </p>

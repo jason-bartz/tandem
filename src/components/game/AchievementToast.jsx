@@ -41,7 +41,7 @@ export default function AchievementToast() {
       role="alert"
       aria-live="polite"
     >
-      <div className="bg-amber-400 text-black px-6 py-4 rounded-2xl flex items-center gap-3 max-w-sm">
+      <div className="bg-amber-400 text-black px-6 py-4 rounded-lg flex items-center gap-3 max-w-sm">
         <span className="text-3xl">{achievement.emoji}</span>
         <div className="flex-1">
           <div className="font-black text-sm uppercase tracking-wide">Achievement Unlocked!</div>

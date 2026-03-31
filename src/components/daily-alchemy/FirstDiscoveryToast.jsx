@@ -36,9 +36,9 @@ export function FirstDiscoveryToast({ element, emoji, onDismiss, duration = 5000
           'bg-gradient-to-r from-yellow-400 to-orange-400',
           'text-white',
           '',
-          'rounded-2xl',
+          'rounded-lg',
           '',
-          highContrast && 'border-[4px]'
+          highContrast && 'border-2'
         )}
       >
         <motion.span

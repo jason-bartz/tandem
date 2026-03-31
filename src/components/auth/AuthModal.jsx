@@ -339,7 +339,7 @@ export default function AuthModal({
         disabled={loading}
         type="button"
         aria-label={mode === 'signup' ? 'Sign up with Google' : 'Sign in with Google'}
-        className={`w-full p-4 rounded-2xl border-[3px] transition-all flex items-center justify-center gap-3 mb-4 ${
+        className={`w-full p-4 rounded-lg border-2 transition-all flex items-center justify-center gap-3 mb-4 ${
           loading ? 'opacity-50 cursor-not-allowed' : 'hover:opacity-90'
         } bg-bg-surface dark:bg-bg-card text-text-primary border-border-main`}
       >
@@ -379,7 +379,7 @@ export default function AuthModal({
           disabled={loading}
           type="button"
           aria-label="Sign in with Apple"
-          className={`w-full p-4 rounded-2xl border-[3px] dark:transition-all flex items-center justify-center gap-3 mb-4 ${
+          className={`w-full p-4 rounded-lg border-2 dark:transition-all flex items-center justify-center gap-3 mb-4 ${
             loading ? 'opacity-50 cursor-not-allowed' : ' hover:dark:hover:'
           } bg-black text-white`}
         >
@@ -408,7 +408,7 @@ export default function AuthModal({
         disabled={loading}
         type="button"
         aria-label={mode === 'signup' ? 'Sign up with Discord' : 'Sign in with Discord'}
-        className={`w-full p-4 rounded-2xl border-[3px] dark:transition-all flex items-center justify-center gap-3 mb-4 ${
+        className={`w-full p-4 rounded-lg border-2 dark:transition-all flex items-center justify-center gap-3 mb-4 ${
           loading ? 'opacity-50 cursor-not-allowed' : ' hover:dark:hover:'
         } bg-[#5865F2] text-white`}
       >

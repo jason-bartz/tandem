@@ -53,7 +53,7 @@ export default function AboutPage() {
       />
 
       <div
-        className={`fixed inset-0 w-full h-full overflow-y-auto overflow-x-hidden ${isStandaloneAlchemy ? 'bg-white dark:bg-gray-900' : 'bg-bg-primary'}`}
+        className={`fixed inset-0 w-full h-full overflow-y-auto overflow-x-hidden ${isStandaloneAlchemy ? 'bg-bg-card dark:bg-gray-900' : 'bg-bg-primary'}`}
       >
         {/* Scrollable content container */}
         <div className="min-h-screen flex items-center justify-center pt-safe pb-6">
@@ -183,14 +183,14 @@ export default function AboutPage() {
                             ? 'Generous supporters help keep this game ad-free and the daily puzzle free for everyone. Your support helps cover our servers and keep the games running.'
                             : 'Generous supporters help keep every game free to play and ad-free for everyone. Your support helps cover our servers and keep the games running.'}
                         </p>
-                        <TipJarButton className="rounded-2xl py-3 px-6" />
+                        <TipJarButton className="rounded-lg py-3 px-6" />
                       </div>
 
                       {/* Call to Action */}
                       <div className={isWeb ? 'mt-4' : 'mt-8 pt-6 border-t border-border-light'}>
                         <Link
                           href={homePath}
-                          className="block w-full text-center px-6 py-3 bg-[#38b6ff] hover:bg-[#38b6ff]/90 text-white font-semibold rounded-2xl transition-all"
+                          className="block w-full text-center px-6 py-3 bg-[#38b6ff] hover:bg-[#38b6ff]/90 text-white font-semibold rounded-lg transition-all"
                         >
                           {isStandaloneAlchemy ? 'Back to Puzzle' : 'Back to the puzzles'}
                         </Link>

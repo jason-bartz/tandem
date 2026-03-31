@@ -103,9 +103,9 @@ export default function AlchemyCreativeTutorialModal({ onClose: onCloseProp }) {
             exit={{ scale: 0.95, opacity: 0 }}
             transition={{ duration: reduceMotion ? 0 : 0.25, ease: [0.4, 0, 0.2, 1] }}
             className={cn(
-              'relative w-full max-w-[340px] flex flex-col rounded-2xl overflow-hidden',
-              'border-[3px]',
-              highContrast ? 'bg-hc-surface border-hc-border' : 'bg-white dark:bg-gray-800'
+              'relative w-full max-w-[340px] flex flex-col rounded-lg overflow-hidden',
+              'border-2',
+              highContrast ? 'bg-hc-surface border-hc-border' : 'bg-bg-card dark:bg-gray-800'
             )}
             onClick={(e) => e.stopPropagation()}
           >

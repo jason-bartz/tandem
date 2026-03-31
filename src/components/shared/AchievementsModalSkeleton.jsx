@@ -8,10 +8,10 @@ export default function AchievementsModalSkeleton() {
     <>
       {/* Summary Stats Skeleton */}
       <div
-        className={`rounded-2xl border-[3px] p-4 mb-4 ${
+        className={`rounded-lg p-4 mb-4 ${
           highContrast
-            ? 'bg-hc-primary border-hc-border'
-            : 'bg-accent-blue dark:bg-accent-blue dark:'
+            ? 'bg-hc-primary border border-hc-border'
+            : 'bg-accent-blue dark:bg-accent-blue'
         }`}
       >
         <div className="flex justify-around items-center">
@@ -38,23 +38,23 @@ export default function AchievementsModalSkeleton() {
       {/* Tab Filters Skeleton */}
       <div className="flex gap-2 mb-4">
         <div
-          className={`flex-1 h-9 rounded-xl border-[3px] ${
-            highContrast ? 'bg-hc-surface border-hc-border' : 'bg-gray-200 dark:bg-gray-700 dark:'
+          className={`flex-1 h-9 rounded-xl ${
+            highContrast ? 'bg-hc-surface border border-hc-border' : 'bg-gray-200 dark:bg-gray-700'
           } ${!reduceMotion ? 'skeleton-shimmer' : ''}`}
         />
         <div
-          className={`flex-1 h-9 rounded-xl border-[3px] ${
-            highContrast ? 'bg-hc-surface border-hc-border' : 'bg-gray-200 dark:bg-gray-700 dark:'
+          className={`flex-1 h-9 rounded-xl ${
+            highContrast ? 'bg-hc-surface border border-hc-border' : 'bg-gray-200 dark:bg-gray-700'
           } ${!reduceMotion ? 'skeleton-shimmer' : ''}`}
         />
         <div
-          className={`flex-1 h-9 rounded-xl border-[3px] ${
-            highContrast ? 'bg-hc-surface border-hc-border' : 'bg-gray-200 dark:bg-gray-700 dark:'
+          className={`flex-1 h-9 rounded-xl ${
+            highContrast ? 'bg-hc-surface border border-hc-border' : 'bg-gray-200 dark:bg-gray-700'
           } ${!reduceMotion ? 'skeleton-shimmer' : ''}`}
         />
         <div
-          className={`flex-1 h-9 rounded-xl border-[3px] ${
-            highContrast ? 'bg-hc-surface border-hc-border' : 'bg-gray-200 dark:bg-gray-700 dark:'
+          className={`flex-1 h-9 rounded-xl ${
+            highContrast ? 'bg-hc-surface border border-hc-border' : 'bg-gray-200 dark:bg-gray-700'
           } ${!reduceMotion ? 'skeleton-shimmer' : ''}`}
         />
       </div>
@@ -64,17 +64,19 @@ export default function AchievementsModalSkeleton() {
         {[1, 2, 3, 4, 5].map((i) => (
           <div
             key={i}
-            className={`rounded-2xl border-[3px] p-4 ${
+            className={`rounded-lg p-4 ${
               highContrast
-                ? 'bg-hc-surface border-hc-border'
-                : 'bg-ghost-white dark:bg-bg-card dark:'
+                ? 'bg-hc-surface border border-hc-border'
+                : 'bg-ghost-white dark:bg-bg-card'
             }`}
           >
             <div className="flex items-start gap-4">
               {/* Emoji Icon Skeleton - matches w-16 h-16 from AchievementCard */}
               <div
-                className={`w-16 h-16 rounded-xl border-[2px] flex-shrink-0 ${
-                  highContrast ? 'border-hc-border bg-hc-surface' : 'bg-gray-200 dark:bg-gray-700'
+                className={`w-16 h-16 rounded-xl flex-shrink-0 ${
+                  highContrast
+                    ? 'border border-hc-border bg-hc-surface'
+                    : 'bg-gray-200 dark:bg-gray-700'
                 } ${!reduceMotion ? 'skeleton-shimmer' : ''}`}
                 style={{
                   animationDelay: !reduceMotion ? `${i * 100}ms` : '0ms',

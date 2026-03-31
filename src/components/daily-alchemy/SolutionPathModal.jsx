@@ -46,11 +46,11 @@ function CombinationStep({ step, stepNumber, isLast, emojiMap }) {
         <div
           className={cn(
             'flex items-center gap-1.5 px-3 py-2',
-            'bg-white dark:bg-gray-800',
+            'bg-bg-card dark:bg-gray-800',
             'dark:border-gray-600',
             'rounded-lg',
             '',
-            highContrast && 'border-[3px] border-hc-border'
+            highContrast && 'border-2 border-hc-border'
           )}
         >
           {elementAEmoji && <span className="text-lg">{elementAEmoji}</span>}
@@ -64,11 +64,11 @@ function CombinationStep({ step, stepNumber, isLast, emojiMap }) {
         <div
           className={cn(
             'flex items-center gap-1.5 px-3 py-2',
-            'bg-white dark:bg-gray-800',
+            'bg-bg-card dark:bg-gray-800',
             'dark:border-gray-600',
             'rounded-lg',
             '',
-            highContrast && 'border-[3px] border-hc-border'
+            highContrast && 'border-2 border-hc-border'
           )}
         >
           {elementBEmoji && <span className="text-lg">{elementBEmoji}</span>}
@@ -89,7 +89,7 @@ function CombinationStep({ step, stepNumber, isLast, emojiMap }) {
           'dark:border-gray-600',
           'rounded-xl',
           isLast ? '' : '',
-          highContrast && 'border-[3px] border-hc-border'
+          highContrast && 'border-2 border-hc-border'
         )}
       >
         {resultEmoji && <span className={cn('text-xl', isLast && 'text-2xl')}>{resultEmoji}</span>}

@@ -61,7 +61,7 @@ const PosterModal = ({ movie, onClose, reduceMotion = false, highContrast = fals
       onClick={onClose}
     >
       {/* Backdrop */}
-      <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" />
+      <div className="absolute inset-0 bg-black/80" />
 
       {/* Modal Content */}
       <div
@@ -80,7 +80,7 @@ const PosterModal = ({ movie, onClose, reduceMotion = false, highContrast = fals
 
         {/* Poster */}
         <div
-          className={`rounded-2xl overflow-hidden ${highContrast ? 'border-hc-border' : 'border-accent-yellow'}`}
+          className={`rounded-lg overflow-hidden ${highContrast ? 'border-hc-border' : 'border-accent-yellow'}`}
         >
           <img src={movie.poster} alt={movie.title} className="w-full h-auto object-cover" />
         </div>
@@ -154,7 +154,7 @@ const HintModal = ({
       onClick={onClose}
     >
       {/* Backdrop */}
-      <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" />
+      <div className="absolute inset-0 bg-black/70" />
 
       {/* Modal Content */}
       <div
@@ -163,7 +163,7 @@ const HintModal = ({
         onClick={(e) => e.stopPropagation()}
       >
         <div
-          className={`rounded-2xl overflow-hidden ${highContrast ? 'bg-hc-surface border-hc-border' : 'bg-gradient-to-b from-[#1a1a2e] to-[#0f0f1e] border-accent-yellow'}`}
+          className={`rounded-lg overflow-hidden ${highContrast ? 'bg-hc-surface border-hc-border' : 'bg-gradient-to-b from-[#1a1a2e] to-[#0f0f1e] border-accent-yellow'}`}
         >
           {/* Header */}
           <div
@@ -201,7 +201,7 @@ const HintModal = ({
           <div className="px-5 pb-6">
             <button
               onClick={onClose}
-              className={`w-full py-3 rounded-xl hover: active: transform hover:-translate-y-0.5 active:translate-y-0 transition-all font-bold text-lg ${highContrast ? 'bg-hc-primary text-white border-hc-border' : 'bg-accent-yellow text-gray-900'}`}
+              className={`w-full py-3 rounded-xl hover:scale-105 transition-all font-bold text-lg ${highContrast ? 'bg-hc-primary text-white border-hc-border' : 'bg-accent-yellow text-gray-900'}`}
             >
               Got it!
             </button>
@@ -219,12 +219,10 @@ const TicketButton = ({ icon, label, onClick, disabled, className = '' }) => (
     onClick={onClick}
     disabled={disabled}
     className={`relative transition-all duration-200 ${
-      disabled
-        ? 'opacity-50 grayscale cursor-not-allowed'
-        : 'hover:-translate-y-0.5 active:translate-y-0 cursor-pointer hover:brightness-110'
+      disabled ? 'opacity-50 grayscale cursor-not-allowed' : 'hover:scale-105 cursor-pointer'
     } ${className}`}
   >
-    <div className="relative filter drop-">
+    <div className="relative">
       <img src={icon} alt={label} className="w-24 h-12 sm:w-32 sm:h-14 object-contain" />
       <span className="absolute inset-0 flex items-center justify-center font-bold text-xs sm:text-sm tracking-wide text-gray-900 transform -rotate-1">
         {label}
@@ -541,7 +539,7 @@ const ReelConnectionsGame = ({ titleFont = '' }) => {
           <div className="w-full max-w-2xl pb-8">
             {/* Header during reveal */}
             <div
-              className={`relative rounded-2xl p-6 mb-6 overflow-hidden ${highContrast ? 'bg-hc-surface border-hc-border' : 'cinema-gradient border-accent-yellow'}`}
+              className={`relative rounded-lg p-6 mb-6 overflow-hidden ${highContrast ? 'bg-hc-surface border-hc-border' : 'cinema-gradient border-accent-yellow'}`}
             >
               <div className="absolute top-0 left-0 right-0 flex justify-around py-2">
                 {[...Array(12)].map((_, i) => (
@@ -588,7 +586,7 @@ const ReelConnectionsGame = ({ titleFont = '' }) => {
                   style={reduceMotion ? {} : { animationDelay: `${idx * 50}ms` }}
                 >
                   {/* Colored background container */}
-                  <div className={`${groupColor} rounded-xl sm:rounded-2xl p-2 sm:p-3 relative`}>
+                  <div className={`${groupColor} rounded-xl sm:rounded-lg p-2 sm:p-3 relative`}>
                     {/* Poster row */}
                     <div className="grid grid-cols-4 gap-1 sm:gap-2">
                       {group.movies.map((movie) => (
@@ -712,7 +710,7 @@ const ReelConnectionsGame = ({ titleFont = '' }) => {
 
             {/* Cinematic Marquee Header */}
             <div
-              className={`relative rounded-2xl p-4 sm:p-6 mb-4 sm:mb-6 overflow-hidden ${highContrast ? 'bg-hc-surface border-hc-border' : 'cinema-gradient border-accent-yellow'}`}
+              className={`relative rounded-lg p-4 sm:p-6 mb-4 sm:mb-6 overflow-hidden ${highContrast ? 'bg-hc-surface border-hc-border' : 'cinema-gradient border-accent-yellow'}`}
             >
               {/* Top Marquee Lights */}
               <div className="absolute top-0 left-0 right-0 flex justify-around py-2">
@@ -778,7 +776,7 @@ const ReelConnectionsGame = ({ titleFont = '' }) => {
                   style={reduceMotion ? {} : { animationDelay: `${idx * 50}ms` }}
                 >
                   {/* Colored background container */}
-                  <div className={`${groupColor} rounded-xl sm:rounded-2xl p-2 sm:p-3 relative`}>
+                  <div className={`${groupColor} rounded-xl sm:rounded-lg p-2 sm:p-3 relative`}>
                     {/* Poster row */}
                     <div className="grid grid-cols-4 gap-1 sm:gap-2">
                       {group.movies.map((movie) => (
@@ -914,7 +912,7 @@ const ReelConnectionsGame = ({ titleFont = '' }) => {
           </div>
 
           <div
-            className={`w-full max-w-md relative rounded-2xl p-8 text-center ${reduceMotion ? '' : 'animate-fade-in-up'} overflow-hidden ${highContrast ? 'bg-hc-surface border-hc-border' : 'cinema-gradient border-accent-yellow'}`}
+            className={`w-full max-w-md relative rounded-lg p-8 text-center ${reduceMotion ? '' : 'animate-fade-in-up'} overflow-hidden ${highContrast ? 'bg-hc-surface border-hc-border' : 'cinema-gradient border-accent-yellow'}`}
           >
             {/* Top Marquee Lights */}
             <div className="absolute top-0 left-0 right-0 flex justify-around py-2">
@@ -937,7 +935,7 @@ const ReelConnectionsGame = ({ titleFont = '' }) => {
                 alt={isWin ? 'Success' : 'Game Over'}
                 width={128}
                 height={128}
-                className="drop-shadow-md object-contain"
+                className="object-contain"
               />
             </div>
 
@@ -958,10 +956,10 @@ const ReelConnectionsGame = ({ titleFont = '' }) => {
 
             <div className="grid grid-cols-3 gap-3 mb-6">
               <div
-                className={`backdrop-blur-sm rounded-xl p-3 flex flex-col justify-center items-center ${highContrast ? 'bg-hc-background border-hc-border' : 'bg-ghost-white/10'}`}
+                className={`rounded-xl p-3 flex flex-col justify-center items-center ${highContrast ? 'bg-hc-background border-hc-border' : 'bg-ghost-white/10'}`}
               >
                 <p
-                  className={`font-bold text-xl mb-1 drop-shadow ${highContrast ? 'text-hc-text' : 'text-white'}`}
+                  className={`font-bold text-xl mb-1 ${highContrast ? 'text-hc-text' : 'text-white'}`}
                 >
                   {timeStr}
                 </p>
@@ -972,10 +970,10 @@ const ReelConnectionsGame = ({ titleFont = '' }) => {
                 </p>
               </div>
               <div
-                className={`backdrop-blur-sm rounded-xl p-3 flex flex-col justify-center items-center ${highContrast ? 'bg-hc-background border-hc-border' : 'bg-ghost-white/10'}`}
+                className={`rounded-xl p-3 flex flex-col justify-center items-center ${highContrast ? 'bg-hc-background border-hc-border' : 'bg-ghost-white/10'}`}
               >
                 <p
-                  className={`font-bold text-xl mb-1 drop-shadow ${highContrast ? 'text-hc-text' : 'text-white'}`}
+                  className={`font-bold text-xl mb-1 ${highContrast ? 'text-hc-text' : 'text-white'}`}
                 >
                   {mistakes}/{REEL_CONFIG.MAX_MISTAKES}
                 </p>
@@ -986,10 +984,10 @@ const ReelConnectionsGame = ({ titleFont = '' }) => {
                 </p>
               </div>
               <div
-                className={`backdrop-blur-sm rounded-xl p-3 flex flex-col justify-center items-center min-w-0 ${highContrast ? 'bg-hc-background border-hc-border' : 'bg-ghost-white/10'}`}
+                className={`rounded-xl p-3 flex flex-col justify-center items-center min-w-0 ${highContrast ? 'bg-hc-background border-hc-border' : 'bg-ghost-white/10'}`}
               >
                 <p
-                  className={`font-bold text-sm sm:text-lg mb-1 drop-shadow whitespace-nowrap ${highContrast ? 'text-hc-text' : 'text-white'}`}
+                  className={`font-bold text-sm sm:text-lg mb-1 whitespace-nowrap ${highContrast ? 'text-hc-text' : 'text-white'}`}
                 >
                   {dateStr}
                 </p>
@@ -1009,7 +1007,7 @@ const ReelConnectionsGame = ({ titleFont = '' }) => {
               {isWin && (
                 <button
                   onClick={handleShare}
-                  className={`w-full py-4 rounded-xl hover:active: transform hover:-translate-y-0.5 active:translate-y-0 transition-all font-bold text-lg capitalize tracking-wide ${!reduceMotion ? 'animate-attention-pulse' : ''} ${highContrast ? 'bg-hc-success text-white border-hc-border' : 'bg-accent-green text-gray-900'}`}
+                  className={`w-full py-4 rounded-xl hover:scale-105 transition-all font-bold text-lg capitalize tracking-wide ${!reduceMotion ? 'animate-attention-pulse' : ''} ${highContrast ? 'bg-hc-success text-white border-hc-border' : 'bg-accent-green text-gray-900'}`}
                 >
                   Share Results
                 </button>
@@ -1019,7 +1017,7 @@ const ReelConnectionsGame = ({ titleFont = '' }) => {
               {!isWin && (
                 <button
                   onClick={handleViewPuzzle}
-                  className={`w-full py-4 rounded-xl hover: active: transform hover:-translate-y-0.5 active:translate-y-0 transition-all font-bold text-lg capitalize tracking-wide hover:brightness-110 ${highContrast ? 'bg-hc-warning text-black border-hc-border' : 'bg-accent-yellow text-gray-900'}`}
+                  className={`w-full py-4 rounded-xl hover:scale-105 transition-all font-bold text-lg capitalize tracking-wide ${highContrast ? 'bg-hc-warning text-black border-hc-border' : 'bg-accent-yellow text-gray-900'}`}
                 >
                   Back To Puzzle
                 </button>
@@ -1028,7 +1026,7 @@ const ReelConnectionsGame = ({ titleFont = '' }) => {
               {/* Leaderboard - Yellow */}
               <button
                 onClick={() => setShowLeaderboard(true)}
-                className={`w-full py-4 rounded-xl hover: active: transform hover:-translate-y-0.5 active:translate-y-0 transition-all font-bold text-lg capitalize tracking-wide hover:brightness-110 ${highContrast ? 'bg-hc-warning text-black border-hc-border' : 'bg-accent-yellow text-gray-900'}`}
+                className={`w-full py-4 rounded-xl hover:scale-105 transition-all font-bold text-lg capitalize tracking-wide ${highContrast ? 'bg-hc-warning text-black border-hc-border' : 'bg-accent-yellow text-gray-900'}`}
               >
                 Leaderboard
               </button>
@@ -1037,7 +1035,7 @@ const ReelConnectionsGame = ({ titleFont = '' }) => {
               {isWin && (
                 <button
                   onClick={handleViewPuzzle}
-                  className={`w-full py-4 rounded-xl hover: active: transform hover:-translate-y-0.5 active:translate-y-0 transition-all font-bold text-lg capitalize tracking-wide hover:brightness-110 ${highContrast ? 'bg-hc-warning text-black border-hc-border' : 'bg-accent-yellow text-gray-900'}`}
+                  className={`w-full py-4 rounded-xl hover:scale-105 transition-all font-bold text-lg capitalize tracking-wide ${highContrast ? 'bg-hc-warning text-black border-hc-border' : 'bg-accent-yellow text-gray-900'}`}
                 >
                   Back To Puzzle
                 </button>
@@ -1046,7 +1044,7 @@ const ReelConnectionsGame = ({ titleFont = '' }) => {
               {/* Play from Archive */}
               <button
                 onClick={() => setShowArchive(true)}
-                className={`w-full py-4 rounded-xl hover: active: transform hover:-translate-y-0.5 active:translate-y-0 transition-all font-bold text-lg capitalize tracking-wide hover:brightness-110 ${
+                className={`w-full py-4 rounded-xl hover:scale-105 transition-all font-bold text-lg capitalize tracking-wide ${
                   highContrast
                     ? 'bg-hc-warning text-black border-hc-border'
                     : 'bg-accent-yellow text-gray-900'
@@ -1193,7 +1191,7 @@ const ReelConnectionsGame = ({ titleFont = '' }) => {
         className={`!fixed inset-0 w-full h-full flex items-center justify-center ${highContrast ? 'bg-hc-background' : 'bg-gradient-to-b from-[#0f0f1e] via-[#1a1a2e] to-[#0f0f1e]'}`}
       >
         <div
-          className={`rounded-2xl p-8 max-w-md text-center mx-4 ${highContrast ? 'bg-hc-surface border-hc-border' : 'bg-gray-800 border-accent-yellow'}`}
+          className={`rounded-lg p-8 max-w-md text-center mx-4 ${highContrast ? 'bg-hc-surface border-hc-border' : 'bg-gray-800 border-accent-yellow'}`}
         >
           <div className="mb-6">
             <Image
@@ -1317,7 +1315,7 @@ const ReelConnectionsGame = ({ titleFont = '' }) => {
           {/* Cinematic Marquee Header - Show only when at top or game not started */}
           {isFullHeader && (
             <div
-              className={`relative rounded-2xl p-4 sm:p-6 mb-4 sm:mb-6 overflow-hidden ${highContrast ? 'bg-hc-surface border-hc-border' : 'cinema-gradient border-accent-yellow'}`}
+              className={`relative rounded-lg p-4 sm:p-6 mb-4 sm:mb-6 overflow-hidden ${highContrast ? 'bg-hc-surface border-hc-border' : 'cinema-gradient border-accent-yellow'}`}
             >
               {/* Top Marquee Lights */}
               <div className="absolute top-0 left-0 right-0 flex justify-around py-2">
@@ -1359,7 +1357,7 @@ const ReelConnectionsGame = ({ titleFont = '' }) => {
 
               {/* Stats Row */}
               <div
-                className={`rounded-xl sm:rounded-2xl px-3 sm:px-4 py-2.5 sm:py-3 mb-4 sm:mb-5 mx-1 sm:mx-2 relative ${highContrast ? 'bg-hc-background' : 'bg-black/20'}`}
+                className={`rounded-xl sm:rounded-lg px-3 sm:px-4 py-2.5 sm:py-3 mb-4 sm:mb-5 mx-1 sm:mx-2 relative ${highContrast ? 'bg-hc-background' : 'bg-black/20'}`}
               >
                 <div className="flex items-center justify-between">
                   {/* Mistakes */}
@@ -1473,7 +1471,7 @@ const ReelConnectionsGame = ({ titleFont = '' }) => {
                 style={reduceMotion ? {} : { animationDelay: `${idx * 50}ms` }}
               >
                 {/* Colored background container */}
-                <div className={`${groupColor} rounded-xl sm:rounded-2xl p-2 sm:p-3 relative`}>
+                <div className={`${groupColor} rounded-xl sm:rounded-lg p-2 sm:p-3 relative`}>
                   {/* Poster row */}
                   <div className="grid grid-cols-4 gap-1 sm:gap-2">
                     {group.movies.map((movie) => (
@@ -1591,7 +1589,7 @@ const ReelConnectionsGame = ({ titleFont = '' }) => {
                                 className={`absolute inset-0 ${highContrast ? 'bg-hc-primary/20' : 'bg-[rgba(255,206,0,0.15)]'}`}
                               />
                               <div
-                                className={`absolute top-0.5 right-0.5 sm:top-1 sm:right-1 w-5 h-5 sm:w-6 sm:h-6 border-[2px] border-white rounded-full flex items-center justify-center ${highContrast ? 'bg-hc-primary' : 'bg-accent-yellow'}`}
+                                className={`absolute top-0.5 right-0.5 sm:top-1 sm:right-1 w-5 h-5 sm:w-6 sm:h-6 border-2 border-white rounded-full flex items-center justify-center ${highContrast ? 'bg-hc-primary' : 'bg-accent-yellow'}`}
                               >
                                 <span
                                   className={`text-[10px] sm:text-xs font-bold ${highContrast ? 'text-white' : 'text-gray-900'}`}
@@ -1639,7 +1637,7 @@ const ReelConnectionsGame = ({ titleFont = '' }) => {
                   style={{ left: '50%', top: '50vh', transform: 'translate(-50%, -50%)' }}
                 >
                   <div
-                    className={`rounded-xl sm:rounded-2xl border-[2px] sm:sm: p-4 sm:p-6 text-center ${reduceMotion ? '' : 'animate-fade-in-up'} mx-4 pointer-events-auto ${highContrast ? 'bg-hc-surface border-hc-border' : 'bg-gradient-to-b from-[#1a1a2e] to-[#0f0f1e] border-accent-yellow'}`}
+                    className={`rounded-lg p-4 sm:p-6 text-center ${reduceMotion ? '' : 'animate-fade-in-up'} mx-4 pointer-events-auto ${highContrast ? 'bg-hc-surface' : 'bg-gradient-to-b from-[#1a1a2e] to-[#0f0f1e]'}`}
                   >
                     <h3
                       className={`text-lg sm:text-xl font-bold mb-1 sm:mb-2 whitespace-nowrap ${highContrast ? 'text-hc-text' : 'text-white'}`}
@@ -1653,7 +1651,7 @@ const ReelConnectionsGame = ({ titleFont = '' }) => {
                     </p>
                     <button
                       onClick={onStartGame}
-                      className={`mx-auto flex items-center gap-2 px-6 sm:px-8 py-2.5 sm:py-3 border-[2px] sm:rounded-lg sm:rounded-xl hover: active: transform hover:-translate-y-0.5 active:translate-y-0 transition-all font-bold text-base sm:text-lg tracking-wide ${highContrast ? 'bg-hc-primary text-white border-hc-border' : 'bg-accent-yellow text-gray-900 gold-glow'}`}
+                      className={`mx-auto flex items-center gap-2 px-6 sm:px-8 py-2.5 sm:py-3 rounded-lg hover:scale-105 transition-all font-bold text-base sm:text-lg tracking-wide ${highContrast ? 'bg-hc-primary text-white' : 'bg-accent-yellow text-gray-900'}`}
                     >
                       Action!
                       <Image

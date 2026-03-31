@@ -36,7 +36,7 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
               setActiveGame('tandem');
               setExpandedSection(null);
             }}
-            className={`flex-1 px-2 py-3 rounded-2xl border-[3px] font-bold text-xs transition-all ${
+            className={`flex-1 px-2 py-3 rounded-lg border-2 font-bold text-xs transition-all ${
               activeGame === 'tandem'
                 ? 'bg-[#38b6ff] text-white'
                 : 'bg-ghost-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600'
@@ -49,7 +49,7 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
               setActiveGame('mini');
               setExpandedSection(null);
             }}
-            className={`flex-1 px-2 py-3 rounded-2xl border-[3px] font-bold text-xs transition-all ${
+            className={`flex-1 px-2 py-3 rounded-lg border-2 font-bold text-xs transition-all ${
               activeGame === 'mini'
                 ? 'bg-[#FFEB3B] text-gray-900'
                 : 'bg-ghost-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600'
@@ -62,7 +62,7 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
               setActiveGame('soup');
               setExpandedSection(null);
             }}
-            className={`flex-1 px-2 py-3 rounded-2xl border-[3px] font-bold text-xs transition-all ${
+            className={`flex-1 px-2 py-3 rounded-lg border-2 font-bold text-xs transition-all ${
               activeGame === 'soup'
                 ? 'bg-green-500 text-white'
                 : 'bg-ghost-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600'
@@ -75,7 +75,7 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
               setActiveGame('reel');
               setExpandedSection(null);
             }}
-            className={`flex-1 px-2 py-3 rounded-2xl border-[3px] font-bold text-xs transition-all ${
+            className={`flex-1 px-2 py-3 rounded-lg border-2 font-bold text-xs transition-all ${
               activeGame === 'reel'
                 ? 'bg-red-500 text-white'
                 : 'bg-ghost-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600'
@@ -90,7 +90,7 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
       {activeGame === 'tandem' && (
         <div className="space-y-4 text-gray-600 dark:text-gray-400">
           <div
-            className={`rounded-2xl p-4 border-[3px] ${
+            className={`rounded-lg p-4 border-2 ${
               highContrast
                 ? 'bg-hc-surface text-hc-text border-hc-border'
                 : 'bg-gray-50 dark:bg-gray-800 border-gray-300 dark:border-gray-600'
@@ -124,7 +124,7 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
 
           {/* Demo GIF */}
           <div className="max-w-xs">
-            <div className="rounded-2xl overflow-hidden border-[3px] border-gray-300 dark:border-gray-600">
+            <div className="rounded-lg overflow-hidden border-2 border-gray-300 dark:border-gray-600">
               <ReducedMotionImage
                 src="/game/tandem/howto.gif"
                 staticSrc="/game/tandem/howto/1.webp"
@@ -135,7 +135,7 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
           </div>
 
           <div
-            className={`rounded-2xl p-4 border-[3px] ${
+            className={`rounded-lg p-4 border-2 ${
               highContrast
                 ? 'bg-hc-surface text-hc-text border-hc-border'
                 : 'bg-sky-50 dark:bg-sky-900/20 border-sky-300 dark:border-sky-700'
@@ -177,7 +177,7 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
           </div>
 
           <div
-            className={`rounded-2xl p-4 border-[3px] ${
+            className={`rounded-lg p-4 border-2 ${
               highContrast
                 ? 'bg-hc-success text-white border-hc-border'
                 : 'bg-accent-green/20 dark:bg-green-900/20 border-accent-green'
@@ -235,7 +235,7 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
           </div>
 
           <div
-            className={`rounded-2xl p-4 border-[3px] ${
+            className={`rounded-lg p-4 border-2 ${
               highContrast
                 ? 'bg-hc-surface text-hc-text border-hc-border'
                 : 'bg-gray-50 dark:bg-gray-800 border-gray-300 dark:border-gray-600'
@@ -273,7 +273,7 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
           </div>
 
           <div
-            className={`rounded-2xl p-4 border-[3px] ${
+            className={`rounded-lg p-4 border-2 ${
               highContrast
                 ? 'bg-hc-error text-white border-hc-border'
                 : 'bg-red-50 dark:bg-red-900/20 border-red-400 dark:border-red-600'
@@ -314,7 +314,7 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
       {activeGame === 'mini' && (
         <div className="space-y-4 text-gray-600 dark:text-gray-400">
           <div
-            className={`rounded-2xl p-4 border-[3px] ${
+            className={`rounded-lg p-4 border-2 ${
               highContrast
                 ? 'bg-hc-surface text-hc-text border-hc-border'
                 : 'bg-gray-50 dark:bg-gray-800 border-gray-300 dark:border-gray-600'
@@ -345,7 +345,7 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
 
           {/* Demo GIF */}
           <div className="max-w-xs">
-            <div className="rounded-2xl overflow-hidden border-[3px] border-gray-300 dark:border-gray-600">
+            <div className="rounded-lg overflow-hidden border-2 border-gray-300 dark:border-gray-600">
               <ReducedMotionImage
                 src="/game/daily-mini/howto.gif"
                 staticSrc="/game/daily-mini/howto/1.webp"
@@ -356,7 +356,7 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
           </div>
 
           <div
-            className={`rounded-2xl p-4 border-[3px] ${
+            className={`rounded-lg p-4 border-2 ${
               highContrast
                 ? 'bg-hc-warning text-black border-hc-border'
                 : 'bg-yellow-50 dark:bg-yellow-900/20 border-yellow-500'
@@ -395,7 +395,7 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
       {activeGame === 'soup' && (
         <div className="space-y-4 text-gray-600 dark:text-gray-400">
           <div
-            className={`rounded-2xl p-4 border-[3px] ${
+            className={`rounded-lg p-4 border-2 ${
               highContrast
                 ? 'bg-hc-surface text-hc-text border-hc-border'
                 : 'bg-gray-50 dark:bg-gray-800 border-gray-300 dark:border-gray-600'
@@ -455,7 +455,7 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
 
           {/* Demo GIF */}
           <div className="max-w-xs">
-            <div className="rounded-2xl overflow-hidden border-[3px] border-gray-300 dark:border-gray-600">
+            <div className="rounded-lg overflow-hidden border-2 border-gray-300 dark:border-gray-600">
               <ReducedMotionImage
                 src="/game/daily-alchemy/howto.gif"
                 staticSrc="/game/daily-alchemy/howto/1.webp"
@@ -510,7 +510,7 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
           </div>
 
           <div
-            className={`rounded-2xl p-4 border-[3px] ${
+            className={`rounded-lg p-4 border-2 ${
               highContrast
                 ? 'bg-hc-surface text-hc-text border-hc-border'
                 : 'bg-purple-50 dark:bg-purple-900/20 border-purple-400 dark:border-purple-600'
@@ -534,7 +534,7 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
           </div>
 
           <div
-            className={`rounded-2xl p-4 border-[3px] ${
+            className={`rounded-lg p-4 border-2 ${
               highContrast
                 ? 'bg-hc-surface text-hc-text border-hc-border'
                 : 'bg-red-50 dark:bg-red-900/20 border-red-300 dark:border-red-600'
@@ -561,7 +561,7 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
               className={`rounded-xl p-3 mt-3 space-y-2 ${
                 highContrast
                   ? 'bg-hc-surface border-2 border-hc-border'
-                  : 'bg-white/60 dark:bg-gray-700/60'
+                  : 'bg-bg-card/60 dark:bg-gray-700/60'
               }`}
             >
               <p
@@ -583,7 +583,7 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
           </div>
 
           <div
-            className={`rounded-2xl p-4 border-[3px] ${
+            className={`rounded-lg p-4 border-2 ${
               highContrast
                 ? 'bg-hc-success text-white border-hc-border'
                 : 'bg-green-50 dark:bg-green-900/20 border-green-500'
@@ -607,7 +607,7 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
           </div>
 
           <div
-            className={`rounded-2xl p-4 border-[3px] ${
+            className={`rounded-lg p-4 border-2 ${
               highContrast
                 ? 'bg-hc-success text-white border-hc-border'
                 : 'bg-amber-50 dark:bg-amber-900/20 border-amber-400 dark:border-amber-600'
@@ -636,7 +636,7 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
           </div>
 
           <div
-            className={`rounded-2xl p-4 border-[3px] ${
+            className={`rounded-lg p-4 border-2 ${
               highContrast
                 ? 'bg-hc-warning text-black border-hc-border'
                 : 'bg-amber-50 dark:bg-amber-900/20 border-amber-400 dark:border-amber-600'
@@ -670,7 +670,7 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
           </div>
 
           <div
-            className={`rounded-2xl p-4 border-[3px] ${
+            className={`rounded-lg p-4 border-2 ${
               highContrast
                 ? 'bg-hc-surface text-hc-text border-hc-border'
                 : 'bg-gray-50 dark:bg-gray-800 border-gray-300 dark:border-gray-600'
@@ -685,7 +685,7 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
           </div>
 
           <div
-            className={`rounded-2xl p-4 border-[3px] ${
+            className={`rounded-lg p-4 border-2 ${
               highContrast
                 ? 'bg-hc-surface text-hc-text border-hc-border'
                 : 'bg-sky-50 dark:bg-sky-900/20 border-sky-400 dark:border-sky-600'
@@ -708,7 +708,7 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
           </div>
 
           <div
-            className={`rounded-2xl p-4 border-[3px] ${
+            className={`rounded-lg p-4 border-2 ${
               highContrast
                 ? 'bg-hc-surface text-hc-text border-hc-border'
                 : 'bg-purple-50 dark:bg-purple-900/20 border-purple-400 dark:border-purple-600'
@@ -746,7 +746,7 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
           </div>
 
           <div
-            className={`rounded-2xl p-4 border-[3px] ${
+            className={`rounded-lg p-4 border-2 ${
               highContrast
                 ? 'bg-hc-surface text-hc-text border-hc-border'
                 : 'bg-indigo-50 dark:bg-indigo-900/20 border-indigo-400 dark:border-indigo-600'
@@ -802,7 +802,7 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
       {activeGame === 'reel' && (
         <div className="space-y-4 text-gray-600 dark:text-gray-400">
           <div
-            className={`rounded-2xl p-4 border-[3px] ${
+            className={`rounded-lg p-4 border-2 ${
               highContrast
                 ? 'bg-hc-surface text-hc-text border-hc-border'
                 : 'bg-gray-50 dark:bg-gray-800 border-gray-300 dark:border-gray-600'
@@ -833,7 +833,7 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
 
           {/* Demo GIF */}
           <div className="max-w-xs">
-            <div className="rounded-2xl overflow-hidden border-[3px] border-gray-300 dark:border-gray-600">
+            <div className="rounded-lg overflow-hidden border-2 border-gray-300 dark:border-gray-600">
               <ReducedMotionImage
                 src="/game/reel-connections/howto.gif"
                 staticSrc="/game/reel-connections/howto/1.webp"
@@ -844,7 +844,7 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
           </div>
 
           <div
-            className={`rounded-2xl p-4 border-[3px] ${
+            className={`rounded-lg p-4 border-2 ${
               highContrast
                 ? 'bg-hc-success text-white border-hc-border'
                 : 'bg-amber-50 dark:bg-amber-900/20 border-amber-400 dark:border-amber-600'
@@ -873,7 +873,7 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
           </div>
 
           <div
-            className={`rounded-2xl p-4 border-[3px] ${
+            className={`rounded-lg p-4 border-2 ${
               highContrast
                 ? 'bg-hc-surface text-hc-text border-hc-border'
                 : 'bg-red-50 dark:bg-red-900/20 border-red-300 dark:border-red-700'
@@ -903,7 +903,7 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
           </div>
 
           <div
-            className={`rounded-2xl p-4 border-[3px] ${
+            className={`rounded-lg p-4 border-2 ${
               highContrast
                 ? 'bg-hc-surface text-hc-text border-hc-border'
                 : 'bg-gray-50 dark:bg-gray-800 border-gray-300 dark:border-gray-600'
@@ -938,7 +938,7 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
           </div>
 
           <div
-            className={`rounded-2xl p-4 border-[3px] ${
+            className={`rounded-lg p-4 border-2 ${
               highContrast
                 ? 'bg-hc-surface text-hc-text border-hc-border'
                 : 'bg-gray-50 dark:bg-gray-800 border-gray-300 dark:border-gray-600'

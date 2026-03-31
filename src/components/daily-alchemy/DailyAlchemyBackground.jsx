@@ -16,7 +16,7 @@ export function DailyAlchemyBackground({ className }) {
   }
 
   return (
-    <div className={cn('absolute inset-0 -z-10 bg-white dark:bg-gray-900', className)}>
+    <div className={cn('absolute inset-0 -z-10 bg-bg-card dark:bg-gray-900', className)}>
       <Starfield />
     </div>
   );

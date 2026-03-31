@@ -417,7 +417,7 @@ export default function PlayingScreen({
           <div className="max-w-md w-full mx-auto flex flex-col">
             <div
               ref={puzzleContainerRef}
-              className={`rounded-lg border-[3px] overflow-hidden flex flex-col relative z-20 ${
+              className={`rounded-lg border-2 overflow-hidden flex flex-col relative z-20 ${
                 highContrast
                   ? 'bg-hc-surface border-hc-border'
                   : 'bg-ghost-white dark:bg-bg-card border-border-main dark:'

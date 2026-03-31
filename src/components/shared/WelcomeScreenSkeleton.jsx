@@ -29,10 +29,8 @@ function GameCardSkeleton({
 }) {
   return (
     <div
-      className={`w-full rounded-lg border-[3px] overflow-hidden p-5 relative ${
-        highContrast
-          ? 'bg-hc-surface border-hc-border'
-          : 'bg-ghost-white dark:bg-bg-card border-border-main dark:'
+      className={`w-full rounded-lg overflow-hidden p-5 relative ${
+        highContrast ? 'bg-hc-surface border border-hc-border' : 'bg-ghost-white dark:bg-bg-card'
       }`}
       style={{ animationDelay: !reduceMotion ? `${animationDelay}ms` : '0ms' }}
     >
@@ -131,7 +129,7 @@ export default function WelcomeScreenSkeleton() {
     <>
       {/* Fixed Header Skeleton */}
       <header
-        className={`fixed top-0 left-0 right-0 z-40 pt-safe border-b-[3px] ${
+        className={`fixed top-0 left-0 right-0 z-40 pt-safe border-b ${
           highContrast
             ? 'bg-hc-surface border-hc-border'
             : 'bg-ghost-white dark:bg-bg-card border-border-main'

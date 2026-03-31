@@ -119,7 +119,7 @@ export function AuthProvider({ children }) {
    * Load user profile with avatar from database
    * This is called automatically when user signs in and can be called manually to refresh
    */
-  const loadUserProfile = async (userId) => {
+  const loadUserProfile = useCallback(async (userId) => {
     if (!userId) {
       setUserProfile(null);
       return;
@@ -141,17 +141,17 @@ export function AuthProvider({ children }) {
     } finally {
       setProfileLoading(false);
     }
-  };
+  }, []);
 
   /**
    * Refresh user profile
    * Exposed to components that need to manually refresh profile (e.g., after avatar selection)
    */
-  const refreshProfile = async () => {
+  const refreshProfile = useCallback(async () => {
     if (user?.id) {
       await loadUserProfile(user.id);
     }
-  };
+  }, [user?.id, loadUserProfile]);
 
   useEffect(() => {
     if (!supabase) return; // SSR guard
@@ -445,60 +445,65 @@ export function AuthProvider({ children }) {
    * @param {Object} metadata - Optional user metadata (name, etc.)
    * @returns {Promise<{user, session, error}>}
    */
-  const signUp = async (email, password, metadata = {}) => {
-    try {
-      // Run cleanup before sign up to ensure we have space for auth token
-      await autoCleanupIfNeeded();
+  const signUp = useCallback(
+    async (email, password, metadata = {}) => {
+      try {
+        // Run cleanup before sign up to ensure we have space for auth token
+        await autoCleanupIfNeeded();
 
-      const { data, error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          data: metadata,
-          // Redirect to auth callback to exchange code for session
-          emailRedirectTo: `${window.location.origin}/auth/callback`,
-        },
-      });
+        const { data, error } = await supabase.auth.signUp({
+          email,
+          password,
+          options: {
+            data: metadata,
+            // Redirect to auth callback to exchange code for session
+            emailRedirectTo: `${window.location.origin}/auth/callback`,
+          },
+        });
 
-      if (error) throw error;
+        if (error) throw error;
 
-      // User profile is automatically created by database trigger
-      // (see migration 006_auto_create_user_profile.sql)
+        // User profile is automatically created by database trigger
+        // (see migration 006_auto_create_user_profile.sql)
 
-      return { user: data.user, session: data.session, error: null };
-    } catch (error) {
-      logger.error('Sign up error', error);
+        return { user: data.user, session: data.session, error: null };
+      } catch (error) {
+        logger.error('Sign up error', error);
 
-      // If quota exceeded, try emergency cleanup and retry once
-      if (error.message?.includes('quota') || error.message?.includes('QuotaExceededError')) {
-        logger.warn('[Auth] Storage quota exceeded during signup, attempting emergency cleanup...');
-        try {
-          const { emergencyCleanup } = await import('@/lib/storageCleanup');
-          await emergencyCleanup();
+        // If quota exceeded, try emergency cleanup and retry once
+        if (error.message?.includes('quota') || error.message?.includes('QuotaExceededError')) {
+          logger.warn(
+            '[Auth] Storage quota exceeded during signup, attempting emergency cleanup...'
+          );
+          try {
+            const { emergencyCleanup } = await import('@/lib/storageCleanup');
+            await emergencyCleanup();
 
-          // Retry sign up after cleanup
-          const { data, error: retryError } = await supabase.auth.signUp({
-            email,
-            password,
-            options: {
-              data: metadata,
-              emailRedirectTo: `${window.location.origin}/auth/callback`,
-            },
-          });
+            // Retry sign up after cleanup
+            const { data, error: retryError } = await supabase.auth.signUp({
+              email,
+              password,
+              options: {
+                data: metadata,
+                emailRedirectTo: `${window.location.origin}/auth/callback`,
+              },
+            });
 
-          if (retryError) throw retryError;
+            if (retryError) throw retryError;
 
-          // User profile is automatically created by database trigger
+            // User profile is automatically created by database trigger
 
-          return { user: data.user, session: data.session, error: null };
-        } catch (cleanupError) {
-          logger.error('[Auth] Emergency cleanup/retry failed', cleanupError);
+            return { user: data.user, session: data.session, error: null };
+          } catch (cleanupError) {
+            logger.error('[Auth] Emergency cleanup/retry failed', cleanupError);
+          }
         }
-      }
 
-      return { user: null, session: null, error };
-    }
-  };
+        return { user: null, session: null, error };
+      }
+    },
+    [supabase?.auth]
+  );
 
   /**
    * Sign in with email and password
@@ -507,46 +512,49 @@ export function AuthProvider({ children }) {
    * @param {string} password - User's password
    * @returns {Promise<{user, session, error}>}
    */
-  const signIn = async (email, password) => {
-    try {
-      // Run cleanup before sign in to ensure we have space for auth token
-      await autoCleanupIfNeeded();
+  const signIn = useCallback(
+    async (email, password) => {
+      try {
+        // Run cleanup before sign in to ensure we have space for auth token
+        await autoCleanupIfNeeded();
 
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
+        const { data, error } = await supabase.auth.signInWithPassword({
+          email,
+          password,
+        });
 
-      if (error) throw error;
+        if (error) throw error;
 
-      return { user: data.user, session: data.session, error: null };
-    } catch (error) {
-      logger.error('Sign in error', error);
+        return { user: data.user, session: data.session, error: null };
+      } catch (error) {
+        logger.error('Sign in error', error);
 
-      // If quota exceeded, try emergency cleanup and retry once
-      if (error.message?.includes('quota') || error.message?.includes('QuotaExceededError')) {
-        logger.warn('[Auth] Storage quota exceeded, attempting emergency cleanup...');
-        try {
-          const { emergencyCleanup } = await import('@/lib/storageCleanup');
-          await emergencyCleanup();
+        // If quota exceeded, try emergency cleanup and retry once
+        if (error.message?.includes('quota') || error.message?.includes('QuotaExceededError')) {
+          logger.warn('[Auth] Storage quota exceeded, attempting emergency cleanup...');
+          try {
+            const { emergencyCleanup } = await import('@/lib/storageCleanup');
+            await emergencyCleanup();
 
-          // Retry sign in after cleanup
-          const { data, error: retryError } = await supabase.auth.signInWithPassword({
-            email,
-            password,
-          });
+            // Retry sign in after cleanup
+            const { data, error: retryError } = await supabase.auth.signInWithPassword({
+              email,
+              password,
+            });
 
-          if (retryError) throw retryError;
+            if (retryError) throw retryError;
 
-          return { user: data.user, session: data.session, error: null };
-        } catch (cleanupError) {
-          logger.error('[Auth] Emergency cleanup/retry failed', cleanupError);
+            return { user: data.user, session: data.session, error: null };
+          } catch (cleanupError) {
+            logger.error('[Auth] Emergency cleanup/retry failed', cleanupError);
+          }
         }
-      }
 
-      return { user: null, session: null, error };
-    }
-  };
+        return { user: null, session: null, error };
+      }
+    },
+    [supabase?.auth]
+  );
 
   /**
    * Sign in with Google OAuth
@@ -557,7 +565,7 @@ export function AuthProvider({ children }) {
    *
    * @returns {Promise<{error}>}
    */
-  const signInWithGoogle = async () => {
+  const signInWithGoogle = useCallback(async () => {
     try {
       const isNative =
         typeof window !== 'undefined' && window.Capacitor && window.Capacitor.isNativePlatform();
@@ -606,7 +614,7 @@ export function AuthProvider({ children }) {
       logger.error('Google sign in error', error);
       return { error };
     }
-  };
+  }, [supabase?.auth]);
 
   /**
    * Sign in with Discord OAuth
@@ -617,7 +625,7 @@ export function AuthProvider({ children }) {
    *
    * @returns {Promise<{error}>}
    */
-  const signInWithDiscord = async () => {
+  const signInWithDiscord = useCallback(async () => {
     try {
       const isNative =
         typeof window !== 'undefined' && window.Capacitor && window.Capacitor.isNativePlatform();
@@ -664,7 +672,7 @@ export function AuthProvider({ children }) {
       logger.error('Discord sign in error', error);
       return { error };
     }
-  };
+  }, [supabase?.auth]);
 
   /**
    * Sign in with Apple
@@ -673,7 +681,7 @@ export function AuthProvider({ children }) {
    *
    * @returns {Promise<{user, session, error}>}
    */
-  const signInWithApple = async () => {
+  const signInWithApple = useCallback(async () => {
     try {
       // Use globalThis to avoid build-time module resolution
       const isCapacitor =
@@ -779,14 +787,14 @@ export function AuthProvider({ children }) {
       logger.error('[Auth] Apple sign-in failed', error);
       return { user: null, session: null, error };
     }
-  };
+  }, [supabase?.auth, user?.is_anonymous, user?.id]);
 
   /**
    * Sign out the current user
    *
    * @returns {Promise<{error}>}
    */
-  const signOut = async () => {
+  const signOut = useCallback(async () => {
     try {
       const { error } = await supabase.auth.signOut();
 
@@ -840,7 +848,7 @@ export function AuthProvider({ children }) {
       setUserProfile(null);
       return { error };
     }
-  };
+  }, [supabase?.auth]);
 
   /**
    * Request a password reset email
@@ -851,28 +859,31 @@ export function AuthProvider({ children }) {
    * @param {string} email - User's email address
    * @returns {Promise<{error}>}
    */
-  const resetPassword = async (email) => {
-    try {
-      const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/reset-password`,
-      });
+  const resetPassword = useCallback(
+    async (email) => {
+      try {
+        const { error } = await supabase.auth.resetPasswordForEmail(email, {
+          redirectTo: `${window.location.origin}/reset-password`,
+        });
 
-      if (error) throw error;
+        if (error) throw error;
 
-      return { error: null };
-    } catch (error) {
-      logger.error('Password reset error', error);
-      return { error };
-    }
-  };
+        return { error: null };
+      } catch (error) {
+        logger.error('Password reset error', error);
+        return { error };
+      }
+    },
+    [supabase?.auth]
+  );
 
   /**
    * Dismiss the first-time setup modal
    * This is called when the user completes or skips the first-time setup
    */
-  const dismissFirstTimeSetup = () => {
+  const dismissFirstTimeSetup = useCallback(() => {
     setShowFirstTimeSetup(false);
-  };
+  }, []);
 
   // Derived: whether the current user is an anonymous (non-upgraded) session
   const isAnonymous = user?.is_anonymous === true;

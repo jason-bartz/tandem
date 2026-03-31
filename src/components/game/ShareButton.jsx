@@ -94,7 +94,7 @@ export default function ShareButton({ shareText, className = '' }) {
           share-button
           w-full py-3 px-4
           rounded-md font-semibold
-          transition-all border-[3px]
+          transition-all border-2
           flex items-center justify-center gap-2
           ${
             highContrast

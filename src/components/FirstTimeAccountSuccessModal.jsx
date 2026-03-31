@@ -212,7 +212,7 @@ export default function FirstTimeAccountSuccessModal({ isOpen, onClose, userId }
 
           {/* Username Creation Section */}
           <div
-            className={`p-4 rounded-2xl border-[3px] mb-4 ${
+            className={`p-4 rounded-lg border-2 mb-4 ${
               highContrast
                 ? 'bg-hc-surface border-hc-border'
                 : 'bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border-blue-200 dark:border-blue-700'
@@ -244,7 +244,7 @@ export default function FirstTimeAccountSuccessModal({ isOpen, onClose, userId }
                     ? 'border-red-500 focus:ring-red-500'
                     : highContrast
                       ? 'border-hc-border bg-hc-background text-hc-text focus:ring-hc-focus'
-                      : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-blue-500'
+                      : 'border-gray-300 dark:border-gray-600 bg-bg-card dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-blue-500'
                 }`}
                 placeholder="your_username"
                 minLength={3}
@@ -263,7 +263,7 @@ export default function FirstTimeAccountSuccessModal({ isOpen, onClose, userId }
                     ? 'opacity-50 cursor-not-allowed'
                     : highContrast
                       ? 'border-hc-border bg-hc-surface hover:bg-hc-focus'
-                      : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600'
+                      : 'border-gray-300 dark:border-gray-600 bg-bg-card dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600'
                 }`}
                 aria-label="Generate random username"
                 title="Generate random username"
@@ -308,7 +308,7 @@ export default function FirstTimeAccountSuccessModal({ isOpen, onClose, userId }
 
           {/* Avatar Selection Prompt */}
           <div
-            className={`p-4 rounded-2xl border-[3px] mb-5 ${
+            className={`p-4 rounded-lg border-2 mb-5 ${
               highContrast
                 ? 'bg-hc-primary/10 border-hc-primary'
                 : 'bg-gradient-to-r from-purple-100 to-pink-100 dark:from-purple-900/30 dark:to-pink-900/30 border-purple-300 dark:border-purple-600'
@@ -345,7 +345,7 @@ export default function FirstTimeAccountSuccessModal({ isOpen, onClose, userId }
           <button
             onClick={handleSaveAndSelectAvatar}
             disabled={isSaving || !username.trim()}
-            className={`w-full py-3.5 px-6 rounded-2xl border-[3px] font-bold text-base transition-all ${
+            className={`w-full py-3.5 px-6 rounded-lg border-2 font-bold text-base transition-all ${
               isSaving || !username.trim() ? 'opacity-50 cursor-not-allowed' : ''
             } ${
               highContrast

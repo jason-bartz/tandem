@@ -110,28 +110,19 @@ export default function LearnToPlayBanner({ gameType = 'tandem', onOpenHowToPlay
             onKeyDown={(e) => e.key === 'Enter' && handleClick()}
             className={`
               flex items-center gap-2.5 px-4 py-2.5
-              rounded-full backdrop-blur-sm
+              rounded-full
               border-2 cursor-pointer
               transition-transform active:scale-[0.98]
               ${
                 highContrast
                   ? 'bg-hc-surface border-hc-border'
                   : isTandem
-                    ? 'bg-white/95 dark:bg-gray-800/95 border-blue-400 dark:border-blue-500'
+                    ? 'bg-bg-card dark:bg-gray-800 border-blue-400 dark:border-blue-500'
                     : isSoup
-                      ? 'bg-white/95 dark:bg-gray-800/95 border-green-500 dark:border-green-400'
-                      : 'bg-[#1a1a2e]/95 border-[#ffce00]'
+                      ? 'bg-bg-card dark:bg-gray-800 border-green-500 dark:border-green-400'
+                      : 'bg-[#1a1a2e] border-[#ffce00]'
               }
             `}
-            style={{
-              boxShadow: highContrast
-                ? '0 4px 12px rgba(0,0,0,0.3)'
-                : isTandem
-                  ? '0 4px 16px rgba(59, 130, 246, 0.25), 0 2px 8px rgba(0, 0, 0, 0.1)'
-                  : isSoup
-                    ? '0 4px 16px rgba(34, 197, 94, 0.25), 0 2px 8px rgba(0, 0, 0, 0.1)'
-                    : '0 4px 16px rgba(255, 206, 0, 0.3), 0 2px 8px rgba(0, 0, 0, 0.3)',
-            }}
           >
             {/* Hint Icon */}
             <Image

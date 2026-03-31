@@ -41,7 +41,7 @@ function IngredientChip({ emoji, name }) {
     <div
       className={cn(
         'flex items-center gap-1.5 px-3 py-1.5',
-        'bg-white dark:bg-gray-800',
+        'bg-bg-card dark:bg-gray-800',
         'dark:border-gray-600',
         'rounded-lg',
         '',
@@ -112,7 +112,7 @@ function FirstDiscoveryDetail({ discovery, onClose }) {
           'rounded-xl',
           '',
           'my-auto',
-          highContrast && 'border-[4px] border-hc-border'
+          highContrast && 'border-2 border-hc-border'
         )}
         onClick={(e) => e.stopPropagation()}
       >
@@ -122,7 +122,7 @@ function FirstDiscoveryDetail({ discovery, onClose }) {
           className={cn(
             'absolute top-2 right-2 p-1.5 rounded-full',
             'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200',
-            'hover:bg-black/10 dark:hover:bg-white/10',
+            'hover:bg-black/10 dark:hover:bg-bg-card/10',
             'transition-colors'
           )}
           aria-label="Close"
@@ -245,14 +245,14 @@ function DiscoveryCard({ discovery, onClick }) {
       onTouchEnd={handleTouchEnd}
       className={cn(
         'flex flex-col items-center justify-center p-3 cursor-pointer select-none',
-        'bg-white dark:bg-gray-800',
+        'bg-bg-card dark:bg-gray-800',
         'dark:border-gray-600',
         'rounded-xl',
         'dark:',
         ' hover:',
         '',
         'transition-all duration-150',
-        highContrast && 'border-[3px] border-hc-border'
+        highContrast && 'border-2 border-hc-border'
       )}
     >
       <span className="text-2xl mb-1">{discovery.resultEmoji}</span>

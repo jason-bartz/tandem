@@ -138,7 +138,7 @@ export default function CharacterBlock({
     if (isWrong) {
       return highContrast ? 'bg-hc-surface' : 'bg-accent-red/20 dark:bg-red-900/20';
     }
-    return highContrast ? 'bg-hc-background' : 'bg-ghost-white dark:bg-gray-800';
+    return highContrast ? 'bg-hc-background' : 'bg-gray-200 dark:bg-gray-700';
   };
 
   // Determine text color
@@ -156,17 +156,9 @@ export default function CharacterBlock({
     return highContrast ? 'text-hc-text' : 'text-dark-text dark:text-gray-200';
   };
 
-  // Determine border styling - only right border for divider (except last cell)
-  // Always use black dividing lines for all states
+  // Individual tile style — no divider borders, each tile is its own rounded block
   const getBorderStyle = () => {
-    const isLastCell = position === totalLength - 1;
-
-    // Use black dividers for all states (correct, wrong, neutral)
-    return isLastCell
-      ? 'border-r-0'
-      : highContrast
-        ? 'border-r-[2px] border-hc-border'
-        : 'border-r-[2px] border-gray-800 dark:border-gray-600';
+    return 'rounded-md';
   };
 
   return (

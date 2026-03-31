@@ -172,7 +172,7 @@ export default function BulkImport({ onClose, onSuccess }) {
 
             {message && (
               <div
-                className={`p-3 sm:p-4 rounded-lg border-[3px] text-sm sm:text-base font-bold ${
+                className={`p-3 sm:p-4 rounded-lg border-2 text-sm sm:text-base font-bold ${
                   message.startsWith('✅')
                     ? 'bg-accent-green/20 border-accent-green text-text-primary'
                     : message.startsWith('❌')

@@ -143,22 +143,17 @@ export default function HintTutorialBanner({ gameType = 'soup', hasUsedHint = fa
             onKeyDown={(e) => e.key === 'Enter' && handleClick()}
             className={`
               flex items-center gap-2.5 px-4 py-2.5
-              rounded-full backdrop-blur-sm
+              rounded-full
               border-2 cursor-pointer
               transition-transform active:scale-[0.98]
               ${
                 highContrast
                   ? 'bg-hc-surface border-hc-border'
                   : isSoup
-                    ? 'bg-white/95 dark:bg-gray-800/95 border-amber-500 dark:border-amber-400'
-                    : 'bg-white/95 dark:bg-gray-800/95 border-amber-500 dark:border-amber-400'
+                    ? 'bg-bg-card dark:bg-gray-800 border-amber-500 dark:border-amber-400'
+                    : 'bg-bg-card dark:bg-gray-800 border-amber-500 dark:border-amber-400'
               }
             `}
-            style={{
-              boxShadow: highContrast
-                ? '0 4px 12px rgba(0,0,0,0.3)'
-                : '0 4px 16px rgba(245, 158, 11, 0.25), 0 2px 8px rgba(0, 0, 0, 0.1)',
-            }}
           >
             {/* Hint Icon */}
             <Image

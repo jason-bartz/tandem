@@ -189,7 +189,7 @@ export default function SidebarMenu({
             exit={{ opacity: 0 }}
             transition={{ duration: reduceMotion ? 0 : 0.2 }}
             onClick={onClose}
-            className="fixed inset-0 bg-black/50 z-40 backdrop-blur-sm"
+            className="fixed inset-0 bg-black/50 z-40"
             aria-hidden="true"
           />
 
@@ -206,8 +206,8 @@ export default function SidebarMenu({
             }}
             className={`fixed top-0 right-0 bottom-0 w-[22rem] max-w-[85vw] z-50 overflow-y-auto font-sans ${
               highContrast
-                ? 'bg-hc-surface border-l-[4px] border-hc-border'
-                : 'bg-bg-surface dark:bg-bg-card border-l-[4px] border-border-main'
+                ? 'bg-hc-surface border-l-2 border-hc-border'
+                : 'bg-bg-surface dark:bg-bg-card border-l-2 border-border-main'
             }`}
             role="dialog"
             aria-label="Navigation menu"
@@ -287,7 +287,7 @@ export default function SidebarMenu({
                 {isGuest ? (
                   /* Guest Message with Sign-In CTA */
                   <div
-                    className={`w-full p-4 rounded-2xl border-[3px] ${
+                    className={`w-full p-4 rounded-lg border-2 ${
                       highContrast
                         ? 'bg-hc-surface border-hc-border'
                         : 'bg-ghost-white dark:bg-bg-surface border-border-main dark:'
@@ -296,7 +296,7 @@ export default function SidebarMenu({
                     <div className="flex items-start gap-3 mb-3">
                       {/* Guest Avatar */}
                       <div
-                        className={`w-12 h-12 rounded-xl border-[3px] flex items-center justify-center flex-shrink-0 overflow-hidden ${
+                        className={`w-12 h-12 rounded-xl border-2 flex items-center justify-center flex-shrink-0 overflow-hidden ${
                           highContrast
                             ? 'bg-hc-primary border-hc-border'
                             : 'bg-gray-300 dark:bg-gray-600 border-border-main'
@@ -323,7 +323,7 @@ export default function SidebarMenu({
                       onClick={() => handleNavigation('/account')}
                       className={`w-full p-3 text-white rounded-xl text-sm font-bold transition-all ${
                         highContrast
-                          ? 'bg-hc-primary border-[3px] border-hc-border hover:'
+                          ? 'bg-hc-primary border-2 border-hc-border hover:'
                           : 'bg-accent-blue dark: hover:'
                       }`}
                     >
@@ -334,7 +334,7 @@ export default function SidebarMenu({
                   /* Logged-In User Profile */
                   <button
                     onClick={() => handleNavigation('/account')}
-                    className={`w-full p-4 rounded-2xl border-[3px] transition-all text-left ${
+                    className={`w-full p-4 rounded-lg border-2 transition-all text-left ${
                       highContrast
                         ? 'bg-hc-surface border-hc-border hover:bg-hc-primary'
                         : 'bg-ghost-white dark:bg-bg-surface border-border-main dark: hover:'
@@ -344,7 +344,7 @@ export default function SidebarMenu({
                     <div className="flex items-center gap-3">
                       {/* Profile Picture */}
                       <div
-                        className={`w-12 h-12 rounded-xl border-[3px] flex items-center justify-center flex-shrink-0 overflow-hidden ${
+                        className={`w-12 h-12 rounded-xl border-2 flex items-center justify-center flex-shrink-0 overflow-hidden ${
                           highContrast
                             ? 'bg-hc-primary border-hc-border'
                             : 'bg-accent-blue dark:bg-accent-pink border-border-main'
@@ -518,7 +518,7 @@ export default function SidebarMenu({
               {/* Support Section - Main Tandem site */}
               {!isStandaloneAlchemy && (
                 <section className="pt-4 border-t border-border-main space-y-4">
-                  <div className="p-4 rounded-2xl border-2 border-border-main bg-surface-primary dark:">
+                  <div className="p-4 rounded-lg border-2 border-border-main bg-surface-primary dark:">
                     <p className="text-xs text-text-secondary leading-relaxed mb-3">
                       Generous supporters help keep every game free to play and ad-free for
                       everyone. Your support helps cover our servers and keep the games running.
@@ -536,7 +536,7 @@ export default function SidebarMenu({
                     href="https://tandemdaily.com"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="block p-4 rounded-2xl border-2 border-border-main bg-surface-primary dark: hover:transition-all"
+                    className="block p-4 rounded-lg border-2 border-border-main bg-surface-primary dark: hover:transition-all"
                   >
                     <p className="text-sm font-bold text-text-primary mb-1">More Daily Games</p>
                     <p className="text-xs text-text-secondary leading-relaxed">
@@ -548,7 +548,7 @@ export default function SidebarMenu({
                   </a>
 
                   {/* Support Section */}
-                  <div className="p-4 rounded-2xl border-2 border-border-main bg-surface-primary dark:">
+                  <div className="p-4 rounded-lg border-2 border-border-main bg-surface-primary dark:">
                     <p className="text-xs text-text-secondary leading-relaxed mb-3">
                       Generous supporters help keep this game ad-free and the daily puzzle free for
                       everyone. Your support helps cover our servers and keep the games running.
@@ -665,7 +665,7 @@ function MenuButton({ icon, label, onClick, highContrast }) {
   return (
     <button
       onClick={onClick}
-      className={`w-full p-3 rounded-2xl border-[3px] flex items-center gap-3 transition-all ${
+      className={`w-full p-3 rounded-lg border-2 flex items-center gap-3 transition-all ${
         highContrast
           ? 'bg-hc-surface border-hc-border hover:bg-hc-primary'
           : 'bg-ghost-white dark:bg-bg-surface border-border-main dark: hover:'

@@ -18,7 +18,7 @@ export default function ThemeToggle({ theme, toggleTheme }) {
         lightTap();
         toggleTheme();
       }}
-      className="w-12 h-12 rounded-full backdrop-blur-sm flex items-center justify-center text-xl hover:scale-110 transition-all bg-ghost-white/80 dark:bg-gray-800/80"
+      className="w-12 h-12 rounded-full  flex items-center justify-center text-xl hover:scale-110 transition-all bg-ghost-white/80 dark:bg-gray-800/80"
       title={getTitle()}
     >
       <span>{getIcon()}</span>

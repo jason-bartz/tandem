@@ -193,7 +193,7 @@ export default function ImportAdminPage() {
         <div className="flex items-center gap-4">
           <Link
             href="/admin"
-            className="p-2 rounded-xl border-2 bg-white hover:bg-gray-100 transition-colors"
+            className="p-2 rounded-xl border-2 bg-bg-card hover:bg-gray-100 transition-colors"
           >
             <ArrowLeft className="w-5 h-5" />
           </Link>
@@ -247,7 +247,7 @@ export default function ImportAdminPage() {
             <button
               onClick={() => setSelectedLetter(null)}
               className={`px-3 py-1.5 rounded-lg border-2 font-bold text-sm transition-colors ${
-                selectedLetter === null ? 'bg-black text-white' : 'bg-white hover:bg-gray-100'
+                selectedLetter === null ? 'bg-black text-white' : 'bg-bg-card hover:bg-gray-100'
               }`}
             >
               All
@@ -262,7 +262,7 @@ export default function ImportAdminPage() {
                     ? 'bg-black text-white'
                     : count === 0
                       ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                      : 'bg-white hover:bg-gray-100'
+                      : 'bg-bg-card hover:bg-gray-100'
                 }`}
                 title={`${count} elements`}
               >
@@ -295,7 +295,7 @@ export default function ImportAdminPage() {
               <button
                 onClick={() => fetchElements(pagination.page - 1)}
                 disabled={pagination.page === 1}
-                className="p-2 rounded-xl border-2 bg-white hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="p-2 rounded-xl border-2 bg-bg-card hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <ChevronLeft className="w-5 h-5" />
               </button>
@@ -305,7 +305,7 @@ export default function ImportAdminPage() {
               <button
                 onClick={() => fetchElements(pagination.page + 1)}
                 disabled={pagination.page === pagination.totalPages}
-                className="p-2 rounded-xl border-2 bg-white hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="p-2 rounded-xl border-2 bg-bg-card hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <ChevronRight className="w-5 h-5" />
               </button>

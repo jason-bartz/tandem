@@ -41,7 +41,7 @@ export default function AdminLogin() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-bg-primary p-4">
       <div className="relative">
-        <div className="bg-bg-surface p-8 rounded-2xl border-2 border-border-main w-full max-w-md">
+        <div className="bg-bg-surface p-8 rounded-lg border-2 border-border-main w-full max-w-md">
           <div className="text-center mb-8">
             <div className="flex justify-center mb-4">
               <img src="/branding/admin-login-logo.png" alt="Tandem Admin" className="h-16" />
@@ -50,7 +50,7 @@ export default function AdminLogin() {
           </div>
 
           {error && (
-            <div className="p-3 mb-6 bg-accent-red/20 border-[3px] border-accent-red rounded-lg text-center">
+            <div className="p-3 mb-6 bg-accent-red/20 border-2 border-accent-red rounded-lg text-center">
               <p className="text-accent-red font-bold">{error}</p>
             </div>
           )}

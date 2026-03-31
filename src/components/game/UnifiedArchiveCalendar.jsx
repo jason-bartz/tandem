@@ -667,7 +667,7 @@ export default function UnifiedArchiveCalendar({
                 className={`
                 flex-1 py-2.5 px-2
                 rounded-xl
-                border-[3px]
+                border-2
                 font-semibold
                 transition-all
                 flex items-center justify-center
@@ -696,7 +696,7 @@ export default function UnifiedArchiveCalendar({
                 className={`
                 flex-1 py-2.5 px-2
                 rounded-xl
-                border-[3px]
+                border-2
                 font-semibold
                 transition-all
                 flex items-center justify-center
@@ -725,7 +725,7 @@ export default function UnifiedArchiveCalendar({
                 className={`
                 flex-1 py-2.5 px-2
                 rounded-xl
-                border-[3px]
+                border-2
                 font-semibold
                 transition-all
                 flex items-center justify-center
@@ -754,7 +754,7 @@ export default function UnifiedArchiveCalendar({
                 className={`
                 flex-1 py-2.5 px-2
                 rounded-xl
-                border-[3px]
+                border-2
                 font-semibold
                 transition-all
                 flex items-center justify-center
@@ -790,7 +790,7 @@ export default function UnifiedArchiveCalendar({
             className={`
               w-10 h-10
               rounded-xl
-              border-[2px]
+              border-2
               flex items-center justify-center
               text-xl
               transition-all
@@ -816,7 +816,7 @@ export default function UnifiedArchiveCalendar({
             className={`
               px-4 py-2
               rounded-xl
-              border-[2px]
+              border-2
               font-semibold
               transition-all
               ${
@@ -840,7 +840,7 @@ export default function UnifiedArchiveCalendar({
             className={`
               w-10 h-10
               rounded-xl
-              border-[2px]
+              border-2
               flex items-center justify-center
               text-xl
               transition-all

@@ -397,11 +397,11 @@ export function ElementBank({
                     'absolute right-0 top-full mt-1 z-50',
                     'min-w-[140px]',
                     'py-1',
-                    'bg-white dark:bg-gray-800',
+                    'bg-bg-card dark:bg-gray-800',
                     'dark:border-gray-600',
                     'rounded-xl',
                     'dark:',
-                    highContrast && 'border-[3px] border-hc-border'
+                    highContrast && 'border-2 border-hc-border'
                   )}
                   initial={{ opacity: 0, scale: 0.95, y: -4 }}
                   animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -451,13 +451,13 @@ export function ElementBank({
             onDrop={(e) => e.preventDefault()}
             className={cn(
               'w-full px-4 py-2 pl-10',
-              'bg-white dark:bg-gray-800',
+              'bg-bg-card dark:bg-gray-800',
               'dark:border-gray-600',
               'rounded-xl text-sm',
               'dark:',
               'focus:outline-none focus:ring-2 focus:ring-soup-primary',
               'placeholder:text-gray-400',
-              highContrast && 'border-[3px] border-hc-border'
+              highContrast && 'border-2 border-hc-border'
             )}
             aria-label="Search elements"
           />
@@ -497,7 +497,7 @@ export function ElementBank({
               !touchOverFavorites &&
                 !isDraggingToFavorites &&
                 !showFavoritesPanel &&
-                'bg-white dark:bg-gray-800',
+                'bg-bg-card dark:bg-gray-800',
               showFavoritesPanel &&
                 !touchOverFavorites &&
                 'bg-soup-primary/20 ring-2 ring-soup-primary',
@@ -507,7 +507,7 @@ export function ElementBank({
                 'bg-yellow-100 dark:bg-yellow-900/30 ring-2 ring-yellow-500 scale-110',
               // Mobile touch drag feedback - yellow highlight with ring
               touchOverFavorites && 'bg-yellow-100 dark:bg-yellow-900/30 ring-2 ring-yellow-500',
-              highContrast && 'border-[3px] border-hc-border'
+              highContrast && 'border-2 border-hc-border'
             )}
             // Animate width expansion when touch dragging over
             initial={false}

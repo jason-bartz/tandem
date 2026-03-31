@@ -98,13 +98,13 @@ export default function LeaderboardModal({
     >
       {/* Game Toggle Buttons - hidden on standalone (only one game) */}
       {!isStandaloneAlchemy && (
-        <div className="px-4 py-3 border-b-[3px] border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50">
+        <div className="px-4 py-3 border-b-2 border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50">
           <div className="flex gap-2">
             {gameButtons.map((game) => (
               <button
                 key={game.id}
                 onClick={() => handleGameChange(game.id)}
-                className={`flex-1 py-2 px-2 rounded-xl border-[2px] font-bold text-xs transition-all ${
+                className={`flex-1 py-2 px-2 rounded-xl border-2 font-bold text-xs transition-all ${
                   activeGame === game.id
                     ? highContrast
                       ? `${game.hcBgColor} text-hc-text`
@@ -122,14 +122,14 @@ export default function LeaderboardModal({
       )}
 
       {/* Tab Navigation */}
-      <div className="flex border-b-[3px] border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50">
+      <div className="flex border-b-2 border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50">
         <button
           onClick={() => setActiveTab('daily')}
           className={`flex-1 px-6 py-4 font-semibold transition-all ${
             activeTab === 'daily'
               ? highContrast
-                ? 'bg-hc-primary text-white border-b-[3px] border-hc-border'
-                : 'bg-ghost-white dark:bg-gray-800 text-sky-600 dark:text-sky-400 border-b-[3px] border-sky-500'
+                ? 'bg-hc-primary text-white border-b-2 border-hc-border'
+                : 'bg-ghost-white dark:bg-gray-800 text-sky-600 dark:text-sky-400 border-b-2 border-sky-500'
               : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700/50'
           }`}
         >
@@ -140,8 +140,8 @@ export default function LeaderboardModal({
           className={`flex-1 px-6 py-4 font-semibold transition-all ${
             activeTab === 'streak'
               ? highContrast
-                ? 'bg-hc-primary text-white border-b-[3px] border-hc-border'
-                : 'bg-ghost-white dark:bg-gray-800 text-sky-600 dark:text-sky-400 border-b-[3px] border-sky-500'
+                ? 'bg-hc-primary text-white border-b-2 border-hc-border'
+                : 'bg-ghost-white dark:bg-gray-800 text-sky-600 dark:text-sky-400 border-b-2 border-sky-500'
               : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700/50'
           }`}
         >

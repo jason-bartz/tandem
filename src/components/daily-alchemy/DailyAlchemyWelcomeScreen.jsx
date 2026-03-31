@@ -65,9 +65,9 @@ export function DailyAlchemyWelcomeScreen({
           'w-full max-w-sm p-5 mb-6',
           'bg-soup-light/50 dark:bg-soup-primary/10',
           'dark:border-gray-600',
-          'rounded-2xl',
+          'rounded-lg',
           '',
-          highContrast && 'border-[4px] border-hc-border'
+          highContrast && 'border-2 border-hc-border'
         )}
         initial={!reduceMotion ? { opacity: 0, y: 20 } : false}
         animate={{ opacity: 1, y: 0 }}
@@ -119,8 +119,8 @@ export function DailyAlchemyWelcomeScreen({
           className={cn(
             'p-4',
             'bg-gray-50 dark:bg-gray-800',
-            'border-[3px] border-gray-300 dark:border-gray-600',
-            'rounded-xl',
+            'border-2 border-gray-300 dark:border-gray-600',
+            'rounded-lg',
             ' dark:',
             'text-sm text-gray-600 dark:text-gray-300',
             'hover:bg-gray-100 dark:hover:bg-gray-700',
@@ -145,7 +145,7 @@ export function DailyAlchemyWelcomeScreen({
           ' hover:',
           'active:translate-y-0',
           'transition-all duration-150',
-          highContrast && 'border-[4px]'
+          highContrast && 'border-2'
         )}
         initial={!reduceMotion ? { opacity: 0, scale: 0.95 } : false}
         animate={{ opacity: 1, scale: 1 }}
@@ -181,7 +181,7 @@ export function DailyAlchemyWelcomeScreen({
           ' hover:',
           'active:translate-y-0',
           'transition-all duration-150',
-          highContrast && 'border-[4px] border-hc-border'
+          highContrast && 'border-2 border-hc-border'
         )}
         initial={!reduceMotion ? { opacity: 0, scale: 0.95 } : false}
         animate={{ opacity: 1, scale: 1 }}
@@ -226,7 +226,7 @@ export function DailyAlchemyWelcomeScreen({
           ' hover:',
           'active:translate-y-0',
           'transition-all duration-150',
-          highContrast && 'border-[4px]'
+          highContrast && 'border-2'
         )}
         initial={!reduceMotion ? { opacity: 0, scale: 0.95 } : false}
         animate={{ opacity: 1, scale: 1 }}
@@ -256,8 +256,8 @@ export function DailyAlchemyWelcomeScreen({
           'w-full max-w-sm mt-6 p-4',
           'flex items-center gap-3',
           'bg-gray-50 dark:bg-gray-800',
-          'border-[3px] border-gray-300 dark:border-gray-600',
-          'rounded-xl',
+          'border-2 border-gray-300 dark:border-gray-600',
+          'rounded-lg',
           ' dark:',
           'hover:bg-gray-100 dark:hover:bg-gray-700',
           'hover:border-gray-400 dark:hover:border-gray-500',

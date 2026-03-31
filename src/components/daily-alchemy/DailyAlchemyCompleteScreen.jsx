@@ -31,12 +31,12 @@ function StatCard({ iconSrc, label, value, highlight = false }) {
       className={cn(
         'flex flex-col items-center justify-center p-3',
         'aspect-square',
-        'bg-white dark:bg-gray-800',
+        'bg-bg-card dark:bg-gray-800',
         '',
         'rounded-xl',
         '',
         highlight && 'bg-soup-light/50 dark:bg-soup-primary/20',
-        highContrast && 'border-[3px]'
+        highContrast && 'border-2'
       )}
     >
       <Image src={iconSrc} alt="" width={24} height={24} className="w-6 h-6 mb-1" />
@@ -258,12 +258,12 @@ export function DailyAlchemyCompleteScreen({
       <motion.div
         className={cn(
           'flex flex-col items-center justify-center p-4 mb-6',
-          'bg-white dark:bg-gray-800',
+          'bg-bg-card dark:bg-gray-800',
           '',
           'rounded-xl',
           '',
           'w-full max-w-sm',
-          highContrast && 'border-[3px]'
+          highContrast && 'border-2'
         )}
         initial={!reduceMotion ? { opacity: 0, y: 20 } : false}
         animate={{ opacity: 1, y: 0 }}
@@ -306,7 +306,7 @@ export function DailyAlchemyCompleteScreen({
             '',
             'rounded-xl',
             '',
-            highContrast && 'border-[3px]'
+            highContrast && 'border-2'
           )}
           initial={!reduceMotion ? { opacity: 0 } : false}
           animate={{ opacity: 1 }}
@@ -355,7 +355,7 @@ export function DailyAlchemyCompleteScreen({
             '',
             'transition-all duration-150',
             !copied && !reduceMotion && 'animate-attention-pulse',
-            highContrast && 'border-[4px]'
+            highContrast && 'border-2'
           )}
         >
           {copied ? (
@@ -383,9 +383,9 @@ export function DailyAlchemyCompleteScreen({
                 'p-5',
                 'bg-indigo-50 dark:bg-indigo-950/30',
                 'dark:border-gray-600',
-                'rounded-2xl',
+                'rounded-lg',
                 '',
-                highContrast && 'border-[4px]'
+                highContrast && 'border-2'
               )}
             >
               <div className="flex items-center justify-center gap-2 mb-3">
@@ -443,9 +443,9 @@ export function DailyAlchemyCompleteScreen({
                 'p-5 text-center',
                 'bg-indigo-50 dark:bg-indigo-950/30',
                 'dark:border-gray-600',
-                'rounded-2xl',
+                'rounded-lg',
                 '',
-                highContrast && 'border-[4px]'
+                highContrast && 'border-2'
               )}
             >
               <div className="flex items-center justify-center gap-2 mb-2">
@@ -494,7 +494,7 @@ export function DailyAlchemyCompleteScreen({
                 ' hover:',
                 '',
                 'transition-all duration-150',
-                highContrast && 'border-[4px]'
+                highContrast && 'border-2'
               )}
             >
               Leaderboard
@@ -521,7 +521,7 @@ export function DailyAlchemyCompleteScreen({
                   ' hover:',
                   '',
                   'transition-all duration-150',
-                  highContrast && 'border-[4px]'
+                  highContrast && 'border-2'
                 )}
               >
                 <span>Play Archive</span>
@@ -555,7 +555,7 @@ export function DailyAlchemyCompleteScreen({
               ' hover:',
               '',
               'transition-all duration-150',
-              highContrast && 'border-[4px] border-hc-border'
+              highContrast && 'border-2 border-hc-border'
             )}
             initial={!reduceMotion ? { opacity: 0, y: 10 } : false}
             animate={{ opacity: 1, y: 0 }}
@@ -573,7 +573,7 @@ export function DailyAlchemyCompleteScreen({
               'w-full max-w-sm mt-6 p-4',
               'flex items-center gap-3',
               'bg-gray-50 dark:bg-gray-800',
-              'border-[3px] border-gray-300 dark:border-gray-600',
+              'border-2 border-gray-300 dark:border-gray-600',
               'rounded-xl',
               ' dark:',
               'hover:bg-gray-100 dark:hover:bg-gray-700',
