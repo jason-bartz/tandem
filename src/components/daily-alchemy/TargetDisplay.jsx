@@ -71,6 +71,7 @@ export function StatsAndTargetRow({
   isTargetFound = false,
   onUseHint,
   hintDisabled = false,
+  hintCooldownRemaining = 0,
   isCountdown = false,
   centered = false, // When true, centers the target with stats on right
 }) {
@@ -111,7 +112,11 @@ export function StatsAndTargetRow({
                 : 'hover:scale-105 hover:opacity-80 active:scale-95 cursor-pointer'
             )}
             aria-label="Use hint"
-            title="Get a hint"
+            title={
+              hintCooldownRemaining > 0
+                ? `Hint available in ${hintCooldownRemaining}s`
+                : 'Get a hint'
+            }
           >
             <Image
               src="/ui/shared/hint.png"
@@ -120,7 +125,9 @@ export function StatsAndTargetRow({
               height={22}
               className="w-[22px] h-[22px]"
             />
-            <span className="font-bold text-text-primary text-sm">Hint</span>
+            <span className="font-bold text-text-primary text-sm">
+              {hintCooldownRemaining > 0 ? `${hintCooldownRemaining}s` : 'Hint'}
+            </span>
           </button>
         )}
 

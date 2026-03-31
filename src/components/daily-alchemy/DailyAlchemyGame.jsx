@@ -181,6 +181,7 @@ export function DailyAlchemyGame({ initialDate = null }) {
     currentHintMessage,
     clearHintMessage,
     hintCooldown,
+    hintCooldownRemaining,
 
     // Solution path (for reveal on game over)
     solutionPath,
@@ -698,6 +699,7 @@ export function DailyAlchemyGame({ initialDate = null }) {
                       combinationError={combinationError}
                       onUseHint={useHint}
                       hintCooldown={hintCooldown}
+                      hintCooldownRemaining={hintCooldownRemaining}
                       currentHintMessage={currentHintMessage}
                       onClearHintMessage={clearHintMessage}
                       // Creative Mode saves

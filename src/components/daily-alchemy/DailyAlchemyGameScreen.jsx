@@ -576,6 +576,7 @@ export function DailyAlchemyGameScreen({
   // Hints
   onUseHint,
   hintCooldown = false,
+  hintCooldownRemaining = 0,
   currentHintMessage = null,
   onClearHintMessage,
 
@@ -653,6 +654,7 @@ export function DailyAlchemyGameScreen({
           isTargetFound={isTargetFound}
           onUseHint={onUseHint}
           hintDisabled={isCombining || isAnimating || isComplete || hintCooldown}
+          hintCooldownRemaining={hintCooldown ? hintCooldownRemaining : 0}
           isCountdown={false}
           centered={true}
         />

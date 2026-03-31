@@ -198,12 +198,17 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
   const [currentHintMessage, setCurrentHintMessage] = useState(null);
   const [currentHintElement, setCurrentHintElement] = useState(null); // Track which element the hint is suggesting
   const [hintCooldown, setHintCooldown] = useState(false);
+  const [hintCooldownRemaining, setHintCooldownRemaining] = useState(0);
   const hintCooldownTimer = useRef(null);
+  const hintCountdownInterval = useRef(null);
   const [solutionPath, setSolutionPath] = useState([]);
 
   // Clean up hint cooldown timer on unmount
   useEffect(() => {
-    return () => clearTimeout(hintCooldownTimer.current);
+    return () => {
+      clearTimeout(hintCooldownTimer.current);
+      clearInterval(hintCountdownInterval.current);
+    };
   }, []);
 
   // Creative Mode save state
@@ -575,7 +580,9 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
           setCurrentHintMessage(null);
           setCurrentHintElement(null);
           setHintCooldown(false);
+          setHintCooldownRemaining(0);
           clearTimeout(hintCooldownTimer.current);
+          clearInterval(hintCountdownInterval.current);
           setGameState(SOUP_GAME_STATES.WELCOME);
         }
 
@@ -751,7 +758,9 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
     setCurrentHintMessage(null);
     setCurrentHintElement(null);
     setHintCooldown(false);
+    setHintCooldownRemaining(0);
     clearTimeout(hintCooldownTimer.current);
+    clearInterval(hintCountdownInterval.current);
 
     // Start timer for daily puzzle
     setStartTime(Date.now());
@@ -1025,7 +1034,9 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
     setCurrentHintMessage(null);
     setCurrentHintElement(null);
     setHintCooldown(false);
+    setHintCooldownRemaining(0);
     clearTimeout(hintCooldownTimer.current);
+    clearInterval(hintCountdownInterval.current);
     setCompletionStats(null);
 
     // Start timer (same as startGame)
@@ -2251,7 +2262,9 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
     setCurrentHintMessage(null);
     setCurrentHintElement(null);
     setHintCooldown(false);
+    setHintCooldownRemaining(0);
     clearTimeout(hintCooldownTimer.current);
+    clearInterval(hintCountdownInterval.current);
     setStartTime(Date.now());
     setElapsedTime(0);
     setRemainingTime(0); // Reset countdown
@@ -2369,10 +2382,23 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
     // Increment hints used counter
     setHintsUsed((prev) => prev + 1);
 
-    // Start cooldown
+    // Start cooldown with countdown
     setHintCooldown(true);
+    setHintCooldownRemaining(Math.ceil(HINT_COOLDOWN_MS / 1000));
+    clearInterval(hintCountdownInterval.current);
+    hintCountdownInterval.current = setInterval(() => {
+      setHintCooldownRemaining((prev) => {
+        if (prev <= 1) {
+          clearInterval(hintCountdownInterval.current);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
     hintCooldownTimer.current = setTimeout(() => {
       setHintCooldown(false);
+      setHintCooldownRemaining(0);
+      clearInterval(hintCountdownInterval.current);
     }, HINT_COOLDOWN_MS);
   }, [solutionPath, freePlayMode, isComplete, isCombining, isAnimating, hintCooldown]);
 
@@ -2551,6 +2577,7 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
     currentHintMessage,
     clearHintMessage,
     hintCooldown,
+    hintCooldownRemaining,
 
     // Solution path (for reveal on game over)
     solutionPath,
