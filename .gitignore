@@ -35,6 +35,9 @@ check-bot-streaks.js
 manual-generate-bots.js
 delete-todays-bots.js
 
+# claude
+.claude/
+
 # vercel
 .vercel
 
