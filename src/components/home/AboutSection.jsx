@@ -27,9 +27,9 @@ export default function AboutSection() {
           highContrast ? 'text-hc-text opacity-80' : 'text-text-secondary'
         }`}
       >
-        In a world of infinite scrolling and attention-stealing algorithms, we built something
-        different. Four daily puzzles you solve, share with friends, and move on with your day.
-        Fresh challenges that respect your time. 100% free to play, ad-free, no subscriptions.
+        In a world of infinite scrolling and attention-stealing algorithms, we wanted to build four
+        daily puzzles that respect your time. Generous supporters help keep every game ad-free and
+        free from subscriptions. Your support helps cover our servers and keep the games running.
       </p>
 
       <div className="mt-4">

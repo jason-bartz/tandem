@@ -92,7 +92,7 @@ function PuzzleRow({ puzzle, typed, rowState, isFocused }) {
       animate={rowState === 'wrong' ? { x: [-2, 2, -2, 2, 0] } : { x: 0 }}
       transition={{ duration: 0.3 }}
     >
-      <div className="w-10 text-center text-base">{puzzle.emojis}</div>
+      <div className="w-10 text-center text-base whitespace-nowrap">{puzzle.emojis}</div>
       <div className="flex gap-0.5">
         {letters.map((l, i) => (
           <LetterBlock key={i} letter={l.letter} state={l.state} />
@@ -163,7 +163,7 @@ export default function TandemDemo({ timeline, onCaptionChange } = {}) {
       <div className="space-y-2">
         {MOCK_PUZZLES.map((puzzle, i) => (
           <div key={i} className="flex items-center gap-1.5">
-            <div className="w-10 text-center text-base">{puzzle.emojis}</div>
+            <div className="w-10 text-center text-base whitespace-nowrap">{puzzle.emojis}</div>
             <div className="flex gap-0.5">
               {Array.from({ length: puzzle.length }).map((_, j) => (
                 <div key={j} className="w-5 h-6 rounded-sm bg-gray-200 dark:bg-gray-700" />

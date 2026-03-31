@@ -18,6 +18,7 @@ import HowToPlayModal from '@/components/game/HowToPlayModal';
 import Settings from '@/components/Settings';
 import FeedbackPane from '@/components/FeedbackPane';
 import { validateUsername } from '@/utils/profanityFilter';
+import { formatDate } from '@/utils/helpers/utils';
 import logger from '@/lib/logger';
 import { isStandaloneAlchemy, homePath } from '@/lib/standalone';
 
@@ -247,7 +248,7 @@ export default function AccountPage() {
       // Prepare account info for modal
       setAccountInfo({
         email: user?.email,
-        hasActiveSubscription: subscription?.isActive || false,
+        hasActiveSubscription: false,
       });
 
       setShowDeleteModal(true);
