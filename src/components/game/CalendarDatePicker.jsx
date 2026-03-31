@@ -135,11 +135,7 @@ export default function CalendarDatePicker({
           border-t-[3px] border-l-[3px] border-r-[3px]
           p-4
           animate-slide-up-enter
-          ${
-            highContrast
-              ? 'bg-hc-background border-hc-border'
-              : 'bg-ghost-white dark:bg-bg-card border-black dark:border-gray-600'
-          }
+          ${highContrast ? 'bg-hc-background border-hc-border' : 'bg-ghost-white dark:bg-bg-card'}
         `}
         style={{
           maxHeight: '60vh',
@@ -230,7 +226,7 @@ export default function CalendarDatePicker({
                       transition-all
                       ${
                         !selectable
-                          ? 'opacity-30 cursor-not-allowed'
+                          ? 'opacity-50 cursor-not-allowed text-text-secondary'
                           : selectedMonth === index
                             ? 'text-gray-900 dark:text-white scale-110'
                             : 'text-gray-400 dark:text-gray-500 scale-90'

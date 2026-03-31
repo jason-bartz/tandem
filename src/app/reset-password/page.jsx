@@ -158,7 +158,7 @@ export default function ResetPasswordPage() {
   if (!sessionReady && !error) {
     return (
       <div className="min-h-screen flex items-center justify-center p-4 bg-gray-50 dark:bg-gray-900">
-        <div className="bg-ghost-white dark:bg-gray-800 rounded-[32px] border-[3px] border-black dark:border-gray-600 shadow-[6px_6px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_rgba(0,0,0,0.5)] max-w-md w-full p-8">
+        <div className="bg-ghost-white dark:bg-gray-800 rounded-lg dark: max-w-md w-full p-8">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-4 border-accent-pink border-t-transparent mx-auto mb-4"></div>
             <p className="text-gray-600 dark:text-gray-400">Verifying reset link...</p>
@@ -171,7 +171,7 @@ export default function ResetPasswordPage() {
   if (success) {
     return (
       <div className="min-h-screen flex items-center justify-center p-4 bg-gray-50 dark:bg-gray-900">
-        <div className="bg-ghost-white dark:bg-gray-800 rounded-[32px] border-[3px] border-black dark:border-gray-600 shadow-[6px_6px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_rgba(0,0,0,0.5)] max-w-md w-full p-8">
+        <div className="bg-ghost-white dark:bg-gray-800 rounded-lg dark: max-w-md w-full p-8">
           <div className="text-center">
             <div className="mb-4 text-6xl">✅</div>
             <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
@@ -189,7 +189,7 @@ export default function ResetPasswordPage() {
   if (error && !sessionReady) {
     return (
       <div className="min-h-screen flex items-center justify-center p-4 bg-gray-50 dark:bg-gray-900">
-        <div className="bg-ghost-white dark:bg-gray-800 rounded-[32px] border-[3px] border-black dark:border-gray-600 shadow-[6px_6px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_rgba(0,0,0,0.5)] max-w-md w-full p-8">
+        <div className="bg-ghost-white dark:bg-gray-800 rounded-lg dark: max-w-md w-full p-8">
           <div className="text-center">
             <div className="mb-4 text-6xl">⚠️</div>
             <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
@@ -200,7 +200,7 @@ export default function ResetPasswordPage() {
             </div>
             <button
               onClick={() => router.push(homePath)}
-              className="w-full p-4 text-white rounded-[20px] text-base font-bold cursor-pointer transition-all tracking-wider bg-accent-pink border-[3px] border-black dark:border-gray-600 shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(0,0,0,0.5)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0px_rgba(0,0,0,0.5)] active:translate-x-[4px] active:translate-y-[4px] active:shadow-none"
+              className="w-full p-4 text-white rounded-md text-base font-bold cursor-pointer transition-all tracking-wider bg-accent-pink dark: hover:dark:hover:"
             >
               Back to Home
             </button>
@@ -212,7 +212,7 @@ export default function ResetPasswordPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-gray-50 dark:bg-gray-900">
-      <div className="bg-ghost-white dark:bg-gray-800 rounded-[32px] border-[3px] border-black dark:border-gray-600 shadow-[6px_6px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_rgba(0,0,0,0.5)] max-w-md w-full p-8">
+      <div className="bg-ghost-white dark:bg-gray-800 rounded-lg dark: max-w-md w-full p-8">
         <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Set New Password</h2>
 
         {error && (
@@ -268,7 +268,7 @@ export default function ResetPasswordPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full p-4 text-white rounded-[20px] text-base font-bold cursor-pointer transition-all tracking-wider disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none bg-accent-pink border-[3px] border-black dark:border-gray-600 shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(0,0,0,0.5)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0px_rgba(0,0,0,0.5)] active:translate-x-[4px] active:translate-y-[4px] active:shadow-none"
+            className="w-full p-4 text-white rounded-md text-base font-bold cursor-pointer transition-all tracking-wider disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none bg-accent-pink dark: hover:dark:hover:"
           >
             {loading ? 'Updating Password...' : 'Update Password'}
           </button>

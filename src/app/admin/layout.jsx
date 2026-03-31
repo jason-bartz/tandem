@@ -129,7 +129,7 @@ export default function AdminLayout({ children }) {
   // Render authenticated admin layout
   return (
     <div className="admin-theme min-h-screen bg-ghost-white">
-      <nav className="bg-bg-surface border-b-[1.5px] border-black dark:border-white shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(255,255,255,0.3)]">
+      <nav className="bg-bg-surface border-b-[1.5px] dark:">
         <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex-1"></div>
@@ -141,7 +141,7 @@ export default function AdminLayout({ children }) {
                 href="/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="hidden sm:inline-block px-3 py-1 text-sm border-[2px] border-black dark:border-white bg-accent-blue text-white rounded-lg font-bold hover:translate-y-[-1px] active:translate-y-0 transition-transform shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_rgba(255,255,255,0.3)]"
+                className="hidden sm:inline-block px-3 py-1 text-sm bg-accent-blue text-white rounded-lg font-bold active:translate-y-0 transition-transform dark:"
               >
                 View Game
               </a>
@@ -150,7 +150,7 @@ export default function AdminLayout({ children }) {
                   await storageService.remove('adminToken');
                   router.push('/admin/login');
                 }}
-                className="px-3 py-1 text-sm border-[2px] border-black dark:border-white bg-accent-red text-white rounded-lg font-bold hover:translate-y-[-1px] active:translate-y-0 transition-transform shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_rgba(255,255,255,0.3)]"
+                className="px-3 py-1 text-sm bg-accent-red text-white rounded-lg font-bold active:translate-y-0 transition-transform dark:"
               >
                 Logout
               </button>

@@ -107,8 +107,8 @@ export default function LeaderboardModal({
                 className={`flex-1 py-2 px-2 rounded-xl border-[2px] font-bold text-xs transition-all ${
                   activeGame === game.id
                     ? highContrast
-                      ? `${game.hcBgColor} text-hc-text border-black shadow-[3px_3px_0px_rgba(0,0,0,1)]`
-                      : `${game.bgColor} ${game.textColor} border-black shadow-[3px_3px_0px_rgba(0,0,0,1)]`
+                      ? `${game.hcBgColor} text-hc-text`
+                      : `${game.bgColor} ${game.textColor}`
                     : highContrast
                       ? 'bg-hc-surface text-hc-text border-hc-border'
                       : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600'

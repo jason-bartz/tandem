@@ -703,9 +703,9 @@ export default function PrivacyPolicy() {
               <LegalPageSkeleton />
             ) : (
               <div className="relative">
-                <div className="bg-ghost-white dark:bg-gray-800 rounded-[32px] border-[3px] border-black dark:border-white overflow-hidden -translate-x-[4px] -translate-y-[4px] relative z-10">
+                <div className="bg-ghost-white dark:bg-gray-800 rounded-lg overflow-hidden relative z-10">
                   {/* Header with back button, title, and hamburger menu */}
-                  <div className="flex items-center justify-between p-6 pb-4 border-b-[3px] border-black dark:border-white">
+                  <div className="flex items-center justify-between p-6 pb-4 border-b border-border-light">
                     <Link
                       href={homePath}
                       className="flex items-center justify-center w-10 h-10 hover:opacity-70 transition-opacity"
@@ -735,7 +735,7 @@ export default function PrivacyPolicy() {
                   </div>
 
                   {/* Summary Card */}
-                  <div className="mx-6 mt-6 mb-6 p-4 bg-ghost-white dark:bg-gray-900 rounded-2xl border-[3px] border-black dark:border-white">
+                  <div className="mx-6 mt-6 mb-6 p-4 bg-ghost-white dark:bg-gray-900 rounded-2xl">
                     <h3 className="font-semibold mb-3 text-gray-800 dark:text-gray-200">Summary</h3>
                     <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
                       Our games are designed with privacy in mind:
@@ -837,10 +837,7 @@ export default function PrivacyPolicy() {
                   <div className="p-6 pt-0">
                     <div className="space-y-2">
                       {sections.map((section) => (
-                        <div
-                          key={section.id}
-                          className="border-[3px] border-black dark:border-white rounded-2xl overflow-hidden"
-                        >
+                        <div key={section.id} className="rounded-2xl overflow-hidden">
                           <button
                             onClick={() =>
                               setActiveSection(activeSection === section.id ? null : section.id)
@@ -865,7 +862,7 @@ export default function PrivacyPolicy() {
                             </svg>
                           </button>
                           {activeSection === section.id && (
-                            <div className="p-4 bg-ghost-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-t-[3px] border-black dark:border-white">
+                            <div className="p-4 bg-ghost-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-t border-border-light">
                               {section.content}
                             </div>
                           )}
@@ -874,7 +871,7 @@ export default function PrivacyPolicy() {
                     </div>
 
                     {/* Thank you message */}
-                    <div className="mt-6 p-4 bg-[#7ed957]/20 border-[3px] border-black rounded-2xl shadow-[4px_4px_0px_rgba(0,0,0,1)]">
+                    <div className="mt-6 p-4 bg-[#7ed957]/20 rounded-2xl">
                       <p className="text-sm text-center text-gray-700 dark:text-gray-300">
                         Thank you for playing our games!
                       </p>
@@ -882,7 +879,7 @@ export default function PrivacyPolicy() {
                   </div>
                 </div>
                 {/* Faux drop shadow */}
-                <div className="absolute inset-0 bg-black dark:bg-ghost-white rounded-[32px] -z-10"></div>
+                <div className="absolute inset-0 bg-black dark:bg-ghost-white rounded-lg -z-10"></div>
               </div>
             )}
           </div>

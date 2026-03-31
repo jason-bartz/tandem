@@ -95,10 +95,10 @@ export default function SoupStatsSection({ stats, animationKey }) {
               lightTap();
               setShowFirstDiscoveries(true);
             }}
-            className={`w-full py-3 px-4 rounded-[20px] border-[3px] font-semibold text-sm transition-all flex items-center justify-center ${
+            className={`w-full py-3 px-4 rounded-md font-semibold text-sm transition-all duration-200 flex items-center justify-center hover:scale-105 ${
               highContrast
-                ? 'bg-hc-primary text-hc-text border-hc-border hover:bg-hc-focus shadow-[3px_3px_0px_rgba(0,0,0,1)]'
-                : 'bg-soup-primary dark:bg-soup-hover text-white border-black shadow-[3px_3px_0px_#000] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[1px_1px_0px_#000]'
+                ? 'bg-hc-primary text-hc-text hover:bg-hc-focus'
+                : 'bg-soup-primary dark:bg-soup-hover text-white'
             }`}
           >
             View Discoveries
@@ -109,10 +109,8 @@ export default function SoupStatsSection({ stats, animationKey }) {
       {/* Standalone: Discoveries section as its own card */}
       {isStandaloneAlchemy && (
         <div
-          className={`rounded-2xl border-[3px] overflow-hidden mb-4 ${
-            highContrast
-              ? 'bg-hc-surface border-hc-border shadow-[4px_4px_0px_rgba(0,0,0,1)]'
-              : 'bg-white dark:bg-gray-800 border-black shadow-[4px_4px_0px_#000]'
+          className={`rounded-lg overflow-hidden mb-4 ${
+            highContrast ? 'bg-hc-surface' : 'bg-bg-card dark:bg-gray-800'
           }`}
         >
           <div className="px-4 py-4">
@@ -128,7 +126,7 @@ export default function SoupStatsSection({ stats, animationKey }) {
                 />
                 <span
                   className={`font-semibold text-sm ${
-                    highContrast ? 'text-hc-text' : 'text-gray-800 dark:text-gray-200'
+                    highContrast ? 'text-hc-text' : 'text-text-primary'
                   }`}
                 >
                   First Discoveries
@@ -149,10 +147,10 @@ export default function SoupStatsSection({ stats, animationKey }) {
                 lightTap();
                 setShowFirstDiscoveries(true);
               }}
-              className={`w-full py-3 px-4 rounded-[20px] border-[3px] font-semibold text-sm transition-all flex items-center justify-center ${
+              className={`w-full py-3 px-4 rounded-md font-semibold text-sm transition-all duration-200 flex items-center justify-center hover:scale-105 ${
                 highContrast
-                  ? 'bg-hc-primary text-hc-text border-hc-border hover:bg-hc-focus shadow-[3px_3px_0px_rgba(0,0,0,1)]'
-                  : 'bg-soup-primary dark:bg-soup-hover text-white border-black shadow-[3px_3px_0px_#000] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[1px_1px_0px_#000]'
+                  ? 'bg-hc-primary text-hc-text hover:bg-hc-focus'
+                  : 'bg-soup-primary dark:bg-soup-hover text-white'
               }`}
             >
               View Discoveries

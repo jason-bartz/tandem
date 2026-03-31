@@ -9,20 +9,20 @@ function SectionSkeleton({ themeColor, reduceMotion, highContrast, index }) {
   // Define theme-specific colors matching StatsSection
   const getBackgroundColors = () => {
     if (highContrast) {
-      return 'bg-hc-surface border-hc-border shadow-[4px_4px_0px_rgba(0,0,0,1)]';
+      return 'bg-hc-surface border-hc-border';
     }
 
     if (themeColor === 'blue') {
-      return 'bg-sky-500 dark:bg-sky-600 border-black shadow-[4px_4px_0px_#000]';
+      return 'bg-sky-500 dark:bg-sky-600';
     } else if (themeColor === 'yellow') {
-      return 'bg-yellow-500 dark:bg-yellow-600 border-black shadow-[4px_4px_0px_#000]';
+      return 'bg-yellow-500 dark:bg-yellow-600';
     } else if (themeColor === 'green') {
-      return 'bg-soup-primary dark:bg-soup-hover border-black shadow-[4px_4px_0px_#000]';
+      return 'bg-soup-primary dark:bg-soup-hover';
     } else if (themeColor === 'red') {
-      return 'bg-red-500 dark:bg-red-600 border-black shadow-[4px_4px_0px_#000]';
+      return 'bg-red-500 dark:bg-red-600';
     }
 
-    return 'bg-gray-50 dark:bg-gray-800/50 border-gray-200 dark:border-gray-700 shadow-[4px_4px_0px_rgba(0,0,0,0.1)]';
+    return 'bg-gray-50 dark:bg-gray-800/50 border-gray-200 dark:border-gray-700';
   };
 
   // Skeleton shimmer overlay color based on theme
@@ -89,9 +89,7 @@ export default function StatsModalSkeleton() {
         {/* Stats card (no header) */}
         <div
           className={`rounded-2xl border-[3px] overflow-hidden mb-4 ${
-            highContrast
-              ? 'bg-hc-surface border-hc-border shadow-[4px_4px_0px_rgba(0,0,0,1)]'
-              : 'bg-soup-primary dark:bg-soup-hover border-black shadow-[4px_4px_0px_#000]'
+            highContrast ? 'bg-hc-surface border-hc-border' : 'bg-soup-primary dark:bg-soup-hover'
           }`}
         >
           <div className="px-4 pt-4 pb-4">
@@ -120,9 +118,7 @@ export default function StatsModalSkeleton() {
         {/* Discoveries card */}
         <div
           className={`rounded-2xl border-[3px] overflow-hidden mb-4 ${
-            highContrast
-              ? 'bg-hc-surface border-hc-border shadow-[4px_4px_0px_rgba(0,0,0,1)]'
-              : 'bg-white dark:bg-gray-800 border-black shadow-[4px_4px_0px_#000]'
+            highContrast ? 'bg-hc-surface border-hc-border' : 'bg-white dark:bg-gray-800'
           }`}
         >
           <div className="px-4 py-4">
@@ -143,10 +139,8 @@ export default function StatsModalSkeleton() {
               />
             </div>
             <div
-              className={`w-full h-11 rounded-[20px] border-[3px] ${
-                highContrast
-                  ? 'bg-hc-primary border-hc-border shadow-[3px_3px_0px_rgba(0,0,0,1)]'
-                  : 'bg-soup-primary/50 border-black shadow-[3px_3px_0px_#000]'
+              className={`w-full h-11 rounded-md border-[3px] ${
+                highContrast ? 'bg-hc-primary border-hc-border' : 'bg-soup-primary/50'
               } ${!reduceMotion ? 'skeleton-shimmer' : ''}`}
               style={{ animationDelay: '550ms' }}
             />
@@ -194,10 +188,8 @@ export default function StatsModalSkeleton() {
       <div className="space-y-2 mt-4 pb-4">
         {/* View Achievements Button Skeleton */}
         <div
-          className={`w-full h-12 rounded-[20px] border-[3px] ${
-            highContrast
-              ? 'bg-hc-primary border-hc-border shadow-[4px_4px_0px_rgba(0,0,0,1)]'
-              : 'bg-white border-black shadow-[4px_4px_0px_rgba(0,0,0,1)]'
+          className={`w-full h-12 rounded-md border-[3px] ${
+            highContrast ? 'bg-hc-primary border-hc-border' : 'bg-white'
           } ${!reduceMotion ? 'skeleton-shimmer' : ''}`}
           style={{ animationDelay: '800ms' }}
         />

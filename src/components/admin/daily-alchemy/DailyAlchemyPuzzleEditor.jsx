@@ -397,7 +397,7 @@ export default function DailyAlchemyPuzzleEditor({ puzzle, date, onSave, onCance
   const exactMatch = searchResults.some((el) => el.name.toLowerCase() === searchText.toLowerCase());
 
   return (
-    <div className="bg-ghost-white dark:bg-gray-800 rounded-2xl border-[3px] border-black dark:border-white p-3 sm:p-4 overflow-visible">
+    <div className="bg-ghost-white dark:bg-gray-800 rounded-2xl p-3 sm:p-4 overflow-visible">
       <div className="mb-4">
         <h2 className="text-lg font-black text-text-primary">
           {puzzle ? 'Edit puzzle' : 'Create new puzzle'}
@@ -413,7 +413,7 @@ export default function DailyAlchemyPuzzleEditor({ puzzle, date, onSave, onCance
               type="date"
               value={formData.date}
               onChange={(e) => handleChange('date', e.target.value)}
-              className="w-full px-2 py-1.5 text-sm rounded-lg border-[2px] border-black dark:border-white bg-ghost-white dark:bg-gray-700 text-text-primary"
+              className="w-full px-2 py-1.5 text-sm rounded-lg bg-ghost-white dark:bg-gray-700 text-text-primary"
               disabled={loading}
             />
             {errors.date && <p className="text-red-500 text-xs mt-1">{errors.date}</p>}
@@ -424,7 +424,7 @@ export default function DailyAlchemyPuzzleEditor({ puzzle, date, onSave, onCance
             <select
               value={formData.difficulty}
               onChange={(e) => handleChange('difficulty', e.target.value)}
-              className="w-full px-2 py-1.5 text-sm rounded-lg border-[2px] border-black dark:border-white bg-ghost-white dark:bg-gray-700 text-text-primary"
+              className="w-full px-2 py-1.5 text-sm rounded-lg bg-ghost-white dark:bg-gray-700 text-text-primary"
               disabled={loading}
             >
               <option value="easy">Easy</option>
@@ -442,8 +442,7 @@ export default function DailyAlchemyPuzzleEditor({ puzzle, date, onSave, onCance
               type="button"
               onClick={handleSuggestTargets}
               disabled={isSuggestingTargets || loading}
-              className="px-2.5 py-1 text-xs bg-accent-yellow text-[#2c2c2c] border-[2px] border-black dark:border-white rounded-md font-bold hover:translate-y-[-1px] transition-transform disabled:opacity-50 disabled:cursor-not-allowed"
-              style={{ boxShadow: '2px 2px 0px rgba(0, 0, 0, 1)' }}
+              className="px-2.5 py-1 text-xs bg-accent-yellow text-[#2c2c2c] rounded-md font-bold transition-transform disabled:opacity-50 disabled:cursor-not-allowed"
               title="Get AI-suggested targets"
             >
               {isSuggestingTargets ? (
@@ -494,7 +493,7 @@ export default function DailyAlchemyPuzzleEditor({ puzzle, date, onSave, onCance
               className={`w-full px-3 py-1.5 pl-8 text-sm rounded-lg border-[2px] ${
                 formData.targetElement
                   ? 'border-green-500 bg-green-50 dark:bg-green-900/20'
-                  : 'border-black dark:border-white bg-ghost-white dark:bg-gray-700'
+                  : 'bg-ghost-white dark:bg-gray-700'
               } text-text-primary`}
               disabled={loading}
             />
@@ -545,8 +544,7 @@ export default function DailyAlchemyPuzzleEditor({ puzzle, date, onSave, onCance
                     type="button"
                     onClick={() => handleSelectTargetSuggestion(suggestion)}
                     disabled={loading}
-                    className="p-2 sm:p-3 text-left rounded-lg border-[2px] border-black/20 dark:border-white/20 bg-bg-card hover:border-green-500 hover:bg-green-50 dark:hover:bg-green-900/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-                    style={{ boxShadow: 'var(--shadow-small)' }}
+                    className="p-2 sm:p-3 text-left rounded-lg/20 dark:border-white/20 bg-bg-card hover:border-green-500 hover:bg-green-50 dark:hover:bg-green-900/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     <div className="font-bold text-xs sm:text-sm text-text-primary">
                       {suggestion.emoji} {suggestion.name}
@@ -572,7 +570,7 @@ export default function DailyAlchemyPuzzleEditor({ puzzle, date, onSave, onCance
 
           {/* Search Results Dropdown */}
           {showDropdown && !formData.targetElement && (
-            <div className="absolute z-[100] w-full mt-1 bg-white dark:bg-gray-800 border-[3px] border-black dark:border-white rounded-lg shadow-xl max-h-80 overflow-y-auto">
+            <div className="absolute z-[100] w-full mt-1 bg-white dark:bg-gray-800 rounded-lg max-h-80 overflow-y-auto">
               {isSearching && searchResults.length === 0 ? (
                 <div className="px-4 py-3 text-text-secondary flex items-center gap-2">
                   <div className="w-4 h-4 border-2 border-green-500 border-t-transparent rounded-full animate-spin" />
@@ -659,8 +657,7 @@ export default function DailyAlchemyPuzzleEditor({ puzzle, date, onSave, onCance
               type="button"
               onClick={generatePath}
               disabled={loading || isGeneratingPath || !formData.targetElement}
-              className="px-3 py-1.5 text-sm bg-orange-500 text-white font-bold rounded-md border-[2px] border-black hover:bg-orange-600 transition-colors disabled:opacity-50 flex items-center gap-1.5 flex-shrink-0"
-              style={{ boxShadow: '2px 2px 0px rgba(0, 0, 0, 1)' }}
+              className="px-3 py-1.5 text-sm bg-orange-500 text-white font-bold rounded-md hover:bg-orange-600 transition-colors disabled:opacity-50 flex items-center gap-1.5 flex-shrink-0"
             >
               {isGeneratingPath ? (
                 <>
@@ -727,7 +724,7 @@ export default function DailyAlchemyPuzzleEditor({ puzzle, date, onSave, onCance
               onChange={handleParChange}
               min="1"
               placeholder="Auto-set from path"
-              className="w-full px-2 py-1.5 text-sm rounded-lg border-[2px] border-black dark:border-white bg-ghost-white dark:bg-gray-700 text-text-primary"
+              className="w-full px-2 py-1.5 text-sm rounded-lg bg-ghost-white dark:bg-gray-700 text-text-primary"
               disabled={loading}
             />
             {errors.parMoves && <p className="text-red-500 text-xs mt-1">{errors.parMoves}</p>}
@@ -735,13 +732,12 @@ export default function DailyAlchemyPuzzleEditor({ puzzle, date, onSave, onCance
         </div>
 
         {/* Action Buttons */}
-        <div className="flex gap-2 pt-3 border-t-2 border-black dark:border-white">
+        <div className="flex gap-2 pt-3 border-t-2">
           <button
             type="button"
             onClick={onCancel}
             disabled={loading}
-            className="px-3 sm:px-4 py-1.5 text-xs sm:text-sm font-bold bg-ghost-white dark:bg-gray-700 text-text-primary rounded-md sm:rounded-lg border-[2px] border-black dark:border-white hover:translate-y-[-1px] transition-all"
-            style={{ boxShadow: '2px 2px 0px rgba(0, 0, 0, 1)' }}
+            className="px-3 sm:px-4 py-1.5 text-xs sm:text-sm font-bold bg-ghost-white dark:bg-gray-700 text-text-primary rounded-md sm:rounded-lg transition-all"
           >
             <span className="sm:hidden">Back</span>
             <span className="hidden sm:inline">Back to Calendar</span>
@@ -749,8 +745,7 @@ export default function DailyAlchemyPuzzleEditor({ puzzle, date, onSave, onCance
           <button
             type="submit"
             disabled={loading}
-            className="px-3 sm:px-4 py-1.5 text-xs sm:text-sm font-bold bg-green-500 text-white rounded-md sm:rounded-lg border-[2px] border-black hover:translate-y-[-1px] transition-all disabled:opacity-50"
-            style={{ boxShadow: '2px 2px 0px rgba(0, 0, 0, 1)' }}
+            className="px-3 sm:px-4 py-1.5 text-xs sm:text-sm font-bold bg-green-500 text-white rounded-md sm:rounded-lg transition-all disabled:opacity-50"
           >
             <span className="sm:hidden">{loading ? 'Saving...' : 'Save'}</span>
             <span className="hidden sm:inline">{loading ? 'Saving...' : 'Save Puzzle'}</span>
@@ -775,8 +770,7 @@ export default function DailyAlchemyPuzzleEditor({ puzzle, date, onSave, onCance
               setSuggestError(null);
             }}
             disabled={loading}
-            className="px-3 sm:px-4 py-1.5 text-xs sm:text-sm font-bold bg-accent-orange text-white rounded-md sm:rounded-lg border-[2px] border-black hover:translate-y-[-1px] transition-all disabled:opacity-50"
-            style={{ boxShadow: '2px 2px 0px rgba(0, 0, 0, 1)' }}
+            className="px-3 sm:px-4 py-1.5 text-xs sm:text-sm font-bold bg-accent-orange text-white rounded-md sm:rounded-lg transition-all disabled:opacity-50"
           >
             Clear
           </button>
@@ -786,7 +780,7 @@ export default function DailyAlchemyPuzzleEditor({ puzzle, date, onSave, onCance
       {/* Add Element Modal */}
       {showAddModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white dark:bg-gray-800 rounded-2xl border-[3px] border-black dark:border-white p-6 max-w-md w-full">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 max-w-md w-full">
             <h3 className="text-xl font-black text-text-primary mb-4">Add New Element</h3>
             <p className="text-sm text-text-secondary mb-4">
               This element doesn't exist yet. Add it with an emoji to use as a target.
@@ -801,7 +795,7 @@ export default function DailyAlchemyPuzzleEditor({ puzzle, date, onSave, onCance
                   type="text"
                   value={newElementName}
                   onChange={(e) => setNewElementName(e.target.value)}
-                  className="w-full px-3 py-2 rounded-lg border-[2px] border-black dark:border-white bg-ghost-white dark:bg-gray-700 text-text-primary"
+                  className="w-full px-3 py-2 rounded-lg bg-ghost-white dark:bg-gray-700 text-text-primary"
                   placeholder="e.g., Volcano"
                 />
               </div>
@@ -814,7 +808,7 @@ export default function DailyAlchemyPuzzleEditor({ puzzle, date, onSave, onCance
                   type="text"
                   value={newElementEmoji}
                   onChange={(e) => setNewElementEmoji(e.target.value)}
-                  className="w-full px-3 py-2 rounded-lg border-[2px] border-black dark:border-white bg-ghost-white dark:bg-gray-700 text-text-primary text-center text-2xl"
+                  className="w-full px-3 py-2 rounded-lg bg-ghost-white dark:bg-gray-700 text-text-primary text-center text-2xl"
                   placeholder="🌋"
                 />
               </div>
@@ -824,13 +818,13 @@ export default function DailyAlchemyPuzzleEditor({ puzzle, date, onSave, onCance
               <button
                 onClick={addNewElement}
                 disabled={!newElementName || !newElementEmoji}
-                className="flex-1 px-4 py-2 bg-green-500 text-white font-bold rounded-lg border-[2px] border-black disabled:opacity-50"
+                className="flex-1 px-4 py-2 bg-green-500 text-white font-bold rounded-lg disabled:opacity-50"
               >
                 Add Element
               </button>
               <button
                 onClick={() => setShowAddModal(false)}
-                className="px-4 py-2 bg-gray-200 dark:bg-gray-600 text-text-primary font-bold rounded-lg border-[2px] border-black dark:border-white"
+                className="px-4 py-2 bg-gray-200 dark:bg-gray-600 text-text-primary font-bold rounded-lg"
               >
                 Cancel
               </button>

@@ -110,7 +110,7 @@ export default function LearnToPlayBanner({ gameType = 'tandem', onOpenHowToPlay
             onKeyDown={(e) => e.key === 'Enter' && handleClick()}
             className={`
               flex items-center gap-2.5 px-4 py-2.5
-              rounded-full shadow-lg backdrop-blur-sm
+              rounded-full backdrop-blur-sm
               border-2 cursor-pointer
               transition-transform active:scale-[0.98]
               ${

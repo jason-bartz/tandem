@@ -60,10 +60,10 @@ export default function AdmireScreen({
       <div className="animate-fade-in -mt-16">
         {/* Main admire card */}
         <div
-          className={`rounded-[32px] border-[3px] overflow-hidden p-10 text-center relative ${
+          className={`rounded-lg border-[3px] overflow-hidden p-10 text-center relative ${
             highContrast
-              ? 'bg-hc-surface border-hc-border shadow-[6px_6px_0px_rgba(0,0,0,1)]'
-              : 'bg-ghost-white dark:bg-bg-card border-border-main shadow-[6px_6px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_rgba(0,0,0,0.5)]'
+              ? 'bg-hc-surface border-hc-border'
+              : 'bg-ghost-white dark:bg-bg-card border-border-main dark:'
           }`}
         >
           {/* Back arrow button at top left */}
@@ -124,10 +124,10 @@ export default function AdmireScreen({
             {/* Theme Display */}
             {(admireData?.theme || puzzle?.theme) && (
               <div
-                className={`rounded-2xl p-5 mb-6 relative overflow-hidden border-[3px] shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(0,0,0,0.5)] ${
+                className={`rounded-2xl p-5 mb-6 relative overflow-hidden border-[3px] dark:${
                   highContrast
                     ? 'bg-hc-surface border-hc-border'
-                    : 'bg-accent-yellow/20 dark:bg-yellow-900/40 border-black dark:border-gray-600'
+                    : 'bg-accent-yellow/20 dark:bg-yellow-900/40'
                 }`}
               >
                 <p className="text-sm text-gray-600 dark:text-gray-400 mb-2 font-medium">Theme:</p>
@@ -146,10 +146,10 @@ export default function AdmireScreen({
               {puzzle?.puzzles?.map((puzzleItem, index) => (
                 <div
                   key={index}
-                  className={`rounded-2xl px-4 py-3 border-[3px] shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(0,0,0,0.5)] ${
+                  className={`rounded-2xl px-4 py-3 border-[3px] dark:${
                     highContrast
                       ? 'bg-hc-surface border-hc-border'
-                      : 'bg-green-100 dark:bg-green-900/30 border-black dark:border-gray-600'
+                      : 'bg-green-100 dark:bg-green-900/30'
                   }`}
                 >
                   <div className="flex items-center justify-between">
@@ -169,10 +169,10 @@ export default function AdmireScreen({
             {/* Stats Grid */}
             <div className="grid grid-cols-3 gap-4 mb-6">
               <div
-                className={`rounded-2xl p-4 text-center border-[3px] shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(0,0,0,0.5)] ${
+                className={`rounded-2xl p-4 text-center border-[3px] dark:${
                   highContrast
                     ? 'bg-hc-surface border-hc-border'
-                    : 'bg-accent-blue/20 dark:bg-sky-900/50 border-black dark:border-gray-600'
+                    : 'bg-accent-blue/20 dark:bg-sky-900/50'
                 }`}
               >
                 <div
@@ -185,10 +185,10 @@ export default function AdmireScreen({
                 <div className="text-xs text-gray-600 dark:text-gray-400 mt-1">Time</div>
               </div>
               <div
-                className={`rounded-2xl p-4 text-center border-[3px] shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(0,0,0,0.5)] ${
+                className={`rounded-2xl p-4 text-center border-[3px] dark:${
                   highContrast
                     ? 'bg-hc-surface border-hc-border'
-                    : 'bg-accent-orange/20 dark:bg-orange-900/50 border-black dark:border-gray-600'
+                    : 'bg-accent-orange/20 dark:bg-orange-900/50'
                 }`}
               >
                 <div
@@ -201,10 +201,10 @@ export default function AdmireScreen({
                 <div className="text-xs text-gray-600 dark:text-gray-400 mt-1">Mistakes</div>
               </div>
               <div
-                className={`rounded-2xl p-4 text-center border-[3px] shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(0,0,0,0.5)] flex flex-col items-center justify-center ${
+                className={`rounded-2xl p-4 text-center border-[3px] dark:flex flex-col items-center justify-center ${
                   highContrast
                     ? 'bg-hc-surface border-hc-border'
-                    : 'bg-accent-pink/20 dark:bg-pink-900/50 border-black dark:border-gray-600'
+                    : 'bg-accent-pink/20 dark:bg-pink-900/50'
                 }`}
               >
                 <div
@@ -244,8 +244,8 @@ export default function AdmireScreen({
               }}
               className={`w-full py-3 px-4 rounded-2xl font-semibold transition-all border-[3px] ${
                 highContrast
-                  ? 'bg-hc-surface text-hc-text border-hc-border hover:bg-hc-primary hover:text-white shadow-[4px_4px_0px_rgba(0,0,0,1)]'
-                  : 'bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 border-black dark:border-gray-600 shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(0,0,0,0.5)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0px_rgba(0,0,0,0.5)]'
+                  ? 'bg-hc-surface text-hc-text border-hc-border hover:bg-hc-primary hover:text-white'
+                  : 'bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 dark: hover:dark:hover:'
               }`}
             >
               Replay Puzzle
@@ -258,8 +258,8 @@ export default function AdmireScreen({
               }}
               className={`w-full py-3 px-4 rounded-2xl font-semibold transition-all border-[3px] ${
                 highContrast
-                  ? 'bg-hc-surface text-hc-text border-hc-border hover:bg-hc-primary hover:text-white shadow-[3px_3px_0px_rgba(0,0,0,1)]'
-                  : 'bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 border-black dark:border-gray-600 shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0px_rgba(0,0,0,0.5)]'
+                  ? 'bg-hc-surface text-hc-text border-hc-border hover:bg-hc-primary hover:text-white'
+                  : 'bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 dark: hover:dark:hover:'
               }`}
             >
               Browse Archive
@@ -272,8 +272,8 @@ export default function AdmireScreen({
               }}
               className={`w-full py-3 px-4 rounded-2xl font-semibold transition-all border-[3px] ${
                 highContrast
-                  ? 'bg-hc-surface text-hc-text border-hc-border hover:bg-hc-primary hover:text-white shadow-[3px_3px_0px_rgba(0,0,0,1)]'
-                  : 'bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 border-black dark:border-gray-600 shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0px_rgba(0,0,0,0.5)]'
+                  ? 'bg-hc-surface text-hc-text border-hc-border hover:bg-hc-primary hover:text-white'
+                  : 'bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 dark: hover:dark:hover:'
               }`}
             >
               Leaderboard

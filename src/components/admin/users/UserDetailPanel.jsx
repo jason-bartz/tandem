@@ -102,7 +102,7 @@ export default function UserDetailPanel({ user, onClose }) {
   return (
     <tr>
       <td colSpan="8" className="p-0">
-        <div className="border-t-[3px] border-black dark:border-white bg-bg-card">
+        <div className="border-t border-border-light bg-bg-card">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-0 divide-y-[3px] lg:divide-y-0 lg:divide-x-[3px] divide-black dark:divide-white">
             {/* Profile Section */}
             <div className="p-4 sm:p-5">
@@ -287,7 +287,7 @@ export default function UserDetailPanel({ user, onClose }) {
                   <button
                     onClick={handlePasswordReset}
                     disabled={resetting}
-                    className="w-full px-3 py-2 bg-accent-blue text-white border-[3px] border-black dark:border-white font-bold text-sm rounded-xl hover:translate-y-[-2px] active:translate-y-0 transition-transform shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(255,255,255,0.3)] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0"
+                    className="w-full px-3 py-2 bg-accent-blue text-white font-bold text-sm rounded-xl active:translate-y-0 transition-transform dark: disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0"
                   >
                     {resetting ? 'Sending...' : 'Send Password Reset'}
                   </button>

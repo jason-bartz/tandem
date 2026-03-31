@@ -11,7 +11,7 @@ export default function FeedbackDashboardSkeleton() {
   return (
     <div className="space-y-4">
       {/* Sort & Filter Row Skeleton */}
-      <div className="flex items-center justify-between gap-3 py-2 border-b-[2px] border-black/10 dark:border-white/10">
+      <div className="flex items-center justify-between gap-3 py-2 border-b-[2px] dark:border-white/10">
         <div
           className={`h-5 w-20 bg-gray-200 dark:bg-gray-700 rounded ${!reduceMotion ? 'skeleton-shimmer' : ''}`}
         />
@@ -25,10 +25,10 @@ export default function FeedbackDashboardSkeleton() {
         {[0, 1, 2].map((i) => (
           <div
             key={i}
-            className="rounded-xl border-[3px] border-black dark:border-white bg-ghost-white dark:bg-bg-surface shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(255,255,255,0.3)] overflow-hidden"
+            className="rounded-xl bg-ghost-white dark:bg-bg-surface dark: overflow-hidden"
           >
             {/* Header Skeleton */}
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 px-5 py-3 bg-gray-100 dark:bg-gray-800 border-b-[3px] border-black dark:border-white">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 px-5 py-3 bg-gray-100 dark:bg-gray-800 border-b border-border-light">
               <div className="flex items-center gap-4">
                 <div
                   className={`h-6 w-16 bg-gray-200 dark:bg-gray-700 rounded ${!reduceMotion ? 'skeleton-shimmer' : ''}`}

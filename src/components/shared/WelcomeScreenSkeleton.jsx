@@ -29,10 +29,10 @@ function GameCardSkeleton({
 }) {
   return (
     <div
-      className={`w-full rounded-[24px] border-[3px] overflow-hidden p-5 relative ${
+      className={`w-full rounded-lg border-[3px] overflow-hidden p-5 relative ${
         highContrast
-          ? 'bg-hc-surface border-hc-border shadow-[4px_4px_0px_rgba(0,0,0,1)]'
-          : 'bg-ghost-white dark:bg-bg-card border-border-main shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(0,0,0,0.5)]'
+          ? 'bg-hc-surface border-hc-border'
+          : 'bg-ghost-white dark:bg-bg-card border-border-main dark:'
       }`}
       style={{ animationDelay: !reduceMotion ? `${animationDelay}ms` : '0ms' }}
     >

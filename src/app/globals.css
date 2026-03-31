@@ -6,7 +6,7 @@
 @import '../styles/micro-animations.css';
 
 :root {
-  /* Original bright, fun color palette for light mode */
+  /* Game identity colors (preserved) */
   --accent-green: #7ed957;
   --accent-yellow: #ffce00;
   --accent-pink: #ff66c4;
@@ -15,98 +15,105 @@
   --accent-orange: #ff751f;
   --accent-purple: #a855f7;
 
-  /* Background colors - solid, no gradients */
-  --bg-primary: #ffce00;
-  --bg-tandem: #39b6ff;
-  --bg-surface: #f4f5f9;
-  --bg-card: #f4f5f9;
+  /* Flat design system - structural colors */
+  --primary: #3b82f6;
+  --primary-hover: #2563eb;
+  --secondary: #10b981;
+  --secondary-hover: #059669;
+  --flat-accent: #f59e0b;
+  --flat-accent-hover: #d97706;
+
+  /* Background colors - white canvas, gray blocks */
+  --bg-primary: #ffffff;
+  --bg-tandem: #38b6ff;
+  --bg-surface: #f3f4f6;
+  --bg-card: #ffffff;
 
   /* Text colors */
-  --text-primary: #2c2c2c;
+  --text-primary: #111827;
   --text-secondary: #6b7280;
   --text-muted: #9ca3af;
 
-  /* Border colors - thicker borders */
-  --border-color: #2c2c2c;
+  /* Border colors - subtle, used sparingly */
+  --border-color: #e5e7eb;
   --border-light: #e5e7eb;
-  --border-width: 3px;
 
-  /* Shadows - faux drop shadow */
-  --shadow-card: 4px 4px 0px rgba(0, 0, 0, 1);
-  --shadow-button: 3px 3px 0px rgba(0, 0, 0, 1);
-  --shadow-small: 2px 2px 0px rgba(0, 0, 0, 1);
+  /* Shadows - NONE in flat design */
+  --shadow-card: none;
+  --shadow-button: none;
+  --shadow-small: none;
 
   --modal-bg: rgba(0, 0, 0, 0.5);
 
-  /* Admin-specific softer color palette */
-  --admin-bg-primary: #faf8f5;
-  --admin-bg-surface: #f5f3ef;
-  --admin-bg-card: #fdfcfa;
-  --admin-text-primary: #3a3632;
-  --admin-text-secondary: #6b6662;
-  --admin-text-muted: #a39d96;
-  --admin-border-main: #c4bfb8;
-  --admin-border-light: #e5e1db;
-  --admin-shadow-card: 3px 3px 0px rgba(0, 0, 0, 1);
-  --admin-shadow-button: 3px 3px 0px rgba(0, 0, 0, 1);
-  --admin-shadow-small: 2px 2px 0px rgba(0, 0, 0, 1);
+  /* Admin palette (flat) */
+  --admin-bg-primary: #ffffff;
+  --admin-bg-surface: #f3f4f6;
+  --admin-bg-card: #ffffff;
+  --admin-text-primary: #111827;
+  --admin-text-secondary: #6b7280;
+  --admin-text-muted: #9ca3af;
+  --admin-border-main: #e5e7eb;
+  --admin-border-light: #e5e7eb;
+  --admin-shadow-card: none;
+  --admin-shadow-button: none;
+  --admin-shadow-small: none;
 }
 
 [data-theme='dark'] {
-  /* Dark mode - lighter versions for contrast on dark backgrounds (WCAG AAA: 7:1 on #0f3460) */
-  --accent-green: #7ed957;
-  /* Light green - 8.21:1 on dark bg */
-  --accent-yellow: #ffd700;
-  /* Gold - 10.5:1 on dark bg */
-  --accent-pink: #ff69b4;
-  /* Hot pink - 7.15:1 on dark bg */
-  --accent-blue: #5eb3ff;
-  /* Light blue - 7.82:1 on dark bg */
-  --accent-red: #ff7b7b;
-  /* Light red - 7.03:1 on dark bg */
-  --accent-orange: #ffa64d;
-  /* Light orange - 8.42:1 on dark bg */
-  --accent-purple: #c084fc;
-  /* Light purple - 8.12:1 on dark bg */
+  /* Game identity colors - lightened for dark backgrounds */
+  --accent-green: #86efac;
+  --accent-yellow: #fde68a;
+  --accent-pink: #f9a8d4;
+  --accent-blue: #93c5fd;
+  --accent-red: #fca5a5;
+  --accent-orange: #fdba74;
+  --accent-purple: #c4b5fd;
 
-  /* Background colors - dark blue/purple complementary to yellow */
-  --bg-primary: #1a1a2e;
-  --bg-tandem: #1a1a2e;
-  --bg-surface: #16213e;
-  --bg-card: #0f3460;
+  /* Flat design system - structural colors (dark) */
+  --primary: #60a5fa;
+  --primary-hover: #3b82f6;
+  --secondary: #34d399;
+  --secondary-hover: #10b981;
+  --flat-accent: #fbbf24;
+  --flat-accent-hover: #f59e0b;
+
+  /* Background colors - dark neutrals */
+  --bg-primary: #111827;
+  --bg-tandem: #1e3a5f;
+  --bg-surface: #1f2937;
+  --bg-card: #1f2937;
 
   /* Text colors */
   --text-primary: #f9fafb;
   --text-secondary: #d1d5db;
   --text-muted: #9ca3af;
 
-  /* Border colors - toned down for dark mode */
-  --border-color: #4b5563;
-  --border-light: #4b5563;
-  --border-width: 3px;
+  /* Border colors */
+  --border-color: #374151;
+  --border-light: #374151;
 
-  /* Shadows - softer, less bright in dark mode */
-  --shadow-card: 4px 4px 0px rgba(0, 0, 0, 0.5);
-  --shadow-button: 3px 3px 0px rgba(0, 0, 0, 0.5);
-  --shadow-small: 2px 2px 0px rgba(0, 0, 0, 0.3);
+  /* Shadows - none in flat design */
+  --shadow-card: none;
+  --shadow-button: none;
+  --shadow-small: none;
 
   --modal-bg: rgba(0, 0, 0, 0.7);
 
-  /* Admin-specific softer dark mode palette */
-  --admin-bg-primary: #24292e;
-  --admin-bg-surface: #2d333b;
-  --admin-bg-card: #373e47;
-  --admin-text-primary: #e8eaed;
-  --admin-text-secondary: #c1c6cc;
-  --admin-text-muted: #8b949e;
-  --admin-border-main: #525964;
-  --admin-border-light: #444c56;
-  --admin-shadow-card: 3px 3px 0px rgba(0, 0, 0, 1);
-  --admin-shadow-button: 3px 3px 0px rgba(0, 0, 0, 1);
-  --admin-shadow-small: 2px 2px 0px rgba(0, 0, 0, 1);
+  /* Admin dark palette (flat) */
+  --admin-bg-primary: #111827;
+  --admin-bg-surface: #1f2937;
+  --admin-bg-card: #1f2937;
+  --admin-text-primary: #f9fafb;
+  --admin-text-secondary: #d1d5db;
+  --admin-text-muted: #9ca3af;
+  --admin-border-main: #374151;
+  --admin-border-light: #374151;
+  --admin-shadow-card: none;
+  --admin-shadow-button: none;
+  --admin-shadow-small: none;
 }
 
-/* Standalone Daily Alchemy - override yellow backgrounds with white */
+/* Standalone Daily Alchemy - same as base in flat design (white canvas) */
 :root.standalone-alchemy {
   --bg-primary: #ffffff;
 }
@@ -303,7 +310,7 @@ select {
 
 body {
   font-family:
-    var(--font-plus-jakarta-sans),
+    var(--font-outfit),
     -apple-system,
     BlinkMacSystemFont,
     'Segoe UI',
@@ -333,16 +340,11 @@ body {
 
 .game-container {
   background: var(--bg-card);
-  border-radius: 32px;
-  border: var(--border-width) solid var(--border-color);
-  box-shadow: var(--shadow-card);
+  border-radius: 8px;
   width: 100%;
   max-width: 420px;
   overflow: hidden;
-  transition:
-    background 0.3s ease,
-    border 0.3s ease,
-    box-shadow 0.3s ease;
+  transition: background 0.2s ease;
 }
 
 /* ============================================
@@ -1233,15 +1235,13 @@ body {
 @keyframes goldGlow {
   0%,
   100% {
-    box-shadow:
-      0 0 10px rgba(255, 206, 0, 0.25),
-      0 0 20px rgba(255, 206, 0, 0.1);
+    transform: scale(1);
+    opacity: 1;
   }
 
   50% {
-    box-shadow:
-      0 0 15px rgba(255, 206, 0, 0.35),
-      0 0 30px rgba(255, 206, 0, 0.15);
+    transform: scale(1.02);
+    opacity: 0.9;
   }
 }
 
@@ -1325,6 +1325,15 @@ body {
   background-size: 1000px 100%;
 }
 
+/* High contrast skeleton: solid border, no shimmer animation */
+.high-contrast .skeleton-shimmer,
+.high-contrast .reel-skeleton-shimmer {
+  animation: none !important;
+  background: var(--hc-surface) !important;
+  border: 2px solid var(--hc-border) !important;
+  border-radius: 4px;
+}
+
 /* Reel Connections cinema-themed skeleton shimmer - golden/warm glow on dark background */
 .reel-skeleton-shimmer {
   animation: shimmer 1.5s infinite linear;
@@ -1398,7 +1407,7 @@ body {
 
 /* Cinematic Design Utility Classes */
 .cinema-gradient {
-  background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
+  background: #991b1b;
 }
 
 .gold-glow {
@@ -1473,10 +1482,8 @@ body {
   /* Elastic bounce */
 }
 
-/* Backdrop blur support */
+/* Stats bar - background color set by component */
 .stats-bar-backdrop {
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
 }
 
 /* Reduce motion overrides */
@@ -1512,12 +1519,12 @@ body {
   display: none;
 }
 
-/* Override body background when admin theme is active (prevents overscroll color bleed) */
+/* Override body background when admin theme is active */
 body:has(.admin-theme) {
-  background-color: #ffffff;
+  background-color: var(--bg-primary);
 }
 
-/* Admin-specific styling for better readability */
+/* Admin-specific styling */
 .admin-theme {
   --bg-primary: var(--admin-bg-primary);
   --bg-surface: var(--admin-bg-surface);
@@ -1527,100 +1534,16 @@ body:has(.admin-theme) {
   --text-muted: var(--admin-text-muted);
   --border-main: var(--admin-border-main);
   --border-light: var(--admin-border-light);
-  --shadow-card: var(--admin-shadow-card);
-  --shadow-button: var(--admin-shadow-button);
-  --shadow-small: var(--admin-shadow-small);
-  --border-width: 2px;
 }
 
-.admin-theme .border-border-main {
-  border-color: var(--admin-border-main);
-}
-
-.admin-theme .border-\\[3px\\] {
-  border-width: 2px;
-}
-
-.admin-theme .border-\\[2px\\] {
-  border-width: 2px;
-}
-
-.admin-theme .bg-bg-primary {
-  background-color: var(--admin-bg-primary);
-}
-
-.admin-theme .bg-bg-surface {
-  background-color: var(--admin-bg-surface);
-}
-
-.admin-theme .bg-bg-card {
-  background-color: var(--admin-bg-card);
-}
-
-.admin-theme .text-text-primary {
-  color: var(--admin-text-primary);
-}
-
-.admin-theme .text-text-secondary {
-  color: var(--admin-text-secondary);
-}
-
-.admin-theme .text-text-muted {
-  color: var(--admin-text-muted);
-}
-
-/* Softer accent colors for admin interface */
-.admin-theme .bg-accent-green\/10 {
-  background-color: rgba(126, 217, 87, 0.08);
-}
-
-.admin-theme .bg-accent-blue\/20 {
-  background-color: rgba(56, 182, 255, 0.12);
-}
-
-.admin-theme .bg-accent-pink\/20,
-.admin-theme .bg-accent-pink\/10 {
-  background-color: rgba(255, 102, 196, 0.1);
-}
-
-.admin-theme .bg-accent-yellow\/20 {
-  background-color: rgba(255, 206, 0, 0.12);
-}
-
-.admin-theme .bg-accent-red\/20 {
-  background-color: rgba(255, 87, 87, 0.1);
-}
-
-.admin-theme .bg-accent-orange\/10 {
-  background-color: rgba(255, 117, 31, 0.08);
-}
-
-/* Input and form styling improvements for admin */
-.admin-theme input[type='text'],
-.admin-theme input[type='date'],
-.admin-theme input[type='number'],
-.admin-theme select,
-.admin-theme textarea {
-  transition: all 0.2s ease;
-}
-
-.admin-theme input[type='text']:focus,
-.admin-theme input[type='date']:focus,
-.admin-theme input[type='number']:focus,
+/* Admin input focus states */
+.admin-theme input:focus,
 .admin-theme select:focus,
 .admin-theme textarea:focus {
-  border-color: var(--accent-blue);
-  box-shadow: 0 0 0 3px rgba(56, 182, 255, 0.1);
-}
-
-/* Softer hover states */
-.admin-theme button:hover {
+  border-color: var(--primary);
+  outline: 2px solid var(--primary);
+  outline-offset: 0;
   transition: all 0.2s ease;
-}
-
-/* Calendar day cells - softer borders */
-.admin-theme .hover\\:border-accent-yellow:hover {
-  border-color: rgba(255, 206, 0, 0.6);
 }
 
 /* High Contrast & Color Blind Friendly Mode */
@@ -1635,8 +1558,9 @@ body:has(.admin-theme) {
   background-image: none !important;
 }
 
-/* Ensure modals have proper backgrounds in high contrast mode */
-.high-contrast .bg-ghost-white {
+/* Ensure surfaces have proper backgrounds in high contrast mode */
+.high-contrast .bg-ghost-white,
+.high-contrast .bg-muted {
   background-color: var(--hc-surface) !important;
 }
 
@@ -1647,71 +1571,38 @@ body:has(.admin-theme) {
 
 /* Light mode high contrast - WCAG AAA compliant (7:1 contrast) */
 .high-contrast:not(.dark) {
-  --hc-primary: #0066b3;
-  /* Dark blue - 7.05:1 on white */
+  --hc-primary: #1e40af;
   --hc-primary-text: #ffffff;
-  /* White text on dark blue backgrounds */
-  --hc-success: #2d8504;
-  /* Dark green - 7.12:1 on white */
+  --hc-success: #166534;
   --hc-success-text: #ffffff;
-  /* White text on dark green backgrounds */
-  --hc-error: #c7251a;
-  /* Dark red - 7.26:1 on white */
+  --hc-error: #991b1b;
   --hc-error-text: #ffffff;
-  /* White text on dark red backgrounds */
-  --hc-warning: #7b3ff2;
-  /* Purple - 7.02:1 on white, more attractive than brown */
+  --hc-warning: #92400e;
   --hc-warning-text: #ffffff;
-  /* White text on dark purple backgrounds */
-  --hc-background: #f4f5f9;
-  --hc-surface: #f5f5f5;
+  --hc-background: #f3f4f6;
+  --hc-surface: #f9fafb;
   --hc-text: #000000;
   --hc-border: #000000;
-  /* Pure black for maximum contrast */
-  --hc-focus: #0066b3;
-  /* Dark blue for today highlight */
-  --hc-neutral: #595959;
-  /* Dark gray - 7.48:1 on white */
+  --hc-focus: #1e40af;
+  --hc-neutral: #374151;
 }
 
-/* Dark mode high contrast - WCAG AAA compliant with proper text contrast */
+/* Dark mode high contrast - WCAG AAA compliant */
 .high-contrast.dark {
-  /* Backgrounds: Dark colors for buttons/surfaces */
-  --hc-primary: #003d73;
-  /* Very dark blue - for button backgrounds */
+  --hc-primary: #1e3a5f;
   --hc-primary-text: #ffffff;
-  /* White text on dark blue - 10.7:1 ✓ */
-  --hc-success: #1a5c00;
-  /* Very dark green - for button backgrounds */
+  --hc-success: #14532d;
   --hc-success-text: #ffffff;
-  /* White text on dark green - 9.2:1 ✓ */
-  --hc-error: #8b0000;
-  /* Very dark red - for button backgrounds */
+  --hc-error: #7f1d1d;
   --hc-error-text: #ffffff;
-  /* White text on dark red - 8.1:1 ✓ */
-  --hc-warning: #665200;
-  /* Very dark gold - for button backgrounds */
+  --hc-warning: #78350f;
   --hc-warning-text: #ffffff;
-  /* White text on dark gold - 7.8:1 ✓ */
-
-  /* UI backgrounds */
-  --hc-background: #000814;
-  /* Very dark blue-black */
-  --hc-surface: #001d3d;
-  /* Dark blue surface */
+  --hc-background: #030712;
+  --hc-surface: #111827;
   --hc-text: #ffffff;
-  /* White text on dark backgrounds */
-  --hc-border: #5eb3ff;
-  /* Light blue for borders - visible on dark */
-  --hc-focus: #ff69b4;
-  /* Hot pink for focus states */
-  --hc-neutral: #b0b0b0;
-  /* Light gray */
-
-  /* Legacy compatibility */
-  --hc-success: #1a5c00;
-  --hc-error: #8b0000;
-  --hc-warning: #665200;
+  --hc-border: #93c5fd;
+  --hc-focus: #f472b6;
+  --hc-neutral: #9ca3af;
 }
 
 /* Color blind friendly patterns for visual differentiation */
@@ -1806,7 +1697,8 @@ body:has(.admin-theme) {
 
 .high-contrast button:hover {
   transform: scale(1.05);
-  box-shadow: 0 0 0 3px var(--hc-focus);
+  outline: 3px solid var(--hc-focus);
+  outline-offset: 2px;
 }
 
 /* Color blind friendly button styles */
@@ -1865,7 +1757,8 @@ body:has(.admin-theme) {
 .high-contrast button[class*='from-teal']:hover {
   background: var(--hc-focus) !important;
   transform: scale(1.05);
-  box-shadow: 0 0 0 3px var(--hc-focus);
+  outline: 3px solid var(--hc-focus);
+  outline-offset: 2px;
 }
 
 /* Add icon to primary action buttons */
@@ -1893,4 +1786,237 @@ body:has(.admin-theme) {
 .high-contrast button[role='switch'] span {
   background: var(--hc-background) !important;
   border: 1px solid var(--hc-border) !important;
+}
+
+/* ─── Global high-contrast text overrides ─── */
+/* Gray text tokens that fail WCAG AAA on HC backgrounds */
+.high-contrast .text-gray-400,
+.high-contrast .text-gray-500,
+.high-contrast .text-gray-600 {
+  color: var(--hc-text) !important;
+  opacity: 0.75;
+}
+
+.high-contrast .text-gray-300 {
+  color: var(--hc-text) !important;
+  opacity: 0.65;
+}
+
+/* Semantic text tokens */
+.high-contrast .text-text-secondary,
+.high-contrast .text-text-muted {
+  color: var(--hc-text) !important;
+  opacity: 0.8;
+}
+
+/* ─── Global high-contrast border overrides ─── */
+/* Ensure all borders are visible in HC mode */
+.high-contrast .border-gray-200,
+.high-contrast .border-gray-300,
+.high-contrast .border-gray-600,
+.high-contrast .border-gray-700,
+.high-contrast .border-border-main,
+.high-contrast .border-border-light {
+  border-color: var(--hc-border) !important;
+}
+
+/* Low-opacity borders that become invisible */
+.high-contrast [class*='border-white/'],
+.high-contrast [class*='border-black/'] {
+  border-color: var(--hc-border) !important;
+}
+
+/* ─── Global high-contrast background overrides ─── */
+/* Surface/card backgrounds */
+.high-contrast .bg-bg-surface,
+.high-contrast .bg-bg-card {
+  background-color: var(--hc-surface) !important;
+}
+
+.high-contrast .bg-bg-primary {
+  background-color: var(--hc-background) !important;
+}
+
+/* Game accent backgrounds → HC primary */
+.high-contrast .bg-accent-blue,
+.high-contrast .bg-accent-green,
+.high-contrast .bg-accent-yellow,
+.high-contrast .bg-accent-pink,
+.high-contrast .bg-accent-red,
+.high-contrast .bg-accent-orange,
+.high-contrast .bg-accent-purple {
+  background-color: var(--hc-primary) !important;
+  color: var(--hc-primary-text) !important;
+}
+
+/* Flat accent backgrounds */
+.high-contrast .bg-flat-accent,
+.high-contrast .bg-flat-accent-hover {
+  background-color: var(--hc-warning) !important;
+  color: var(--hc-warning-text) !important;
+}
+
+/* Tinted backgrounds (blue-50, green-50, etc.) → HC surface */
+.high-contrast .bg-blue-50,
+.high-contrast .bg-green-50,
+.high-contrast .bg-yellow-50,
+.high-contrast .bg-red-50,
+.high-contrast .bg-purple-50,
+.high-contrast .bg-amber-50,
+.high-contrast .bg-amber-50\/80 {
+  background-color: var(--hc-surface) !important;
+}
+
+.high-contrast.dark .bg-blue-950\/30,
+.high-contrast.dark .bg-green-950\/30,
+.high-contrast.dark .bg-yellow-950\/30,
+.high-contrast.dark .bg-red-950\/30,
+.high-contrast.dark .bg-purple-950\/30 {
+  background-color: var(--hc-surface) !important;
+}
+
+/* ─── Global high-contrast disabled state overrides ─── */
+/* Ensure disabled elements meet 3:1 contrast minimum */
+.high-contrast button:disabled,
+.high-contrast [disabled] {
+  opacity: 0.6 !important;
+  border: 2px solid var(--hc-border) !important;
+  cursor: not-allowed !important;
+}
+
+/* Fix opacity-30 disabled states (calendar dates, etc.) */
+.high-contrast .opacity-30 {
+  opacity: 0.5 !important;
+}
+
+/* ─── Global high-contrast input/form overrides ─── */
+.high-contrast input,
+.high-contrast textarea,
+.high-contrast select {
+  border: 2px solid var(--hc-border) !important;
+  background-color: var(--hc-surface) !important;
+  color: var(--hc-text) !important;
+}
+
+.high-contrast input:focus,
+.high-contrast textarea:focus,
+.high-contrast select:focus {
+  outline: 4px solid var(--hc-focus) !important;
+  outline-offset: 2px !important;
+}
+
+.high-contrast input::placeholder,
+.high-contrast textarea::placeholder {
+  color: var(--hc-text) !important;
+  opacity: 0.5 !important;
+}
+
+/* ─── Global high-contrast link overrides ─── */
+.high-contrast a:not([class*='bg-']) {
+  text-decoration: underline !important;
+  text-underline-offset: 2px;
+}
+
+/* ─── Global high-contrast divider overrides ─── */
+.high-contrast hr,
+.high-contrast .divide-gray-200 > * + *,
+.high-contrast .divide-gray-700 > * + * {
+  border-color: var(--hc-border) !important;
+}
+
+/* ─── Reel Connections cinema theme HC overrides ─── */
+/* Cinema dark backgrounds → HC surface */
+.high-contrast [class*='from-\[#1a1a2e\]'],
+.high-contrast [class*='to-\[#0f0f1e\]'],
+.high-contrast [class*='bg-\[#1a1a2e\]'],
+.high-contrast [class*='bg-\[#0f0f1e\]'] {
+  background: var(--hc-surface) !important;
+}
+
+/* Cinema gold (#ffce00) borders → HC border */
+.high-contrast [class*='border-\[#ffce00\]'] {
+  border-color: var(--hc-border) !important;
+}
+
+/* Cinema gold (#ffce00) backgrounds → HC primary */
+.high-contrast [class*='bg-\[#ffce00\]'] {
+  background-color: var(--hc-primary) !important;
+  color: var(--hc-primary-text) !important;
+}
+
+/* Cinema gold text → HC text */
+.high-contrast [class*='text-\[#ffce00\]'],
+.high-contrast [class*='hover\:text-\[#ffce00\]']:hover {
+  color: var(--hc-text) !important;
+}
+
+/* Cinema green (#7ed957) → HC success */
+.high-contrast [class*='bg-\[#7ed957\]'] {
+  background-color: var(--hc-success) !important;
+  color: var(--hc-success-text) !important;
+}
+
+.high-contrast [class*='text-\[#7ed957\]'] {
+  color: var(--hc-success) !important;
+}
+
+.high-contrast [class*='border-\[#7ed957\]'] {
+  border-color: var(--hc-success) !important;
+}
+
+/* Cinema red (#ff5757) → HC error */
+.high-contrast [class*='bg-\[#ff5757\]'] {
+  background-color: var(--hc-error) !important;
+  color: var(--hc-error-text) !important;
+}
+
+.high-contrast [class*='text-\[#ff5757\]'] {
+  color: var(--hc-error) !important;
+}
+
+.high-contrast [class*='border-\[#ff5757\]'] {
+  border-color: var(--hc-error) !important;
+}
+
+/* Discord blue (#5865F2) → HC primary */
+.high-contrast [class*='bg-\[#5865F2\]'] {
+  background-color: var(--hc-primary) !important;
+  color: var(--hc-primary-text) !important;
+}
+
+.high-contrast [class*='text-\[#5865F2\]'] {
+  color: var(--hc-text) !important;
+}
+
+/* Cinema dark text (#0f0f1e, #2c2c2c) → HC text */
+.high-contrast [class*='text-\[#0f0f1e\]'],
+.high-contrast [class*='text-\[#2c2c2c\]'] {
+  color: var(--hc-primary-text) !important;
+}
+
+/* Focus states: cinema gold → HC focus */
+.high-contrast [class*='focus\:border-\[#ffce00\]']:focus {
+  border-color: var(--hc-focus) !important;
+  outline: 3px solid var(--hc-focus) !important;
+  outline-offset: 1px !important;
+}
+
+/* White opacity borders/text → HC border */
+.high-contrast [class*='border-white\/10'],
+.high-contrast [class*='border-white\/20'],
+.high-contrast [class*='border-white\/30'] {
+  border-color: var(--hc-border) !important;
+}
+
+.high-contrast [class*='text-white\/30'],
+.high-contrast [class*='text-white\/50'],
+.high-contrast [class*='text-white\/70'] {
+  color: var(--hc-text) !important;
+  opacity: 0.8 !important;
+}
+
+/* Ghost white opacity backgrounds → HC surface */
+.high-contrast [class*='bg-ghost-white\/'],
+.high-contrast [class*='bg-white\/'] {
+  background-color: var(--hc-surface) !important;
 }

@@ -65,9 +65,9 @@ export default function VersionChecker() {
 
   return (
     <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-      <div className="bg-ghost-white dark:bg-gray-800 rounded-2xl p-6 max-w-md w-full shadow-2xl">
+      <div className="bg-bg-surface dark:bg-bg-card rounded-2xl p-6 max-w-md w-full">
         <div className="text-center">
-          <div className="w-16 h-16 bg-gradient-to-br from-sky-500 to-teal-500 rounded-full flex items-center justify-center mx-auto mb-4">
+          <div className="w-16 h-16 bg-primary rounded-full flex items-center justify-center mx-auto mb-4">
             <svg
               className="w-8 h-8 text-white"
               fill="none"
@@ -83,20 +83,20 @@ export default function VersionChecker() {
             </svg>
           </div>
 
-          <h2 className="text-2xl font-bold mb-2 text-gray-900 dark:text-white">Update Required</h2>
+          <h2 className="text-2xl font-bold mb-2 text-text-primary">Update Required</h2>
 
-          <p className="text-gray-600 dark:text-gray-300 mb-6">
+          <p className="text-text-secondary mb-6">
             A new version of Tandem is available. Please update the app to continue playing.
           </p>
 
-          <div className="space-y-2 text-sm text-gray-500 dark:text-gray-400 mb-6">
+          <div className="space-y-2 text-sm text-text-secondary mb-6">
             <p>Current version: {APP_VERSION}</p>
             <p>Required version: {versionInfo?.minSupportedClient || '1.0.0'}</p>
           </div>
 
           <a
             href="https://apps.apple.com/app/tandem-daily"
-            className="inline-block w-full py-3 px-4 bg-gradient-to-r from-sky-500 to-teal-500 text-white rounded-xl font-semibold hover:shadow-lg transition-all"
+            className="inline-block w-full py-3 px-4 bg-primary hover:bg-primary-hover text-white rounded-xl font-semibold transition-all"
             target="_blank"
             rel="noopener noreferrer"
           >

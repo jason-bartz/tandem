@@ -150,8 +150,8 @@ export default function DeleteAccountModal({
             onClick={handleClose}
             className={`flex-1 py-3 rounded-2xl border-[3px] font-semibold transition-all ${
               highContrast
-                ? 'bg-hc-surface text-hc-text border-hc-border hover:bg-hc-focus shadow-[4px_4px_0px_rgba(0,0,0,1)]'
-                : 'bg-ghost-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 border-black dark:border-gray-600 shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]'
+                ? 'bg-hc-surface text-hc-text border-hc-border hover:bg-hc-focus'
+                : 'bg-ghost-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:'
             }`}
           >
             Cancel
@@ -160,8 +160,8 @@ export default function DeleteAccountModal({
             onClick={handleProceedToConfirmation}
             className={`flex-1 py-3 rounded-2xl border-[3px] font-semibold transition-all ${
               highContrast
-                ? 'bg-hc-error text-white border-hc-border hover:bg-red-700 shadow-[4px_4px_0px_rgba(0,0,0,1)]'
-                : 'bg-red-600 text-white border-black dark:border-gray-600 shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]'
+                ? 'bg-hc-error text-white border-hc-border hover:bg-red-700'
+                : 'bg-red-600 text-white hover:'
             }`}
           >
             Continue
@@ -180,8 +180,8 @@ export default function DeleteAccountModal({
               loading ? 'opacity-50 cursor-not-allowed' : ''
             } ${
               highContrast
-                ? 'bg-hc-surface text-hc-text border-hc-border hover:bg-hc-focus shadow-[4px_4px_0px_rgba(0,0,0,1)]'
-                : 'bg-ghost-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 border-black dark:border-gray-600 shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]'
+                ? 'bg-hc-surface text-hc-text border-hc-border hover:bg-hc-focus'
+                : 'bg-ghost-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:'
             }`}
           >
             Back
@@ -195,8 +195,8 @@ export default function DeleteAccountModal({
                 : ''
             } ${
               highContrast
-                ? 'bg-hc-error text-white border-hc-border hover:bg-red-700 shadow-[4px_4px_0px_rgba(0,0,0,1)]'
-                : 'bg-red-600 text-white border-black dark:border-gray-600 shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]'
+                ? 'bg-hc-error text-white border-hc-border hover:bg-red-700'
+                : 'bg-red-600 text-white hover:'
             }`}
           >
             {loading ? (

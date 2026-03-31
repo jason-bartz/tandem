@@ -187,27 +187,52 @@ export async function POST(request) {
     const hasLock = await tryAcquireDiscoveryLock(cacheKey);
 
     if (!hasLock) {
-      // Another request is processing this - wait briefly and check cache/db again
-      await new Promise((resolve) => setTimeout(resolve, 200));
+      // Another request holds the lock — poll cache/db with exponential backoff
+      for (let attempt = 0; attempt < 8; attempt++) {
+        await new Promise((resolve) =>
+          setTimeout(resolve, Math.min(200 * Math.pow(2, attempt), 3000))
+        );
 
-      // Check cache again
-      const cachedAfterWait = await getCachedCombination(cacheKey);
-      if (cachedAfterWait) {
-        const result =
-          typeof cachedAfterWait === 'string' ? JSON.parse(cachedAfterWait) : cachedAfterWait;
-        return NextResponse.json({
-          success: true,
-          result: {
-            element: result.element,
-            emoji: result.emoji,
-            isFirstDiscovery: false,
-          },
-          cached: true,
-        });
+        // Check cache
+        const cachedAfterWait = await getCachedCombination(cacheKey);
+        if (cachedAfterWait) {
+          const result =
+            typeof cachedAfterWait === 'string' ? JSON.parse(cachedAfterWait) : cachedAfterWait;
+          return NextResponse.json({
+            success: true,
+            result: {
+              element: result.element,
+              emoji: result.emoji,
+              isFirstDiscovery: false,
+            },
+            cached: true,
+          });
+        }
+
+        // Check database
+        const { data: dbAfterWait } = await supabase
+          .from('element_combinations')
+          .select('result_element, result_emoji')
+          .eq('combination_key', cacheKey)
+          .single();
+
+        if (dbAfterWait) {
+          await setCachedCombination(cacheKey, {
+            element: dbAfterWait.result_element,
+            emoji: dbAfterWait.result_emoji,
+          });
+          return NextResponse.json({
+            success: true,
+            result: {
+              element: dbAfterWait.result_element,
+              emoji: dbAfterWait.result_emoji,
+              isFirstDiscovery: false,
+            },
+            cached: false,
+          });
+        }
       }
-
-      // Still not found, wait longer
-      await new Promise((resolve) => setTimeout(resolve, 500));
+      // Exhausted retries — fall through to generate via AI as a fallback
     }
 
     try {

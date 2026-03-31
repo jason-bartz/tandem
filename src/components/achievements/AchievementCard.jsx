@@ -48,11 +48,11 @@ export default function AchievementCard({ achievement, index = 0 }) {
       className={`relative rounded-2xl border-[3px] p-4 transition-all ${animationClass} ${delayClass} ${
         isUnlocked
           ? highContrast
-            ? 'bg-hc-surface border-hc-border shadow-[4px_4px_0px_rgba(0,0,0,1)]'
-            : 'bg-ghost-white dark:bg-bg-card border-black dark:border-gray-600 shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(0,0,0,0.5)]'
+            ? 'bg-hc-surface border-hc-border'
+            : 'bg-ghost-white dark:bg-bg-card dark:'
           : highContrast
-            ? 'bg-hc-surface/40 border-hc-border/40 shadow-[2px_2px_0px_rgba(0,0,0,0.3)]'
-            : 'bg-gray-100 dark:bg-gray-800/50 border-black dark:border-gray-600 shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_rgba(0,0,0,0.5)]'
+            ? 'bg-hc-surface/40 border-hc-border/40'
+            : 'bg-gray-100 dark:bg-gray-800/50 dark:'
       }`}
     >
       {/* Locked Overlay */}

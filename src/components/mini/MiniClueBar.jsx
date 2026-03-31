@@ -48,7 +48,7 @@ export default function MiniClueBar({
           className="
               flex-shrink-0
               w-10 h-10
-              rounded-[12px]
+              rounded-md
               bg-transparent
               flex items-center justify-center
               hover:bg-gray-100 dark:hover:bg-gray-700
@@ -84,7 +84,7 @@ export default function MiniClueBar({
           className="
               flex-shrink-0
               w-10 h-10
-              rounded-[12px]
+              rounded-md
               bg-transparent
               flex items-center justify-center
               hover:bg-gray-100 dark:hover:bg-gray-700

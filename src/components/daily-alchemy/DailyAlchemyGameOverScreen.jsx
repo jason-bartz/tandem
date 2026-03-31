@@ -44,9 +44,9 @@ export function DailyAlchemyGameOverScreen({
         className={cn(
           'flex flex-col items-center justify-center p-4 mb-6',
           'bg-red-50 dark:bg-red-900/20',
-          'border-[2px] border-black',
+          '',
           'rounded-xl',
-          'shadow-[2px_2px_0px_rgba(0,0,0,1)]',
+          '',
           'w-full max-w-sm',
           highContrast && 'border-[3px]'
         )}
@@ -74,12 +74,12 @@ export function DailyAlchemyGameOverScreen({
             className={cn(
               'w-full flex items-center justify-center gap-2 px-6 py-4',
               'bg-soup-primary text-white',
-              'border-[3px] border-black',
+              '',
               'rounded-xl font-bold text-lg',
-              'shadow-[4px_4px_0px_rgba(0,0,0,1)]',
+              '',
               'hover:bg-soup-hover',
-              'hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_rgba(0,0,0,1)]',
-              'active:translate-y-0 active:shadow-none',
+              ' hover:',
+              'active:translate-y-0',
               'transition-all duration-150',
               highContrast && 'border-[4px]'
             )}
@@ -103,11 +103,11 @@ export function DailyAlchemyGameOverScreen({
               'w-full flex items-center justify-center gap-2 px-6 py-3',
               'bg-gray-200 dark:bg-gray-700',
               'text-gray-800 dark:text-gray-200',
-              'border-[3px] border-black dark:border-gray-600',
+              'dark:border-gray-600',
               'rounded-xl font-bold',
-              'shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)]',
-              'hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[1px_1px_0px_rgba(0,0,0,1)]',
-              'active:translate-x-[3px] active:translate-y-[3px] active:shadow-none',
+              'dark:',
+              ' hover:',
+              '',
               'transition-all duration-150',
               highContrast && 'border-[4px]'
             )}
@@ -135,12 +135,12 @@ export function DailyAlchemyGameOverScreen({
         className={cn(
           'w-full max-w-sm flex items-center justify-center gap-3 py-4',
           'bg-ghost-white dark:bg-gray-800 text-gray-800 dark:text-gray-200',
-          'border-[3px] border-black dark:border-gray-600',
+          'dark:border-gray-600',
           'rounded-xl font-bold text-lg',
-          'shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(75,85,99,1)]',
+          'dark:',
           'hover:bg-gray-50 dark:hover:bg-gray-700',
-          'hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_rgba(0,0,0,1)]',
-          'active:translate-y-0 active:shadow-none',
+          ' hover:',
+          'active:translate-y-0',
           'transition-all duration-150',
           highContrast && 'border-[4px] border-hc-border'
         )}

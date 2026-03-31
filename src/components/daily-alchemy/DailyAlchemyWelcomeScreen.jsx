@@ -64,9 +64,9 @@ export function DailyAlchemyWelcomeScreen({
         className={cn(
           'w-full max-w-sm p-5 mb-6',
           'bg-soup-light/50 dark:bg-soup-primary/10',
-          'border-[3px] border-black dark:border-gray-600',
+          'dark:border-gray-600',
           'rounded-2xl',
-          'shadow-[4px_4px_0px_rgba(0,0,0,1)]',
+          '',
           highContrast && 'border-[4px] border-hc-border'
         )}
         initial={!reduceMotion ? { opacity: 0, y: 20 } : false}
@@ -121,7 +121,7 @@ export function DailyAlchemyWelcomeScreen({
             'bg-gray-50 dark:bg-gray-800',
             'border-[3px] border-gray-300 dark:border-gray-600',
             'rounded-xl',
-            'shadow-[3px_3px_0px_rgba(0,0,0,0.15)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.3)]',
+            ' dark:',
             'text-sm text-gray-600 dark:text-gray-300',
             'hover:bg-gray-100 dark:hover:bg-gray-700',
             'hover:border-gray-400 dark:hover:border-gray-500',
@@ -138,12 +138,12 @@ export function DailyAlchemyWelcomeScreen({
         className={cn(
           'w-full max-w-sm flex items-center justify-center gap-3 py-4',
           'bg-soup-primary text-black',
-          'border-[3px] border-black',
+          '',
           'rounded-xl font-bold text-lg',
-          'shadow-[4px_4px_0px_rgba(0,0,0,1)]',
+          '',
           'hover:bg-soup-hover',
-          'hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_rgba(0,0,0,1)]',
-          'active:translate-y-0 active:shadow-none',
+          ' hover:',
+          'active:translate-y-0',
           'transition-all duration-150',
           highContrast && 'border-[4px]'
         )}
@@ -174,12 +174,12 @@ export function DailyAlchemyWelcomeScreen({
         className={cn(
           'w-full max-w-sm flex items-center justify-center gap-3 py-4 mt-3',
           'bg-ghost-white dark:bg-gray-800 text-gray-800 dark:text-gray-200',
-          'border-[3px] border-black dark:border-gray-600',
+          'dark:border-gray-600',
           'rounded-xl font-bold text-lg',
-          'shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(75,85,99,1)]',
+          'dark:',
           'hover:bg-gray-50 dark:hover:bg-gray-700',
-          'hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_rgba(0,0,0,1)]',
-          'active:translate-y-0 active:shadow-none',
+          ' hover:',
+          'active:translate-y-0',
           'transition-all duration-150',
           highContrast && 'border-[4px] border-hc-border'
         )}
@@ -219,12 +219,12 @@ export function DailyAlchemyWelcomeScreen({
         className={cn(
           'w-full max-w-sm flex items-center justify-center gap-3 py-4 mb-3',
           'bg-indigo-500 text-white',
-          'border-[3px] border-black',
+          '',
           'rounded-xl font-bold text-lg',
-          'shadow-[4px_4px_0px_rgba(0,0,0,1)]',
+          '',
           'hover:bg-indigo-600',
-          'hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_rgba(0,0,0,1)]',
-          'active:translate-y-0 active:shadow-none',
+          ' hover:',
+          'active:translate-y-0',
           'transition-all duration-150',
           highContrast && 'border-[4px]'
         )}
@@ -258,7 +258,7 @@ export function DailyAlchemyWelcomeScreen({
           'bg-gray-50 dark:bg-gray-800',
           'border-[3px] border-gray-300 dark:border-gray-600',
           'rounded-xl',
-          'shadow-[3px_3px_0px_rgba(0,0,0,0.15)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.3)]',
+          ' dark:',
           'hover:bg-gray-100 dark:hover:bg-gray-700',
           'hover:border-gray-400 dark:hover:border-gray-500',
           'transition-colors cursor-pointer'

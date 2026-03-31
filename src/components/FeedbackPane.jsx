@@ -89,7 +89,7 @@ export default function FeedbackPane({ isOpen, onClose }) {
 
       {/* Sliding Pane */}
       <div
-        className={`fixed top-0 left-0 h-full w-full sm:w-[480px] bg-ghost-white dark:bg-bg-surface shadow-2xl transform transition-all duration-300 ease-in-out z-50 ${
+        className={`fixed top-0 left-0 h-full w-full sm:w-[480px] bg-ghost-white dark:bg-bg-surface transform transition-all duration-300 ease-in-out z-50 ${
           isOpen ? 'translate-x-0 opacity-100' : '-translate-x-full opacity-0'
         }`}
       >
@@ -128,7 +128,7 @@ export default function FeedbackPane({ isOpen, onClose }) {
                 className={`p-4 rounded-2xl border-[3px] ${
                   highContrast
                     ? 'bg-hc-primary/20 border-hc-border'
-                    : 'bg-accent-green/20 border-accent-green shadow-[3px_3px_0px_rgba(0,0,0,0.1)]'
+                    : 'bg-accent-green/20 border-accent-green'
                 }`}
               >
                 <div className="flex items-start gap-3">
@@ -161,7 +161,7 @@ export default function FeedbackPane({ isOpen, onClose }) {
                 className={`p-4 rounded-2xl border-[3px] ${
                   highContrast
                     ? 'bg-hc-error/20 border-hc-border'
-                    : 'bg-accent-red/20 border-accent-red shadow-[3px_3px_0px_rgba(0,0,0,0.1)]'
+                    : 'bg-accent-red/20 border-accent-red'
                 }`}
               >
                 <div className="flex items-start gap-3">
@@ -201,7 +201,7 @@ export default function FeedbackPane({ isOpen, onClose }) {
                         formData.category === category.value
                           ? highContrast
                             ? 'bg-hc-primary border-hc-border text-black'
-                            : 'bg-accent-blue border-border-main text-white shadow-[3px_3px_0px_rgba(0,0,0,1)]'
+                            : 'bg-accent-blue border-border-main text-white'
                           : highContrast
                             ? 'bg-hc-surface border-hc-border text-gray-700 hover:bg-hc-primary/20'
                             : 'bg-ghost-white dark:bg-bg-surface border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 hover:border-gray-400'
@@ -237,7 +237,7 @@ export default function FeedbackPane({ isOpen, onClose }) {
                   className={`w-full rounded-2xl border-[3px] px-4 py-3 text-base resize-none transition-all focus:outline-none focus:ring-4 ${
                     highContrast
                       ? 'border-hc-border bg-hc-surface text-gray-900 focus:ring-hc-focus/30'
-                      : 'border-border-main bg-ghost-white dark:bg-bg-card text-gray-900 dark:text-gray-100 focus:ring-accent-blue/20 shadow-[2px_2px_0px_rgba(0,0,0,0.1)]'
+                      : 'border-border-main bg-ghost-white dark:bg-bg-card text-gray-900 dark:text-gray-100 focus:ring-accent-blue/20'
                   }`}
                   placeholder="Describe your feedback in detail. Include puzzle numbers, steps to reproduce bugs, or specific feature suggestions..."
                   maxLength={2000}
@@ -297,7 +297,7 @@ export default function FeedbackPane({ isOpen, onClose }) {
                       className={`w-full rounded-xl border-[3px] px-4 py-2.5 text-sm transition-all focus:outline-none focus:ring-4 ${
                         highContrast
                           ? 'border-hc-border bg-hc-surface text-gray-900 focus:ring-hc-focus/30'
-                          : 'border-border-main bg-ghost-white dark:bg-bg-card text-gray-900 dark:text-gray-100 focus:ring-accent-blue/20 shadow-[2px_2px_0px_rgba(0,0,0,0.1)]'
+                          : 'border-border-main bg-ghost-white dark:bg-bg-card text-gray-900 dark:text-gray-100 focus:ring-accent-blue/20'
                       }`}
                       placeholder="Your email address"
                     />
@@ -313,7 +313,7 @@ export default function FeedbackPane({ isOpen, onClose }) {
                   highContrast
                     ? 'bg-hc-primary border-hc-border text-black hover:bg-hc-focus focus:ring-hc-focus/30'
                     : canSubmit && !submitting
-                      ? 'bg-accent-blue border-border-main text-white shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)] active:translate-x-[4px] active:translate-y-[4px] active:shadow-none focus:ring-accent-blue/30'
+                      ? 'bg-accent-blue border-border-main text-white hover: focus:ring-accent-blue/30'
                       : 'bg-gray-300 dark:bg-gray-600 border-border-main text-gray-500 dark:text-gray-400 cursor-not-allowed'
                 }`}
               >

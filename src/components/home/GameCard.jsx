@@ -87,10 +87,10 @@ export default function GameCard({
     <motion.button
       onClick={handleClick}
       disabled={loading}
-      className={`relative w-full text-left rounded-[24px] border-[3px] overflow-hidden p-5 transition-shadow cursor-pointer disabled:cursor-wait focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ${
+      className={`relative w-full text-left rounded-lg overflow-hidden p-5 cursor-pointer disabled:cursor-wait focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 transition-all duration-200 hover:scale-[1.02] ${
         highContrast
-          ? 'bg-hc-surface border-hc-border shadow-[4px_4px_0px_rgba(0,0,0,1)] focus-visible:ring-hc-focus'
-          : 'bg-ghost-white dark:bg-bg-card border-border-main shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(0,0,0,0.5)] focus-visible:ring-accent-blue'
+          ? 'bg-hc-surface border-hc-border focus-visible:ring-hc-focus'
+          : 'bg-ghost-white dark:bg-bg-card border-border-main dark:focus-visible:ring-accent-blue'
       }`}
       variants={{ ...cardVariants, ...tapVariants }}
       initial="initial"
@@ -102,9 +102,7 @@ export default function GameCard({
       {completed && !showNewBadge && (
         <motion.span
           className={`absolute top-2 right-2 w-7 h-7 flex items-center justify-center rounded-full z-10 ${
-            highContrast
-              ? 'bg-hc-text text-hc-background'
-              : 'bg-green-500 text-white shadow-[2px_2px_0px_rgba(0,0,0,0.3)]'
+            highContrast ? 'bg-hc-text text-hc-background' : 'bg-green-500 text-white'
           }`}
           initial={reduceMotion ? false : { scale: 0, rotate: -90 }}
           animate={{ scale: 1, rotate: 0 }}
@@ -134,24 +132,16 @@ export default function GameCard({
         </motion.span>
       )}
       <div className="flex items-center gap-4">
-        {/* Icon */}
+        {/* Icon - always show immediately (preloaded in head) */}
         <div className="w-[52px] h-[52px] flex-shrink-0 relative">
-          {loading ? (
-            <div
-              className={`w-full h-full rounded-xl bg-gray-200 dark:bg-gray-700 ${
-                !reduceMotion ? 'skeleton-shimmer' : ''
-              }`}
-            />
-          ) : (
-            <Image
-              src={`${icon}?v=${ASSET_VERSION}`}
-              alt=""
-              width={52}
-              height={52}
-              className="rounded-xl"
-              priority
-            />
-          )}
+          <Image
+            src={`${icon}?v=${ASSET_VERSION}`}
+            alt=""
+            width={52}
+            height={52}
+            className="rounded-xl"
+            priority
+          />
         </div>
 
         {/* Content */}
@@ -168,7 +158,7 @@ export default function GameCard({
           {/* Description */}
           <p
             className={`text-sm leading-snug mb-2 ${
-              highContrast ? 'text-hc-text opacity-80' : 'text-gray-600 dark:text-gray-400'
+              highContrast ? 'text-hc-text' : 'text-gray-600 dark:text-gray-400'
             }`}
           >
             {description}
@@ -177,12 +167,10 @@ export default function GameCard({
           {/* Puzzle Number and Creator Attribution */}
           <div
             className={`text-sm font-medium ${
-              highContrast ? 'text-hc-text opacity-70' : 'text-gray-500 dark:text-gray-500'
+              highContrast ? 'text-hc-text' : 'text-gray-500 dark:text-gray-500'
             }`}
           >
-            {loading ? (
-              <span className="inline-block w-20 h-4 bg-gray-200 dark:bg-gray-700 rounded" />
-            ) : unavailable ? (
+            {unavailable ? (
               <span className="text-amber-600 dark:text-amber-400">Will be ready shortly!</span>
             ) : completed ? (
               <span className="text-green-600 dark:text-green-400">{completedMessage}</span>
@@ -203,7 +191,7 @@ export default function GameCard({
         <div className="flex-shrink-0">
           <svg
             className={`w-5 h-5 ${
-              highContrast ? 'text-hc-text opacity-60' : 'text-gray-400 dark:text-gray-500'
+              highContrast ? 'text-hc-text' : 'text-gray-400 dark:text-gray-500'
             }`}
             fill="none"
             stroke="currentColor"

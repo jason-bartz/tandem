@@ -207,8 +207,8 @@ export default function UserManagement() {
 
   if (loading && users.length === 0) {
     return (
-      <div className="bg-bg-surface rounded-lg border-[3px] border-black dark:border-white shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(255,255,255,0.3)]">
-        <div className="px-3 sm:px-6 py-3 sm:py-4 border-b-[3px] border-black dark:border-white">
+      <div className="bg-bg-surface rounded-lg dark:">
+        <div className="px-3 sm:px-6 py-3 sm:py-4 border-b border-border-light">
           <h3 className="text-base sm:text-lg font-bold text-text-primary">User Management</h3>
         </div>
         <div className="p-3 sm:p-6">
@@ -219,14 +219,14 @@ export default function UserManagement() {
   }
 
   return (
-    <div className="bg-bg-surface rounded-lg border-[3px] border-black dark:border-white shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(255,255,255,0.3)]">
-      <div className="px-3 sm:px-6 py-3 sm:py-4 border-b-[3px] border-black dark:border-white">
+    <div className="bg-bg-surface rounded-lg dark:">
+      <div className="px-3 sm:px-6 py-3 sm:py-4 border-b border-border-light">
         <div className="flex items-center justify-between">
           <h3 className="text-base sm:text-lg font-bold text-text-primary">User Management</h3>
           <button
             onClick={handleExport}
             disabled={exporting}
-            className="px-3 py-1.5 bg-bg-card border-[2px] border-border-main rounded-lg font-bold text-xs text-text-secondary hover:bg-bg-surface hover:border-black dark:hover:border-white transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1.5"
+            className="px-3 py-1.5 bg-bg-card border-[2px] border-border-main rounded-lg font-bold text-xs text-text-secondary hover:bg-bg-surface hover:dark:hover:border-white transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1.5"
           >
             {exporting ? (
               <>
@@ -282,7 +282,7 @@ export default function UserManagement() {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search by username, email, or user ID..."
-              className="w-full px-4 py-2.5 border-[3px] border-border-main rounded-lg bg-bg-card text-text-primary font-medium text-sm placeholder:text-text-muted focus:outline-none focus:border-orange-500 transition-colors"
+              className="w-full px-4 py-2.5 border-2 border-border-main rounded-lg bg-bg-card text-text-primary font-medium text-sm placeholder:text-text-muted focus:outline-none focus:border-orange-500 transition-colors"
             />
             {search && (
               <button
@@ -304,7 +304,7 @@ export default function UserManagement() {
           <select
             value={typeFilter}
             onChange={(e) => setTypeFilter(e.target.value)}
-            className="px-3 py-2.5 border-[3px] border-border-main rounded-lg bg-bg-card text-text-primary font-bold text-sm cursor-pointer focus:outline-none focus:border-orange-500"
+            className="px-3 py-2.5 border-2 border-border-main rounded-lg bg-bg-card text-text-primary font-bold text-sm cursor-pointer focus:outline-none focus:border-orange-500"
           >
             {TYPE_OPTIONS.map((opt) => (
               <option key={opt.value} value={opt.value}>
@@ -316,7 +316,7 @@ export default function UserManagement() {
           <select
             value={sortOrder}
             onChange={(e) => setSortOrder(e.target.value)}
-            className="px-3 py-2.5 border-[3px] border-border-main rounded-lg bg-bg-card text-text-primary font-bold text-sm cursor-pointer focus:outline-none focus:border-orange-500"
+            className="px-3 py-2.5 border-2 border-border-main rounded-lg bg-bg-card text-text-primary font-bold text-sm cursor-pointer focus:outline-none focus:border-orange-500"
           >
             {SORT_OPTIONS.map((opt) => (
               <option key={opt.value} value={opt.value}>
@@ -333,10 +333,10 @@ export default function UserManagement() {
         )}
 
         {/* User Table */}
-        <div className="overflow-x-auto rounded-lg border-[3px] border-black dark:border-white">
+        <div className="overflow-x-auto rounded-lg">
           <table className="w-full text-sm">
             <thead>
-              <tr className="bg-bg-card border-b-[3px] border-black dark:border-white">
+              <tr className="bg-bg-card border-b border-border-light">
                 <th className="text-left px-3 py-2.5 font-bold text-text-secondary text-xs uppercase tracking-wide">
                   User
                 </th>
@@ -453,7 +453,7 @@ export default function UserManagement() {
                       (detailLoading ? (
                         <tr key={`${user.id}-detail`}>
                           <td colSpan="8" className="p-0">
-                            <div className="border-t-[3px] border-black dark:border-white bg-bg-card p-8 text-center">
+                            <div className="border-t border-border-light bg-bg-card p-8 text-center">
                               <div className="inline-block w-6 h-6 border-[3px] border-orange-500 border-t-transparent rounded-full animate-spin" />
                               <p className="text-sm text-text-secondary mt-2 font-medium">
                                 Loading user details...
@@ -473,7 +473,7 @@ export default function UserManagement() {
                       ) : (
                         <tr key={`${user.id}-detail`}>
                           <td colSpan="8" className="p-0">
-                            <div className="border-t-[3px] border-black dark:border-white bg-bg-card p-6 text-center">
+                            <div className="border-t border-border-light bg-bg-card p-6 text-center">
                               <p className="text-sm text-accent-red font-bold">
                                 Failed to load user details
                               </p>

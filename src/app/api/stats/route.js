@@ -45,10 +45,12 @@ export async function GET(request) {
       });
     }
 
-    // Default: return global stats
-    const stats = await getStats();
-    const popularPuzzles = await getPopularPuzzles(3);
-    const dailyActivity = await getDailyActivity(7);
+    // Default: return global stats (parallel fetch)
+    const [stats, popularPuzzles, dailyActivity] = await Promise.all([
+      getStats(),
+      getPopularPuzzles(3),
+      getDailyActivity(7),
+    ]);
 
     return NextResponse.json({
       success: true,

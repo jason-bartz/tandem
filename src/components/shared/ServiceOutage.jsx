@@ -1,6 +1,7 @@
 'use client';
 
 import { WifiOff } from 'lucide-react';
+import { useTheme } from '@/contexts/ThemeContext';
 
 /**
  * ServiceOutage - Displayed when the backend (Supabase) is unreachable.
@@ -8,18 +9,38 @@ import { WifiOff } from 'lucide-react';
  * for individual API calls to time out.
  */
 export default function ServiceOutage() {
+  const { highContrast } = useTheme();
+
   return (
     <div className="fixed inset-0 w-full h-full flex items-center justify-center bg-bg-primary px-4">
-      <div className="bg-ghost-white dark:bg-gray-800 rounded-3xl border-[3px] border-black dark:border-gray-600 shadow-[6px_6px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_rgba(0,0,0,0.5)] p-8 max-w-md text-center">
+      <div
+        className={`rounded-3xl p-8 max-w-md text-center ${
+          highContrast
+            ? 'bg-hc-surface border-4 border-hc-border'
+            : 'bg-ghost-white dark:bg-gray-800'
+        }`}
+      >
         <div className="mb-6 flex justify-center">
-          <div className="w-20 h-20 rounded-full bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center">
-            <WifiOff className="w-10 h-10 text-amber-600 dark:text-amber-400" />
+          <div
+            className={`w-20 h-20 rounded-full flex items-center justify-center ${
+              highContrast ? 'bg-hc-warning' : 'bg-amber-100 dark:bg-amber-900/30'
+            }`}
+          >
+            <WifiOff
+              className={`w-10 h-10 ${
+                highContrast ? 'text-hc-warning-text' : 'text-amber-600 dark:text-amber-400'
+              }`}
+            />
           </div>
         </div>
-        <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-3">
+        <h2
+          className={`text-xl font-bold mb-3 ${
+            highContrast ? 'text-hc-text' : 'text-gray-900 dark:text-white'
+          }`}
+        >
           Temporarily Unavailable
         </h2>
-        <p className="text-gray-600 dark:text-gray-400 mb-6">
+        <p className={`mb-6 ${highContrast ? 'text-hc-text' : 'text-gray-600 dark:text-gray-400'}`}>
           Our database provider is experiencing a temporary outage, which is preventing our puzzles
           from loading. I apologize for the inconvenience. Check back shortly!
           <br />
@@ -27,7 +48,11 @@ export default function ServiceOutage() {
         </p>
         <button
           onClick={() => window.location.reload()}
-          className="px-6 py-3 bg-sky-600 text-white rounded-xl hover:bg-sky-700 transition-colors font-medium"
+          className={`px-6 py-3 rounded-xl font-medium transition-colors ${
+            highContrast
+              ? 'bg-hc-primary text-hc-primary-text border-2 border-hc-border'
+              : 'bg-sky-600 text-white hover:bg-sky-700'
+          }`}
         >
           Try Again
         </button>

@@ -71,7 +71,7 @@ export default function AboutPage() {
               <>
                 {/* Main content card */}
                 <div className="relative">
-                  <div className="bg-ghost-white dark:bg-gray-800 rounded-[32px] border-[3px] border-black dark:border-white overflow-hidden -translate-x-[4px] -translate-y-[4px] relative z-10">
+                  <div className="bg-ghost-white dark:bg-gray-800 rounded-lg overflow-hidden relative z-10">
                     {/* Header with back button, title, and hamburger menu */}
                     <div className="flex items-center justify-between p-6 pb-4">
                       <Link
@@ -149,8 +149,8 @@ export default function AboutPage() {
                         )}
 
                         {/* Founder Image and Info */}
-                        <div className="flex flex-col items-center pt-6 border-t-[3px] border-black dark:border-white">
-                          <div className="relative w-32 h-32 rounded-full overflow-hidden border-[3px] border-black dark:border-white mb-4">
+                        <div className="flex flex-col items-center pt-6 border-t border-border-light">
+                          <div className="relative w-32 h-32 rounded-full overflow-hidden mb-4">
                             <Image
                               src="/branding/jason-bartz.webp"
                               alt="Jason Bartz"
@@ -177,7 +177,7 @@ export default function AboutPage() {
                       </div>
 
                       {/* Support Section */}
-                      <div className="mt-8 pt-6 border-t-[3px] border-black dark:border-white">
+                      <div className="mt-8 pt-6 border-t border-border-light">
                         <p className="text-sm text-gray-600 dark:text-gray-400 text-center mb-4">
                           {isStandaloneAlchemy
                             ? 'Generous supporters help keep this game ad-free and the daily puzzle free for everyone. Your support helps cover our servers and keep the games running.'
@@ -187,14 +187,10 @@ export default function AboutPage() {
                       </div>
 
                       {/* Call to Action */}
-                      <div
-                        className={
-                          isWeb ? 'mt-4' : 'mt-8 pt-6 border-t-[3px] border-black dark:border-white'
-                        }
-                      >
+                      <div className={isWeb ? 'mt-4' : 'mt-8 pt-6 border-t border-border-light'}>
                         <Link
                           href={homePath}
-                          className="block w-full text-center px-6 py-3 bg-[#38b6ff] hover:bg-[#38b6ff]/90 text-white font-semibold rounded-2xl border-[3px] border-black dark:border-white transition-all"
+                          className="block w-full text-center px-6 py-3 bg-[#38b6ff] hover:bg-[#38b6ff]/90 text-white font-semibold rounded-2xl transition-all"
                         >
                           {isStandaloneAlchemy ? 'Back to Puzzle' : 'Back to the puzzles'}
                         </Link>
@@ -202,7 +198,7 @@ export default function AboutPage() {
                     </div>
                   </div>
                   {/* Faux drop shadow */}
-                  <div className="absolute inset-0 bg-black dark:bg-ghost-white rounded-[32px] -z-10"></div>
+                  <div className="absolute inset-0 bg-black dark:bg-ghost-white rounded-lg -z-10"></div>
                 </div>
               </>
             )}

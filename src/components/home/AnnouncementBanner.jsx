@@ -59,7 +59,7 @@ export default function AnnouncementBanner() {
         className={`relative mb-4 rounded-2xl px-4 pt-3 pb-3 ${
           highContrast
             ? 'bg-hc-surface text-hc-text'
-            : 'bg-amber-50/80 dark:bg-amber-900/20 text-gray-700 dark:text-gray-300'
+            : 'bg-bg-surface dark:bg-bg-card text-text-secondary'
         }`}
         role="status"
         aria-live="polite"

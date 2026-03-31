@@ -305,10 +305,10 @@ export default function AuthModal({
     >
       {/* Success message */}
       {successMessage && (
-        <div className="mb-4 p-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg relative">
+        <div className="mb-4 p-3 bg-green-50 dark:bg-green-900/20 border-2 border-green-200 dark:border-green-800 rounded-lg relative">
           <button
             onClick={() => setSuccessMessage(null)}
-            className="absolute top-2 right-2 text-green-600 dark:text-green-400 hover:text-green-800 dark:hover:text-green-200"
+            className="absolute top-2 right-2 text-accent-green hover:opacity-70"
             aria-label="Close message"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -320,14 +320,14 @@ export default function AuthModal({
               />
             </svg>
           </button>
-          <p className="text-sm text-green-600 dark:text-green-400 pr-6">{successMessage}</p>
+          <p className="text-sm text-accent-green pr-6">{successMessage}</p>
         </div>
       )}
 
       {/* Error message */}
       {error && (
-        <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
-          <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
+        <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 border-2 border-red-200 dark:border-red-800 rounded-lg">
+          <p className="text-sm text-accent-red">{error}</p>
         </div>
       )}
 
@@ -339,11 +339,9 @@ export default function AuthModal({
         disabled={loading}
         type="button"
         aria-label={mode === 'signup' ? 'Sign up with Google' : 'Sign in with Google'}
-        className={`w-full p-4 rounded-2xl border-[3px] shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(0,0,0,0.5)] transition-all flex items-center justify-center gap-3 mb-4 ${
-          loading
-            ? 'opacity-50 cursor-not-allowed'
-            : 'hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0px_rgba(0,0,0,0.5)]'
-        } bg-white text-gray-700 border-black dark:bg-gray-800 dark:text-gray-200 dark:border-gray-600`}
+        className={`w-full p-4 rounded-2xl border-[3px] transition-all flex items-center justify-center gap-3 mb-4 ${
+          loading ? 'opacity-50 cursor-not-allowed' : 'hover:opacity-90'
+        } bg-bg-surface dark:bg-bg-card text-text-primary border-border-main`}
       >
         {loading ? (
           <div className="animate-spin rounded-full h-5 w-5 border-2 border-gray-700 border-t-transparent dark:border-gray-200 dark:border-t-transparent"></div>
@@ -381,11 +379,9 @@ export default function AuthModal({
           disabled={loading}
           type="button"
           aria-label="Sign in with Apple"
-          className={`w-full p-4 rounded-2xl border-[3px] shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(0,0,0,0.5)] transition-all flex items-center justify-center gap-3 mb-4 ${
-            loading
-              ? 'opacity-50 cursor-not-allowed'
-              : 'hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0px_rgba(0,0,0,0.5)]'
-          } bg-black text-white border-black dark:border-gray-600`}
+          className={`w-full p-4 rounded-2xl border-[3px] dark:transition-all flex items-center justify-center gap-3 mb-4 ${
+            loading ? 'opacity-50 cursor-not-allowed' : ' hover:dark:hover:'
+          } bg-black text-white`}
         >
           {loading ? (
             <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent"></div>
@@ -412,11 +408,9 @@ export default function AuthModal({
         disabled={loading}
         type="button"
         aria-label={mode === 'signup' ? 'Sign up with Discord' : 'Sign in with Discord'}
-        className={`w-full p-4 rounded-2xl border-[3px] shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(0,0,0,0.5)] transition-all flex items-center justify-center gap-3 mb-4 ${
-          loading
-            ? 'opacity-50 cursor-not-allowed'
-            : 'hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0px_rgba(0,0,0,0.5)]'
-        } bg-[#5865F2] text-white border-black dark:border-gray-600`}
+        className={`w-full p-4 rounded-2xl border-[3px] dark:transition-all flex items-center justify-center gap-3 mb-4 ${
+          loading ? 'opacity-50 cursor-not-allowed' : ' hover:dark:hover:'
+        } bg-[#5865F2] text-white`}
       >
         {loading ? (
           <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent"></div>
@@ -434,18 +428,15 @@ export default function AuthModal({
 
       {/* Divider between social sign-in and email form */}
       <div className="flex items-center gap-4 my-6">
-        <div className="flex-1 h-px bg-gray-300 dark:bg-gray-600"></div>
-        <span className="text-sm text-gray-500 dark:text-gray-400">or</span>
-        <div className="flex-1 h-px bg-gray-300 dark:bg-gray-600"></div>
+        <div className="flex-1 h-px bg-border-main"></div>
+        <span className="text-sm text-text-secondary">or</span>
+        <div className="flex-1 h-px bg-border-main"></div>
       </div>
 
       {/* Email/Password Form */}
       <form onSubmit={handleSubmit}>
         <div className="mb-4">
-          <label
-            htmlFor="email"
-            className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-          >
+          <label htmlFor="email" className="block text-sm font-medium text-text-primary mb-2">
             Email
           </label>
           <input
@@ -453,7 +444,7 @@ export default function AuthModal({
             id="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+            className="w-full px-4 py-3 border-2 border-border-main rounded-lg focus:border-primary focus:outline-none bg-bg-surface dark:bg-bg-card text-text-primary"
             placeholder="you@example.com"
             required
           />
@@ -462,10 +453,7 @@ export default function AuthModal({
         {mode !== 'reset' && (
           <div className="mb-6">
             <div className="flex items-center justify-between mb-2">
-              <label
-                htmlFor="password"
-                className="block text-sm font-medium text-gray-700 dark:text-gray-300"
-              >
+              <label htmlFor="password" className="block text-sm font-medium text-text-primary">
                 Password
               </label>
               {mode === 'login' && (
@@ -488,21 +476,19 @@ export default function AuthModal({
               id="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+              className="w-full px-4 py-3 border-2 border-border-main rounded-lg focus:border-primary focus:outline-none bg-bg-surface dark:bg-bg-card text-text-primary"
               placeholder="••••••••"
               minLength={6}
               required
             />
             {mode === 'signup' && (
-              <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                Must be at least 6 characters
-              </p>
+              <p className="mt-1 text-xs text-text-secondary">Must be at least 6 characters</p>
             )}
           </div>
         )}
 
         {mode === 'reset' && (
-          <p className="mb-6 text-sm text-gray-600 dark:text-gray-400">
+          <p className="mb-6 text-sm text-text-secondary">
             Enter your email address and we'll send you a link to reset your password.
           </p>
         )}
@@ -510,7 +496,7 @@ export default function AuthModal({
         <button
           type="submit"
           disabled={loading}
-          className="w-full p-4 text-white rounded-[20px] text-base font-bold cursor-pointer transition-all tracking-wider disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none bg-accent-pink border-[3px] border-black dark:border-gray-600 shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(0,0,0,0.5)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0px_rgba(0,0,0,0.5)] active:translate-x-[4px] active:translate-y-[4px] active:shadow-none"
+          className="w-full p-4 text-white rounded-md text-base font-bold cursor-pointer transition-all tracking-wider disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none bg-accent-pink dark: hover:dark:hover:"
         >
           {loading
             ? 'Please wait...'
@@ -531,14 +517,14 @@ export default function AuthModal({
               setError(null);
               setSuccessMessage(null);
             }}
-            className="text-sm font-semibold text-gray-700 dark:text-gray-300 hover:text-accent-pink dark:hover:text-accent-pink transition-colors"
+            className="text-sm font-semibold text-text-secondary hover:text-accent-pink transition-colors"
           >
             Back to sign in
           </button>
         ) : (
           <button
             onClick={toggleMode}
-            className="text-sm font-semibold text-gray-700 dark:text-gray-300 hover:text-accent-pink dark:hover:text-accent-pink transition-colors"
+            className="text-sm font-semibold text-text-secondary hover:text-accent-pink transition-colors"
           >
             {mode === 'signup'
               ? 'Already have an account? Sign in'

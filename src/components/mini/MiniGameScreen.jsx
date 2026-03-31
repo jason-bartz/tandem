@@ -260,10 +260,10 @@ export default function MiniGameScreen({
         {/* Bottom padding accounts for fixed keyboard (~220px) */}
         <div className="flex flex-col max-w-md w-full mx-auto pt-1 pt-safe-ios pb-[220px] px-4">
           <div
-            className={`rounded-[32px] border-[3px] overflow-hidden flex flex-col relative ${
+            className={`rounded-lg border-[3px] overflow-hidden flex flex-col relative ${
               highContrast
-                ? 'bg-hc-surface border-hc-border shadow-[6px_6px_0px_rgba(0,0,0,1)]'
-                : 'bg-ghost-white dark:bg-bg-card border-border-main shadow-[6px_6px_0px_rgba(0,0,0,1)]'
+                ? 'bg-hc-surface border-hc-border'
+                : 'bg-ghost-white dark:bg-bg-card border-border-main'
             }`}
           >
             {/* Header - back button, title/date, and hamburger menu - ALWAYS VISIBLE */}
@@ -394,10 +394,10 @@ export default function MiniGameScreen({
               >
                 <div
                   className={`
-                    rounded-[32px]
-                    border-[3px] border-black dark:border-gray-600
-                    shadow-[6px_6px_0px_rgba(0,0,0,1)]
-                    dark:shadow-[6px_6px_0px_rgba(0,0,0,0.5)]
+                    rounded-lg
+                   
+                   
+                    dark:
                     p-8
                     pointer-events-auto
                     ${reduceMotion ? '' : 'animate-fade-in-up'}
@@ -413,10 +413,10 @@ export default function MiniGameScreen({
                     onClick={handleStartClick}
                     className={`
                       w-full px-12 py-4
-                      rounded-[20px]
-                      border-[3px] border-black dark:border-gray-600
-                      shadow-[4px_4px_0px_rgba(0,0,0,1)]
-                      dark:shadow-[4px_4px_0px_rgba(0,0,0,0.5)]
+                      rounded-md
+                     
+                     
+                      dark:
                       font-black text-lg
                       tracking-wider
                       transition-all
@@ -427,10 +427,10 @@ export default function MiniGameScreen({
                       }
                       ${
                         !reduceMotion &&
-                        `hover:translate-x-[2px] hover:translate-y-[2px]
-                        hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]
-                        active:translate-x-[4px] active:translate-y-[4px]
-                        active:shadow-none`
+                        `
+                        hover:
+                       
+                       `
                       }
                     `}
                   >
@@ -499,7 +499,7 @@ export default function MiniGameScreen({
             className={`
               fixed bottom-0 left-0 right-0
               rounded-t-[32px]
-              border-t-[3px] border-l-[3px] border-r-[3px] border-black dark:border-gray-600
+              border-t-[3px] border-l-[3px] border-r-[3px]
               p-6 pb-8
               max-w-md mx-auto
               ${highContrast ? 'bg-hc-surface' : 'bg-ghost-white dark:bg-gray-800'}
@@ -515,7 +515,7 @@ export default function MiniGameScreen({
                 className="
                   w-8 h-8
                   rounded-[8px]
-                  border-[2px] border-black dark:border-gray-600
+                 
                   bg-ghost-white dark:bg-gray-700
                   flex items-center justify-center
                 "
@@ -542,19 +542,19 @@ export default function MiniGameScreen({
               <div className="space-y-2">
                 <button
                   onClick={() => handleCheckAction('cell')}
-                  className="w-full px-4 py-3 rounded-[12px] border-[2px] border-black dark:border-gray-600 bg-ghost-white dark:bg-gray-700 text-left text-sm font-medium text-text-primary hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors"
+                  className="w-full px-4 py-3 rounded-md bg-ghost-white dark:bg-gray-700 text-left text-sm font-medium text-text-primary hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors"
                 >
                   Check Square
                 </button>
                 <button
                   onClick={() => handleCheckAction('word')}
-                  className="w-full px-4 py-3 rounded-[12px] border-[2px] border-black dark:border-gray-600 bg-ghost-white dark:bg-gray-700 text-left text-sm font-medium text-text-primary hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors"
+                  className="w-full px-4 py-3 rounded-md bg-ghost-white dark:bg-gray-700 text-left text-sm font-medium text-text-primary hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors"
                 >
                   Check Word
                 </button>
                 <button
                   onClick={() => handleCheckAction('puzzle')}
-                  className="w-full px-4 py-3 rounded-[12px] border-[2px] border-black dark:border-gray-600 bg-ghost-white dark:bg-gray-700 text-left text-sm font-medium text-text-primary hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors"
+                  className="w-full px-4 py-3 rounded-md bg-ghost-white dark:bg-gray-700 text-left text-sm font-medium text-text-primary hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors"
                 >
                   Check Puzzle
                 </button>
@@ -567,8 +567,8 @@ export default function MiniGameScreen({
                 onClick={handleAutoCheckToggle}
                 className={`
                   w-full px-4 py-3
-                  rounded-[12px]
-                  border-[2px] border-black dark:border-gray-600
+                  rounded-md
+                 
                   text-sm font-medium
                   transition-colors
                   ${
@@ -592,7 +592,7 @@ export default function MiniGameScreen({
             className={`
               fixed bottom-0 left-0 right-0
               rounded-t-[32px]
-              border-t-[3px] border-l-[3px] border-r-[3px] border-black dark:border-gray-600
+              border-t-[3px] border-l-[3px] border-r-[3px]
               p-6 pb-8
               max-w-md mx-auto
               ${highContrast ? 'bg-hc-surface' : 'bg-ghost-white dark:bg-gray-800'}
@@ -608,7 +608,7 @@ export default function MiniGameScreen({
                 className="
                   w-8 h-8
                   rounded-[8px]
-                  border-[2px] border-black dark:border-gray-600
+                 
                   bg-ghost-white dark:bg-gray-700
                   flex items-center justify-center
                 "
@@ -635,19 +635,19 @@ export default function MiniGameScreen({
               <div className="space-y-2">
                 <button
                   onClick={() => handleRevealAction('cell')}
-                  className="w-full px-4 py-3 rounded-[12px] border-[2px] border-black dark:border-gray-600 bg-ghost-white dark:bg-gray-700 text-left text-sm font-medium text-text-primary hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors"
+                  className="w-full px-4 py-3 rounded-md bg-ghost-white dark:bg-gray-700 text-left text-sm font-medium text-text-primary hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors"
                 >
                   Reveal Square
                 </button>
                 <button
                   onClick={() => handleRevealAction('word')}
-                  className="w-full px-4 py-3 rounded-[12px] border-[2px] border-black dark:border-gray-600 bg-ghost-white dark:bg-gray-700 text-left text-sm font-medium text-text-primary hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors"
+                  className="w-full px-4 py-3 rounded-md bg-ghost-white dark:bg-gray-700 text-left text-sm font-medium text-text-primary hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors"
                 >
                   Reveal Word
                 </button>
                 <button
                   onClick={() => handleRevealAction('puzzle')}
-                  className="w-full px-4 py-3 rounded-[12px] border-[2px] border-black dark:border-gray-600 bg-ghost-white dark:bg-gray-700 text-left text-sm font-medium text-text-primary hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors"
+                  className="w-full px-4 py-3 rounded-md bg-ghost-white dark:bg-gray-700 text-left text-sm font-medium text-text-primary hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors"
                 >
                   Reveal Puzzle
                 </button>

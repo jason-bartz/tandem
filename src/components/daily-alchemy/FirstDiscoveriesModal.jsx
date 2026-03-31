@@ -42,9 +42,9 @@ function IngredientChip({ emoji, name }) {
       className={cn(
         'flex items-center gap-1.5 px-3 py-1.5',
         'bg-white dark:bg-gray-800',
-        'border-[2px] border-black dark:border-gray-600',
+        'dark:border-gray-600',
         'rounded-lg',
-        'shadow-[2px_2px_0px_rgba(0,0,0,1)]',
+        '',
         'flex-1 min-w-0'
       )}
     >
@@ -108,9 +108,9 @@ function FirstDiscoveryDetail({ discovery, onClose }) {
           'relative w-full max-w-xs p-5',
           'bg-gradient-to-br from-yellow-50 to-orange-50',
           'dark:from-yellow-900/40 dark:to-orange-900/40',
-          'border-[3px] border-black dark:border-gray-600',
+          'dark:border-gray-600',
           'rounded-xl',
-          'shadow-[4px_4px_0px_rgba(0,0,0,1)]',
+          '',
           'my-auto',
           highContrast && 'border-[4px] border-hc-border'
         )}
@@ -246,11 +246,11 @@ function DiscoveryCard({ discovery, onClick }) {
       className={cn(
         'flex flex-col items-center justify-center p-3 cursor-pointer select-none',
         'bg-white dark:bg-gray-800',
-        'border-[2px] border-black dark:border-gray-600',
+        'dark:border-gray-600',
         'rounded-xl',
-        'shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_rgba(0,0,0,0.5)]',
-        'hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_rgba(0,0,0,1)]',
-        'active:translate-x-[2px] active:translate-y-[2px] active:shadow-none',
+        'dark:',
+        ' hover:',
+        '',
         'transition-all duration-150',
         highContrast && 'border-[3px] border-hc-border'
       )}

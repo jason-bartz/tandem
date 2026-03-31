@@ -23,9 +23,7 @@ export async function GET(request) {
 
     // If requesting a range of puzzles (for archive)
     if (startDate || endDate || limit) {
-      const query = supabase
-        .from('mini_puzzles')
-        .select('id, date, number');
+      const query = supabase.from('mini_puzzles').select('id, date, number');
 
       if (startDate) {
         query.gte('date', startDate);
@@ -40,7 +38,8 @@ export async function GET(request) {
       query.order('date', { ascending: false });
 
       if (limit) {
-        query.limit(parseInt(limit, 10));
+        const parsedLimit = parseInt(limit, 10);
+        query.limit(Number.isNaN(parsedLimit) ? 50 : Math.min(Math.max(1, parsedLimit), 100));
       }
 
       const { data, error, count } = await query;
@@ -81,7 +80,7 @@ export async function GET(request) {
 
     // Don't return the solution to the client (they need to solve it!)
     // eslint-disable-next-line no-unused-vars
-    const { solution, ...puzzleWithoutSolution} = data;
+    const { solution, ...puzzleWithoutSolution } = data;
 
     logger.info('[API] Mini puzzle fetched successfully', {
       date: data.date,
@@ -115,10 +114,7 @@ export async function POST(request) {
     const { date, grid } = body;
 
     if (!date || !grid) {
-      return NextResponse.json(
-        { error: 'Missing required fields: date, grid' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Missing required fields: date, grid' }, { status: 400 });
     }
 
     logger.info('[API] Validating mini puzzle solution', { date });

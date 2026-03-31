@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, lazy, Suspense } from 'react';
 import { formatTime, formatDateShort } from '@/lib/utils';
 import { playHintSound, playCorrectSound, playErrorSound } from '@/lib/sounds';
 import PuzzleRow from './PuzzleRow';
@@ -7,16 +7,18 @@ import HintDisplay from './HintDisplay';
 import HintEarnedToast from './HintEarnedToast';
 import TandemTutorialModal from './TandemTutorialModal';
 import StatsBar from './StatsBar';
-import RulesModal from './RulesModal';
-import HowToPlayModal from './HowToPlayModal';
-import UnifiedStatsModal from '@/components/stats/UnifiedStatsModal';
-import UnifiedArchiveCalendar from './UnifiedArchiveCalendar';
-import Settings from '@/components/Settings';
-import FeedbackPane from '@/components/FeedbackPane';
 import OnScreenKeyboard from './OnScreenKeyboard';
 import HamburgerMenu from '@/components/navigation/HamburgerMenu';
 import SidebarMenu from '@/components/navigation/SidebarMenu';
-import LeaderboardModal from '@/components/leaderboard/LeaderboardModal';
+
+// Lazy-load modals to reduce initial bundle size
+const RulesModal = lazy(() => import('./RulesModal'));
+const HowToPlayModal = lazy(() => import('./HowToPlayModal'));
+const UnifiedStatsModal = lazy(() => import('@/components/stats/UnifiedStatsModal'));
+const UnifiedArchiveCalendar = lazy(() => import('./UnifiedArchiveCalendar'));
+const Settings = lazy(() => import('@/components/Settings'));
+const FeedbackPane = lazy(() => import('@/components/FeedbackPane'));
+const LeaderboardModal = lazy(() => import('@/components/leaderboard/LeaderboardModal'));
 import { useHaptics } from '@/hooks/useHaptics';
 import { useTheme } from '@/contexts/ThemeContext';
 import platformService from '@/services/platform';
@@ -415,10 +417,10 @@ export default function PlayingScreen({
           <div className="max-w-md w-full mx-auto flex flex-col">
             <div
               ref={puzzleContainerRef}
-              className={`rounded-[32px] border-[3px] overflow-hidden flex flex-col relative z-20 ${
+              className={`rounded-lg border-[3px] overflow-hidden flex flex-col relative z-20 ${
                 highContrast
-                  ? 'bg-hc-surface border-hc-border shadow-[6px_6px_0px_rgba(0,0,0,1)]'
-                  : 'bg-ghost-white dark:bg-bg-card border-border-main shadow-[6px_6px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_rgba(0,0,0,0.5)]'
+                  ? 'bg-hc-surface border-hc-border'
+                  : 'bg-ghost-white dark:bg-bg-card border-border-main dark:'
               }`}
             >
               {/* Header - back button, date, and hamburger menu in one row */}
@@ -524,7 +526,7 @@ export default function PlayingScreen({
                                 : 0
                             }
                             onKeyboardInput={handleKeyboardInput}
-                            themeColor={puzzle?.themeColor || '#3B82F6'}
+                            themeColor={puzzle?.themeColor || 'var(--primary)'}
                             isSmallPhone={isSmallPhone}
                             isMobilePhone={isMobilePhone}
                           />
@@ -569,14 +571,13 @@ export default function PlayingScreen({
                         correctAnswers[focusedIndex] ||
                         !answers[focusedIndex]?.trim()
                       }
-                      className="px-6 py-3 text-white text-base font-bold rounded-[20px] border-[3px] border-black dark:border-gray-600 shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(0,0,0,0.5)] disabled:bg-gray-300 dark:disabled:bg-gray-700 disabled:cursor-not-allowed disabled:opacity-50 hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)] active:translate-x-[4px] active:translate-y-[4px] active:shadow-none transition-all overflow-hidden whitespace-nowrap"
-                      style={
+                      className={`px-6 py-3 text-base font-bold rounded-md disabled:cursor-not-allowed disabled:opacity-40 transition-all duration-200 overflow-hidden whitespace-nowrap ${
                         focusedIndex !== null &&
                         !correctAnswers[focusedIndex] &&
                         answers[focusedIndex]?.trim()
-                          ? { backgroundColor: '#3B82F6' }
-                          : {}
-                      }
+                          ? 'bg-primary text-white hover:bg-primary-hover hover:scale-105'
+                          : 'bg-gray-200 dark:bg-gray-700 text-text-muted'
+                      }`}
                       animate={
                         showSecondHintCelebration
                           ? {
@@ -610,10 +611,10 @@ export default function PlayingScreen({
                           lightTap();
                           handleUseHint();
                         }}
-                        className={`px-6 py-3 font-bold rounded-[20px] border-[3px] text-base transition-all ${
+                        className={`px-6 py-3 font-bold rounded-md text-base transition-all duration-200 hover:scale-105 ${
                           highContrast
-                            ? 'bg-hc-warning text-black border-hc-border shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]'
-                            : 'bg-accent-yellow text-gray-900 border-black dark:border-gray-600 shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(0,0,0,0.5)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]'
+                            ? 'bg-hc-warning text-black border-2 border-hc-border'
+                            : 'bg-flat-accent text-gray-900 dark:text-gray-900'
                         } disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden whitespace-nowrap`}
                         disabled={focusedIndex === null || correctAnswers[focusedIndex]}
                         aria-label={`Use hint. ${unlockedHints - hintsUsed} of ${unlockedHints} hints available`}
@@ -684,32 +685,42 @@ export default function PlayingScreen({
         </div>
 
         {/* Fixed Keyboard at Bottom - Outside Card */}
-        <div className="fixed bottom-0 left-0 right-0 pb-safe bg-bg-tandem pt-3 z-10">
+        <div className="fixed bottom-0 left-0 right-0 pb-safe bg-bg-primary pt-3 z-10">
           <OnScreenKeyboard
             onKeyPress={handleKeyboardInput}
             disabled={solved === 4}
             layout={keyboardLayout}
             isSmallPhone={isSmallPhone}
             isMobilePhone={isMobilePhone}
-            checkButtonColor="#3B82F6"
+            checkButtonColor="var(--primary)"
           />
         </div>
 
-        <RulesModal isOpen={showRules} onClose={() => setShowRules(false)} />
-        <UnifiedStatsModal isOpen={showStats} onClose={() => setShowStats(false)} />
-        <UnifiedArchiveCalendar
-          isOpen={showArchive}
-          onClose={() => setShowArchive(false)}
-          onSelectPuzzle={onSelectPuzzle}
-          defaultTab="tandem"
-        />
-        <HowToPlayModal isOpen={showHowToPlay} onClose={() => setShowHowToPlay(false)} />
-        <Settings
-          isOpen={showSettings}
-          onClose={() => {
-            setShowSettings(false);
-          }}
-        />
+        <Suspense fallback={null}>
+          {showRules && <RulesModal isOpen={showRules} onClose={() => setShowRules(false)} />}
+          {showStats && (
+            <UnifiedStatsModal isOpen={showStats} onClose={() => setShowStats(false)} />
+          )}
+          {showArchive && (
+            <UnifiedArchiveCalendar
+              isOpen={showArchive}
+              onClose={() => setShowArchive(false)}
+              onSelectPuzzle={onSelectPuzzle}
+              defaultTab="tandem"
+            />
+          )}
+          {showHowToPlay && (
+            <HowToPlayModal isOpen={showHowToPlay} onClose={() => setShowHowToPlay(false)} />
+          )}
+          {showSettings && (
+            <Settings
+              isOpen={showSettings}
+              onClose={() => {
+                setShowSettings(false);
+              }}
+            />
+          )}
+        </Suspense>
       </div>
 
       {/* Sidebar Menu */}
@@ -724,13 +735,19 @@ export default function PlayingScreen({
         onOpenLeaderboard={() => setShowLeaderboard(true)}
       />
 
-      <FeedbackPane isOpen={showFeedback} onClose={() => setShowFeedback(false)} />
-      <LeaderboardModal
-        isOpen={showLeaderboard}
-        onClose={() => setShowLeaderboard(false)}
-        initialGame="tandem"
-        initialTab="daily"
-      />
+      <Suspense fallback={null}>
+        {showFeedback && (
+          <FeedbackPane isOpen={showFeedback} onClose={() => setShowFeedback(false)} />
+        )}
+        {showLeaderboard && (
+          <LeaderboardModal
+            isOpen={showLeaderboard}
+            onClose={() => setShowLeaderboard(false)}
+            initialGame="tandem"
+            initialTab="daily"
+          />
+        )}
+      </Suspense>
     </>
   );
 }

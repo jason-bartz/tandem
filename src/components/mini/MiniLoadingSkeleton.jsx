@@ -15,10 +15,10 @@ export default function MiniLoadingSkeleton() {
     <div className="min-h-screen flex flex-col bg-bg-main dark:bg-bg-main">
       <div className="flex flex-col max-w-md w-full mx-auto pt-1 pt-safe-ios pb-[220px] px-4">
         <div
-          className={`rounded-[32px] border-[3px] overflow-hidden flex flex-col ${
+          className={`rounded-lg border-[3px] overflow-hidden flex flex-col ${
             highContrast
-              ? 'bg-hc-surface border-hc-border shadow-[6px_6px_0px_rgba(0,0,0,1)]'
-              : 'bg-ghost-white dark:bg-bg-card border-border-main shadow-[6px_6px_0px_rgba(0,0,0,1)]'
+              ? 'bg-hc-surface border-hc-border'
+              : 'bg-ghost-white dark:bg-bg-card border-border-main'
           }`}
         >
           {/* Header skeleton - back button, title, hamburger */}

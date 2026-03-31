@@ -1,0 +1,7 @@
+{
+  "name": "eslint-plugin-reduce-motion",
+  "version": "1.0.0",
+  "private": true,
+  "description": "ESLint rules enforcing WCAG reduce motion compliance",
+  "main": "index.js"
+}

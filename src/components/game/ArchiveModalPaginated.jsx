@@ -50,14 +50,14 @@ const PuzzleItem = memo(
     return (
       <button
         onClick={() => onClick(puzzle)}
-        className={`w-full p-3 rounded-2xl transition-all text-left transform border-[3px] shadow-[3px_3px_0px_rgba(0,0,0,0.2)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.2)] ${
+        className={`w-full p-3 rounded-2xl transition-all text-left transform border-[3px] dark: ${
           highContrast
             ? actuallyLocked
-              ? 'bg-hc-surface border-hc-error opacity-75 hover:opacity-100 shadow-[3px_3px_0px_rgba(0,0,0,1)]'
-              : 'bg-hc-surface border-hc-border hover:bg-hc-focus hover:text-white active:scale-98 shadow-[3px_3px_0px_rgba(0,0,0,1)]'
+              ? 'bg-hc-surface border-hc-error opacity-75 hover:opacity-100'
+              : 'bg-hc-surface border-hc-border hover:bg-hc-focus hover:text-white active:scale-98'
             : actuallyLocked
               ? 'bg-gray-50 dark:bg-gray-800 border-gray-300 dark:border-gray-700 opacity-75 hover:opacity-100'
-              : 'bg-ghost-white dark:bg-bg-card border-border-main hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_rgba(0,0,0,0.2)]'
+              : 'bg-ghost-white dark:bg-bg-card border-border-main hover:'
         }`}
         style={{
           WebkitTapHighlightColor: 'transparent',
@@ -131,7 +131,7 @@ const SkeletonLoader = ({ count = 3, highContrast }) => (
     {Array.from({ length: count }).map((_, index) => (
       <div
         key={index}
-        className={`w-full p-3 rounded-2xl mb-2 border-[3px] shadow-[3px_3px_0px_rgba(0,0,0,0.2)] ${
+        className={`w-full p-3 rounded-2xl mb-2 border-[3px] ${
           highContrast
             ? 'bg-hc-surface border-hc-border'
             : 'bg-ghost-white dark:bg-bg-card border-border-main'
@@ -518,8 +518,8 @@ export default function ArchiveModalPaginated({ isOpen, onClose, onSelectPuzzle 
             onClick={onClose}
             className={`w-full py-3 text-white font-semibold text-base sm:text-lg rounded-2xl transition-all border-[3px] ${
               highContrast
-                ? 'bg-hc-primary border-hc-border hover:bg-hc-focus shadow-[4px_4px_0px_rgba(0,0,0,1)]'
-                : 'bg-accent-blue border-black dark:border-gray-600 shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(0,0,0,0.5)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0px_rgba(0,0,0,0.5)]'
+                ? 'bg-hc-primary border-hc-border hover:bg-hc-focus'
+                : 'bg-accent-blue dark: hover:dark:hover:'
             }`}
             style={{
               WebkitTapHighlightColor: 'transparent',

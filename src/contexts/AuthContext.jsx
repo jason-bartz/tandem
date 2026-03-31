@@ -1,6 +1,14 @@
 'use client';
 
-import { createContext, useContext, useCallback, useEffect, useRef, useState } from 'react';
+import {
+  createContext,
+  useContext,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { getSupabaseBrowserClient } from '@/lib/supabase/client';
 import { autoCleanupIfNeeded } from '@/lib/storageCleanup';
 import storageService from '@/core/storage/storageService';
@@ -1026,29 +1034,54 @@ export function AuthProvider({ children }) {
     setServiceUnavailable(true);
   }, []);
 
-  const value = {
-    user,
-    session,
-    loading,
-    isAnonymous,
-    serviceUnavailable,
-    markServiceUnavailable,
-    userProfile,
-    profileLoading,
-    showFirstTimeSetup,
-    dismissFirstTimeSetup,
-    refreshProfile,
-    signUp,
-    signIn,
-    signOut,
-    signInWithGoogle,
-    signInWithDiscord,
-    signInWithApple,
-    resetPassword,
-    ensureAlchemySession,
-    upgradeAnonymousWithEmail,
-    upgradeAnonymousWithOAuth,
-  };
+  const value = useMemo(
+    () => ({
+      user,
+      session,
+      loading,
+      isAnonymous,
+      serviceUnavailable,
+      markServiceUnavailable,
+      userProfile,
+      profileLoading,
+      showFirstTimeSetup,
+      dismissFirstTimeSetup,
+      refreshProfile,
+      signUp,
+      signIn,
+      signOut,
+      signInWithGoogle,
+      signInWithDiscord,
+      signInWithApple,
+      resetPassword,
+      ensureAlchemySession,
+      upgradeAnonymousWithEmail,
+      upgradeAnonymousWithOAuth,
+    }),
+    [
+      user,
+      session,
+      loading,
+      isAnonymous,
+      serviceUnavailable,
+      markServiceUnavailable,
+      userProfile,
+      profileLoading,
+      showFirstTimeSetup,
+      dismissFirstTimeSetup,
+      refreshProfile,
+      signUp,
+      signIn,
+      signOut,
+      signInWithGoogle,
+      signInWithDiscord,
+      signInWithApple,
+      resetPassword,
+      ensureAlchemySession,
+      upgradeAnonymousWithEmail,
+      upgradeAnonymousWithOAuth,
+    ]
+  );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

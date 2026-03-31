@@ -14,6 +14,7 @@ import Settings from '@/components/Settings';
 import FeedbackPane from '@/components/FeedbackPane';
 import { ASSET_VERSION } from '@/lib/constants';
 import { isStandaloneAlchemy, homePath } from '@/lib/standalone';
+import ReducedMotionImage from '@/components/shared/ReducedMotionImage';
 
 export default function Support() {
   useTheme();
@@ -963,9 +964,10 @@ export default function Support() {
             </ol>
           </div>
           {/* Demo GIF */}
-          <div className="rounded-2xl overflow-hidden border-[3px] border-gray-300 dark:border-gray-600 shadow-[3px_3px_0px_rgba(0,0,0,0.2)]">
-            <img
+          <div className="rounded-2xl overflow-hidden border-[3px] border-gray-300 dark:border-gray-600">
+            <ReducedMotionImage
               src="/game/daily-alchemy/howto.gif"
+              staticSrc="/game/daily-alchemy/howto/1.webp"
               alt="Daily Alchemy gameplay demo"
               className="w-full h-auto"
             />
@@ -1489,9 +1491,9 @@ export default function Support() {
             ) : (
               <div className="relative">
                 {/* Main content card */}
-                <div className="bg-ghost-white dark:bg-gray-800 rounded-[32px] border-[3px] border-black dark:border-white overflow-hidden -translate-x-[4px] -translate-y-[4px] relative z-10">
+                <div className="bg-ghost-white dark:bg-gray-800 rounded-lg overflow-hidden relative z-10">
                   {/* Header with back button, title, and hamburger menu */}
-                  <div className="flex items-center justify-between p-6 pb-4 border-b-[3px] border-black dark:border-white">
+                  <div className="flex items-center justify-between p-6 pb-4 border-b border-border-light">
                     <Link
                       href={homePath}
                       className="flex items-center justify-center w-10 h-10 hover:opacity-70 transition-opacity"
@@ -1531,8 +1533,8 @@ export default function Support() {
                           }}
                           className={`px-2 py-3 rounded-2xl border-[3px] font-bold text-sm transition-all ${
                             activeGame === 'tandem'
-                              ? 'bg-ghost-white text-black border-black shadow-[3px_3px_0px_rgba(0,0,0,1)]'
-                              : 'bg-ghost-white/50 text-black/60 border-black/30 hover:bg-ghost-white/70'
+                              ? 'bg-ghost-white text-black'
+                              : 'bg-ghost-white/50 text-black/60 hover:bg-ghost-white/70'
                           }`}
                         >
                           <div className="flex items-center justify-center gap-1">
@@ -1553,8 +1555,8 @@ export default function Support() {
                           }}
                           className={`px-2 py-3 rounded-2xl border-[3px] font-bold text-sm transition-all ${
                             activeGame === 'mini'
-                              ? 'bg-ghost-white text-black border-black shadow-[3px_3px_0px_rgba(0,0,0,1)]'
-                              : 'bg-ghost-white/50 text-black/60 border-black/30 hover:bg-ghost-white/70'
+                              ? 'bg-ghost-white text-black'
+                              : 'bg-ghost-white/50 text-black/60 hover:bg-ghost-white/70'
                           }`}
                         >
                           <div className="flex items-center justify-center gap-1">
@@ -1575,8 +1577,8 @@ export default function Support() {
                           }}
                           className={`px-2 py-3 rounded-2xl border-[3px] font-bold text-sm transition-all ${
                             activeGame === 'soup'
-                              ? 'bg-ghost-white text-black border-black shadow-[3px_3px_0px_rgba(0,0,0,1)]'
-                              : 'bg-ghost-white/50 text-black/60 border-black/30 hover:bg-ghost-white/70'
+                              ? 'bg-ghost-white text-black'
+                              : 'bg-ghost-white/50 text-black/60 hover:bg-ghost-white/70'
                           }`}
                         >
                           <div className="flex items-center justify-center gap-1">
@@ -1597,8 +1599,8 @@ export default function Support() {
                           }}
                           className={`px-2 py-3 rounded-2xl border-[3px] font-bold text-sm transition-all ${
                             activeGame === 'reel'
-                              ? 'bg-ghost-white text-black border-black shadow-[3px_3px_0px_rgba(0,0,0,1)]'
-                              : 'bg-ghost-white/50 text-black/60 border-black/30 hover:bg-ghost-white/70'
+                              ? 'bg-ghost-white text-black'
+                              : 'bg-ghost-white/50 text-black/60 hover:bg-ghost-white/70'
                           }`}
                         >
                           <div className="flex items-center justify-center gap-1">
@@ -1620,10 +1622,7 @@ export default function Support() {
                   <div className="p-6 pt-0">
                     <div className="space-y-2">
                       {currentSections.map((section) => (
-                        <div
-                          key={section.id}
-                          className="border-[3px] border-black dark:border-white rounded-2xl overflow-hidden"
-                        >
+                        <div key={section.id} className="rounded-2xl overflow-hidden">
                           <button
                             onClick={() =>
                               setActiveSection(activeSection === section.id ? null : section.id)
@@ -1648,7 +1647,7 @@ export default function Support() {
                             </svg>
                           </button>
                           {activeSection === section.id && (
-                            <div className="p-4 bg-ghost-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-t-[3px] border-black dark:border-white">
+                            <div className="p-4 bg-ghost-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-t border-border-light">
                               {section.content}
                             </div>
                           )}
@@ -1657,7 +1656,7 @@ export default function Support() {
                     </div>
 
                     {/* System Requirements */}
-                    <div className="mt-8 pt-6 border-t-[3px] border-black dark:border-white">
+                    <div className="mt-8 pt-6 border-t border-border-light">
                       <h3 className="font-semibold mb-3 text-gray-800 dark:text-gray-200">
                         System Requirements
                       </h3>
@@ -1687,7 +1686,7 @@ export default function Support() {
                   </div>
                 </div>
                 {/* Faux drop shadow */}
-                <div className="absolute inset-0 bg-black dark:bg-ghost-white rounded-[32px] -z-10"></div>
+                <div className="absolute inset-0 bg-black dark:bg-ghost-white rounded-lg -z-10"></div>
               </div>
             )}
           </div>

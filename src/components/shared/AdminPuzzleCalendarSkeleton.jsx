@@ -24,10 +24,7 @@ export default function AdminPuzzleCalendarSkeleton() {
         {Array.from({ length: 35 }).map((_, i) => (
           <div
             key={i}
-            className="relative aspect-square min-h-0 p-2 rounded-lg border-[2px] border-black dark:border-white bg-ghost-white dark:bg-gray-800"
-            style={{
-              boxShadow: '2px 2px 0px rgba(0, 0, 0, 1)',
-            }}
+            className="relative aspect-square min-h-0 p-2 rounded-lg bg-ghost-white dark:bg-gray-800"
           >
             {/* Day number skeleton */}
             <div
@@ -54,7 +51,7 @@ export default function AdminPuzzleCalendarSkeleton() {
       </div>
 
       {/* Legend skeleton */}
-      <div className="mt-6 pt-4 border-t-[3px] border-black dark:border-white">
+      <div className="mt-6 pt-4 border-t border-border-light">
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-1.5">
             <div

@@ -118,15 +118,15 @@ export function EmbeddedFavorites({
       className={cn(
         'flex flex-col h-full',
         'bg-white dark:bg-gray-800',
-        'border-[2px] border-black dark:border-gray-600',
+        'dark:border-gray-600',
         'rounded-xl',
-        'shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(75,85,99,1)]',
+        'dark:',
         'overflow-hidden',
         highContrast && 'border-[3px] border-hc-border'
       )}
     >
       {/* Header */}
-      <div className="flex items-center justify-between px-3 py-2 border-b-2 border-black dark:border-gray-600 flex-shrink-0">
+      <div className="flex items-center justify-between px-3 py-2 border-b-2 flex-shrink-0">
         <div className="flex items-center gap-2">
           <Image
             src="/ui/shared/favorites.png"

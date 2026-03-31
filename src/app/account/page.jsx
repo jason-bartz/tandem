@@ -329,7 +329,7 @@ export default function AccountPage() {
           <div className="w-full max-w-2xl mx-auto p-6 relative z-10 my-auto">
             <div className="relative">
               {/* Skeleton card */}
-              <div className="bg-ghost-white dark:bg-gray-800 rounded-[32px] border-[3px] border-black dark:border-white overflow-hidden -translate-x-[4px] -translate-y-[4px] relative z-10">
+              <div className="bg-ghost-white dark:bg-gray-800 rounded-lg overflow-hidden relative z-10">
                 {/* Header skeleton */}
                 <div className="flex items-center justify-between p-6 pb-4">
                   <div className="w-10 h-10 bg-gray-200 dark:bg-gray-700 rounded-lg animate-pulse"></div>
@@ -369,7 +369,7 @@ export default function AccountPage() {
                 </div>
               </div>
               {/* Shadow element */}
-              <div className="absolute inset-0 bg-black dark:bg-ghost-white rounded-[32px] -z-10"></div>
+              <div className="absolute inset-0 bg-black dark:bg-ghost-white rounded-lg -z-10"></div>
             </div>
           </div>
         </div>
@@ -396,7 +396,7 @@ export default function AccountPage() {
           <div className="w-full max-w-2xl mx-auto p-6 relative z-10 my-auto">
             <div className="relative">
               {/* Main content card */}
-              <div className="bg-ghost-white dark:bg-gray-800 rounded-[32px] border-[3px] border-black dark:border-white overflow-hidden -translate-x-[4px] -translate-y-[4px] relative z-10">
+              <div className="bg-ghost-white dark:bg-gray-800 rounded-lg overflow-hidden relative z-10">
                 {/* Header with back button, title, and hamburger menu */}
                 <div className="flex items-start justify-between p-6 pb-4">
                   <Link
@@ -434,7 +434,7 @@ export default function AccountPage() {
                     </h2>
 
                     {/* Profile Card */}
-                    <div className="bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 rounded-2xl border-[3px] border-black dark:border-white p-4 shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(255,255,255,1)]">
+                    <div className="bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 rounded-2xl p-4 dark:">
                       <div className="flex items-start gap-4">
                         {/* Avatar */}
                         <div className="flex-shrink-0 flex flex-col items-center gap-2">
@@ -444,7 +444,7 @@ export default function AccountPage() {
                                 setShowAvatarModal(true);
                                 lightTap();
                               }}
-                              className="relative w-20 h-20 rounded-xl overflow-hidden border-[3px] border-purple-500 shadow-[3px_3px_0px_rgba(147,51,234,0.5)] hover:scale-105 transition-transform"
+                              className="relative w-20 h-20 rounded-xl overflow-hidden border-[3px] border-purple-500 hover:scale-105 transition-transform"
                               aria-label={
                                 userAvatar?.selected_avatar_id ? 'Change avatar' : 'Select avatar'
                               }
@@ -514,7 +514,7 @@ export default function AccountPage() {
                                     className={`flex-1 py-2 px-3 rounded-xl border-[2px] font-medium text-sm transition-all ${
                                       loadingUsername
                                         ? 'opacity-50 cursor-not-allowed'
-                                        : 'bg-purple-500 text-white border-black shadow-[2px_2px_0px_rgba(0,0,0,1)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_rgba(0,0,0,1)]'
+                                        : 'bg-purple-500 text-white hover:'
                                     }`}
                                   >
                                     {loadingUsername ? 'Saving...' : 'Save'}
@@ -525,7 +525,7 @@ export default function AccountPage() {
                                     className={`flex-1 py-2 px-3 rounded-xl border-[2px] font-medium text-sm transition-all ${
                                       loadingUsername
                                         ? 'opacity-50 cursor-not-allowed'
-                                        : 'bg-ghost-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-black shadow-[2px_2px_0px_rgba(0,0,0,1)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_rgba(0,0,0,1)]'
+                                        : 'bg-ghost-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:'
                                     }`}
                                   >
                                     Cancel
@@ -636,7 +636,7 @@ export default function AccountPage() {
                     {/* Sign Out Button */}
                     <button
                       onClick={handleSignOut}
-                      className="w-full py-3 px-4 rounded-xl border-[3px] font-semibold transition-all bg-ghost-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-black shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]"
+                      className="w-full py-3 px-4 rounded-xl border-[3px] font-semibold transition-all bg-ghost-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:"
                     >
                       Sign Out
                     </button>
@@ -645,7 +645,7 @@ export default function AccountPage() {
                     {!isWeb && !user?.email && (
                       <button
                         onClick={forceLogout}
-                        className="w-full py-3 px-4 rounded-xl border-[3px] font-semibold transition-all bg-orange-500 text-white border-black shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]"
+                        className="w-full py-3 px-4 rounded-xl border-[3px] font-semibold transition-all bg-orange-500 text-white hover:"
                       >
                         Force Logout (Clear All Data)
                       </button>
@@ -654,7 +654,7 @@ export default function AccountPage() {
                     {/* Delete Account Button */}
                     <button
                       onClick={handleDeleteAccount}
-                      className="w-full py-3 px-4 rounded-xl border-[3px] font-semibold transition-all bg-red-600 text-white border-black shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]"
+                      className="w-full py-3 px-4 rounded-xl border-[3px] font-semibold transition-all bg-red-600 text-white hover:"
                     >
                       Delete Account
                     </button>
@@ -663,7 +663,7 @@ export default function AccountPage() {
               </div>
 
               {/* Neo-brutalist shadow element */}
-              <div className="absolute inset-0 bg-black dark:bg-ghost-white rounded-[32px] -z-10"></div>
+              <div className="absolute inset-0 bg-black dark:bg-ghost-white rounded-lg -z-10"></div>
             </div>
           </div>
         </div>
@@ -835,7 +835,7 @@ function IOSSignInPage() {
         <div className="w-full max-w-md mx-auto p-6">
           <div className="relative">
             {/* Main card */}
-            <div className="bg-ghost-white dark:bg-gray-800 rounded-[32px] border-[3px] border-black dark:border-white overflow-hidden -translate-x-[4px] -translate-y-[4px] relative z-10 p-6">
+            <div className="bg-ghost-white dark:bg-gray-800 rounded-lg overflow-hidden relative z-10 p-6">
               {/* Back button */}
               <button
                 onClick={() => {
@@ -881,10 +881,8 @@ function IOSSignInPage() {
               <button
                 onClick={handleGoogleSignIn}
                 disabled={loading}
-                className={`w-full p-4 rounded-xl border-[3px] border-black shadow-[3px_3px_0px_rgba(0,0,0,1)] transition-all flex items-center justify-center gap-3 mb-3 bg-white text-gray-700 ${
-                  loading
-                    ? 'opacity-50 cursor-not-allowed'
-                    : 'hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]'
+                className={`w-full p-4 rounded-xl transition-all flex items-center justify-center gap-3 mb-3 bg-white text-gray-700 ${
+                  loading ? 'opacity-50 cursor-not-allowed' : ' hover:'
                 }`}
               >
                 {loading ? (
@@ -918,10 +916,8 @@ function IOSSignInPage() {
               <button
                 onClick={handleAppleSignIn}
                 disabled={loading}
-                className={`w-full p-4 rounded-xl border-[3px] border-black shadow-[3px_3px_0px_rgba(0,0,0,1)] transition-all flex items-center justify-center gap-3 mb-3 bg-black text-white ${
-                  loading
-                    ? 'opacity-50 cursor-not-allowed'
-                    : 'hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]'
+                className={`w-full p-4 rounded-xl transition-all flex items-center justify-center gap-3 mb-3 bg-black text-white ${
+                  loading ? 'opacity-50 cursor-not-allowed' : ' hover:'
                 }`}
               >
                 {loading ? (
@@ -940,10 +936,8 @@ function IOSSignInPage() {
               <button
                 onClick={handleDiscordSignIn}
                 disabled={loading}
-                className={`w-full p-4 rounded-xl border-[3px] border-black shadow-[3px_3px_0px_rgba(0,0,0,1)] transition-all flex items-center justify-center gap-3 bg-[#5865F2] text-white ${
-                  loading
-                    ? 'opacity-50 cursor-not-allowed'
-                    : 'hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]'
+                className={`w-full p-4 rounded-xl transition-all flex items-center justify-center gap-3 bg-[#5865F2] text-white ${
+                  loading ? 'opacity-50 cursor-not-allowed' : ' hover:'
                 }`}
               >
                 {loading ? (
@@ -1017,10 +1011,8 @@ function IOSSignInPage() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className={`w-full py-4 bg-purple-500 text-white rounded-xl border-[3px] border-black shadow-[3px_3px_0px_rgba(0,0,0,1)] font-bold ${
-                    loading
-                      ? 'opacity-50 cursor-not-allowed'
-                      : 'hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]'
+                  className={`w-full py-4 bg-purple-500 text-white rounded-xl font-bold ${
+                    loading ? 'opacity-50 cursor-not-allowed' : ' hover:'
                   }`}
                 >
                   {loading ? 'Please wait...' : mode === 'signup' ? 'Create Account' : 'Sign In'}
@@ -1043,7 +1035,7 @@ function IOSSignInPage() {
             </div>
 
             {/* Shadow */}
-            <div className="absolute inset-0 bg-black dark:bg-ghost-white rounded-[32px] -z-10"></div>
+            <div className="absolute inset-0 bg-black dark:bg-ghost-white rounded-lg -z-10"></div>
           </div>
         </div>
       </div>

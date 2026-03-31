@@ -72,7 +72,7 @@ export default function HowToPlayPage() {
               incorrectly, any letters in the correct position turn green and stay locked. Just fill
               in the remaining blanks.
             </p>
-            <div className="bg-gray-100 dark:bg-gray-900 rounded-2xl p-4 border-[3px] border-black dark:border-white">
+            <div className="bg-gray-100 dark:bg-gray-900 rounded-2xl p-4">
               <p className="font-semibold mb-2">Example: Answer is PLAN</p>
               <div className="space-y-2 font-mono text-sm">
                 <p>
@@ -115,7 +115,7 @@ export default function HowToPlayPage() {
               <span className="text-2xl">🏜️🌡️</span>
               <span className="font-mono font-bold">= DESERT</span>
             </div>
-            <div className="mt-4 p-3 bg-[#ff5757] text-white rounded-2xl text-center font-bold border-[3px] border-black dark:border-white">
+            <div className="mt-4 p-3 bg-[#ff5757] text-white rounded-2xl text-center font-bold">
               Theme Revealed: Things That Are Hot
             </div>
           </div>
@@ -473,10 +473,10 @@ export default function HowToPlayPage() {
 
             {/* Main content card */}
             <div className="relative">
-              <div className="bg-ghost-white dark:bg-gray-800 rounded-[32px] border-[3px] border-black dark:border-white overflow-hidden -translate-x-[4px] -translate-y-[4px] relative z-10">
+              <div className="bg-ghost-white dark:bg-gray-800 rounded-lg overflow-hidden relative z-10">
                 {/* Header */}
                 <div
-                  className="border-b-[3px] border-black dark:border-white p-6"
+                  className="border-b border-border-light p-6"
                   style={{ backgroundColor: getThemeColor() }}
                 >
                   <h1
@@ -496,7 +496,7 @@ export default function HowToPlayPage() {
                 </div>
 
                 {/* Tab Navigation */}
-                <div className="flex border-b-[3px] border-black dark:border-white">
+                <div className="flex border-b border-border-light">
                   {tabs.map((tab) => (
                     <button
                       key={tab.id}
@@ -521,7 +521,7 @@ export default function HowToPlayPage() {
                 </div>
 
                 {/* Quick Start Card */}
-                <div className="mx-6 mt-6 mb-6 p-4 bg-ghost-white dark:bg-gray-900 rounded-2xl border-[3px] border-black dark:border-white">
+                <div className="mx-6 mt-6 mb-6 p-4 bg-ghost-white dark:bg-gray-900 rounded-2xl">
                   <h3 className="font-semibold mb-3 text-gray-800 dark:text-gray-200">
                     Quick Start
                   </h3>
@@ -532,10 +532,7 @@ export default function HowToPlayPage() {
                 <div className="p-6 pt-0">
                   <div className="space-y-2">
                     {sections.map((section) => (
-                      <div
-                        key={section.id}
-                        className="border-[3px] border-black dark:border-white rounded-2xl overflow-hidden"
-                      >
+                      <div key={section.id} className="rounded-2xl overflow-hidden">
                         <button
                           onClick={() =>
                             setActiveSection(activeSection === section.id ? null : section.id)
@@ -560,7 +557,7 @@ export default function HowToPlayPage() {
                           </svg>
                         </button>
                         {activeSection === section.id && (
-                          <div className="p-4 bg-ghost-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-t-[3px] border-black dark:border-white">
+                          <div className="p-4 bg-ghost-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-t border-border-light">
                             {section.content}
                           </div>
                         )}
@@ -569,7 +566,7 @@ export default function HowToPlayPage() {
                   </div>
 
                   {/* Call to Action */}
-                  <div className="mt-6 pt-6 border-t-[3px] border-black dark:border-white">
+                  <div className="mt-6 pt-6 border-t border-border-light">
                     <h3 className="font-semibold mb-3 text-gray-800 dark:text-gray-200">
                       Ready to Play?
                     </h3>
@@ -580,7 +577,7 @@ export default function HowToPlayPage() {
                     <div className="flex gap-3 flex-wrap">
                       <Link
                         href={getPlayLink()}
-                        className="inline-flex items-center gap-2 px-4 py-2 hover:opacity-90 font-semibold rounded-2xl border-[3px] border-black dark:border-white transition-all"
+                        className="inline-flex items-center gap-2 px-4 py-2 hover:opacity-90 font-semibold rounded-2xl transition-all"
                         style={{
                           backgroundColor: getThemeColor(),
                           color: activeTab === 'mini' ? '#1f2937' : 'white',
@@ -593,7 +590,7 @@ export default function HowToPlayPage() {
                 </div>
               </div>
               {/* Faux drop shadow */}
-              <div className="absolute inset-0 bg-black dark:bg-ghost-white rounded-[32px] -z-10"></div>
+              <div className="absolute inset-0 bg-black dark:bg-ghost-white rounded-lg -z-10"></div>
             </div>
 
             {/* Footer */}

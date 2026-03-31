@@ -173,7 +173,7 @@ export default function PathGenerator({ onPathAccepted }) {
             onChange={(e) => setTargetInput(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && !isGenerating && generatePaths()}
             placeholder="Enter target element (e.g., Robot, Volcano, Pizza)"
-            className="w-full px-4 py-3 pl-10 rounded-lg border-[2px] border-black dark:border-white bg-ghost-white dark:bg-gray-700 text-text-primary text-lg"
+            className="w-full px-4 py-3 pl-10 rounded-lg bg-ghost-white dark:bg-gray-700 text-text-primary text-lg"
             disabled={isGenerating}
           />
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
@@ -181,8 +181,7 @@ export default function PathGenerator({ onPathAccepted }) {
         <button
           onClick={generatePaths}
           disabled={isGenerating || !targetInput.trim()}
-          className="px-6 py-3 bg-green-500 text-white font-bold rounded-lg border-[2px] border-black hover:bg-green-600 transition-colors disabled:opacity-50 flex items-center gap-2"
-          style={{ boxShadow: '3px 3px 0px rgba(0, 0, 0, 1)' }}
+          className="px-6 py-3 bg-green-500 text-white font-bold rounded-lg hover:bg-green-600 transition-colors disabled:opacity-50 flex items-center gap-2"
         >
           {isGenerating ? (
             <>
@@ -295,7 +294,7 @@ export default function PathGenerator({ onPathAccepted }) {
             <button
               onClick={regenerate}
               disabled={isGenerating}
-              className="px-4 py-2 bg-orange-500 text-white font-bold rounded-lg border-[2px] border-black flex items-center gap-2 hover:bg-orange-600 transition-colors disabled:opacity-50"
+              className="px-4 py-2 bg-orange-500 text-white font-bold rounded-lg flex items-center gap-2 hover:bg-orange-600 transition-colors disabled:opacity-50"
             >
               <RotateCcw className="w-4 h-4" />
               Regenerate All
@@ -416,7 +415,7 @@ function PathCard({ path, onSave, isSaving, isSaved }) {
   return (
     <div className={`${colors.bg} border-[3px] ${colors.border} rounded-xl overflow-hidden`}>
       {/* Header */}
-      <div className="p-4 border-b-[2px] border-black/10 dark:border-white/10">
+      <div className="p-4 border-b-[2px] dark:border-white/10">
         <div className="flex items-center justify-between">
           <div>
             <h4 className={`font-bold ${colors.text}`}>{path.label}</h4>
@@ -545,10 +544,9 @@ function PathCard({ path, onSave, isSaving, isSaved }) {
         <button
           onClick={onSave}
           disabled={isSaving || isSaved}
-          className={`w-full py-3 text-white font-bold rounded-lg border-[2px] border-black transition-colors disabled:opacity-50 flex items-center justify-center gap-2 ${
+          className={`w-full py-3 text-white font-bold rounded-lg transition-colors disabled:opacity-50 flex items-center justify-center gap-2 ${
             isSaved ? 'bg-green-500' : colors.button
           }`}
-          style={{ boxShadow: '3px 3px 0px rgba(0, 0, 0, 1)' }}
         >
           {isSaving ? (
             <>

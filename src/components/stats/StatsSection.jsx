@@ -19,23 +19,23 @@ export default function StatsSection({ title, emoji, icon, themeColor, children 
   // Define theme-specific colors for entire section (solid color)
   const getBackgroundColors = () => {
     if (highContrast) {
-      return 'bg-hc-surface border-hc-border shadow-[4px_4px_0px_rgba(0,0,0,1)]';
+      return 'bg-hc-surface border-hc-border';
     }
 
     if (themeColor === 'blue') {
-      return 'bg-sky-500 dark:bg-sky-600 border-black shadow-[4px_4px_0px_#000]';
+      return 'bg-sky-500 dark:bg-sky-600';
     } else if (themeColor === 'purple') {
-      return 'bg-purple-600 dark:bg-purple-700 border-black shadow-[4px_4px_0px_#000]';
+      return 'bg-purple-600 dark:bg-purple-700';
     } else if (themeColor === 'yellow') {
-      return 'bg-yellow-500 dark:bg-yellow-600 border-black shadow-[4px_4px_0px_#000]';
+      return 'bg-yellow-500 dark:bg-yellow-600';
     } else if (themeColor === 'red') {
-      return 'bg-red-500 dark:bg-red-600 border-black shadow-[4px_4px_0px_#000]';
+      return 'bg-red-500 dark:bg-red-600';
     } else if (themeColor === 'green') {
-      return 'bg-soup-primary dark:bg-soup-hover border-black shadow-[4px_4px_0px_#000]';
+      return 'bg-soup-primary dark:bg-soup-hover';
     }
 
     // Default fallback
-    return 'bg-gray-50 dark:bg-gray-800/50 border-gray-200 dark:border-gray-700 shadow-[4px_4px_0px_rgba(0,0,0,0.1)]';
+    return 'bg-gray-50 dark:bg-gray-800/50 border-gray-200 dark:border-gray-700';
   };
 
   const getTextColor = () => {
@@ -59,7 +59,7 @@ export default function StatsSection({ title, emoji, icon, themeColor, children 
   };
 
   return (
-    <div className={`rounded-2xl border-[3px] overflow-hidden mb-4 ${getBackgroundColors()}`}>
+    <div className={`rounded-lg overflow-hidden mb-4 ${getBackgroundColors()}`}>
       {/* Section Header - hidden when title is null (standalone) */}
       {title && (
         <div className={`px-4 py-3`}>

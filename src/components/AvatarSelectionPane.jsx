@@ -196,17 +196,17 @@ export default function AvatarSelectionPane({
                   className={`py-3 px-2 rounded-2xl border-[3px] transition-all cursor-pointer hover:scale-[1.05] ${
                     isSelected
                       ? highContrast
-                        ? 'bg-hc-primary border-hc-border shadow-[4px_4px_0px_rgba(0,0,0,1)]'
-                        : 'bg-gradient-to-br from-purple-100 to-pink-100 dark:from-purple-900/40 dark:to-pink-900/40 border-purple-500 shadow-[4px_4px_0px_rgba(147,51,234,0.5)]'
+                        ? 'bg-hc-primary border-hc-border'
+                        : 'bg-gradient-to-br from-purple-100 to-pink-100 dark:from-purple-900/40 dark:to-pink-900/40 border-purple-500'
                       : highContrast
-                        ? 'bg-hc-surface border-hc-border hover:bg-hc-focus shadow-[2px_2px_0px_rgba(0,0,0,0.5)]'
-                        : 'bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500 shadow-[2px_2px_0px_rgba(0,0,0,0.2)] hover:shadow-[3px_3px_0px_rgba(0,0,0,0.3)]'
+                        ? 'bg-hc-surface border-hc-border hover:bg-hc-focus'
+                        : 'bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500 hover:'
                   }`}
                   aria-label={`View ${avatar.display_name}`}
                 >
                   <div className="flex flex-col items-center justify-center gap-2">
                     {/* Avatar Image */}
-                    <div className="relative w-16 h-16 rounded-2xl overflow-hidden flex-shrink-0 border-[3px] border-black dark:border-white shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(255,255,255,1)]">
+                    <div className="relative w-16 h-16 rounded-2xl overflow-hidden flex-shrink-0 dark:">
                       <Image
                         src={avatar.image_path}
                         alt={avatar.display_name}
@@ -241,7 +241,7 @@ export default function AvatarSelectionPane({
       {!loading && expandedAvatar && expandedAvatarData && (
         <div className="flex flex-col items-center text-center px-4 py-6">
           {/* Avatar Image */}
-          <div className="relative w-48 h-48 mb-6 rounded-3xl overflow-hidden border-[3px] border-black dark:border-white shadow-[6px_6px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_rgba(255,255,255,1)]">
+          <div className="relative w-48 h-48 mb-6 rounded-3xl overflow-hidden dark:">
             <Image
               src={expandedAvatarData.image_path}
               alt={expandedAvatarData.display_name}
@@ -270,8 +270,8 @@ export default function AvatarSelectionPane({
                 saving ? 'opacity-50 cursor-not-allowed' : ''
               } ${
                 highContrast
-                  ? 'bg-hc-surface text-hc-text border-hc-border hover:bg-hc-focus shadow-[4px_4px_0px_rgba(0,0,0,1)]'
-                  : 'bg-ghost-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-black dark:border-gray-600 shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]'
+                  ? 'bg-hc-surface text-hc-text border-hc-border hover:bg-hc-focus'
+                  : 'bg-ghost-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:'
               }`}
             >
               Back
@@ -285,8 +285,8 @@ export default function AvatarSelectionPane({
                 saving ? 'opacity-50 cursor-not-allowed' : ''
               } ${
                 highContrast
-                  ? 'bg-hc-primary text-white border-hc-border hover:bg-hc-focus shadow-[4px_4px_0px_rgba(0,0,0,1)]'
-                  : 'bg-purple-500 text-white border-black shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]'
+                  ? 'bg-hc-primary text-white border-hc-border hover:bg-hc-focus'
+                  : 'bg-purple-500 text-white hover:'
               }`}
             >
               {saving ? (
@@ -311,7 +311,7 @@ export default function AvatarSelectionPane({
             className={`py-2 px-4 rounded-xl border-[2px] font-medium text-sm transition-all ${
               highContrast
                 ? 'bg-hc-primary text-white border-hc-border hover:bg-hc-focus'
-                : 'bg-sky-500 text-white border-black shadow-[3px_3px_0px_rgba(0,0,0,1)]'
+                : 'bg-sky-500 text-white'
             }`}
           >
             Retry

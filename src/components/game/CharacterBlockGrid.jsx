@@ -340,12 +340,12 @@ export default function CharacterBlockGrid({
   // Determine shadow for outer container
   const getShadow = () => {
     if (isCorrect) {
-      return 'shadow-[2px_2px_0px_rgba(126,217,87,0.5)]';
+      return '';
     }
     if (isWrong) {
-      return 'shadow-[2px_2px_0px_rgba(255,87,87,0.3)]';
+      return '';
     }
-    return 'shadow-[2px_2px_0px_rgba(0,0,0,0.2)] dark:shadow-[2px_2px_0px_rgba(0,0,0,0.3)]';
+    return ' dark:';
   };
 
   // Determine if we need horizontal scrolling

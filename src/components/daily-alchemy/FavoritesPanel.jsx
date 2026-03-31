@@ -93,16 +93,16 @@ export function FavoritesPanel({
         className={cn(
           'absolute left-0 right-0 top-full mt-2 z-50',
           'bg-white dark:bg-gray-800',
-          'border-[2px] border-black dark:border-gray-600',
+          'dark:border-gray-600',
           'rounded-xl',
-          'shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(75,85,99,1)]',
+          'dark:',
           'overflow-hidden flex flex-col',
           'max-h-[50vh]',
           highContrast && 'border-[3px] border-hc-border'
         )}
       >
         {/* Header */}
-        <div className="flex items-center justify-between p-3 border-b-2 border-black dark:border-gray-600">
+        <div className="flex items-center justify-between p-3 border-b-2">
           <div className="flex items-center gap-2">
             <Image
               src="/ui/shared/favorites.png"

@@ -193,7 +193,7 @@ export default function ImportAdminPage() {
         <div className="flex items-center gap-4">
           <Link
             href="/admin"
-            className="p-2 rounded-xl border-2 border-black bg-white hover:bg-gray-100 transition-colors"
+            className="p-2 rounded-xl border-2 bg-white hover:bg-gray-100 transition-colors"
           >
             <ArrowLeft className="w-5 h-5" />
           </Link>
@@ -208,10 +208,10 @@ export default function ImportAdminPage() {
         {/* Stats */}
         {stats && (
           <div className="flex gap-4 text-sm">
-            <div className="px-4 py-2 bg-blue-100 rounded-xl border-2 border-black">
+            <div className="px-4 py-2 bg-blue-100 rounded-xl border-2">
               <span className="font-bold">{stats.totalElements.toLocaleString()}</span> elements
             </div>
-            <div className="px-4 py-2 bg-green-100 rounded-xl border-2 border-black">
+            <div className="px-4 py-2 bg-green-100 rounded-xl border-2">
               <span className="font-bold">{stats.totalCombinations.toLocaleString()}</span>{' '}
               combinations
             </div>
@@ -229,7 +229,7 @@ export default function ImportAdminPage() {
             placeholder="Search elements..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-10 py-3 rounded-xl border-2 border-black focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full pl-10 pr-10 py-3 rounded-xl border-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
           {searchQuery && (
             <button
@@ -246,7 +246,7 @@ export default function ImportAdminPage() {
           <div className="flex flex-wrap gap-1">
             <button
               onClick={() => setSelectedLetter(null)}
-              className={`px-3 py-1.5 rounded-lg border-2 border-black font-bold text-sm transition-colors ${
+              className={`px-3 py-1.5 rounded-lg border-2 font-bold text-sm transition-colors ${
                 selectedLetter === null ? 'bg-black text-white' : 'bg-white hover:bg-gray-100'
               }`}
             >
@@ -257,7 +257,7 @@ export default function ImportAdminPage() {
                 key={letter}
                 onClick={() => setSelectedLetter(letter)}
                 disabled={count === 0}
-                className={`px-3 py-1.5 rounded-lg border-2 border-black font-bold text-sm transition-colors ${
+                className={`px-3 py-1.5 rounded-lg border-2 font-bold text-sm transition-colors ${
                   selectedLetter === letter
                     ? 'bg-black text-white'
                     : count === 0
@@ -277,7 +277,7 @@ export default function ImportAdminPage() {
       {/* Element Grid */}
       {loading ? (
         <div className="flex items-center justify-center py-20">
-          <div className="animate-spin rounded-full h-12 w-12 border-4 border-black border-t-transparent" />
+          <div className="animate-spin rounded-full h-12 w-12 border-4 border-t-transparent" />
         </div>
       ) : elements.length === 0 ? (
         <div className="text-center py-20 text-gray-500">
@@ -295,7 +295,7 @@ export default function ImportAdminPage() {
               <button
                 onClick={() => fetchElements(pagination.page - 1)}
                 disabled={pagination.page === 1}
-                className="p-2 rounded-xl border-2 border-black bg-white hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="p-2 rounded-xl border-2 bg-white hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <ChevronLeft className="w-5 h-5" />
               </button>
@@ -305,7 +305,7 @@ export default function ImportAdminPage() {
               <button
                 onClick={() => fetchElements(pagination.page + 1)}
                 disabled={pagination.page === pagination.totalPages}
-                className="p-2 rounded-xl border-2 border-black bg-white hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="p-2 rounded-xl border-2 bg-white hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <ChevronRight className="w-5 h-5" />
               </button>

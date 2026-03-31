@@ -33,32 +33,55 @@ class APIService {
    * @private
    */
   async fetchWithErrorHandling(url, options = {}) {
-    try {
-      const fullUrl = this.buildUrl(url);
+    const { retries = 2, timeout = 15000, ...fetchOptions } = options;
+    const fullUrl = this.buildUrl(url);
 
-      const response = await fetch(fullUrl, {
-        ...options,
-        headers: {
-          'Content-Type': 'application/json',
-          ...options.headers,
-        },
-      });
+    let lastError;
+    for (let attempt = 0; attempt <= retries; attempt++) {
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), timeout);
 
-      if (!response.ok) {
-        throw new Error(`API Error: ${response.status}`);
+        const response = await fetch(fullUrl, {
+          ...fetchOptions,
+          signal: controller.signal,
+          headers: {
+            'Content-Type': 'application/json',
+            ...fetchOptions.headers,
+          },
+        });
+
+        clearTimeout(timeoutId);
+
+        if (!response.ok) {
+          throw new Error(`API Error: ${response.status}`);
+        }
+
+        return await response.json();
+      } catch (error) {
+        lastError = error;
+
+        // Don't retry on client errors (4xx) or abort
+        if (error.name === 'AbortError') {
+          lastError = new Error(`Request timed out after ${timeout}ms`);
+          // Still retry timeouts
+        } else if (error.message?.match(/API Error: 4\d{2}/)) {
+          break;
+        }
+
+        // Wait before retrying (exponential backoff)
+        if (attempt < retries) {
+          await new Promise((r) => setTimeout(r, Math.pow(2, attempt) * 500));
+        }
       }
-
-      return await response.json();
-    } catch (error) {
-      // API fetch error
-
-      // For native platform, try offline fallback
-      if (platformService.isPlatformNative() && !platformService.isOnline()) {
-        // Device is offline, attempting to use cached data
-      }
-
-      throw error;
     }
+
+    // For native platform, try offline fallback
+    if (platformService.isPlatformNative() && !platformService.isOnline()) {
+      // Device is offline, attempting to use cached data
+    }
+
+    throw lastError;
   }
 
   /**

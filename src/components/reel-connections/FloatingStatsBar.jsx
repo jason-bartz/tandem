@@ -155,7 +155,7 @@ const FloatingStatsBar = ({
                     alt={isMistake ? 'Mistake' : 'Remaining'}
                     width={16}
                     height={16}
-                    className="w-full h-full object-contain drop-shadow-md"
+                    className="w-full h-full object-contain"
                   />
                 </div>
               );

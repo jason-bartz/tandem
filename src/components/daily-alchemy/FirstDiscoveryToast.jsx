@@ -35,9 +35,9 @@ export function FirstDiscoveryToast({ element, emoji, onDismiss, duration = 5000
           'flex items-center gap-3 px-6 py-3',
           'bg-gradient-to-r from-yellow-400 to-orange-400',
           'text-white',
-          'border-[3px] border-black',
+          '',
           'rounded-2xl',
-          'shadow-[4px_4px_0px_rgba(0,0,0,1)]',
+          '',
           highContrast && 'border-[4px]'
         )}
       >

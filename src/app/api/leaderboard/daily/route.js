@@ -98,7 +98,7 @@ export async function GET(request) {
     const { searchParams } = new URL(request.url);
     const gameType = searchParams.get('game');
     const date = searchParams.get('date');
-    const limit = Math.min(parseInt(searchParams.get('limit') || '10'), 100);
+    const limit = Math.min(Math.max(1, parseInt(searchParams.get('limit') || '10', 10) || 10), 100);
 
     // Validation
     if (!gameType || !['tandem', 'mini', 'reel', 'soup'].includes(gameType)) {

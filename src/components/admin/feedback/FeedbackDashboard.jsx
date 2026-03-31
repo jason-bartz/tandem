@@ -177,7 +177,7 @@ export default function FeedbackDashboard({ onCountsChange }) {
       </div>
 
       {/* Sort & Filter Row */}
-      <div className="flex items-center justify-between gap-3 py-2 border-b-[2px] border-black/10 dark:border-white/10">
+      <div className="flex items-center justify-between gap-3 py-2 border-b-[2px] dark:border-white/10">
         {/* Sort Toggle */}
         <button
           onClick={() => setSortOrder((prev) => (prev === 'newest' ? 'oldest' : 'newest'))}
@@ -200,8 +200,8 @@ export default function FeedbackDashboard({ onCountsChange }) {
             onClick={() => setShowFilterDropdown((prev) => !prev)}
             className={`flex items-center gap-1.5 px-3 py-1.5 text-sm font-bold rounded-lg border-[2px] transition-all ${
               showFilterDropdown || activeFilterCount > 0
-                ? 'bg-black dark:bg-white text-white dark:text-black border-black dark:border-white'
-                : 'bg-ghost-white dark:bg-gray-800 text-text-primary border-black dark:border-white hover:bg-gray-100 dark:hover:bg-gray-700'
+                ? 'bg-black dark:bg-white text-white dark:text-black'
+                : 'bg-ghost-white dark:bg-gray-800 text-text-primary hover:bg-gray-100 dark:hover:bg-gray-700'
             }`}
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -222,9 +222,9 @@ export default function FeedbackDashboard({ onCountsChange }) {
 
           {/* Filter Dropdown */}
           {showFilterDropdown && (
-            <div className="absolute right-0 top-full mt-2 w-72 sm:w-80 bg-white dark:bg-gray-800 border-[3px] border-black dark:border-white rounded-xl shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(255,255,255,0.3)] z-50 overflow-hidden">
+            <div className="absolute right-0 top-full mt-2 w-72 sm:w-80 bg-white dark:bg-gray-800 rounded-xl dark: z-50 overflow-hidden">
               {/* Status Section */}
-              <div className="p-3 border-b-[2px] border-black/10 dark:border-white/10">
+              <div className="p-3 border-b-[2px] dark:border-white/10">
                 <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">
                   Status
                 </span>
@@ -293,7 +293,7 @@ export default function FeedbackDashboard({ onCountsChange }) {
       {loading && <FeedbackDashboardSkeleton />}
 
       {error && (
-        <div className="rounded-xl border-[3px] border-accent-red bg-accent-red/10 dark:bg-accent-red/20 shadow-[4px_4px_0px_rgba(239,68,68,0.4)] p-4">
+        <div className="rounded-xl border-[3px] border-accent-red bg-accent-red/10 dark:bg-accent-red/20 p-4">
           <div className="flex items-start gap-3">
             <div className="flex-1">
               <p className="text-sm font-bold text-accent-red mb-1">Error Loading Feedback</p>
@@ -304,7 +304,7 @@ export default function FeedbackDashboard({ onCountsChange }) {
       )}
 
       {!loading && !hasFeedback && (
-        <div className="rounded-xl border-[3px] border-black dark:border-white bg-ghost-white dark:bg-bg-surface shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(255,255,255,0.3)] p-12 text-center">
+        <div className="rounded-xl bg-ghost-white dark:bg-bg-surface dark: p-12 text-center">
           <div className="max-w-md mx-auto">
             <p className="text-sm font-bold text-gray-900 dark:text-gray-100 mb-2">
               No Feedback Found
@@ -324,12 +324,12 @@ export default function FeedbackDashboard({ onCountsChange }) {
           return (
             <div
               key={entry.id}
-              className={`rounded-xl border-[3px] border-black dark:border-white bg-ghost-white dark:bg-bg-surface shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(255,255,255,0.3)] overflow-hidden`}
+              className={`rounded-xl bg-ghost-white dark:bg-bg-surface dark: overflow-hidden`}
             >
               {/* Compact Header */}
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 px-4 sm:px-5 py-3 bg-gray-100 dark:bg-gray-800 border-b-[3px] border-black dark:border-white">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 px-4 sm:px-5 py-3 bg-gray-100 dark:bg-gray-800 border-b border-border-light">
                 <div className="flex items-center justify-between sm:justify-start gap-3 sm:gap-4">
-                  <span className="px-2 py-1 rounded bg-ghost-white dark:bg-gray-700 border-[2px] border-black dark:border-white text-xs font-bold text-gray-800 dark:text-gray-200 flex items-center gap-2">
+                  <span className="px-2 py-1 rounded bg-ghost-white dark:bg-gray-700 text-xs font-bold text-gray-800 dark:text-gray-200 flex items-center gap-2">
                     {category.icon && (
                       <img src={category.icon} alt="" className="w-4 h-4 flex-shrink-0" />
                     )}
@@ -343,7 +343,7 @@ export default function FeedbackDashboard({ onCountsChange }) {
                   value={entry.status}
                   onChange={(event) => handleStatusChange(entry.id, event.target.value)}
                   disabled={isStatusUpdating}
-                  className={`w-full sm:w-auto px-3 py-1.5 rounded-lg border-[2px] border-black dark:border-white text-xs font-bold bg-ghost-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 transition-all ${
+                  className={`w-full sm:w-auto px-3 py-1.5 rounded-lg text-xs font-bold bg-ghost-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 transition-all ${
                     isStatusUpdating
                       ? 'opacity-50 cursor-not-allowed'
                       : 'hover:bg-gray-50 dark:hover:bg-gray-600'
@@ -464,15 +464,15 @@ export default function FeedbackDashboard({ onCountsChange }) {
                         }
                         rows={3}
                         placeholder="Add internal note..."
-                        className="w-full px-3 py-2 rounded-lg border-[2px] border-black dark:border-white text-sm bg-ghost-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                        className="w-full px-3 py-2 rounded-lg text-sm bg-ghost-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-purple-500"
                       />
                       <button
                         onClick={() => handleCommentSubmit(entry.id)}
                         disabled={!commentDraft.trim() || isCommentUpdating}
-                        className={`w-full px-4 py-2 rounded-lg border-[2px] border-black dark:border-white text-sm font-bold transition-all ${
+                        className={`w-full px-4 py-2 rounded-lg text-sm font-bold transition-all ${
                           !commentDraft.trim() || isCommentUpdating
                             ? 'bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed'
-                            : 'bg-purple-600 text-white hover:bg-purple-700 active:translate-y-[1px]'
+                            : 'bg-purple-600 text-white hover:bg-purple-700'
                         }`}
                       >
                         {isCommentUpdating ? 'Saving...' : 'Add Note'}

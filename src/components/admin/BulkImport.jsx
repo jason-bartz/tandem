@@ -82,10 +82,7 @@ export default function BulkImport({ onClose, onSuccess }) {
 
   return (
     <div className="fixed inset-0 bg-black/70 flex items-center justify-center p-3 sm:p-4 z-50">
-      <div
-        className="bg-bg-surface rounded-lg border-[3px] border-border-main max-w-4xl w-full max-h-[90vh] overflow-y-auto"
-        style={{ boxShadow: 'var(--shadow-card)' }}
-      >
+      <div className="bg-bg-surface rounded-lg border-2 border-border-main max-w-4xl w-full max-h-[90vh] overflow-y-auto">
         <div className="p-4 sm:p-6">
           <div className="flex justify-between items-center mb-4 sm:mb-6">
             <h2 className="text-xl sm:text-2xl font-bold text-text-primary">Bulk Import Puzzles</h2>
@@ -119,8 +116,7 @@ export default function BulkImport({ onClose, onSuccess }) {
                   type="date"
                   value={startDate}
                   onChange={(e) => setStartDate(e.target.value)}
-                  className="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border-[3px] border-border-main rounded-lg bg-bg-card text-text-primary font-medium focus:outline-none focus:ring-2 focus:ring-accent-blue"
-                  style={{ boxShadow: 'var(--shadow-small)' }}
+                  className="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border-2 border-border-main rounded-lg bg-bg-card text-text-primary font-medium focus:outline-none focus:ring-2 focus:ring-accent-blue"
                 />
                 <p className="text-xs text-text-secondary font-medium mt-1">
                   Puzzles will be assigned to available dates starting from this date
@@ -166,8 +162,7 @@ export default function BulkImport({ onClose, onSuccess }) {
                 value={jsonInput}
                 onChange={(e) => setJsonInput(e.target.value)}
                 placeholder="Paste your JSON array of puzzles here..."
-                className="w-full h-48 sm:h-64 px-3 sm:px-4 py-2 text-xs sm:text-sm border-[3px] border-border-main rounded-lg bg-bg-card text-text-primary font-mono focus:outline-none focus:ring-2 focus:ring-accent-blue"
-                style={{ boxShadow: 'var(--shadow-small)' }}
+                className="w-full h-48 sm:h-64 px-3 sm:px-4 py-2 text-xs sm:text-sm border-2 border-border-main rounded-lg bg-bg-card text-text-primary font-mono focus:outline-none focus:ring-2 focus:ring-accent-blue"
                 spellCheck={false}
               />
               <p className="text-xs text-text-secondary font-medium mt-1">
@@ -184,17 +179,13 @@ export default function BulkImport({ onClose, onSuccess }) {
                       ? 'bg-accent-red/20 border-accent-red text-text-primary'
                       : 'bg-accent-blue/20 border-accent-blue text-text-primary'
                 }`}
-                style={{ boxShadow: 'var(--shadow-small)' }}
               >
                 {message}
               </div>
             )}
 
             {results && results.summary && (
-              <div
-                className="bg-bg-card border-[3px] border-border-main p-3 sm:p-4 rounded-lg"
-                style={{ boxShadow: 'var(--shadow-small)' }}
-              >
+              <div className="bg-bg-card border-2 border-border-main p-3 sm:p-4 rounded-lg">
                 <h3 className="text-sm sm:text-base font-bold text-text-primary mb-2">
                   Import Summary
                 </h3>
@@ -243,16 +234,14 @@ export default function BulkImport({ onClose, onSuccess }) {
               <button
                 type="button"
                 onClick={onClose}
-                className="w-full sm:w-auto px-4 sm:px-6 py-2 text-sm sm:text-base border-[3px] border-border-main bg-bg-card text-text-primary rounded-lg font-bold hover:bg-text-muted/20 transition-colors"
-                style={{ boxShadow: 'var(--shadow-button)' }}
+                className="w-full sm:w-auto px-4 sm:px-6 py-2 text-sm sm:text-base border-2 border-border-main bg-bg-card text-text-primary rounded-lg font-bold hover:bg-text-muted/20 transition-colors"
               >
                 Cancel
               </button>
               <button
                 onClick={handleImport}
                 disabled={loading || !jsonInput.trim()}
-                className="w-full sm:w-auto px-4 sm:px-6 py-2 text-sm sm:text-base bg-gradient-to-r from-accent-blue to-accent-green border-[3px] border-border-main text-white rounded-lg font-bold hover:translate-y-[-2px] transition-transform disabled:opacity-50 disabled:cursor-not-allowed"
-                style={{ boxShadow: 'var(--shadow-button)' }}
+                className="w-full sm:w-auto px-4 sm:px-6 py-2 text-sm sm:text-base bg-gradient-to-r from-accent-blue to-accent-green border-2 border-border-main text-white rounded-lg font-bold transition-transform disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {loading ? 'Importing...' : 'Import Puzzles'}
               </button>

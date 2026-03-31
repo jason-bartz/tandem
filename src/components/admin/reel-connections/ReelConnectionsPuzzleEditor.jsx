@@ -87,11 +87,9 @@ function MovieSearchInput({ value, onChange, groupColor, onShuffle, shuffleLoadi
   return (
     <div ref={containerRef} className="relative">
       {value ? (
-        <div
-          className={`${groupColor} border-[3px] border-black dark:border-white rounded-xl p-3 shadow-[3px_3px_0px_rgba(0,0,0,1)]`}
-        >
+        <div className={`${groupColor} rounded-xl p-3`}>
           <div className="flex items-center gap-3">
-            <div className="w-16 h-24 rounded-lg overflow-hidden border-2 border-black flex-shrink-0">
+            <div className="w-16 h-24 rounded-lg overflow-hidden border-2 flex-shrink-0">
               <img src={value.poster} alt={value.title} className="w-full h-full object-cover" />
             </div>
             <div className="flex-1 min-w-0">
@@ -103,7 +101,7 @@ function MovieSearchInput({ value, onChange, groupColor, onShuffle, shuffleLoadi
                 <button
                   onClick={onShuffle}
                   disabled={shuffleLoading}
-                  className="w-8 h-8 sm:w-auto sm:h-auto sm:px-2 sm:py-1.5 bg-accent-green text-white rounded-lg border-[2px] border-black hover:translate-y-[-2px] transition-transform shadow-[2px_2px_0px_rgba(0,0,0,1)] font-bold disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-1 text-xs"
+                  className="w-8 h-8 sm:w-auto sm:h-auto sm:px-2 sm:py-1.5 bg-accent-green text-white rounded-lg transition-transform font-bold disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-1 text-xs"
                   title="Generate new movie"
                 >
                   {shuffleLoading ? (
@@ -139,7 +137,7 @@ function MovieSearchInput({ value, onChange, groupColor, onShuffle, shuffleLoadi
                 href={`https://www.imdb.com/title/${value.imdbId}/`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-8 h-8 sm:w-auto sm:h-auto sm:px-2 sm:py-1.5 bg-[#F5C518] text-black rounded-lg border-[2px] border-black hover:translate-y-[-2px] transition-transform shadow-[2px_2px_0px_rgba(0,0,0,1)] font-bold flex items-center justify-center gap-1 text-xs"
+                className="w-8 h-8 sm:w-auto sm:h-auto sm:px-2 sm:py-1.5 bg-[#F5C518] text-black rounded-lg transition-transform font-bold flex items-center justify-center gap-1 text-xs"
                 title="View on IMDb"
               >
                 <span className="sm:hidden">i</span>
@@ -147,7 +145,7 @@ function MovieSearchInput({ value, onChange, groupColor, onShuffle, shuffleLoadi
               </a>
               <button
                 onClick={handleRemove}
-                className="w-8 h-8 sm:w-auto sm:h-auto sm:px-2 sm:py-1.5 bg-accent-red text-white rounded-lg border-[2px] border-black hover:translate-y-[-2px] transition-transform shadow-[2px_2px_0px_rgba(0,0,0,1)] font-bold flex items-center justify-center gap-1 text-xs"
+                className="w-8 h-8 sm:w-auto sm:h-auto sm:px-2 sm:py-1.5 bg-accent-red text-white rounded-lg transition-transform font-bold flex items-center justify-center gap-1 text-xs"
               >
                 <span className="sm:hidden">×</span>
                 <span className="hidden sm:inline">Clear</span>
@@ -162,7 +160,7 @@ function MovieSearchInput({ value, onChange, groupColor, onShuffle, shuffleLoadi
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search for a movie..."
-            className="w-full px-3 py-1.5 text-sm border-[2px] border-black dark:border-white rounded-lg bg-bg-card text-text-primary font-medium shadow-[2px_2px_0px_rgba(0,0,0,1)] focus:outline-none focus:ring-2 focus:ring-accent-red"
+            className="w-full px-3 py-1.5 text-sm rounded-lg bg-bg-card text-text-primary font-medium focus:outline-none focus:ring-2 focus:ring-accent-red"
           />
           {loading && (
             <div className="absolute right-3 top-1/2 -translate-y-1/2">
@@ -170,14 +168,14 @@ function MovieSearchInput({ value, onChange, groupColor, onShuffle, shuffleLoadi
             </div>
           )}
           {showResults && results.length > 0 && (
-            <div className="absolute top-full left-0 right-0 mt-2 bg-bg-surface border-[3px] border-black dark:border-white rounded-xl shadow-[4px_4px_0px_rgba(0,0,0,1)] max-h-64 overflow-y-auto z-50">
+            <div className="absolute top-full left-0 right-0 mt-2 bg-bg-surface rounded-xl max-h-64 overflow-y-auto z-50">
               {results.map((movie) => (
                 <button
                   key={movie.imdbId}
                   onClick={() => handleSelect(movie)}
-                  className="w-full flex items-center gap-3 p-3 hover:bg-accent-yellow/20 transition-colors border-b-[2px] border-black/10 last:border-0"
+                  className="w-full flex items-center gap-3 p-3 hover:bg-accent-yellow/20 transition-colors border-b-[2px] last:border-0"
                 >
-                  <div className="w-12 h-16 rounded overflow-hidden border-2 border-black flex-shrink-0">
+                  <div className="w-12 h-16 rounded overflow-hidden border-2 flex-shrink-0">
                     <img
                       src={movie.poster}
                       alt={movie.title}
@@ -548,7 +546,7 @@ export default function ReelConnectionsPuzzleEditor({
   };
 
   return (
-    <div className="bg-bg-surface rounded-lg border-[3px] border-black dark:border-white p-3 sm:p-4 shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(255,255,255,0.3)]">
+    <div className="bg-bg-surface rounded-lg p-3 sm:p-4 dark:">
       <div className="flex justify-between items-start mb-4">
         <div className="flex-1">
           <div className="flex items-center gap-3 mb-1">
@@ -582,7 +580,7 @@ export default function ReelConnectionsPuzzleEditor({
                 type="date"
                 value={selectedDate}
                 onChange={(e) => setSelectedDate(e.target.value)}
-                className="px-3 py-1 border-[2px] border-black dark:border-white rounded-lg bg-bg-card text-text-primary font-medium text-sm"
+                className="px-3 py-1 rounded-lg bg-bg-card text-text-primary font-medium text-sm"
               />
             </div>
           )}
@@ -591,7 +589,7 @@ export default function ReelConnectionsPuzzleEditor({
           <button
             onClick={handleGenerateAll}
             disabled={loading || generatingAll || generatingForGroup !== null}
-            className="px-2 py-1 bg-accent-green text-white border-[2px] border-black dark:border-white font-bold rounded-lg hover:translate-y-[-1px] transition-transform shadow-[2px_2px_0px_rgba(0,0,0,1)] text-xs flex items-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-2 py-1 bg-accent-green text-white font-bold rounded-lg transition-transform text-xs flex items-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {generatingAll ? (
               <>
@@ -629,7 +627,7 @@ export default function ReelConnectionsPuzzleEditor({
           {onShowConnections && (
             <button
               onClick={onShowConnections}
-              className="px-2 py-1 bg-accent-blue text-white border-[2px] border-black dark:border-white font-bold rounded-lg hover:translate-y-[-1px] transition-transform shadow-[2px_2px_0px_rgba(0,0,0,1)] text-xs flex items-center gap-1.5 flex-shrink-0"
+              className="px-2 py-1 bg-accent-blue text-white font-bold rounded-lg transition-transform text-xs flex items-center gap-1.5 flex-shrink-0"
             >
               <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
@@ -668,10 +666,7 @@ export default function ReelConnectionsPuzzleEditor({
           const isSuggestionsLoading = suggestionsLoading[groupIndex];
 
           return (
-            <div
-              key={levelInfo.id}
-              className={`${levelInfo.color} rounded-xl border-[3px] border-black dark:border-white p-4 shadow-[4px_4px_0px_rgba(0,0,0,1)]`}
-            >
+            <div key={levelInfo.id} className={`${levelInfo.color} rounded-xl p-4`}>
               <div className="mb-3">
                 <div className="flex items-center justify-between mb-1.5">
                   <label className={`block text-xs font-bold ${levelInfo.textColor}`}>
@@ -681,7 +676,7 @@ export default function ReelConnectionsPuzzleEditor({
                     type="button"
                     onClick={() => handleSuggestIdeas(groupIndex)}
                     disabled={loading || isSuggestionsLoading || isGenerating}
-                    className="flex items-center gap-1 px-2 py-0.5 bg-ghost-white text-[#2c2c2c] border-[2px] border-black rounded-lg hover:translate-y-[-1px] transition-transform shadow-[2px_2px_0px_rgba(0,0,0,1)] disabled:opacity-50 disabled:cursor-not-allowed text-xs font-bold"
+                    className="flex items-center gap-1 px-2 py-0.5 bg-ghost-white text-[#2c2c2c] rounded-lg transition-transform disabled:opacity-50 disabled:cursor-not-allowed text-xs font-bold"
                   >
                     {isSuggestionsLoading ? (
                       <>
@@ -727,7 +722,7 @@ export default function ReelConnectionsPuzzleEditor({
                   value={group.connection}
                   onChange={(e) => handleConnectionChange(groupIndex, e.target.value)}
                   placeholder="e.g., Movies directed by Steven Spielberg"
-                  className="w-full px-3 py-1.5 text-sm border-[2px] border-black rounded-lg bg-ghost-white text-[#2c2c2c] font-medium shadow-[2px_2px_0px_rgba(0,0,0,1)] focus:outline-none focus:ring-2 focus:ring-accent-red"
+                  className="w-full px-3 py-1.5 text-sm rounded-lg bg-ghost-white text-[#2c2c2c] font-medium focus:outline-none focus:ring-2 focus:ring-accent-red"
                 />
 
                 {/* Suggestions */}
@@ -738,7 +733,7 @@ export default function ReelConnectionsPuzzleEditor({
                         <button
                           type="button"
                           onClick={() => handleSelectSuggestion(groupIndex, suggestion)}
-                          className="px-3 pr-7 py-1.5 bg-ghost-white text-[#2c2c2c] border-[2px] border-black rounded-lg hover:bg-accent-yellow/30 transition-colors text-xs font-medium"
+                          className="px-3 pr-7 py-1.5 bg-ghost-white text-[#2c2c2c] rounded-lg hover:bg-accent-yellow/30 transition-colors text-xs font-medium"
                           title={suggestion.description}
                         >
                           {suggestion.connection}
@@ -783,7 +778,7 @@ export default function ReelConnectionsPuzzleEditor({
                       value={group.connectionContext || ''}
                       onChange={(e) => handleConnectionContextChange(groupIndex, e.target.value)}
                       placeholder="e.g., exclude Arnold Schwarzenegger movies"
-                      className="w-full px-3 py-1.5 text-sm border-[2px] border-black rounded-lg bg-ghost-white text-[#2c2c2c] font-medium shadow-[2px_2px_0px_rgba(0,0,0,1)] focus:outline-none focus:ring-2 focus:ring-accent-red"
+                      className="w-full px-3 py-1.5 text-sm rounded-lg bg-ghost-white text-[#2c2c2c] font-medium focus:outline-none focus:ring-2 focus:ring-accent-red"
                     />
                   </div>
                   <div className="flex items-end">
@@ -791,7 +786,7 @@ export default function ReelConnectionsPuzzleEditor({
                       type="button"
                       onClick={() => handleGenerate(groupIndex)}
                       disabled={loading || isGenerating || !group.connection.trim()}
-                      className="flex items-center gap-1 px-3 py-1.5 bg-accent-green text-white border-[2px] border-black rounded-lg hover:translate-y-[-1px] transition-transform shadow-[2px_2px_0px_rgba(0,0,0,1)] disabled:opacity-50 disabled:cursor-not-allowed text-xs font-bold whitespace-nowrap"
+                      className="flex items-center gap-1 px-3 py-1.5 bg-accent-green text-white rounded-lg transition-transform disabled:opacity-50 disabled:cursor-not-allowed text-xs font-bold whitespace-nowrap"
                     >
                       {isGenerating ? (
                         <>
@@ -854,7 +849,7 @@ export default function ReelConnectionsPuzzleEditor({
         <button
           onClick={onCancel}
           disabled={loading}
-          className="px-3 sm:px-4 py-1.5 text-xs sm:text-sm bg-bg-card text-text-primary border-[2px] border-black dark:border-white font-bold rounded-md sm:rounded-lg hover:translate-y-[-1px] active:translate-y-0 transition-transform shadow-[2px_2px_0px_rgba(0,0,0,1)] disabled:opacity-50"
+          className="px-3 sm:px-4 py-1.5 text-xs sm:text-sm bg-bg-card text-text-primary font-bold rounded-md sm:rounded-lg active:translate-y-0 transition-transform disabled:opacity-50"
         >
           <span className="sm:hidden">Back</span>
           <span className="hidden sm:inline">Back to Calendar</span>
@@ -862,7 +857,7 @@ export default function ReelConnectionsPuzzleEditor({
         <button
           onClick={handleSave}
           disabled={loading}
-          className="px-3 sm:px-4 py-1.5 text-xs sm:text-sm bg-accent-green text-white border-[2px] border-black dark:border-white font-bold rounded-md sm:rounded-lg hover:translate-y-[-1px] active:translate-y-0 transition-transform shadow-[2px_2px_0px_rgba(0,0,0,1)] disabled:opacity-50 disabled:cursor-not-allowed"
+          className="px-3 sm:px-4 py-1.5 text-xs sm:text-sm bg-accent-green text-white font-bold rounded-md sm:rounded-lg active:translate-y-0 transition-transform disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <span className="sm:hidden">{loading ? 'Saving...' : 'Save'}</span>
           <span className="hidden sm:inline">{loading ? 'Saving...' : 'Save Puzzle'}</span>
@@ -881,7 +876,7 @@ export default function ReelConnectionsPuzzleEditor({
             setDismissedConnections([]);
           }}
           disabled={loading}
-          className="px-3 sm:px-4 py-1.5 text-xs sm:text-sm bg-accent-orange text-white border-[2px] border-black dark:border-white font-bold rounded-md sm:rounded-lg hover:translate-y-[-1px] active:translate-y-0 transition-transform shadow-[2px_2px_0px_rgba(0,0,0,1)] disabled:opacity-50"
+          className="px-3 sm:px-4 py-1.5 text-xs sm:text-sm bg-accent-orange text-white font-bold rounded-md sm:rounded-lg active:translate-y-0 transition-transform disabled:opacity-50"
         >
           Clear
         </button>

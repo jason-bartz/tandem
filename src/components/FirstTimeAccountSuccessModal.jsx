@@ -349,8 +349,8 @@ export default function FirstTimeAccountSuccessModal({ isOpen, onClose, userId }
               isSaving || !username.trim() ? 'opacity-50 cursor-not-allowed' : ''
             } ${
               highContrast
-                ? 'bg-hc-primary text-white border-hc-border hover:bg-hc-focus shadow-[4px_4px_0px_rgba(0,0,0,1)]'
-                : 'bg-gradient-to-r from-purple-500 to-pink-500 text-white border-black shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]'
+                ? 'bg-hc-primary text-white border-hc-border hover:bg-hc-focus'
+                : 'bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:'
             }`}
           >
             {isSaving ? (

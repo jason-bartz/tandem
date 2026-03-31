@@ -126,12 +126,9 @@ export default function GameSelectorModal({ date, puzzles, onSelectGame, onClose
       className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
       onClick={handleBackdropClick}
     >
-      <div
-        className="bg-bg-surface border-[3px] border-black dark:border-white rounded-xl w-full max-w-md overflow-hidden"
-        style={{ boxShadow: '6px 6px 0px rgba(0, 0, 0, 1)' }}
-      >
+      <div className="bg-bg-surface rounded-xl w-full max-w-md overflow-hidden">
         {/* Header */}
-        <div className="p-4 sm:p-5 border-b-[3px] border-black dark:border-white bg-bg-card">
+        <div className="p-4 sm:p-5 border-b border-border-light bg-bg-card">
           <div className="flex items-start justify-between">
             <div>
               <h2 className="text-lg sm:text-xl font-bold text-text-primary">
@@ -181,12 +178,11 @@ export default function GameSelectorModal({ date, puzzles, onSelectGame, onClose
                 key={game.id}
                 onClick={() => onSelectGame(game.id, hasPuzzle ? puzzles[game.id] : null)}
                 className={`
-                  w-full p-4 rounded-xl border-[3px] border-black dark:border-white
+                  w-full p-4 rounded-xl
                   flex items-center gap-4 transition-all
-                  hover:translate-y-[-2px] active:translate-y-0
+                  active:translate-y-0
                   ${hasPuzzle ? game.bgColor : 'bg-bg-card hover:bg-gray-50 dark:hover:bg-gray-800'}
                 `}
-                style={{ boxShadow: '3px 3px 0px rgba(0, 0, 0, 1)' }}
               >
                 {/* Game icon */}
                 <div className="w-12 h-12 sm:w-14 sm:h-14 relative flex-shrink-0">
@@ -215,10 +211,9 @@ export default function GameSelectorModal({ date, puzzles, onSelectGame, onClose
                 <div
                   className={`
                     px-3 py-1.5 rounded-lg text-xs sm:text-sm font-bold flex-shrink-0
-                    border-[2px] border-black dark:border-white
+                   
                     ${hasPuzzle ? 'bg-accent-green text-white' : 'bg-accent-yellow text-gray-900'}
                   `}
-                  style={{ boxShadow: '2px 2px 0px rgba(0, 0, 0, 1)' }}
                 >
                   {actionLabel}
                 </div>
@@ -228,11 +223,10 @@ export default function GameSelectorModal({ date, puzzles, onSelectGame, onClose
         </div>
 
         {/* Footer */}
-        <div className="p-4 sm:p-5 border-t-[3px] border-black dark:border-white bg-bg-card">
+        <div className="p-4 sm:p-5 border-t border-border-light bg-bg-card">
           <button
             onClick={onClose}
-            className="w-full py-2.5 px-4 text-sm font-bold text-text-primary bg-bg-surface border-[2px] border-black dark:border-white rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 hover:translate-y-[-1px] active:translate-y-0 transition-all"
-            style={{ boxShadow: '2px 2px 0px rgba(0, 0, 0, 1)' }}
+            className="w-full py-2.5 px-4 text-sm font-bold text-text-primary bg-bg-surface rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 active:translate-y-0 transition-all"
           >
             Cancel
           </button>

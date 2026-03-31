@@ -65,9 +65,9 @@ export function EmotePicker({ isOpen, onClose, onSelectEmote, cooldownActive = f
             'absolute right-0 top-full mt-2 z-50',
             'p-3',
             'bg-white dark:bg-gray-800',
-            'border-[3px] border-black dark:border-gray-600',
+            'dark:border-gray-600',
             'rounded-xl',
-            'shadow-[4px_4px_0px_rgba(0,0,0,1)]',
+            '',
             highContrast && 'border-[4px] border-hc-border'
           )}
           initial={!reduceMotion ? { opacity: 0, scale: 0.9, y: -8 } : false}

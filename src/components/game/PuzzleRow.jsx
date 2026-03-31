@@ -61,7 +61,7 @@ export default function PuzzleRow({
               : isMobilePhone
                 ? 'w-[65px] h-[55px] px-1'
                 : 'w-[70px] sm:w-[80px] h-[60px] sm:h-[70px] px-1 sm:px-2'
-          } rounded-[18px] flex items-center justify-center border-[3px] shadow-[3px_3px_0px_rgba(0,0,0,0.3)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.3)] transition-all flex-shrink-0 cursor-pointer select-none ${
+          } rounded-[18px] flex items-center justify-center border-[3px] dark: transition-all flex-shrink-0 cursor-pointer select-none ${
             highContrast
               ? 'bg-hc-surface border-hc-border'
               : 'bg-ghost-white dark:bg-gray-700 border-gray-800 dark:border-gray-500'

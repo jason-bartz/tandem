@@ -1814,6 +1814,13 @@ CLUE STYLE EXAMPLES:
 - PHONE → "Pocket device for calls and texts"
 - BEACH → "Sandy vacation spot"
 
+FILL-IN-THE-BLANK RULE:
+If you use a fill-in-the-blank clue (with underscores), the number of underscores MUST exactly match the number of letters in the answer word. Use one underscore per letter, separated by spaces.
+- OCEAN → "Motion of the _ _ _ _ _" (5 underscores for 5 letters) ✓
+- OCEAN → "Motion of the _ _ _" (3 underscores for 5 letters) ✗ WRONG
+- SEE → "'_ _ _ no evil, speak no evil'" (3 underscores for 3 letters) ✓
+- TIME → "Once upon a _ _ _ _" (4 underscores for 4 letters) ✓
+
 RESPONSE FORMAT (JSON array only, no explanation):
 ["clue for word 1", "clue for word 2", "clue for word 3", ...]
 
@@ -3416,8 +3423,9 @@ Mix these styles for an engaging puzzle:
 - "Good energy or atmosphere" → VIBES
 
 **4. Fill-in-the-blank:**
-- "'___ no evil, speak no evil'" → SEE
-- "Once upon a ___" → TIME
+- "'_ _ _ no evil, speak no evil'" → SEE
+- "Once upon a _ _ _ _" → TIME
+- IMPORTANT: The number of underscores MUST match the number of letters in the answer (one underscore per letter, separated by spaces).
 
 ## CROSSWORD STRUCTURE
 Each continuous run of white cells = EXACTLY ONE WORD.

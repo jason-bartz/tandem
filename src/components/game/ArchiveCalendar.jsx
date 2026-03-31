@@ -318,16 +318,12 @@ export default function ArchiveCalendar({ isOpen, onClose, onSelectPuzzle }) {
         <div
           onClick={(e) => e.stopPropagation()}
           className={`
-            rounded-[32px]
+            rounded-lg
             border-[3px]
             p-6
             w-full max-w-md
             animate-modal-enter
-            ${
-              highContrast
-                ? 'bg-hc-background border-hc-border shadow-[6px_6px_0px_rgba(0,0,0,1)]'
-                : 'bg-ghost-white dark:bg-bg-card border-black dark:border-gray-600 shadow-[6px_6px_0px_rgba(0,0,0,1)]'
-            }
+            ${highContrast ? 'bg-hc-background border-hc-border' : 'bg-ghost-white dark:bg-bg-card'}
           `}
         >
           {/* Header */}
@@ -346,8 +342,8 @@ export default function ArchiveCalendar({ isOpen, onClose, onSelectPuzzle }) {
                 transition-all
                 ${
                   highContrast
-                    ? 'bg-hc-surface text-hc-text border-hc-border hover:bg-hc-primary hover:text-white shadow-[2px_2px_0px_rgba(0,0,0,1)]'
-                    : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 border-gray-300 dark:border-gray-600 hover:bg-gray-200 dark:hover:bg-gray-600 shadow-[2px_2px_0px_rgba(0,0,0,0.2)]'
+                    ? 'bg-hc-surface text-hc-text border-hc-border hover:bg-hc-primary hover:text-white'
+                    : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 border-gray-300 dark:border-gray-600 hover:bg-gray-200 dark:hover:bg-gray-600'
                 }
               `}
               aria-label="Close"
@@ -374,7 +370,7 @@ export default function ArchiveCalendar({ isOpen, onClose, onSelectPuzzle }) {
                 transition-all
                 ${
                   !canGoPrevious
-                    ? 'opacity-30 cursor-not-allowed text-gray-800 dark:text-gray-200'
+                    ? 'opacity-50 cursor-not-allowed text-text-secondary'
                     : highContrast
                       ? 'border-hc-border text-hc-text hover:bg-hc-focus hover:text-white'
                       : 'border-gray-300 dark:border-gray-600 text-gray-800 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 active:scale-95'
@@ -424,7 +420,7 @@ export default function ArchiveCalendar({ isOpen, onClose, onSelectPuzzle }) {
                 transition-all
                 ${
                   !canGoNext
-                    ? 'opacity-30 cursor-not-allowed text-gray-800 dark:text-gray-200'
+                    ? 'opacity-50 cursor-not-allowed text-text-secondary'
                     : highContrast
                       ? 'border-hc-border text-hc-text hover:bg-hc-focus hover:text-white'
                       : 'border-gray-300 dark:border-gray-600 text-gray-800 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 active:scale-95'
@@ -484,8 +480,8 @@ export default function ArchiveCalendar({ isOpen, onClose, onSelectPuzzle }) {
               transition-all
               ${
                 highContrast
-                  ? 'bg-hc-primary border-hc-border hover:bg-hc-focus shadow-[4px_4px_0px_rgba(0,0,0,1)]'
-                  : 'bg-accent-blue border-black dark:border-gray-600 shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]'
+                  ? 'bg-hc-primary border-hc-border hover:bg-hc-focus'
+                  : 'bg-accent-blue hover:'
               }
             `}
             style={{

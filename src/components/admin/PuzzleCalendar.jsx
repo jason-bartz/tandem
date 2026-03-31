@@ -132,7 +132,7 @@ export default function PuzzleCalendar({
 
   return (
     <div className="h-full w-full overflow-x-auto">
-      <div className="px-3 sm:px-6 py-3 sm:py-4 border-t-[3px] border-b-[3px] border-black dark:border-white">
+      <div className="px-3 sm:px-6 py-3 sm:py-4 border-t-[3px] border-b border-border-light">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
           <div className="relative">
             <button
@@ -151,7 +151,7 @@ export default function PuzzleCalendar({
             </button>
 
             {showMonthPicker && (
-              <div className="absolute top-full left-0 mt-2 bg-bg-surface rounded-lg border-[3px] border-black dark:border-white p-4 z-50 w-72 sm:w-80 shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(255,255,255,0.3)]">
+              <div className="absolute top-full left-0 mt-2 bg-bg-surface rounded-lg p-4 z-50 w-72 sm:w-80 dark:">
                 <div className="grid grid-cols-3 gap-2 mb-4">
                   {[
                     'Jan',
@@ -177,10 +177,9 @@ export default function PuzzleCalendar({
                       }}
                       className={`px-3 py-2 rounded text-sm font-bold border-[2px] transition-transform ${
                         currentMonth.getMonth() === index
-                          ? 'bg-accent-yellow border-black dark:border-white text-text-primary'
-                          : 'bg-bg-card border-black dark:border-white text-text-secondary hover:bg-accent-yellow/20'
+                          ? 'bg-accent-yellow text-text-primary'
+                          : 'bg-bg-card text-text-secondary hover:bg-accent-yellow/20'
                       }`}
-                      style={{ boxShadow: '2px 2px 0px rgba(0, 0, 0, 1)' }}
                     >
                       {month}
                     </button>
@@ -197,11 +196,11 @@ export default function PuzzleCalendar({
                     }}
                     min="2024"
                     max="2030"
-                    className="flex-1 px-3 py-2 border-[3px] border-black dark:border-white rounded text-center bg-bg-card text-text-primary font-bold shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_rgba(255,255,255,0.3)]"
+                    className="flex-1 px-3 py-2 rounded text-center bg-bg-card text-text-primary font-bold dark:"
                   />
                   <button
                     onClick={() => setShowMonthPicker(false)}
-                    className="px-4 py-2 bg-accent-green border-[3px] border-black dark:border-white rounded text-white font-bold hover:translate-y-[-2px] transition-transform shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(255,255,255,0.3)]"
+                    className="px-4 py-2 bg-accent-green rounded text-white font-bold transition-transform dark:"
                   >
                     Done
                   </button>
@@ -213,7 +212,7 @@ export default function PuzzleCalendar({
           <div className="flex items-center space-x-1 sm:space-x-2">
             <button
               onClick={() => setCurrentMonth(new Date())}
-              className="px-2 sm:px-3 py-1 text-xs sm:text-sm bg-accent-blue border-[2px] border-black dark:border-white text-white rounded-lg font-bold hover:translate-y-[-1px] transition-transform shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_rgba(255,255,255,0.3)]"
+              className="px-2 sm:px-3 py-1 text-xs sm:text-sm bg-accent-blue text-white rounded-lg font-bold transition-transform dark:"
             >
               Today
             </button>
@@ -267,12 +266,11 @@ export default function PuzzleCalendar({
                   key={index}
                   className={`
                     relative aspect-square min-h-0 p-1.5 sm:p-2 rounded-lg border-[2px] overflow-hidden transition-all
-                    ${day ? 'cursor-pointer hover:border-accent-yellow hover:translate-y-[-2px]' : ''}
-                    ${isToday(day) ? 'border-accent-yellow bg-accent-yellow/20' : 'border-black dark:border-white'}
+                    ${day ? 'cursor-pointer hover:border-accent-yellow' : ''}
+                    ${isToday(day) ? 'border-accent-yellow bg-accent-yellow/20' : ''}
                     ${puzzle ? 'bg-accent-green/10' : ''}
                     ${holiday && !puzzle ? 'bg-accent-orange/10' : ''}
                   `}
-                  style={day ? { boxShadow: '2px 2px 0px rgba(0, 0, 0, 1)' } : {}}
                   onClick={() =>
                     day &&
                     setSelectedPuzzle(puzzle ? { ...puzzle, date: dateStr } : { date: dateStr })
@@ -345,7 +343,7 @@ export default function PuzzleCalendar({
           </div>
 
           {/* Legend */}
-          <div className="mt-6 pt-4 border-t-[3px] border-black dark:border-white">
+          <div className="mt-6 pt-4 border-t border-border-light">
             <div className="flex items-center gap-4 text-xs text-text-secondary font-medium">
               <div className="flex items-center gap-1.5">
                 <div className="w-3 h-3 rounded-full bg-accent-green" />
@@ -362,7 +360,7 @@ export default function PuzzleCalendar({
 
       {selectedPuzzle && (
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center p-3 sm:p-4 z-50">
-          <div className="bg-bg-surface rounded-lg border-[3px] border-black dark:border-white p-4 sm:p-6 max-w-md w-full max-h-[90vh] overflow-y-auto shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(255,255,255,0.3)]">
+          <div className="bg-bg-surface rounded-lg p-4 sm:p-6 max-w-md w-full max-h-[90vh] overflow-y-auto dark:">
             <h3 className="text-base sm:text-lg font-bold text-text-primary mb-3 sm:mb-4">
               {selectedPuzzle.theme ? 'Puzzle Details' : 'No Puzzle'} -{' '}
               {formatDate(selectedPuzzle.date, 'short')}
@@ -381,7 +379,7 @@ export default function PuzzleCalendar({
                   {selectedPuzzle.puzzles.map((p, i) => (
                     <div
                       key={i}
-                      className="flex items-center space-x-3 sm:space-x-4 p-2 bg-bg-card border-[2px] border-black dark:border-white rounded-lg shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_rgba(255,255,255,0.3)]"
+                      className="flex items-center space-x-3 sm:space-x-4 p-2 bg-bg-card rounded-lg dark:"
                     >
                       <span className="text-xl sm:text-2xl">{p.emoji}</span>
                       <span className="text-sm sm:text-base text-text-primary font-bold">
@@ -397,19 +395,19 @@ export default function PuzzleCalendar({
                       onEditPuzzle({ ...selectedPuzzle, date: selectedPuzzle.date });
                       setSelectedPuzzle(null);
                     }}
-                    className="w-full sm:w-auto px-4 py-2 text-sm sm:text-base bg-accent-blue border-[3px] border-black dark:border-white text-white rounded-lg font-bold hover:translate-y-[-2px] transition-transform shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(255,255,255,0.3)]"
+                    className="w-full sm:w-auto px-4 py-2 text-sm sm:text-base bg-accent-blue text-white rounded-lg font-bold transition-transform dark:"
                   >
                     Edit
                   </button>
                   <button
                     onClick={() => handleDeletePuzzle(selectedPuzzle.date)}
-                    className="w-full sm:w-auto px-4 py-2 text-sm sm:text-base bg-accent-red border-[3px] border-black dark:border-white text-white rounded-lg font-bold hover:translate-y-[-2px] transition-transform shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(255,255,255,0.3)]"
+                    className="w-full sm:w-auto px-4 py-2 text-sm sm:text-base bg-accent-red text-white rounded-lg font-bold transition-transform dark:"
                   >
                     Delete
                   </button>
                   <button
                     onClick={() => setSelectedPuzzle(null)}
-                    className="w-full sm:w-auto px-4 py-2 text-sm sm:text-base bg-bg-card border-[3px] border-black dark:border-white text-text-primary rounded-lg font-bold hover:bg-text-muted/20 transition-colors shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(255,255,255,0.3)]"
+                    className="w-full sm:w-auto px-4 py-2 text-sm sm:text-base bg-bg-card text-text-primary rounded-lg font-bold hover:bg-text-muted/20 transition-colors dark:"
                   >
                     Close
                   </button>
@@ -426,13 +424,13 @@ export default function PuzzleCalendar({
                       onEditPuzzle({ date: selectedPuzzle.date });
                       setSelectedPuzzle(null);
                     }}
-                    className="flex-1 px-4 py-2 text-sm sm:text-base bg-accent-green border-[3px] border-black dark:border-white text-white rounded-lg font-bold hover:translate-y-[-2px] transition-transform shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(255,255,255,0.3)]"
+                    className="flex-1 px-4 py-2 text-sm sm:text-base bg-accent-green text-white rounded-lg font-bold transition-transform dark:"
                   >
                     Create Puzzle
                   </button>
                   <button
                     onClick={() => setSelectedPuzzle(null)}
-                    className="flex-1 px-4 py-2 text-sm sm:text-base bg-bg-card border-[3px] border-black dark:border-white text-text-primary rounded-lg font-bold hover:bg-text-muted/20 transition-colors shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(255,255,255,0.3)]"
+                    className="flex-1 px-4 py-2 text-sm sm:text-base bg-bg-card text-text-primary rounded-lg font-bold hover:bg-text-muted/20 transition-colors dark:"
                   >
                     Close
                   </button>

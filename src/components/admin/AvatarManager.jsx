@@ -256,8 +256,8 @@ export default function AvatarManager() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="bg-bg-surface rounded-lg border-[3px] border-black dark:border-white shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(255,255,255,0.3)]">
-        <div className="px-6 py-4 border-b-[3px] border-black dark:border-white">
+      <div className="bg-bg-surface rounded-lg dark:">
+        <div className="px-6 py-4 border-b border-border-light">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <span className="text-2xl">🐾</span>
@@ -265,7 +265,7 @@ export default function AvatarManager() {
             </div>
             <button
               onClick={() => setShowUploadForm(true)}
-              className="px-2.5 py-1 text-xs bg-accent-green text-white border-[2px] border-black dark:border-white font-bold rounded-md hover:translate-y-[-2px] active:translate-y-0 transition-transform shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_rgba(255,255,255,0.3)] whitespace-nowrap"
+              className="px-2.5 py-1 text-xs bg-accent-green text-white font-bold rounded-md active:translate-y-0 transition-transform dark: whitespace-nowrap"
             >
               Add
             </button>
@@ -295,8 +295,8 @@ export default function AvatarManager() {
           {/* Upload Form Modal */}
           {showUploadForm && (
             <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-              <div className="bg-bg-surface rounded-lg border-[3px] border-black dark:border-white shadow-[4px_4px_0px_rgba(0,0,0,1)] max-w-lg w-full max-h-[90vh] overflow-y-auto">
-                <div className="px-6 py-4 border-b-[3px] border-black dark:border-white">
+              <div className="bg-bg-surface rounded-lg max-w-lg w-full max-h-[90vh] overflow-y-auto">
+                <div className="px-6 py-4 border-b border-border-light">
                   <h4 className="font-bold text-text-primary">Add New Avatar</h4>
                 </div>
                 <div className="p-6 space-y-4">
@@ -307,7 +307,7 @@ export default function AvatarManager() {
                     </label>
                     <div className="flex items-center gap-4">
                       {imagePreview ? (
-                        <div className="w-24 h-24 rounded-full border-[3px] border-black dark:border-white overflow-hidden">
+                        <div className="w-24 h-24 rounded-full overflow-hidden">
                           <img
                             src={imagePreview}
                             alt="Preview"
@@ -330,7 +330,7 @@ export default function AvatarManager() {
                         />
                         <label
                           htmlFor="avatar-image"
-                          className="inline-block px-4 py-2 bg-accent-blue text-white border-[3px] border-black dark:border-white font-bold rounded-lg cursor-pointer hover:translate-y-[-2px] active:translate-y-0 transition-transform"
+                          className="inline-block px-4 py-2 bg-accent-blue text-white font-bold rounded-lg cursor-pointer active:translate-y-0 transition-transform"
                         >
                           Choose Image
                         </label>
@@ -359,7 +359,7 @@ export default function AvatarManager() {
                         )
                       }
                       placeholder="e.g., berry"
-                      className="w-full px-3 py-2 border-[3px] border-black dark:border-white rounded-lg bg-bg-surface text-text-primary font-medium focus:outline-none focus:ring-2 focus:ring-accent-blue"
+                      className="w-full px-3 py-2 rounded-lg bg-bg-surface text-text-primary font-medium focus:outline-none focus:ring-2 focus:ring-accent-blue"
                     />
                   </div>
 
@@ -373,7 +373,7 @@ export default function AvatarManager() {
                       value={uploadForm.display_name}
                       onChange={(e) => handleUploadFormChange('display_name', e.target.value)}
                       placeholder="e.g., Berry"
-                      className="w-full px-3 py-2 border-[3px] border-black dark:border-white rounded-lg bg-bg-surface text-text-primary font-medium focus:outline-none focus:ring-2 focus:ring-accent-blue"
+                      className="w-full px-3 py-2 rounded-lg bg-bg-surface text-text-primary font-medium focus:outline-none focus:ring-2 focus:ring-accent-blue"
                     />
                   </div>
 
@@ -387,7 +387,7 @@ export default function AvatarManager() {
                       onChange={(e) => handleUploadFormChange('bio', e.target.value)}
                       placeholder="Describe this character's personality..."
                       rows={4}
-                      className="w-full px-3 py-2 border-[3px] border-black dark:border-white rounded-lg bg-bg-surface text-text-primary font-medium focus:outline-none focus:ring-2 focus:ring-accent-blue resize-none"
+                      className="w-full px-3 py-2 rounded-lg bg-bg-surface text-text-primary font-medium focus:outline-none focus:ring-2 focus:ring-accent-blue resize-none"
                     />
                   </div>
 
@@ -404,7 +404,7 @@ export default function AvatarManager() {
                       onChange={(e) => handleUploadFormChange('alchemy_bio', e.target.value)}
                       placeholder="Alchemy-themed character personality for standalone site..."
                       rows={4}
-                      className="w-full px-3 py-2 border-[3px] border-black dark:border-white rounded-lg bg-bg-surface text-text-primary font-medium focus:outline-none focus:ring-2 focus:ring-accent-blue resize-none"
+                      className="w-full px-3 py-2 rounded-lg bg-bg-surface text-text-primary font-medium focus:outline-none focus:ring-2 focus:ring-accent-blue resize-none"
                     />
                   </div>
 
@@ -415,7 +415,7 @@ export default function AvatarManager() {
                       id="is_active"
                       checked={uploadForm.is_active}
                       onChange={(e) => handleUploadFormChange('is_active', e.target.checked)}
-                      className="w-5 h-5 border-[3px] border-black dark:border-white rounded"
+                      className="w-5 h-5 rounded"
                     />
                     <label htmlFor="is_active" className="text-sm font-medium text-text-primary">
                       Make active immediately (visible to users)
@@ -423,11 +423,11 @@ export default function AvatarManager() {
                   </div>
 
                   {/* Actions */}
-                  <div className="flex gap-3 pt-4 border-t-[3px] border-black dark:border-white">
+                  <div className="flex gap-3 pt-4 border-t border-border-light">
                     <button
                       onClick={handleUpload}
                       disabled={saving}
-                      className="flex-1 px-4 py-2 bg-accent-green text-white border-[3px] border-black dark:border-white font-bold rounded-xl hover:translate-y-[-2px] active:translate-y-0 transition-transform shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(255,255,255,0.3)] disabled:opacity-50"
+                      className="flex-1 px-4 py-2 bg-accent-green text-white font-bold rounded-xl active:translate-y-0 transition-transform dark: disabled:opacity-50"
                     >
                       {saving ? 'Creating...' : 'Create Avatar'}
                     </button>
@@ -436,7 +436,7 @@ export default function AvatarManager() {
                         resetUploadForm();
                         setShowUploadForm(false);
                       }}
-                      className="px-4 py-2 bg-bg-card text-text-primary border-[3px] border-black dark:border-white font-bold rounded-xl hover:translate-y-[-2px] active:translate-y-0 transition-transform"
+                      className="px-4 py-2 bg-bg-card text-text-primary font-bold rounded-xl active:translate-y-0 transition-transform"
                     >
                       Cancel
                     </button>
@@ -449,14 +449,14 @@ export default function AvatarManager() {
           {/* Edit Modal */}
           {editingAvatar && (
             <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-              <div className="bg-bg-surface rounded-lg border-[3px] border-black dark:border-white shadow-[4px_4px_0px_rgba(0,0,0,1)] max-w-lg w-full">
-                <div className="px-6 py-4 border-b-[3px] border-black dark:border-white">
+              <div className="bg-bg-surface rounded-lg max-w-lg w-full">
+                <div className="px-6 py-4 border-b border-border-light">
                   <h4 className="font-bold text-text-primary">Edit Avatar</h4>
                 </div>
                 <div className="p-6 space-y-4">
                   {/* Preview */}
                   <div className="flex items-center gap-4">
-                    <div className="w-16 h-16 rounded-full border-[3px] border-black dark:border-white overflow-hidden">
+                    <div className="w-16 h-16 rounded-full overflow-hidden">
                       <img
                         src={editingAvatar.image_path}
                         alt={editingAvatar.display_name}
@@ -479,7 +479,7 @@ export default function AvatarManager() {
                       onChange={(e) =>
                         setEditingAvatar({ ...editingAvatar, display_name: e.target.value })
                       }
-                      className="w-full px-3 py-2 border-[3px] border-black dark:border-white rounded-lg bg-bg-surface text-text-primary font-medium focus:outline-none focus:ring-2 focus:ring-accent-blue"
+                      className="w-full px-3 py-2 rounded-lg bg-bg-surface text-text-primary font-medium focus:outline-none focus:ring-2 focus:ring-accent-blue"
                     />
                   </div>
 
@@ -490,7 +490,7 @@ export default function AvatarManager() {
                       value={editingAvatar.bio}
                       onChange={(e) => setEditingAvatar({ ...editingAvatar, bio: e.target.value })}
                       rows={4}
-                      className="w-full px-3 py-2 border-[3px] border-black dark:border-white rounded-lg bg-bg-surface text-text-primary font-medium focus:outline-none focus:ring-2 focus:ring-accent-blue resize-none"
+                      className="w-full px-3 py-2 rounded-lg bg-bg-surface text-text-primary font-medium focus:outline-none focus:ring-2 focus:ring-accent-blue resize-none"
                     />
                   </div>
 
@@ -507,22 +507,22 @@ export default function AvatarManager() {
                       }
                       placeholder="Alchemy-themed bio (leave empty to use default bio)"
                       rows={4}
-                      className="w-full px-3 py-2 border-[3px] border-black dark:border-white rounded-lg bg-bg-surface text-text-primary font-medium focus:outline-none focus:ring-2 focus:ring-accent-blue resize-none"
+                      className="w-full px-3 py-2 rounded-lg bg-bg-surface text-text-primary font-medium focus:outline-none focus:ring-2 focus:ring-accent-blue resize-none"
                     />
                   </div>
 
                   {/* Actions */}
-                  <div className="flex gap-3 pt-4 border-t-[3px] border-black dark:border-white">
+                  <div className="flex gap-3 pt-4 border-t border-border-light">
                     <button
                       onClick={handleSaveEdit}
                       disabled={saving}
-                      className="flex-1 px-4 py-2 bg-accent-blue text-white border-[3px] border-black dark:border-white font-bold rounded-xl hover:translate-y-[-2px] active:translate-y-0 transition-transform shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(255,255,255,0.3)] disabled:opacity-50"
+                      className="flex-1 px-4 py-2 bg-accent-blue text-white font-bold rounded-xl active:translate-y-0 transition-transform dark: disabled:opacity-50"
                     >
                       {saving ? 'Saving...' : 'Save Changes'}
                     </button>
                     <button
                       onClick={() => setEditingAvatar(null)}
-                      className="px-4 py-2 bg-bg-card text-text-primary border-[3px] border-black dark:border-white font-bold rounded-xl hover:translate-y-[-2px] active:translate-y-0 transition-transform"
+                      className="px-4 py-2 bg-bg-card text-text-primary font-bold rounded-xl active:translate-y-0 transition-transform"
                     >
                       Cancel
                     </button>
@@ -542,7 +542,7 @@ export default function AvatarManager() {
                 } p-4`}
               >
                 <div className="flex items-start gap-3">
-                  <div className="w-16 h-16 rounded-full border-[3px] border-black dark:border-white overflow-hidden flex-shrink-0">
+                  <div className="w-16 h-16 rounded-full overflow-hidden flex-shrink-0">
                     <img
                       src={avatar.image_path}
                       alt={avatar.display_name}

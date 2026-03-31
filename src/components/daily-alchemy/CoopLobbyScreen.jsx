@@ -225,12 +225,12 @@ export function CoopLobbyScreen({
             className={cn(
               'w-full flex items-center justify-center gap-2 py-3 mb-3',
               'bg-amber-500 text-white',
-              'border-[3px] border-black',
+              '',
               'rounded-xl font-bold',
-              'shadow-[3px_3px_0px_rgba(0,0,0,1)]',
+              '',
               'hover:bg-amber-600',
-              'hover:translate-y-[-1px]',
-              'active:translate-y-0 active:shadow-none',
+              '',
+              'active:translate-y-0',
               'transition-all duration-150'
             )}
           >
@@ -243,12 +243,12 @@ export function CoopLobbyScreen({
             className={cn(
               'w-full flex items-center justify-center gap-2 py-3 mb-3',
               'bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200',
-              'border-[3px] border-black dark:border-gray-600',
+              'dark:border-gray-600',
               'rounded-xl font-bold',
-              'shadow-[3px_3px_0px_rgba(0,0,0,1)]',
+              '',
               'hover:bg-gray-50 dark:hover:bg-gray-700',
-              'hover:translate-y-[-1px]',
-              'active:translate-y-0 active:shadow-none',
+              '',
+              'active:translate-y-0',
               'transition-all duration-150'
             )}
           >
@@ -292,12 +292,12 @@ export function CoopLobbyScreen({
                 className={cn(
                   'w-full flex flex-col items-center py-4 mb-3',
                   'bg-amber-500 text-white',
-                  'border-[3px] border-black',
+                  '',
                   'rounded-xl font-bold',
-                  'shadow-[4px_4px_0px_rgba(0,0,0,1)]',
+                  '',
                   'hover:bg-amber-600',
-                  'hover:translate-y-[-1px]',
-                  'active:translate-y-0 active:shadow-none',
+                  '',
+                  'active:translate-y-0',
                   'transition-all duration-150'
                 )}
               >
@@ -316,12 +316,12 @@ export function CoopLobbyScreen({
               className={cn(
                 'w-full flex flex-col items-center py-4 mb-3',
                 'bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200',
-                'border-[3px] border-black dark:border-gray-600',
+                'dark:border-gray-600',
                 'rounded-xl font-bold',
-                'shadow-[3px_3px_0px_rgba(0,0,0,1)]',
+                '',
                 'hover:bg-gray-50 dark:hover:bg-gray-700',
-                'hover:translate-y-[-1px]',
-                'active:translate-y-0 active:shadow-none',
+                '',
+                'active:translate-y-0',
                 'transition-all duration-150'
               )}
             >
@@ -398,9 +398,9 @@ export function CoopLobbyScreen({
             className={cn(
               'w-full p-6 mb-6',
               'bg-indigo-50 dark:bg-indigo-950/30',
-              'border-[3px] border-black dark:border-gray-600',
+              'dark:border-gray-600',
               'rounded-2xl',
-              'shadow-[4px_4px_0px_rgba(0,0,0,1)]',
+              '',
               highContrast && 'border-[4px] border-hc-border'
             )}
           >
@@ -419,12 +419,12 @@ export function CoopLobbyScreen({
               className={cn(
                 'w-full flex items-center justify-center gap-2 py-3',
                 'bg-indigo-500 text-white',
-                'border-[3px] border-black',
+                '',
                 'rounded-xl font-bold',
-                'shadow-[3px_3px_0px_rgba(0,0,0,1)]',
+                '',
                 'hover:bg-indigo-600',
-                'hover:translate-y-[-1px] hover:shadow-[4px_4px_0px_rgba(0,0,0,1)]',
-                'active:translate-y-0 active:shadow-none',
+                ' hover:',
+                'active:translate-y-0',
                 'transition-all duration-150'
               )}
             >
@@ -496,12 +496,12 @@ export function CoopLobbyScreen({
               className={cn(
                 'w-full flex items-center justify-center gap-3 py-4 mb-3',
                 'bg-indigo-500 text-white',
-                'border-[3px] border-black',
+                '',
                 'rounded-xl font-bold text-lg',
-                'shadow-[4px_4px_0px_rgba(0,0,0,1)]',
+                '',
                 'hover:bg-indigo-600',
-                'hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_rgba(0,0,0,1)]',
-                'active:translate-y-0 active:shadow-none',
+                ' hover:',
+                'active:translate-y-0',
                 'transition-all duration-150',
                 highContrast && 'border-[4px]'
               )}
@@ -515,12 +515,12 @@ export function CoopLobbyScreen({
               className={cn(
                 'w-full flex items-center justify-center gap-3 py-4 mb-3',
                 'bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200',
-                'border-[3px] border-black dark:border-gray-600',
+                'dark:border-gray-600',
                 'rounded-xl font-bold text-lg',
-                'shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(75,85,99,1)]',
+                'dark:',
                 'hover:bg-gray-50 dark:hover:bg-gray-700',
-                'hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_rgba(0,0,0,1)]',
-                'active:translate-y-0 active:shadow-none',
+                ' hover:',
+                'active:translate-y-0',
                 'transition-all duration-150',
                 highContrast && 'border-[4px] border-hc-border'
               )}
@@ -534,12 +534,12 @@ export function CoopLobbyScreen({
               className={cn(
                 'w-full flex items-center justify-center gap-3 py-4',
                 'bg-gradient-to-r from-amber-500 to-orange-500 text-white',
-                'border-[3px] border-black',
+                '',
                 'rounded-xl font-bold text-lg',
-                'shadow-[4px_4px_0px_rgba(0,0,0,1)]',
+                '',
                 'hover:from-amber-600 hover:to-orange-600',
-                'hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_rgba(0,0,0,1)]',
-                'active:translate-y-0 active:shadow-none',
+                ' hover:',
+                'active:translate-y-0',
                 'transition-all duration-150',
                 highContrast && 'border-[4px]'
               )}
@@ -602,12 +602,12 @@ export function CoopLobbyScreen({
                     className={cn(
                       'w-full flex flex-col items-center py-4 mb-3',
                       'bg-indigo-500 text-white',
-                      'border-[3px] border-black',
+                      '',
                       'rounded-xl font-bold',
-                      'shadow-[4px_4px_0px_rgba(0,0,0,1)]',
+                      '',
                       'hover:bg-indigo-600',
-                      'hover:translate-y-[-1px]',
-                      'active:translate-y-0 active:shadow-none',
+                      '',
+                      'active:translate-y-0',
                       'transition-all duration-150',
                       isCreating && 'opacity-70 cursor-not-allowed'
                     )}
@@ -634,12 +634,12 @@ export function CoopLobbyScreen({
                   className={cn(
                     'w-full flex flex-col items-center py-4 mb-3',
                     'bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200',
-                    'border-[3px] border-black dark:border-gray-600',
+                    'dark:border-gray-600',
                     'rounded-xl font-bold',
-                    'shadow-[3px_3px_0px_rgba(0,0,0,1)]',
+                    '',
                     'hover:bg-gray-50 dark:hover:bg-gray-700',
-                    'hover:translate-y-[-1px]',
-                    'active:translate-y-0 active:shadow-none',
+                    '',
+                    'active:translate-y-0',
                     'transition-all duration-150'
                   )}
                 >
@@ -659,12 +659,12 @@ export function CoopLobbyScreen({
                   className={cn(
                     'w-full flex items-center justify-center gap-3 py-4 mb-3',
                     'bg-indigo-500 text-white',
-                    'border-[3px] border-black',
+                    '',
                     'rounded-xl font-bold',
-                    'shadow-[4px_4px_0px_rgba(0,0,0,1)]',
+                    '',
                     'hover:bg-indigo-600',
-                    'hover:translate-y-[-1px]',
-                    'active:translate-y-0 active:shadow-none',
+                    '',
+                    'active:translate-y-0',
                     'transition-all duration-150',
                     isCreating && 'opacity-70 cursor-not-allowed'
                   )}
@@ -679,12 +679,12 @@ export function CoopLobbyScreen({
                   className={cn(
                     'w-full flex items-center justify-center gap-3 py-4 mb-3',
                     'bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200',
-                    'border-[3px] border-black dark:border-gray-600',
+                    'dark:border-gray-600',
                     'rounded-xl font-bold',
-                    'shadow-[3px_3px_0px_rgba(0,0,0,1)]',
+                    '',
                     'hover:bg-gray-50 dark:hover:bg-gray-700',
-                    'hover:translate-y-[-1px]',
-                    'active:translate-y-0 active:shadow-none',
+                    '',
+                    'active:translate-y-0',
                     'transition-all duration-150'
                   )}
                 >
@@ -796,9 +796,9 @@ export function CoopLobbyScreen({
               className={cn(
                 'w-full text-center text-3xl font-mono font-bold tracking-[0.3em] py-4 mb-4',
                 'bg-white dark:bg-gray-800',
-                'border-[3px] border-black dark:border-gray-600',
+                'dark:border-gray-600',
                 'rounded-xl',
-                'shadow-[3px_3px_0px_rgba(0,0,0,1)]',
+                '',
                 'focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-300',
                 'text-gray-900 dark:text-white placeholder-gray-300 dark:placeholder-gray-600',
                 'uppercase'
@@ -822,12 +822,12 @@ export function CoopLobbyScreen({
               className={cn(
                 'w-full flex items-center justify-center gap-2 py-4 mb-4',
                 'bg-indigo-500 text-white',
-                'border-[3px] border-black',
+                '',
                 'rounded-xl font-bold text-lg',
-                'shadow-[4px_4px_0px_rgba(0,0,0,1)]',
+                '',
                 'hover:bg-indigo-600',
-                'hover:translate-y-[-1px]',
-                'active:translate-y-0 active:shadow-none',
+                '',
+                'active:translate-y-0',
                 'transition-all duration-150',
                 (joinCode.length !== 6 || isJoining) && 'opacity-50 cursor-not-allowed'
               )}

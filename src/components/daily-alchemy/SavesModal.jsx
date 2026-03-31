@@ -214,9 +214,9 @@ export function SavesModal({
             className={cn(
               'relative z-10 flex flex-col w-full max-w-sm mx-4',
               'bg-white dark:bg-gray-800',
-              'border-[3px] border-black dark:border-gray-600',
+              'dark:border-gray-600',
               'rounded-2xl',
-              'shadow-[4px_4px_0px_rgba(0,0,0,1)]',
+              '',
               highContrast && 'border-hc-border'
             )}
             initial={{ scale: 0.9, opacity: 0 }}
@@ -255,16 +255,16 @@ export function SavesModal({
                     onClick={() => handleSlotClick(slotNum)}
                     className={cn(
                       'relative p-3 rounded-xl transition-all duration-150',
-                      'border-[2px] border-black dark:border-gray-600',
+                      'dark:border-gray-600',
                       isSavedSlot && [
                         'bg-green-50 dark:bg-green-900/20',
                         'border-green-500 dark:border-green-600',
-                        'shadow-[2px_2px_0px_rgba(0,0,0,1)]',
+                        '',
                       ],
                       isActive &&
                         !isSavedSlot && [
                           'bg-soup-primary/10 dark:bg-soup-primary/20',
-                          'shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_rgba(75,85,99,1)]',
+                          'dark:',
                           highContrast && 'border-[3px] border-hc-border',
                         ],
                       !isActive &&
@@ -272,7 +272,7 @@ export function SavesModal({
                         saveOnly && [
                           'cursor-pointer',
                           'hover:bg-indigo-50 dark:hover:bg-indigo-900/20',
-                          'hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]',
+                          'hover:',
                         ],
                       !isActive &&
                         !isSavedSlot &&
@@ -280,7 +280,7 @@ export function SavesModal({
                         slot.hasSave && [
                           'cursor-pointer',
                           'hover:bg-gray-50 dark:hover:bg-gray-700/50',
-                          'hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]',
+                          'hover:',
                         ],
                       !isActive &&
                         !isSavedSlot &&
@@ -469,9 +469,9 @@ export function SavesModal({
                   className={cn(
                     'relative z-10 flex flex-col gap-4 p-6 mx-4 max-w-sm',
                     'bg-white dark:bg-gray-800',
-                    'border-[3px] border-black dark:border-gray-600',
+                    'dark:border-gray-600',
                     'rounded-2xl',
-                    'shadow-[4px_4px_0px_rgba(0,0,0,1)]'
+                    ''
                   )}
                   initial={{ scale: 0.9, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}
@@ -516,9 +516,9 @@ export function SavesModal({
                         'bg-amber-500 text-white',
                         'border-2 border-amber-600',
                         'rounded-xl',
-                        'shadow-[2px_2px_0px_rgba(0,0,0,1)]',
+                        '',
                         'hover:bg-amber-600',
-                        'active:translate-y-[1px] active:shadow-none',
+                        '',
                         'transition-all duration-150',
                         'disabled:opacity-50'
                       )}
@@ -552,9 +552,9 @@ export function SavesModal({
                   className={cn(
                     'relative z-10 flex flex-col gap-4 p-6 mx-4 max-w-sm',
                     'bg-white dark:bg-gray-800',
-                    'border-[3px] border-black dark:border-gray-600',
+                    'dark:border-gray-600',
                     'rounded-2xl',
-                    'shadow-[4px_4px_0px_rgba(0,0,0,1)]'
+                    ''
                   )}
                   initial={{ scale: 0.9, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}
@@ -597,9 +597,9 @@ export function SavesModal({
                         'bg-red-500 text-white',
                         'border-2 border-red-600',
                         'rounded-xl',
-                        'shadow-[2px_2px_0px_rgba(0,0,0,1)]',
+                        '',
                         'hover:bg-red-600',
-                        'active:translate-y-[1px] active:shadow-none',
+                        '',
                         'transition-all duration-150',
                         'disabled:opacity-50'
                       )}
@@ -633,9 +633,9 @@ export function SavesModal({
                   className={cn(
                     'relative z-10 flex flex-col gap-4 p-6 mx-4 max-w-sm',
                     'bg-white dark:bg-gray-800',
-                    'border-[3px] border-black dark:border-gray-600',
+                    'dark:border-gray-600',
                     'rounded-2xl',
-                    'shadow-[4px_4px_0px_rgba(0,0,0,1)]'
+                    ''
                   )}
                   initial={{ scale: 0.9, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}
@@ -680,9 +680,9 @@ export function SavesModal({
                         'bg-indigo-500 text-white',
                         'border-2 border-indigo-600',
                         'rounded-xl',
-                        'shadow-[2px_2px_0px_rgba(0,0,0,1)]',
+                        '',
                         'hover:bg-indigo-600',
-                        'active:translate-y-[1px] active:shadow-none',
+                        '',
                         'transition-all duration-150',
                         'disabled:opacity-50'
                       )}

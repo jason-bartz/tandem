@@ -156,9 +156,9 @@ export default function ElementDetailModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-      <div className="bg-white rounded-2xl border-4 border-black shadow-[8px_8px_0px_rgba(0,0,0,1)] w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col">
+      <div className="bg-white rounded-2xl border-4 w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col">
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b-2 border-black bg-gray-50">
+        <div className="flex items-center justify-between p-4 border-b-2 bg-gray-50">
           <div className="flex items-center gap-3">
             {editing ? (
               <>
@@ -166,14 +166,14 @@ export default function ElementDetailModal({
                   type="text"
                   value={editEmoji}
                   onChange={(e) => setEditEmoji(e.target.value)}
-                  className="w-12 h-12 text-3xl text-center rounded-lg border-2 border-black"
+                  className="w-12 h-12 text-3xl text-center rounded-lg border-2"
                   placeholder="✨"
                 />
                 <input
                   type="text"
                   value={editName}
                   onChange={(e) => setEditName(e.target.value)}
-                  className="text-xl font-bold px-3 py-1 rounded-lg border-2 border-black"
+                  className="text-xl font-bold px-3 py-1 rounded-lg border-2"
                 />
               </>
             ) : (
@@ -190,7 +190,7 @@ export default function ElementDetailModal({
                 <button
                   onClick={handleSave}
                   disabled={saving}
-                  className="p-2 rounded-lg border-2 border-black bg-green-500 text-white hover:bg-green-600 disabled:opacity-50"
+                  className="p-2 rounded-lg border-2 bg-green-500 text-white hover:bg-green-600 disabled:opacity-50"
                 >
                   <Save className="w-5 h-5" />
                 </button>
@@ -201,7 +201,7 @@ export default function ElementDetailModal({
                     setEditEmoji(element.emoji);
                     setError(null);
                   }}
-                  className="p-2 rounded-lg border-2 border-black bg-gray-200 hover:bg-gray-300"
+                  className="p-2 rounded-lg border-2 bg-gray-200 hover:bg-gray-300"
                 >
                   <X className="w-5 h-5" />
                 </button>
@@ -210,13 +210,13 @@ export default function ElementDetailModal({
               <>
                 <button
                   onClick={() => setEditing(true)}
-                  className="p-2 rounded-lg border-2 border-black bg-blue-500 text-white hover:bg-blue-600"
+                  className="p-2 rounded-lg border-2 bg-blue-500 text-white hover:bg-blue-600"
                 >
                   <Edit2 className="w-5 h-5" />
                 </button>
                 <button
                   onClick={() => setShowDeleteConfirm(true)}
-                  className="p-2 rounded-lg border-2 border-black bg-red-500 text-white hover:bg-red-600"
+                  className="p-2 rounded-lg border-2 bg-red-500 text-white hover:bg-red-600"
                 >
                   <Trash2 className="w-5 h-5" />
                 </button>
@@ -224,7 +224,7 @@ export default function ElementDetailModal({
             )}
             <button
               onClick={onClose}
-              className="p-2 rounded-lg border-2 border-black bg-white hover:bg-gray-100"
+              className="p-2 rounded-lg border-2 bg-white hover:bg-gray-100"
             >
               <X className="w-5 h-5" />
             </button>
@@ -242,22 +242,22 @@ export default function ElementDetailModal({
         <div className="flex-1 overflow-y-auto p-4">
           {loading ? (
             <div className="flex items-center justify-center py-12">
-              <div className="animate-spin rounded-full h-8 w-8 border-4 border-black border-t-transparent" />
+              <div className="animate-spin rounded-full h-8 w-8 border-4 border-t-transparent" />
             </div>
           ) : details ? (
             <div className="space-y-4">
               {/* Stats */}
               <div className="flex gap-4 text-sm">
-                <div className="px-3 py-1 bg-blue-100 rounded-lg border-2 border-black">
+                <div className="px-3 py-1 bg-blue-100 rounded-lg border-2">
                   <span className="font-bold">{details.stats.asInputCount}</span> as input
                 </div>
-                <div className="px-3 py-1 bg-green-100 rounded-lg border-2 border-black">
+                <div className="px-3 py-1 bg-green-100 rounded-lg border-2">
                   <span className="font-bold">{details.stats.asResultCount}</span> as result
                 </div>
               </div>
 
               {/* Shortest Path Section */}
-              <div className="border-2 border-black rounded-xl overflow-hidden">
+              <div className="border-2 rounded-xl overflow-hidden">
                 <button
                   onClick={() => {
                     if (!showPath && !pathData) {
@@ -325,7 +325,7 @@ export default function ElementDetailModal({
               </div>
 
               {/* Combinations as Input */}
-              <div className="border-2 border-black rounded-xl overflow-hidden">
+              <div className="border-2 rounded-xl overflow-hidden">
                 <button
                   onClick={() => setExpandedSection(expandedSection === 'input' ? null : 'input')}
                   className="w-full flex items-center justify-between p-3 bg-blue-50 hover:bg-blue-100 transition-colors"
@@ -362,7 +362,7 @@ export default function ElementDetailModal({
               </div>
 
               {/* Combinations as Result */}
-              <div className="border-2 border-black rounded-xl overflow-hidden">
+              <div className="border-2 rounded-xl overflow-hidden">
                 <button
                   onClick={() => setExpandedSection(expandedSection === 'result' ? null : 'result')}
                   className="w-full flex items-center justify-between p-3 bg-green-50 hover:bg-green-100 transition-colors"
@@ -407,7 +407,7 @@ export default function ElementDetailModal({
         {/* Delete Confirmation Modal */}
         {showDeleteConfirm && (
           <div className="absolute inset-0 bg-black/50 flex items-center justify-center p-4">
-            <div className="bg-white rounded-xl border-4 border-black p-6 max-w-md">
+            <div className="bg-white rounded-xl border-4 p-6 max-w-md">
               <div className="flex items-center gap-3 mb-4">
                 <div className="p-2 bg-red-100 rounded-full">
                   <AlertTriangle className="w-6 h-6 text-red-600" />
@@ -424,14 +424,14 @@ export default function ElementDetailModal({
               <div className="flex gap-3">
                 <button
                   onClick={() => setShowDeleteConfirm(false)}
-                  className="flex-1 px-4 py-2 rounded-lg border-2 border-black bg-gray-100 hover:bg-gray-200 font-bold"
+                  className="flex-1 px-4 py-2 rounded-lg border-2 bg-gray-100 hover:bg-gray-200 font-bold"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={handleDelete}
                   disabled={saving}
-                  className="flex-1 px-4 py-2 rounded-lg border-2 border-black bg-red-500 text-white hover:bg-red-600 font-bold disabled:opacity-50"
+                  className="flex-1 px-4 py-2 rounded-lg border-2 bg-red-500 text-white hover:bg-red-600 font-bold disabled:opacity-50"
                 >
                   {saving ? 'Deleting...' : 'Delete'}
                 </button>
@@ -493,13 +493,13 @@ function CombinationRow({ combo, highlightElement, onEdit, onDelete, isResult })
             type="text"
             value={editResult}
             onChange={(e) => setEditResult(e.target.value)}
-            className="px-2 py-1 rounded border-2 border-black text-sm flex-1"
+            className="px-2 py-1 rounded border-2 text-sm flex-1"
           />
           <input
             type="text"
             value={editEmoji}
             onChange={(e) => setEditEmoji(e.target.value)}
-            className="px-2 py-1 rounded border-2 border-black text-sm w-12 text-center"
+            className="px-2 py-1 rounded border-2 text-sm w-12 text-center"
           />
         </div>
         {error && <div className="text-red-500 text-xs mb-2">{error}</div>}
@@ -507,7 +507,7 @@ function CombinationRow({ combo, highlightElement, onEdit, onDelete, isResult })
           <button
             onClick={handleSave}
             disabled={saving}
-            className="px-3 py-1 rounded border-2 border-black bg-green-500 text-white text-xs font-bold disabled:opacity-50"
+            className="px-3 py-1 rounded border-2 bg-green-500 text-white text-xs font-bold disabled:opacity-50"
           >
             Save
           </button>
@@ -518,7 +518,7 @@ function CombinationRow({ combo, highlightElement, onEdit, onDelete, isResult })
               setEditEmoji(combo.result_emoji);
               setError(null);
             }}
-            className="px-3 py-1 rounded border-2 border-black bg-gray-200 text-xs font-bold"
+            className="px-3 py-1 rounded border-2 bg-gray-200 text-xs font-bold"
           >
             Cancel
           </button>

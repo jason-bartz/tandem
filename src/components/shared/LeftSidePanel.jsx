@@ -46,7 +46,7 @@ export default function LeftSidePanel({
   headerClassName = '',
   contentClassName = '',
 }) {
-  const { theme } = useTheme();
+  const { theme, highContrast } = useTheme();
   const panelRef = useRef(null);
   const contentRef = useRef(null);
   const touchStartX = useRef(null);
@@ -195,8 +195,12 @@ export default function LeftSidePanel({
       {/* Panel */}
       <div
         ref={panelRef}
-        className={`absolute left-0 top-0 bottom-0 w-[90vw] flex flex-col animate-slide-in-left shadow-2xl ${
-          theme === 'dark' ? 'bg-gray-900' : 'bg-ghost-white'
+        className={`absolute left-0 top-0 bottom-0 w-[90vw] flex flex-col animate-slide-in-left ${
+          highContrast
+            ? 'bg-hc-surface border-r-4 border-hc-border'
+            : theme === 'dark'
+              ? 'bg-gray-900'
+              : 'bg-ghost-white'
         }`}
         style={{
           maxWidth,
@@ -214,13 +218,17 @@ export default function LeftSidePanel({
         {(title || showCloseButton) && (
           <div
             className={`shrink-0 flex items-center justify-between px-6 py-4 border-b-[3px] ${
-              theme === 'dark' ? 'border-gray-800' : 'border-gray-200'
+              highContrast
+                ? 'border-hc-border'
+                : theme === 'dark'
+                  ? 'border-gray-800'
+                  : 'border-gray-200'
             } ${headerClassName}`}
           >
             {title && (
               <h2
                 id="panel-title"
-                className={`text-xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}
+                className={`text-xl font-bold ${highContrast ? 'text-hc-text' : theme === 'dark' ? 'text-white' : 'text-gray-900'}`}
               >
                 {title}
               </h2>
@@ -230,9 +238,11 @@ export default function LeftSidePanel({
               <button
                 onClick={onClose}
                 className={`ml-auto p-2 rounded-full transition-colors ${
-                  theme === 'dark'
-                    ? 'hover:bg-gray-800 text-gray-400 hover:text-white'
-                    : 'hover:bg-gray-100 text-gray-600 hover:text-gray-900'
+                  highContrast
+                    ? 'text-hc-text hover:bg-hc-border/20'
+                    : theme === 'dark'
+                      ? 'hover:bg-gray-800 text-gray-400 hover:text-white'
+                      : 'hover:bg-gray-100 text-gray-600 hover:text-gray-900'
                 }`}
                 aria-label="Close panel"
               >
@@ -266,7 +276,11 @@ export default function LeftSidePanel({
         {footer && (
           <div
             className={`shrink-0 px-6 py-4 border-t-[3px] ${
-              theme === 'dark' ? 'border-gray-800' : 'border-gray-200'
+              highContrast
+                ? 'border-hc-border'
+                : theme === 'dark'
+                  ? 'border-gray-800'
+                  : 'border-gray-200'
             }`}
           >
             {footer}

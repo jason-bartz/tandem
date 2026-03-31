@@ -67,10 +67,10 @@ export default function DailyMiniPage() {
         <div
           className="
             max-w-md w-full
-            rounded-[32px]
-            border-[3px] border-black dark:border-gray-600
-            shadow-[6px_6px_0px_rgba(0,0,0,1)]
-            dark:shadow-[6px_6px_0px_rgba(0,0,0,0.5)]
+            rounded-lg
+           
+           
+            dark:
             bg-ghost-white dark:bg-gray-800
             p-10
             text-center
@@ -90,19 +90,19 @@ export default function DailyMiniPage() {
             onClick={() => router.push('/')}
             className="
               w-full h-14
-              rounded-[20px]
-              border-[3px] border-black dark:border-gray-600
-              shadow-[4px_4px_0px_rgba(0,0,0,1)]
-              dark:shadow-[4px_4px_0px_rgba(0,0,0,0.5)]
+              rounded-md
+             
+             
+              dark:
               bg-accent-yellow dark:bg-accent-yellow
               text-gray-900
               font-black
               tracking-wider
               uppercase
-              hover:translate-x-[2px] hover:translate-y-[2px]
-              hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]
-              active:translate-x-[4px] active:translate-y-[4px]
-              active:shadow-none
+             
+              hover:
+             
+             
               transition-all
             "
           >

@@ -275,10 +275,10 @@ function SelectionSlot({
         'w-24 h-24 sm:w-28 sm:h-28 shrink-0',
         'flex flex-col items-center justify-center',
         'bg-white dark:bg-gray-800',
-        'border-[3px] border-black dark:border-gray-600',
+        'dark:border-gray-600',
         'rounded-xl',
         // Only show shadow when element is present
-        element && 'shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(75,85,99,1)]',
+        element && 'dark:',
         !element && 'border-dashed hover:border-soup-primary/70 hover:bg-soup-light/30',
         isDragOver && !element && 'border-soup-primary bg-soup-light/50 scale-105',
         // Active slot highlight
@@ -372,9 +372,9 @@ export function CombinationArea({
       className={cn(
         'p-4 sm:p-6',
         'bg-soup-light/50 dark:bg-soup-primary/10',
-        'border-[3px] border-black dark:border-gray-600',
+        'dark:border-gray-600',
         'rounded-2xl',
-        'shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(75,85,99,1)]',
+        'dark:',
         highContrast && 'border-[4px] border-hc-border'
       )}
     >
@@ -414,8 +414,8 @@ export function CombinationArea({
                 'rounded-xl sm:rounded-2xl',
                 'border-[3px]',
                 highContrast
-                  ? 'bg-hc-warning border-hc-warning shadow-[3px_3px_0px_rgba(0,0,0,1)]'
-                  : 'bg-accent-yellow dark:bg-yellow-600 border-accent-yellow dark:border-yellow-700 shadow-[3px_3px_0px_rgba(0,0,0,0.3)]',
+                  ? 'bg-hc-warning border-hc-warning'
+                  : 'bg-accent-yellow dark:bg-yellow-600 border-accent-yellow dark:border-yellow-700',
                 'flex items-start gap-2'
               )}
             >
@@ -477,8 +477,8 @@ export function CombinationArea({
         <div
           className={cn(
             'flex items-center shrink-0',
-            'border-[3px] border-black dark:border-gray-600 rounded-lg',
-            'shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_rgba(75,85,99,1)]',
+            'rounded-lg',
+            'dark:',
             'overflow-hidden',
             // Force GPU compositing so Safari maintains overflow clip during color transitions
             '[backface-visibility:hidden]',
@@ -552,13 +552,13 @@ export function CombinationArea({
           className={cn(
             'w-[96px] sm:w-[112px] shrink-0 grow-0 py-1.5 sm:py-3',
             'bg-gray-200 dark:bg-gray-700',
-            'border-[3px] border-black dark:border-gray-600',
+            'dark:border-gray-600',
             'rounded-xl font-bold',
-            'shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(75,85,99,1)]',
+            'dark:',
             'transition-all duration-150',
-            'hover:translate-y-[-1px] hover:shadow-[4px_4px_0px_rgba(0,0,0,1)]',
-            'active:translate-y-0 active:shadow-none',
-            'disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:hover:shadow-[3px_3px_0px_rgba(0,0,0,1)]',
+            ' hover:',
+            'active:translate-y-0',
+            'disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:hover:',
             'text-gray-900 dark:text-white',
             highContrast && 'border-[4px]'
           )}
@@ -575,13 +575,13 @@ export function CombinationArea({
           disabled={!canCombine && !isCombining && !isAnimating}
           className={cn(
             'w-[96px] sm:w-[112px] shrink-0 grow-0 py-1.5 sm:py-3',
-            'border-[3px] border-black',
+            '',
             'rounded-xl font-bold',
-            'shadow-[3px_3px_0px_rgba(0,0,0,1)]',
+            '',
             'transition-all duration-200',
-            'hover:translate-y-[-1px] hover:shadow-[4px_4px_0px_rgba(0,0,0,1)]',
-            'active:translate-y-0 active:shadow-none',
-            'disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:hover:shadow-[3px_3px_0px_rgba(0,0,0,1)]',
+            ' hover:',
+            'active:translate-y-0',
+            'disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:hover:',
             'overflow-hidden',
             isSubtractMode
               ? 'bg-red-400 dark:bg-red-500 text-white hover:bg-red-500 dark:hover:bg-red-600 disabled:hover:bg-red-400 dark:disabled:hover:bg-red-500'

@@ -102,10 +102,8 @@ export default function TandemTutorialModal({ onClose: onCloseProp }) {
             transition={{ duration: reduceMotion ? 0 : 0.25, ease: [0.4, 0, 0.2, 1] }}
             className={cn(
               'relative w-full max-w-[340px] flex flex-col rounded-2xl overflow-hidden',
-              'border-[3px] shadow-[4px_4px_0px_rgba(0,0,0,1)]',
-              highContrast
-                ? 'bg-hc-surface border-hc-border'
-                : 'bg-white dark:bg-gray-800 border-black'
+              'border-[3px]',
+              highContrast ? 'bg-hc-surface border-hc-border' : 'bg-white dark:bg-gray-800'
             )}
             onClick={(e) => e.stopPropagation()}
           >
@@ -170,9 +168,9 @@ export default function TandemTutorialModal({ onClose: onCloseProp }) {
                 }}
                 className={cn(
                   'mt-3 w-full py-2.5 rounded-xl font-bold text-sm',
-                  'border-[3px] border-black',
-                  'shadow-[3px_3px_0px_rgba(0,0,0,1)]',
-                  'active:translate-y-[1px] active:shadow-[1px_1px_0px_rgba(0,0,0,1)]',
+                  '',
+                  '',
+                  ' active:',
                   'transition-all duration-100',
                   highContrast
                     ? 'bg-hc-surface text-hc-text hover:bg-hc-border/20'

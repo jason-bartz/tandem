@@ -120,7 +120,7 @@ export default function Greeting({
   reelPlayed = false,
   isLoading = false,
 }) {
-  const { highContrast } = useTheme();
+  const { highContrast, reduceMotion } = useTheme();
   const [greeting, setGreeting] = useState('');
   const [formattedDate, setFormattedDate] = useState('');
   const [callToAction, setCallToAction] = useState('');
@@ -162,7 +162,7 @@ export default function Greeting({
   // Prevent hydration mismatch by not rendering until mounted
   if (!mounted) {
     return (
-      <div className="text-center mb-6 animate-fade-in">
+      <div className={`text-center mb-6 ${reduceMotion ? '' : 'animate-fade-in'}`}>
         <div className="h-8 mb-1" />
         <div className="h-6 mb-1" />
         <div className="h-5" />
@@ -171,7 +171,7 @@ export default function Greeting({
   }
 
   return (
-    <div className="text-center mb-6 animate-fade-in">
+    <div className={`text-center mb-6 ${reduceMotion ? '' : 'animate-fade-in'}`}>
       <h2
         className={`text-2xl font-bold mb-1 ${
           highContrast ? 'text-hc-text' : 'text-gray-900 dark:text-gray-100'

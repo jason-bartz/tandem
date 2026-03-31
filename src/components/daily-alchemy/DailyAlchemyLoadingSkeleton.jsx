@@ -51,9 +51,9 @@ export function DailyAlchemyLoadingSkeleton() {
                   className={cn(
                     'w-full max-w-sm p-5 mb-6',
                     'bg-soup-light/50 dark:bg-soup-primary/10',
-                    'border-[3px] border-black dark:border-gray-600',
+                    'dark:border-gray-600',
                     'rounded-2xl',
-                    'shadow-[4px_4px_0px_rgba(0,0,0,1)]'
+                    ''
                   )}
                 >
                   {/* Today's Target Label */}
@@ -103,7 +103,7 @@ export function DailyAlchemyLoadingSkeleton() {
                       'bg-gray-50 dark:bg-gray-800',
                       'border-[3px] border-gray-300 dark:border-gray-600',
                       'rounded-xl',
-                      'shadow-[3px_3px_0px_rgba(0,0,0,0.15)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.3)]'
+                      ' dark:'
                     )}
                   >
                     <div
@@ -121,9 +121,9 @@ export function DailyAlchemyLoadingSkeleton() {
                   className={cn(
                     'w-full max-w-sm h-14',
                     'bg-soup-primary/50 dark:bg-soup-primary/30',
-                    'border-[3px] border-black dark:border-gray-600',
+                    'dark:border-gray-600',
                     'rounded-xl',
-                    'shadow-[4px_4px_0px_rgba(0,0,0,1)]',
+                    '',
                     shimmerClass
                   )}
                 />
@@ -140,9 +140,9 @@ export function DailyAlchemyLoadingSkeleton() {
                   className={cn(
                     'w-full max-w-sm h-14 mb-3',
                     'bg-indigo-500/50 dark:bg-indigo-500/30',
-                    'border-[3px] border-black dark:border-gray-600',
+                    'dark:border-gray-600',
                     'rounded-xl',
-                    'shadow-[4px_4px_0px_rgba(0,0,0,1)]',
+                    '',
                     shimmerClass
                   )}
                 />
@@ -160,9 +160,9 @@ export function DailyAlchemyLoadingSkeleton() {
                   className={cn(
                     'w-full max-w-sm h-14',
                     'bg-white/50 dark:bg-gray-800/50',
-                    'border-[3px] border-black dark:border-gray-600',
+                    'dark:border-gray-600',
                     'rounded-xl',
-                    'shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(75,85,99,1)]',
+                    'dark:',
                     shimmerClass
                   )}
                 />
@@ -183,7 +183,7 @@ export function DailyAlchemyLoadingSkeleton() {
                     'bg-gray-50 dark:bg-gray-800',
                     'border-[3px] border-gray-300 dark:border-gray-600',
                     'rounded-xl',
-                    'shadow-[3px_3px_0px_rgba(0,0,0,0.15)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.3)]'
+                    ' dark:'
                   )}
                 >
                   {/* Discord Logo placeholder */}

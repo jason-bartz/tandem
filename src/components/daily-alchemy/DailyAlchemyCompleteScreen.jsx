@@ -32,9 +32,9 @@ function StatCard({ iconSrc, label, value, highlight = false }) {
         'flex flex-col items-center justify-center p-3',
         'aspect-square',
         'bg-white dark:bg-gray-800',
-        'border-[2px] border-black',
+        '',
         'rounded-xl',
-        'shadow-[2px_2px_0px_rgba(0,0,0,1)]',
+        '',
         highlight && 'bg-soup-light/50 dark:bg-soup-primary/20',
         highContrast && 'border-[3px]'
       )}
@@ -259,9 +259,9 @@ export function DailyAlchemyCompleteScreen({
         className={cn(
           'flex flex-col items-center justify-center p-4 mb-6',
           'bg-white dark:bg-gray-800',
-          'border-[2px] border-black',
+          '',
           'rounded-xl',
-          'shadow-[2px_2px_0px_rgba(0,0,0,1)]',
+          '',
           'w-full max-w-sm',
           highContrast && 'border-[3px]'
         )}
@@ -303,9 +303,9 @@ export function DailyAlchemyCompleteScreen({
             'w-full max-w-sm mb-6 p-4',
             'bg-gradient-to-r from-yellow-100 to-orange-100',
             'dark:from-yellow-900/30 dark:to-orange-900/30',
-            'border-[2px] border-black',
+            '',
             'rounded-xl',
-            'shadow-[2px_2px_0px_rgba(0,0,0,1)]',
+            '',
             highContrast && 'border-[3px]'
           )}
           initial={!reduceMotion ? { opacity: 0 } : false}
@@ -326,7 +326,7 @@ export function DailyAlchemyCompleteScreen({
             {firstDiscoveryElements.map((el, i) => (
               <span
                 key={i}
-                className="px-2 py-1 bg-white dark:bg-gray-800 rounded-lg text-sm font-medium shadow-sm"
+                className="px-2 py-1 bg-white dark:bg-gray-800 rounded-lg text-sm font-medium"
               >
                 {el}
               </span>
@@ -347,12 +347,12 @@ export function DailyAlchemyCompleteScreen({
           className={cn(
             'w-full flex items-center justify-center gap-2 px-6 py-3',
             'bg-soup-primary text-white',
-            'border-[3px] border-black',
+            '',
             'rounded-xl font-bold',
-            'shadow-[4px_4px_0px_rgba(0,0,0,1)]',
+            '',
             'hover:bg-soup-hover',
-            'hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]',
-            'active:translate-x-[4px] active:translate-y-[4px] active:shadow-none',
+            ' hover:',
+            '',
             'transition-all duration-150',
             !copied && !reduceMotion && 'animate-attention-pulse',
             highContrast && 'border-[4px]'
@@ -382,9 +382,9 @@ export function DailyAlchemyCompleteScreen({
               className={cn(
                 'p-5',
                 'bg-indigo-50 dark:bg-indigo-950/30',
-                'border-[3px] border-black dark:border-gray-600',
+                'dark:border-gray-600',
                 'rounded-2xl',
-                'shadow-[4px_4px_0px_rgba(0,0,0,1)]',
+                '',
                 highContrast && 'border-[4px]'
               )}
             >
@@ -401,12 +401,12 @@ export function DailyAlchemyCompleteScreen({
                   className={cn(
                     'flex-1 py-3',
                     'bg-indigo-500 text-white',
-                    'border-[3px] border-black',
+                    '',
                     'rounded-xl font-bold',
-                    'shadow-[3px_3px_0px_rgba(0,0,0,1)]',
+                    '',
                     'hover:bg-indigo-600',
-                    'hover:translate-y-[-1px] hover:shadow-[4px_4px_0px_rgba(0,0,0,1)]',
-                    'active:translate-y-0 active:shadow-none',
+                    ' hover:',
+                    'active:translate-y-0',
                     'transition-all duration-150'
                   )}
                 >
@@ -418,12 +418,12 @@ export function DailyAlchemyCompleteScreen({
                     'flex-1 py-3',
                     'bg-white dark:bg-gray-800',
                     'text-gray-800 dark:text-gray-200',
-                    'border-[3px] border-black dark:border-gray-600',
+                    'dark:border-gray-600',
                     'rounded-xl font-bold',
-                    'shadow-[3px_3px_0px_rgba(0,0,0,1)]',
+                    '',
                     'hover:bg-gray-50 dark:hover:bg-gray-700',
-                    'hover:translate-y-[-1px]',
-                    'active:translate-y-0 active:shadow-none',
+                    '',
+                    'active:translate-y-0',
                     'transition-all duration-150'
                   )}
                 >
@@ -442,9 +442,9 @@ export function DailyAlchemyCompleteScreen({
               className={cn(
                 'p-5 text-center',
                 'bg-indigo-50 dark:bg-indigo-950/30',
-                'border-[3px] border-black dark:border-gray-600',
+                'dark:border-gray-600',
                 'rounded-2xl',
-                'shadow-[4px_4px_0px_rgba(0,0,0,1)]',
+                '',
                 highContrast && 'border-[4px]'
               )}
             >
@@ -488,11 +488,11 @@ export function DailyAlchemyCompleteScreen({
                 'w-full flex items-center justify-center gap-2 px-6 py-3',
                 'bg-gray-200 dark:bg-gray-700',
                 'text-gray-800 dark:text-gray-200',
-                'border-[3px] border-black dark:border-gray-600',
+                'dark:border-gray-600',
                 'rounded-xl font-bold',
-                'shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)]',
-                'hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[1px_1px_0px_rgba(0,0,0,1)]',
-                'active:translate-x-[3px] active:translate-y-[3px] active:shadow-none',
+                'dark:',
+                ' hover:',
+                '',
                 'transition-all duration-150',
                 highContrast && 'border-[4px]'
               )}
@@ -515,11 +515,11 @@ export function DailyAlchemyCompleteScreen({
                   'w-full flex items-center justify-center gap-2 px-6 py-3',
                   'bg-gray-200 dark:bg-gray-700',
                   'text-gray-800 dark:text-gray-200',
-                  'border-[3px] border-black dark:border-gray-600',
+                  'dark:border-gray-600',
                   'rounded-xl font-bold',
-                  'shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)]',
-                  'hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[1px_1px_0px_rgba(0,0,0,1)]',
-                  'active:translate-x-[3px] active:translate-y-[3px] active:shadow-none',
+                  'dark:',
+                  ' hover:',
+                  '',
                   'transition-all duration-150',
                   highContrast && 'border-[4px]'
                 )}
@@ -548,12 +548,12 @@ export function DailyAlchemyCompleteScreen({
               'w-full max-w-sm flex items-center justify-center gap-2 py-3',
               'bg-white dark:bg-gray-800',
               'text-gray-800 dark:text-gray-200',
-              'border-[3px] border-black dark:border-gray-600',
+              'dark:border-gray-600',
               'rounded-xl font-bold',
-              'shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(0,0,0,0.5)]',
+              'dark:',
               'hover:bg-gray-50 dark:hover:bg-gray-700',
-              'hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]',
-              'active:translate-x-[4px] active:translate-y-[4px] active:shadow-none',
+              ' hover:',
+              '',
               'transition-all duration-150',
               highContrast && 'border-[4px] border-hc-border'
             )}
@@ -575,7 +575,7 @@ export function DailyAlchemyCompleteScreen({
               'bg-gray-50 dark:bg-gray-800',
               'border-[3px] border-gray-300 dark:border-gray-600',
               'rounded-xl',
-              'shadow-[3px_3px_0px_rgba(0,0,0,0.15)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.3)]',
+              ' dark:',
               'hover:bg-gray-100 dark:hover:bg-gray-700',
               'hover:border-gray-400 dark:hover:border-gray-500',
               'transition-colors cursor-pointer'

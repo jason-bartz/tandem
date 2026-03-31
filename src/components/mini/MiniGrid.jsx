@@ -61,14 +61,16 @@ export default function MiniGrid({
     const baseClasses = 'relative flex items-center justify-center font-bold text-lg sm:text-xl';
 
     if (isBlack) {
-      return `${baseClasses} bg-gray-900 dark:bg-gray-950`;
+      return `${baseClasses} ${highContrast ? 'bg-hc-text' : 'bg-gray-900 dark:bg-gray-950'}`;
     }
 
     if (!isEditable) {
-      return `${baseClasses} bg-gray-200 dark:bg-gray-800 cursor-not-allowed`;
+      return `${baseClasses} ${highContrast ? 'bg-hc-surface border border-hc-border' : 'bg-gray-200 dark:bg-gray-800'} cursor-not-allowed`;
     }
 
-    let bgClass = 'bg-ghost-white dark:bg-gray-900 text-gray-900 dark:text-gray-100';
+    let bgClass = highContrast
+      ? 'bg-hc-background text-hc-text border border-hc-border'
+      : 'bg-ghost-white dark:bg-gray-900 text-gray-900 dark:text-gray-100';
 
     if (isSelected) {
       // Selected cell is always blue (priority over correct)
@@ -104,10 +106,10 @@ export default function MiniGrid({
       {/* Grid container with neo-brutalist border */}
       <div
         className="
-          rounded-[16px]
-          border-[3px] border-black dark:border-gray-600
-          shadow-[4px_4px_0px_rgba(0,0,0,1)]
-          dark:shadow-[4px_4px_0px_rgba(0,0,0,0.5)]
+          rounded-md
+         
+         
+          dark:
           overflow-hidden
           bg-ghost-white dark:bg-gray-900
         "
@@ -127,7 +129,7 @@ export default function MiniGrid({
                     aspect-square
                     border-r-[2px] border-b-[2px]
                     last:border-r-0
-                    border-black dark:border-gray-700
+                   
                     outline-none focus:outline-none
                     ${getCellClasses(rowIndex, colIndex)}
                   `}

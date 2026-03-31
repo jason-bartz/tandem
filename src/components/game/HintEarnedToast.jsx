@@ -82,7 +82,7 @@ export default function HintEarnedToast({ isSmallPhone = false, isMobilePhone = 
           <div
             className={`
               ${isSmallPhone ? 'px-4 py-2.5' : isMobilePhone ? 'px-5 py-3' : 'px-6 py-3'}
-              rounded-2xl shadow-2xl backdrop-blur-sm
+              rounded-2xl backdrop-blur-sm
               flex items-center gap-3
               ${isSmallPhone ? 'max-w-[280px]' : isMobilePhone ? 'max-w-xs' : 'max-w-sm'}
               ${

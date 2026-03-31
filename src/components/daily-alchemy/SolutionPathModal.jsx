@@ -33,8 +33,8 @@ function CombinationStep({ step, stepNumber, isLast, emojiMap }) {
         className={cn(
           'w-7 h-7 rounded-full flex items-center justify-center mb-3',
           'bg-soup-primary text-white font-bold text-sm',
-          'border-2 border-black',
-          'shadow-[2px_2px_0px_rgba(0,0,0,1)]'
+          'border-2',
+          ''
         )}
       >
         {stepNumber}
@@ -47,9 +47,9 @@ function CombinationStep({ step, stepNumber, isLast, emojiMap }) {
           className={cn(
             'flex items-center gap-1.5 px-3 py-2',
             'bg-white dark:bg-gray-800',
-            'border-[2px] border-black dark:border-gray-600',
+            'dark:border-gray-600',
             'rounded-lg',
-            'shadow-[2px_2px_0px_rgba(0,0,0,1)]',
+            '',
             highContrast && 'border-[3px] border-hc-border'
           )}
         >
@@ -65,9 +65,9 @@ function CombinationStep({ step, stepNumber, isLast, emojiMap }) {
           className={cn(
             'flex items-center gap-1.5 px-3 py-2',
             'bg-white dark:bg-gray-800',
-            'border-[2px] border-black dark:border-gray-600',
+            'dark:border-gray-600',
             'rounded-lg',
-            'shadow-[2px_2px_0px_rgba(0,0,0,1)]',
+            '',
             highContrast && 'border-[3px] border-hc-border'
           )}
         >
@@ -86,9 +86,9 @@ function CombinationStep({ step, stepNumber, isLast, emojiMap }) {
           isLast
             ? 'bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/40 dark:to-emerald-900/40'
             : 'bg-gray-50 dark:bg-gray-700/50',
-          'border-[2px] border-black dark:border-gray-600',
+          'dark:border-gray-600',
           'rounded-xl',
-          isLast ? 'shadow-[3px_3px_0px_rgba(0,0,0,1)]' : 'shadow-[2px_2px_0px_rgba(0,0,0,1)]',
+          isLast ? '' : '',
           highContrast && 'border-[3px] border-hc-border'
         )}
       >
@@ -167,10 +167,10 @@ export default function SolutionPathModal({
           className={cn(
             'w-full py-4 rounded-xl font-bold text-lg transition-all',
             'bg-soup-primary text-white',
-            'border-[3px] border-black',
-            'shadow-[4px_4px_0px_rgba(0,0,0,1)]',
-            'hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]',
-            'active:translate-x-[4px] active:translate-y-[4px] active:shadow-none',
+            '',
+            '',
+            ' hover:',
+            '',
             highContrast && 'bg-hc-primary border-hc-border'
           )}
         >

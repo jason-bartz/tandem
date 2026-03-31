@@ -986,7 +986,7 @@ export default function MiniPuzzleEditor({ puzzle, date, onSave, onCancel, loadi
 
   // ─── Render ────────────────────────────────────────────────────
   return (
-    <div className="bg-ghost-white dark:bg-gray-800 rounded-2xl border-[3px] border-black dark:border-white p-3 sm:p-4">
+    <div className="bg-ghost-white dark:bg-gray-800 rounded-2xl p-3 sm:p-4">
       {/* Header + Status */}
       <div className="mb-3">
         <h2 className="text-lg font-black text-text-primary">
@@ -1061,8 +1061,7 @@ export default function MiniPuzzleEditor({ puzzle, date, onSave, onCancel, loadi
           type="button"
           onClick={undo}
           disabled={loading || gridHistory.length === 0}
-          className="px-2 py-1 text-xs font-bold bg-ghost-white dark:bg-gray-700 text-text-primary rounded-lg border-[2px] border-black dark:border-white hover:translate-y-[-1px] transition-all disabled:opacity-50"
-          style={{ boxShadow: '2px 2px 0px rgba(0, 0, 0, 1)' }}
+          className="px-2 py-1 text-xs font-bold bg-ghost-white dark:bg-gray-700 text-text-primary rounded-lg transition-all disabled:opacity-50"
           title="Undo last word or fill"
         >
           Undo
@@ -1071,8 +1070,7 @@ export default function MiniPuzzleEditor({ puzzle, date, onSave, onCancel, loadi
           type="button"
           onClick={quickFill}
           disabled={loading || isGenerating}
-          className="px-2 sm:px-2.5 py-1 text-xs font-bold bg-accent-blue text-white rounded-lg border-[2px] border-black hover:translate-y-[-1px] transition-all disabled:opacity-50"
-          style={{ boxShadow: '2px 2px 0px rgba(0, 0, 0, 1)' }}
+          className="px-2 sm:px-2.5 py-1 text-xs font-bold bg-accent-blue text-white rounded-lg transition-all disabled:opacity-50"
           title="Auto-fill grid using CSP solver (each click = different fill)"
         >
           {isGenerating ? 'Filling...' : 'Quick Fill'}
@@ -1081,8 +1079,7 @@ export default function MiniPuzzleEditor({ puzzle, date, onSave, onCancel, loadi
           type="button"
           onClick={bestLocation}
           disabled={loading || isGenerating}
-          className="px-2 sm:px-2.5 py-1 text-xs font-bold bg-ghost-white dark:bg-gray-700 text-text-primary rounded-lg border-[2px] border-black dark:border-white hover:translate-y-[-1px] transition-all disabled:opacity-50"
-          style={{ boxShadow: '2px 2px 0px rgba(0, 0, 0, 1)' }}
+          className="px-2 sm:px-2.5 py-1 text-xs font-bold bg-ghost-white dark:bg-gray-700 text-text-primary rounded-lg transition-all disabled:opacity-50"
           title="Jump to the most constrained unfilled slot"
         >
           <span className="sm:hidden">Best</span>
@@ -1092,8 +1089,7 @@ export default function MiniPuzzleEditor({ puzzle, date, onSave, onCancel, loadi
           type="button"
           onClick={aiFillWord}
           disabled={loading || isGenerating || !currentSlotId || !currentWordHasEmpty}
-          className="px-2 sm:px-2.5 py-1 text-xs font-bold bg-purple-600 text-white rounded-lg border-[2px] border-black hover:translate-y-[-1px] transition-all disabled:opacity-50"
-          style={{ boxShadow: '2px 2px 0px rgba(0, 0, 0, 1)' }}
+          className="px-2 sm:px-2.5 py-1 text-xs font-bold bg-purple-600 text-white rounded-lg transition-all disabled:opacity-50"
           title="Fill selected word with best candidate"
         >
           <span className="sm:hidden">AI</span>
@@ -1114,15 +1110,14 @@ export default function MiniPuzzleEditor({ puzzle, date, onSave, onCancel, loadi
             }
           }}
           placeholder="Theme (e.g. Space, Italian food...)"
-          className="flex-1 min-w-[160px] px-2.5 py-1 text-xs rounded-lg border-[2px] border-black dark:border-white bg-ghost-white dark:bg-gray-700 text-text-primary placeholder:text-text-secondary"
+          className="flex-1 min-w-[160px] px-2.5 py-1 text-xs rounded-lg bg-ghost-white dark:bg-gray-700 text-text-primary placeholder:text-text-secondary"
           disabled={loading || isGenerating}
         />
         <button
           type="button"
           onClick={themedFill}
           disabled={loading || isGenerating || !themeInput.trim()}
-          className="px-2.5 py-1 text-xs font-bold bg-emerald-600 text-white rounded-lg border-[2px] border-black hover:translate-y-[-1px] transition-all disabled:opacity-50"
-          style={{ boxShadow: '2px 2px 0px rgba(0, 0, 0, 1)' }}
+          className="px-2.5 py-1 text-xs font-bold bg-emerald-600 text-white rounded-lg transition-all disabled:opacity-50"
           title="Generate themed puzzle: AI picks seed words, CSP fills the rest"
         >
           {isGenerating ? 'Generating...' : 'Theme Fill'}
@@ -1131,8 +1126,7 @@ export default function MiniPuzzleEditor({ puzzle, date, onSave, onCancel, loadi
           type="button"
           onClick={fetchThemeSeedWords}
           disabled={loading || isGenerating || !themeInput.trim()}
-          className="px-2.5 py-1 text-xs font-bold bg-ghost-white dark:bg-gray-700 text-text-primary rounded-lg border-[2px] border-black dark:border-white hover:translate-y-[-1px] transition-all disabled:opacity-50"
-          style={{ boxShadow: '2px 2px 0px rgba(0, 0, 0, 1)' }}
+          className="px-2.5 py-1 text-xs font-bold bg-ghost-white dark:bg-gray-700 text-text-primary rounded-lg transition-all disabled:opacity-50"
           title="Preview theme words without filling (validate against dictionary)"
         >
           Preview Words
@@ -1184,7 +1178,7 @@ export default function MiniPuzzleEditor({ puzzle, date, onSave, onCancel, loadi
               type="date"
               value={formData.date}
               onChange={(e) => handleChange('date', e.target.value)}
-              className="w-full px-2 py-1.5 text-sm rounded-lg border-[2px] border-black dark:border-white bg-ghost-white dark:bg-gray-700 text-text-primary"
+              className="w-full px-2 py-1.5 text-sm rounded-lg bg-ghost-white dark:bg-gray-700 text-text-primary"
               disabled={loading}
             />
             {errors.date && <p className="text-red-500 text-xs mt-1">{errors.date}</p>}
@@ -1195,7 +1189,7 @@ export default function MiniPuzzleEditor({ puzzle, date, onSave, onCancel, loadi
             <select
               value={formData.difficulty}
               onChange={(e) => handleChange('difficulty', e.target.value)}
-              className="w-full px-2 py-1.5 text-sm rounded-lg border-[2px] border-black dark:border-white bg-ghost-white dark:bg-gray-700 text-text-primary"
+              className="w-full px-2 py-1.5 text-sm rounded-lg bg-ghost-white dark:bg-gray-700 text-text-primary"
               disabled={loading}
             >
               <option value="easy">Easy</option>
@@ -1217,7 +1211,7 @@ export default function MiniPuzzleEditor({ puzzle, date, onSave, onCancel, loadi
                   onClick={() => setCurrentDirection('across')}
                   className={`px-2 py-0.5 text-xs font-bold rounded border-[2px] ${
                     currentDirection === 'across'
-                      ? 'bg-accent-yellow text-gray-900 border-black'
+                      ? 'bg-accent-yellow text-gray-900'
                       : 'bg-ghost-white dark:bg-gray-700 text-text-primary border-gray-300'
                   }`}
                 >
@@ -1228,7 +1222,7 @@ export default function MiniPuzzleEditor({ puzzle, date, onSave, onCancel, loadi
                   onClick={() => setCurrentDirection('down')}
                   className={`px-2 py-0.5 text-xs font-bold rounded border-[2px] ${
                     currentDirection === 'down'
-                      ? 'bg-accent-yellow text-gray-900 border-black'
+                      ? 'bg-accent-yellow text-gray-900'
                       : 'bg-ghost-white dark:bg-gray-700 text-text-primary border-gray-300'
                   }`}
                 >
@@ -1238,7 +1232,7 @@ export default function MiniPuzzleEditor({ puzzle, date, onSave, onCancel, loadi
             </div>
 
             {/* Grid with Preview Support */}
-            <div className="inline-block rounded-lg overflow-hidden border-2 border-black dark:border-white">
+            <div className="inline-block rounded-lg overflow-hidden border-2">
               <div className="grid grid-cols-5">
                 {formData.grid.map((row, rowIndex) =>
                   row.map((cell, colIndex) => {
@@ -1316,7 +1310,7 @@ export default function MiniPuzzleEditor({ puzzle, date, onSave, onCancel, loadi
 
           {/* Right Panel */}
           <div className="lg:col-span-1 flex flex-col gap-3">
-            <div className="bg-gray-50 dark:bg-gray-900 border-[2px] border-black dark:border-white rounded-lg p-3 flex-1 min-h-[300px] max-h-[500px] flex flex-col">
+            <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-3 flex-1 min-h-[300px] max-h-[500px] flex flex-col">
               <CandidateList
                 candidates={candidates}
                 totalCandidates={totalCandidates}
@@ -1346,8 +1340,7 @@ export default function MiniPuzzleEditor({ puzzle, date, onSave, onCancel, loadi
                 isGeneratingClues ||
                 (gridWords.across.length === 0 && gridWords.down.length === 0)
               }
-              className="px-2.5 py-1 text-xs font-bold bg-purple-600 text-white rounded-lg border-[2px] border-black hover:bg-purple-700 disabled:opacity-50 transition-all"
-              style={{ boxShadow: '2px 2px 0px rgba(0, 0, 0, 1)' }}
+              className="px-2.5 py-1 text-xs font-bold bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50 transition-all"
             >
               {isGeneratingClues ? 'Generating...' : 'Generate Clues'}
             </button>
@@ -1416,13 +1409,12 @@ export default function MiniPuzzleEditor({ puzzle, date, onSave, onCancel, loadi
         </div>
 
         {/* Action Buttons */}
-        <div className="flex gap-2 pt-3 border-t-2 border-black dark:border-white">
+        <div className="flex gap-2 pt-3 border-t-2">
           <button
             type="button"
             onClick={onCancel}
             disabled={loading}
-            className="px-3 sm:px-4 py-1.5 text-xs sm:text-sm font-bold bg-ghost-white dark:bg-gray-700 text-text-primary rounded-md sm:rounded-lg border-[2px] border-black dark:border-white hover:translate-y-[-1px] transition-all"
-            style={{ boxShadow: '2px 2px 0px rgba(0, 0, 0, 1)' }}
+            className="px-3 sm:px-4 py-1.5 text-xs sm:text-sm font-bold bg-ghost-white dark:bg-gray-700 text-text-primary rounded-md sm:rounded-lg transition-all"
           >
             <span className="sm:hidden">Back</span>
             <span className="hidden sm:inline">Back to Calendar</span>
@@ -1430,8 +1422,7 @@ export default function MiniPuzzleEditor({ puzzle, date, onSave, onCancel, loadi
           <button
             type="submit"
             disabled={loading}
-            className="px-3 sm:px-4 py-1.5 text-xs sm:text-sm font-bold bg-accent-yellow text-gray-900 rounded-md sm:rounded-lg border-[2px] border-black hover:translate-y-[-1px] transition-all disabled:opacity-50"
-            style={{ boxShadow: '2px 2px 0px rgba(0, 0, 0, 1)' }}
+            className="px-3 sm:px-4 py-1.5 text-xs sm:text-sm font-bold bg-accent-yellow text-gray-900 rounded-md sm:rounded-lg transition-all disabled:opacity-50"
           >
             <span className="sm:hidden">{loading ? 'Saving...' : 'Save'}</span>
             <span className="hidden sm:inline">{loading ? 'Saving...' : 'Save Puzzle'}</span>
@@ -1440,8 +1431,7 @@ export default function MiniPuzzleEditor({ puzzle, date, onSave, onCancel, loadi
             type="button"
             onClick={clearAll}
             disabled={isGenerating}
-            className="px-3 sm:px-4 py-1.5 text-xs sm:text-sm font-bold bg-red-600 text-white rounded-md sm:rounded-lg border-[2px] border-black hover:translate-y-[-1px] transition-all disabled:opacity-50"
-            style={{ boxShadow: '2px 2px 0px rgba(0, 0, 0, 1)' }}
+            className="px-3 sm:px-4 py-1.5 text-xs sm:text-sm font-bold bg-red-600 text-white rounded-md sm:rounded-lg transition-all disabled:opacity-50"
             title="Clear grid, clues, and stats"
           >
             Clear

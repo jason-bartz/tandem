@@ -51,7 +51,7 @@ export default function BottomPanel({
   headerClassName = '',
   contentClassName = '',
 }) {
-  const { theme } = useTheme();
+  const { theme, highContrast } = useTheme();
   const panelRef = useRef(null);
   const contentRef = useRef(null);
   const touchStartY = useRef(null);
@@ -204,11 +204,11 @@ export default function BottomPanel({
       {/* Panel */}
       <div
         ref={panelRef}
-        className={`absolute bottom-0 shadow-2xl rounded-t-3xl ${
+        className={`absolute bottom-0 rounded-t-3xl ${
           maxWidth
             ? 'left-1/2 -translate-x-1/2 animate-slide-in-bottom-centered'
             : 'left-0 right-0 animate-slide-in-bottom'
-        } ${theme === 'dark' ? 'bg-gray-900' : 'bg-ghost-white'}`}
+        } ${highContrast ? 'bg-hc-surface border-t-4 border-hc-border' : theme === 'dark' ? 'bg-gray-900' : 'bg-ghost-white'}`}
         style={{
           maxHeight,
           maxWidth: maxWidth || undefined,
@@ -227,7 +227,7 @@ export default function BottomPanel({
         <div className="flex justify-center py-3">
           <div
             className={`w-12 h-1.5 rounded-full ${
-              theme === 'dark' ? 'bg-gray-700' : 'bg-gray-300'
+              highContrast ? 'bg-hc-border' : theme === 'dark' ? 'bg-gray-700' : 'bg-gray-300'
             }`}
           />
         </div>
@@ -238,7 +238,7 @@ export default function BottomPanel({
             {title && (
               <h2
                 id="panel-title"
-                className={`text-xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}
+                className={`text-xl font-bold ${highContrast ? 'text-hc-text' : theme === 'dark' ? 'text-white' : 'text-gray-900'}`}
               >
                 {title}
               </h2>
@@ -248,9 +248,11 @@ export default function BottomPanel({
               <button
                 onClick={onClose}
                 className={`ml-auto p-2 rounded-full transition-colors ${
-                  theme === 'dark'
-                    ? 'hover:bg-gray-800 text-gray-400 hover:text-white'
-                    : 'hover:bg-gray-100 text-gray-600 hover:text-gray-900'
+                  highContrast
+                    ? 'text-hc-text hover:bg-hc-border/20'
+                    : theme === 'dark'
+                      ? 'hover:bg-gray-800 text-gray-400 hover:text-white'
+                      : 'hover:bg-gray-100 text-gray-600 hover:text-gray-900'
                 }`}
                 aria-label="Close panel"
               >
@@ -289,7 +291,11 @@ export default function BottomPanel({
         {footer && (
           <div
             className={`px-6 py-4 border-t ${
-              theme === 'dark' ? 'border-gray-800' : 'border-gray-200'
+              highContrast
+                ? 'border-hc-border'
+                : theme === 'dark'
+                  ? 'border-gray-800'
+                  : 'border-gray-200'
             }`}
           >
             {footer}

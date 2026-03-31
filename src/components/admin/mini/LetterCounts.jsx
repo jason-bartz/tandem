@@ -29,7 +29,7 @@ export default function LetterCounts({ grid }) {
   const entries = Object.entries(counts.letters);
 
   return (
-    <div className="bg-gray-50 dark:bg-gray-900 border-[2px] border-black dark:border-white rounded-lg px-2.5 py-2">
+    <div className="bg-gray-50 dark:bg-gray-900 rounded-lg px-2.5 py-2">
       <div className="flex items-center justify-between mb-1.5">
         <span className="text-[10px] font-bold text-text-secondary uppercase tracking-wide">
           Letter counts

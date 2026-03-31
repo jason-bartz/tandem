@@ -289,8 +289,8 @@ export default function SidebarMenu({
                   <div
                     className={`w-full p-4 rounded-2xl border-[3px] ${
                       highContrast
-                        ? 'bg-hc-surface border-hc-border shadow-[3px_3px_0px_rgba(0,0,0,1)]'
-                        : 'bg-ghost-white dark:bg-bg-surface border-border-main shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)]'
+                        ? 'bg-hc-surface border-hc-border'
+                        : 'bg-ghost-white dark:bg-bg-surface border-border-main dark:'
                     }`}
                   >
                     <div className="flex items-start gap-3 mb-3">
@@ -323,8 +323,8 @@ export default function SidebarMenu({
                       onClick={() => handleNavigation('/account')}
                       className={`w-full p-3 text-white rounded-xl text-sm font-bold transition-all ${
                         highContrast
-                          ? 'bg-hc-primary border-[3px] border-hc-border shadow-[2px_2px_0px_rgba(0,0,0,1)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_rgba(0,0,0,1)]'
-                          : 'bg-accent-blue border-[3px] border-black dark:border-gray-600 shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_rgba(0,0,0,0.5)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_rgba(0,0,0,1)]'
+                          ? 'bg-hc-primary border-[3px] border-hc-border hover:'
+                          : 'bg-accent-blue dark: hover:'
                       }`}
                     >
                       Sign In / Create Account
@@ -336,8 +336,8 @@ export default function SidebarMenu({
                     onClick={() => handleNavigation('/account')}
                     className={`w-full p-4 rounded-2xl border-[3px] transition-all text-left ${
                       highContrast
-                        ? 'bg-hc-surface border-hc-border hover:bg-hc-primary shadow-[3px_3px_0px_rgba(0,0,0,1)]'
-                        : 'bg-ghost-white dark:bg-bg-surface border-border-main shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]'
+                        ? 'bg-hc-surface border-hc-border hover:bg-hc-primary'
+                        : 'bg-ghost-white dark:bg-bg-surface border-border-main dark: hover:'
                     }`}
                   >
                     {/* Profile Header */}
@@ -517,8 +517,8 @@ export default function SidebarMenu({
 
               {/* Support Section - Main Tandem site */}
               {!isStandaloneAlchemy && (
-                <section className="pt-4 border-t-[3px] border-border-main space-y-4">
-                  <div className="p-4 rounded-2xl border-[3px] border-border-main bg-surface-primary shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)]">
+                <section className="pt-4 border-t border-border-main space-y-4">
+                  <div className="p-4 rounded-2xl border-2 border-border-main bg-surface-primary dark:">
                     <p className="text-xs text-text-secondary leading-relaxed mb-3">
                       Generous supporters help keep every game free to play and ad-free for
                       everyone. Your support helps cover our servers and keep the games running.
@@ -530,13 +530,13 @@ export default function SidebarMenu({
 
               {/* Tandem Daily CTA & Support - Standalone Only */}
               {isStandaloneAlchemy && (
-                <section className="pt-4 border-t-[3px] border-border-main space-y-4">
+                <section className="pt-4 border-t border-border-main space-y-4">
                   {/* More Games CTA */}
                   <a
                     href="https://tandemdaily.com"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="block p-4 rounded-2xl border-[3px] border-border-main bg-surface-primary shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)] transition-all"
+                    className="block p-4 rounded-2xl border-2 border-border-main bg-surface-primary dark: hover:transition-all"
                   >
                     <p className="text-sm font-bold text-text-primary mb-1">More Daily Games</p>
                     <p className="text-xs text-text-secondary leading-relaxed">
@@ -548,7 +548,7 @@ export default function SidebarMenu({
                   </a>
 
                   {/* Support Section */}
-                  <div className="p-4 rounded-2xl border-[3px] border-border-main bg-surface-primary shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)]">
+                  <div className="p-4 rounded-2xl border-2 border-border-main bg-surface-primary dark:">
                     <p className="text-xs text-text-secondary leading-relaxed mb-3">
                       Generous supporters help keep this game ad-free and the daily puzzle free for
                       everyone. Your support helps cover our servers and keep the games running.
@@ -557,7 +557,7 @@ export default function SidebarMenu({
                       href="https://buymeacoffee.com/jasonbartz"
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center justify-center gap-2 w-full px-4 py-2.5 bg-[#FFDD00] hover:bg-[#FFDD00]/90 text-black font-semibold rounded-xl border-[3px] border-black transition-all"
+                      className="flex items-center justify-center gap-2 w-full px-4 py-2.5 bg-flat-accent hover:bg-flat-accent-hover text-gray-900 font-semibold rounded-xl transition-all"
                     >
                       <Image
                         src="/ui/shared/coffee.png"
@@ -573,7 +573,7 @@ export default function SidebarMenu({
               )}
 
               {/* Footer Links */}
-              <section className="pt-4 border-t-[3px] border-border-main space-y-1">
+              <section className="pt-4 border-t border-border-main space-y-1">
                 {!isStandaloneAlchemy && (
                   <FooterLink label="Settings" onClick={() => handleModalOpen(onOpenSettings)} />
                 )}
@@ -607,7 +607,7 @@ export default function SidebarMenu({
                             window.open('https://www.tiktok.com/@tandem.daily', '_blank');
                           }
                         }}
-                        className="w-10 h-10 rounded-full flex items-center justify-center border-[3px] border-border-main bg-bg-surface text-text-secondary hover:text-text-primary transition-colors shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_rgba(0,0,0,0.5)]"
+                        className="w-10 h-10 rounded-full flex items-center justify-center border-2 border-border-main bg-bg-surface text-text-secondary hover:text-text-primary transition-colors dark:"
                         aria-label="Follow us on TikTok"
                       >
                         <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
@@ -623,7 +623,7 @@ export default function SidebarMenu({
                             window.open('https://instagram.com/tandem.daily', '_blank');
                           }
                         }}
-                        className="w-10 h-10 rounded-full flex items-center justify-center border-[3px] border-border-main bg-bg-surface text-text-secondary hover:text-pink-500 dark:hover:text-pink-400 transition-colors shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_rgba(0,0,0,0.5)]"
+                        className="w-10 h-10 rounded-full flex items-center justify-center border-2 border-border-main bg-bg-surface text-text-secondary hover:text-pink-500 dark:hover:text-pink-400 transition-colors dark:"
                         aria-label="Follow us on Instagram"
                       >
                         <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
@@ -639,7 +639,7 @@ export default function SidebarMenu({
                             window.open('https://discord.gg/uSxtYQXtHN', '_blank');
                           }
                         }}
-                        className="w-10 h-10 rounded-full flex items-center justify-center border-[3px] border-border-main bg-bg-surface text-text-secondary hover:text-[#5865F2] transition-colors shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_rgba(0,0,0,0.5)]"
+                        className="w-10 h-10 rounded-full flex items-center justify-center border-2 border-border-main bg-bg-surface text-text-secondary hover:text-[#5865F2] transition-colors dark:"
                         aria-label="Join us on Discord"
                       >
                         <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
@@ -667,8 +667,8 @@ function MenuButton({ icon, label, onClick, highContrast }) {
       onClick={onClick}
       className={`w-full p-3 rounded-2xl border-[3px] flex items-center gap-3 transition-all ${
         highContrast
-          ? 'bg-hc-surface border-hc-border hover:bg-hc-primary shadow-[3px_3px_0px_rgba(0,0,0,1)]'
-          : 'bg-ghost-white dark:bg-bg-surface border-border-main shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]'
+          ? 'bg-hc-surface border-hc-border hover:bg-hc-primary'
+          : 'bg-ghost-white dark:bg-bg-surface border-border-main dark: hover:'
       }`}
     >
       <img src={icon} alt="" className="w-6 h-6" />
@@ -697,38 +697,36 @@ function FooterLink({ label, onClick }) {
 function GameButton({ icon, label, onClick, isActive, gameColor, highContrast, badge, subtitle }) {
   const iconSrc = icon;
 
-  // Define colors for each game
+  // Flat design: subtle tinted backgrounds with colored left accent
   const getGameColors = () => {
-    if (gameColor === 'blue') {
-      return {
-        bg: '#38b6ff', // Tandem blue
-        text: 'text-white',
-      };
-    } else if (gameColor === 'purple') {
-      return {
-        bg: '#8b5cf6', // Purple-500 (Cryptic color)
-        text: 'text-white',
-      };
-    } else if (gameColor === 'yellow') {
-      return {
-        bg: '#ffce00', // Yellow (Mini color)
-        text: 'text-gray-900',
-      };
-    } else if (gameColor === 'red') {
-      return {
-        bg: '#ef4444', // Red-500 (Reel Connections color)
-        text: 'text-white',
-      };
-    } else if (gameColor === 'green') {
-      return {
-        bg: '#7ed957', // soup-primary (Daily Alchemy color)
-        text: 'text-white',
-      };
-    }
-    return {
-      bg: '#ffce00', // Default yellow
-      text: 'text-gray-900',
+    const colorMap = {
+      blue: {
+        bg: 'bg-blue-50 dark:bg-blue-950/30',
+        border: 'border-l-accent-blue',
+        activeBg: 'bg-blue-100 dark:bg-blue-900/40',
+      },
+      yellow: {
+        bg: 'bg-yellow-50 dark:bg-yellow-950/30',
+        border: 'border-l-accent-yellow',
+        activeBg: 'bg-yellow-100 dark:bg-yellow-900/40',
+      },
+      green: {
+        bg: 'bg-green-50 dark:bg-green-950/30',
+        border: 'border-l-accent-green',
+        activeBg: 'bg-green-100 dark:bg-green-900/40',
+      },
+      red: {
+        bg: 'bg-red-50 dark:bg-red-950/30',
+        border: 'border-l-accent-red',
+        activeBg: 'bg-red-100 dark:bg-red-900/40',
+      },
+      purple: {
+        bg: 'bg-purple-50 dark:bg-purple-950/30',
+        border: 'border-l-accent-purple',
+        activeBg: 'bg-purple-100 dark:bg-purple-900/40',
+      },
     };
+    return colorMap[gameColor] || colorMap.yellow;
   };
 
   const colors = getGameColors();
@@ -736,38 +734,27 @@ function GameButton({ icon, label, onClick, isActive, gameColor, highContrast, b
   return (
     <button
       onClick={onClick}
-      style={!highContrast ? { backgroundColor: colors.bg } : undefined}
-      className={`w-full p-3 rounded-2xl border-[3px] flex items-center gap-3 transition-all ${
+      className={`w-full p-3 rounded-lg flex items-center gap-3 transition-all duration-200 border-l-4 hover:scale-[1.02] ${
         isActive
           ? highContrast
-            ? 'bg-hc-primary border-hc-border shadow-[3px_3px_0px_rgba(0,0,0,1)]'
-            : `border-border-main shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(0,0,0,0.6)]`
+            ? 'bg-hc-primary border-l-hc-border'
+            : `${colors.activeBg} ${colors.border}`
           : highContrast
-            ? 'bg-hc-surface border-hc-border hover:bg-hc-primary shadow-[3px_3px_0px_rgba(0,0,0,1)]'
-            : 'border-border-main shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]'
+            ? 'bg-hc-surface border-l-hc-border hover:bg-hc-primary'
+            : `${colors.bg} ${colors.border}`
       }`}
     >
       <img src={iconSrc} alt="" className="w-8 h-8" />
       <div className="flex flex-col items-start">
         <div className="flex items-center gap-2">
-          <span
-            className={`text-base font-bold whitespace-nowrap ${!highContrast ? colors.text : 'text-text-primary'}`}
-          >
-            {label}
-          </span>
+          <span className="text-base font-bold whitespace-nowrap text-text-primary">{label}</span>
           {badge && (
-            <span className="px-1.5 py-0.5 bg-[#ffce00] text-[#0f0f1e] text-[10px] font-black uppercase tracking-wider rounded shadow-sm transform -rotate-2">
+            <span className="px-1.5 py-0.5 bg-accent-yellow text-gray-900 text-[10px] font-black uppercase tracking-wider rounded">
               {badge}
             </span>
           )}
         </div>
-        {subtitle && (
-          <span
-            className={`text-[10px] ${!highContrast ? colors.text : 'text-text-secondary'} opacity-90`}
-          >
-            {subtitle}
-          </span>
-        )}
+        {subtitle && <span className="text-[10px] text-text-secondary">{subtitle}</span>}
       </div>
     </button>
   );

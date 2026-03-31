@@ -65,10 +65,8 @@ export default function UnifiedStatsModal({ isOpen, onClose }) {
         {/* Error State */}
         {error && !loading && (
           <div
-            className={`p-4 rounded-2xl border-[3px] mb-4 ${
-              highContrast
-                ? 'bg-hc-surface border-hc-border'
-                : 'bg-red-50 dark:bg-red-900/20 border-red-500'
+            className={`p-4 rounded-lg mb-4 ${
+              highContrast ? 'bg-hc-surface' : 'bg-red-50 dark:bg-red-900/20'
             }`}
           >
             <p
@@ -101,10 +99,10 @@ export default function UnifiedStatsModal({ isOpen, onClose }) {
                 {/* Achievements Button */}
                 <button
                   onClick={handleOpenAchievements}
-                  className={`w-full py-3 px-4 rounded-[20px] border-[3px] font-semibold transition-all flex items-center justify-center ${
+                  className={`w-full py-3 px-4 rounded-md font-semibold transition-all duration-200 flex items-center justify-center hover:scale-105 ${
                     highContrast
-                      ? 'bg-hc-primary text-hc-text border-hc-border hover:bg-hc-primary/90 shadow-[4px_4px_0px_rgba(0,0,0,1)]'
-                      : 'bg-white text-black border-black dark:border-gray-600 shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(0,0,0,0.5)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0px_rgba(0,0,0,0.5)]'
+                      ? 'bg-hc-primary text-hc-text hover:bg-hc-primary/90'
+                      : 'bg-bg-surface text-text-primary dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600'
                   }`}
                 >
                   View Achievements

@@ -166,6 +166,7 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
 
   // Combination state
   const [isCombining, setIsCombining] = useState(false); // API loading state
+  const isCombiningRef = useRef(false); // Synchronous guard against double-fire
   const [isAnimating, setIsAnimating] = useState(false); // Animation state (after API responds)
   const [lastResult, setLastResult] = useState(null);
   const [combinationPath, setCombinationPath] = useState([]);
@@ -1232,6 +1233,16 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
       setIsSlotSwitching(true);
       setCreativeLoadComplete(false); // Prevent autosave during switch
 
+      // Abort any in-flight autosave before switching slots
+      if (autoSaveAbortController.current) {
+        autoSaveAbortController.current.abort();
+        autoSaveAbortController.current = null;
+      }
+      if (autoSaveTimeoutRef.current) {
+        clearTimeout(autoSaveTimeoutRef.current);
+        autoSaveTimeoutRef.current = null;
+      }
+
       try {
         // 1. Auto-save current slot (favorites included via saveCreativeMode)
         await saveCreativeMode(activeSaveSlot);
@@ -1786,7 +1797,10 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
    * Combine (or subtract) the selected elements
    */
   const combineElements = useCallback(async () => {
-    if (!selectedA || !selectedB || isCombining || isAnimating) return;
+    if (!selectedA || !selectedB || isCombiningRef.current || isCombining || isAnimating) return;
+
+    // Set ref synchronously to block concurrent calls before async setState
+    isCombiningRef.current = true;
 
     try {
       playCombineButtonSound();
@@ -1844,6 +1858,7 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
       }
 
       // API done - now start the animation
+      isCombiningRef.current = false;
       setIsCombining(false);
       setIsAnimating(true);
 
@@ -1961,6 +1976,7 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
         ? "Hmm, couldn't figure out that subtraction. Try a different pair!"
         : "Hmm, couldn't find a combination. Try a different pair!";
       setCombinationError(errorMsg);
+      isCombiningRef.current = false;
       setIsCombining(false);
       setIsAnimating(false);
       // Clear selections so user can try again

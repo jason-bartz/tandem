@@ -251,10 +251,10 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
           {showAppBanner && !Capacitor.isNativePlatform() && (
             <div className="mb-6">
               <div
-                className={`rounded-2xl border-[3px] p-5 shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(255,255,255,0.3)] ${
+                className={`rounded-2xl border-[3px] p-5 dark: ${
                   highContrast
                     ? 'bg-hc-primary border-hc-border'
-                    : 'bg-gradient-to-br from-sky-50 to-blue-50 dark:from-sky-900/30 dark:to-blue-900/30 border-black dark:border-gray-600'
+                    : 'bg-gradient-to-br from-sky-50 to-blue-50 dark:from-sky-900/30 dark:to-blue-900/30'
                 }`}
               >
                 {/* Content */}
@@ -300,8 +300,8 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
                       onClick={handleAppBannerDismiss}
                       className={`px-4 py-2 rounded-xl font-medium text-sm transition-all border-[3px] whitespace-nowrap ${
                         highContrast
-                          ? 'bg-hc-surface text-hc-text border-hc-border hover:bg-hc-focus hover:text-white shadow-[2px_2px_0px_rgba(0,0,0,1)]'
-                          : 'bg-ghost-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-black dark:border-gray-600 shadow-[2px_2px_0px_rgba(0,0,0,1)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_rgba(0,0,0,1)]'
+                          ? 'bg-hc-surface text-hc-text border-hc-border hover:bg-hc-focus hover:text-white'
+                          : 'bg-ghost-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:'
                       }`}
                     >
                       Skip
@@ -316,10 +316,8 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
           <div className="mb-8">
             {/* Section Card */}
             <div
-              className={`rounded-2xl border-[3px] overflow-hidden shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(255,255,255,0.3)] ${
-                highContrast
-                  ? 'border-hc-border bg-hc-surface'
-                  : 'border-black dark:border-gray-600 bg-ghost-white dark:bg-gray-800'
+              className={`rounded-2xl border-[3px] overflow-hidden dark: ${
+                highContrast ? 'border-hc-border bg-hc-surface' : 'bg-ghost-white dark:bg-gray-800'
               }`}
             >
               {/* Section Header */}
@@ -356,14 +354,14 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
                     </div>
                     <button
                       onClick={handleHardModeToggle}
-                      className={`relative inline-flex h-9 w-[4.5rem] items-center rounded-full border-[2px] border-black dark:border-gray-600 transition-colors shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_rgba(0,0,0,0.5)] ${
+                      className={`relative inline-flex h-9 w-[4.5rem] items-center rounded-full transition-colors duration-200 ${
                         highContrast
                           ? hardModeEnabled
                             ? 'bg-hc-primary'
-                            : 'bg-hc-surface'
+                            : 'bg-hc-surface border-2 border-hc-border'
                           : hardModeEnabled
-                            ? 'bg-gradient-to-r from-red-500 to-orange-500'
-                            : 'bg-gray-200 dark:bg-gray-700'
+                            ? 'bg-orange-500'
+                            : 'bg-gray-300 dark:bg-gray-600'
                       }`}
                       role="switch"
                       aria-checked={hardModeEnabled}
@@ -371,12 +369,8 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
                       <span
                         className={`${
                           hardModeEnabled ? 'translate-x-[2.125rem]' : 'translate-x-0.5'
-                        } inline-flex h-7 w-7 items-center justify-center transform rounded-full border-[2px] border-black dark:border-gray-600 shadow-[1px_1px_0px_rgba(0,0,0,1)] transition-transform ${
-                          highContrast
-                            ? 'bg-hc-background'
-                            : hardModeEnabled
-                              ? 'bg-orange-600'
-                              : 'bg-ghost-white dark:bg-gray-600'
+                        } inline-flex h-7 w-7 items-center justify-center transform rounded-full transition-transform duration-200 ${
+                          highContrast ? 'bg-hc-background' : 'bg-white dark:bg-gray-200'
                         }`}
                       >
                         <img
@@ -401,10 +395,10 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
             <div className="mb-8">
               {/* Section Card */}
               <div
-                className={`rounded-2xl border-[3px] overflow-hidden shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(255,255,255,1)] ${
+                className={`rounded-2xl border-[3px] overflow-hidden dark: ${
                   highContrast
                     ? 'border-hc-border bg-hc-surface'
-                    : 'border-black dark:border-white bg-ghost-white dark:bg-gray-800'
+                    : 'bg-ghost-white dark:bg-gray-800'
                 }`}
               >
                 {/* Section Header */}
@@ -453,7 +447,7 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
                             await toggleSync(!syncStatus.enabled);
                             lightTap();
                           }}
-                          className={`relative inline-flex h-9 w-[4.5rem] items-center rounded-full border-[2px] border-black dark:border-gray-600 transition-colors shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_rgba(0,0,0,0.5)] ${
+                          className={`relative inline-flex h-9 w-[4.5rem] items-center rounded-full transition-colors dark:${
                             highContrast
                               ? syncStatus.enabled
                                 ? 'bg-hc-primary'
@@ -468,7 +462,7 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
                           <span
                             className={`${
                               syncStatus.enabled ? 'translate-x-[2.125rem]' : 'translate-x-0.5'
-                            } inline-flex h-7 w-7 items-center justify-center transform rounded-full border-[2px] border-black dark:border-gray-600 shadow-[1px_1px_0px_rgba(0,0,0,1)] transition-transform ${
+                            } inline-flex h-7 w-7 items-center justify-center transform rounded-full transition-transform ${
                               highContrast
                                 ? 'bg-hc-background'
                                 : syncStatus.enabled
@@ -534,10 +528,10 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
             <div className="mb-8">
               {/* Section Card */}
               <div
-                className={`rounded-2xl border-[3px] overflow-hidden shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(255,255,255,1)] ${
+                className={`rounded-2xl border-[3px] overflow-hidden dark: ${
                   highContrast
                     ? 'border-hc-border bg-hc-surface'
-                    : 'border-black dark:border-white bg-ghost-white dark:bg-gray-800'
+                    : 'bg-ghost-white dark:bg-gray-800'
                 }`}
               >
                 {/* Section Header */}
@@ -604,7 +598,7 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
                           });
                           lightTap();
                         }}
-                        className={`relative inline-flex h-9 w-[4.5rem] items-center rounded-full border-[2px] border-black dark:border-gray-600 transition-colors shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_rgba(0,0,0,0.5)] ${
+                        className={`relative inline-flex h-9 w-[4.5rem] items-center rounded-full transition-colors dark:${
                           highContrast
                             ? notificationSettings.notificationsEnabled
                               ? 'bg-hc-primary'
@@ -621,7 +615,7 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
                             notificationSettings.notificationsEnabled
                               ? 'translate-x-[2.125rem]'
                               : 'translate-x-0.5'
-                          } inline-flex h-7 w-7 items-center justify-center transform rounded-full border-[2px] border-black dark:border-gray-600 shadow-[1px_1px_0px_rgba(0,0,0,1)] transition-transform ${
+                          } inline-flex h-7 w-7 items-center justify-center transform rounded-full transition-transform ${
                             highContrast
                               ? 'bg-hc-background'
                               : notificationSettings.notificationsEnabled
@@ -653,10 +647,8 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
           <div className="mb-8">
             {/* Section Card */}
             <div
-              className={`rounded-2xl border-[3px] overflow-hidden shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(255,255,255,0.3)] ${
-                highContrast
-                  ? 'border-hc-border bg-hc-surface'
-                  : 'border-black dark:border-gray-600 bg-ghost-white dark:bg-gray-800'
+              className={`rounded-2xl border-[3px] overflow-hidden dark: ${
+                highContrast ? 'border-hc-border bg-hc-surface' : 'bg-ghost-white dark:bg-gray-800'
               }`}
             >
               {/* Section Header */}
@@ -681,14 +673,14 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
                         toggleTheme();
                         lightTap();
                       }}
-                      className={`relative inline-flex h-9 w-[4.5rem] items-center rounded-full border-[2px] border-black dark:border-gray-600 transition-colors shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_rgba(0,0,0,0.5)] ${
+                      className={`relative inline-flex h-9 w-[4.5rem] items-center rounded-full transition-colors duration-200 ${
                         highContrast
                           ? theme === 'dark'
                             ? 'bg-hc-primary'
-                            : 'bg-hc-surface'
+                            : 'bg-hc-surface border-2 border-hc-border'
                           : theme === 'dark'
-                            ? 'bg-gradient-to-r from-indigo-500 to-purple-600'
-                            : 'bg-gradient-to-r from-amber-400 to-yellow-500'
+                            ? 'bg-indigo-600'
+                            : 'bg-amber-400'
                       }`}
                       role="switch"
                       aria-checked={theme === 'dark'}
@@ -696,12 +688,8 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
                       <span
                         className={`${
                           theme === 'dark' ? 'translate-x-[2.125rem]' : 'translate-x-0.5'
-                        } inline-flex h-7 w-7 items-center justify-center transform rounded-full border-[2px] border-black dark:border-gray-600 shadow-[1px_1px_0px_rgba(0,0,0,1)] transition-transform ${
-                          highContrast
-                            ? 'bg-hc-background'
-                            : theme === 'dark'
-                              ? 'bg-purple-700'
-                              : 'bg-yellow-600'
+                        } inline-flex h-7 w-7 items-center justify-center transform rounded-full transition-transform duration-200 ${
+                          highContrast ? 'bg-hc-background' : 'bg-white'
                         }`}
                       >
                         <img
@@ -717,7 +705,7 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
                     </button>
                     <p
                       className={`text-xs font-medium mt-1.5 text-center ${
-                        highContrast ? 'text-hc-text' : 'text-gray-700 dark:text-gray-200'
+                        highContrast ? 'text-hc-text' : 'text-text-primary'
                       }`}
                     >
                       Appearance
@@ -731,10 +719,8 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
                         toggleHighContrast();
                         lightTap();
                       }}
-                      className={`relative inline-flex h-9 w-[4.5rem] items-center rounded-full border-[2px] transition-colors shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_rgba(0,0,0,0.5)] ${
-                        highContrast
-                          ? 'bg-hc-primary border-hc-border'
-                          : 'bg-gradient-to-r from-green-400 to-teal-500 border-black dark:border-gray-600'
+                      className={`relative inline-flex h-9 w-[4.5rem] items-center rounded-full transition-colors duration-200 ${
+                        highContrast ? 'bg-hc-primary border-2 border-hc-border' : 'bg-teal-500'
                       }`}
                       role="switch"
                       aria-checked={highContrast}
@@ -742,10 +728,8 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
                       <span
                         className={`${
                           highContrast ? 'translate-x-[2.125rem]' : 'translate-x-0.5'
-                        } inline-flex h-7 w-7 items-center justify-center transform rounded-full border-[2px] shadow-[1px_1px_0px_rgba(0,0,0,1)] transition-transform ${
-                          highContrast
-                            ? 'bg-hc-background border-hc-border'
-                            : 'bg-teal-600 border-black dark:border-gray-600'
+                        } inline-flex h-7 w-7 items-center justify-center transform rounded-full transition-transform duration-200 ${
+                          highContrast ? 'bg-hc-background border-2 border-hc-border' : 'bg-white'
                         }`}
                       >
                         <img src="/ui/shared/eye.png" alt="High Contrast" className="w-4 h-4" />
@@ -753,7 +737,7 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
                     </button>
                     <p
                       className={`text-xs font-medium mt-1.5 text-center ${
-                        highContrast ? 'text-hc-text' : 'text-gray-700 dark:text-gray-200'
+                        highContrast ? 'text-hc-text' : 'text-text-primary'
                       }`}
                     >
                       Contrast
@@ -767,14 +751,14 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
                         toggleReduceMotion();
                         lightTap();
                       }}
-                      className={`relative inline-flex h-9 w-[4.5rem] items-center rounded-full border-[2px] border-black dark:border-gray-600 transition-colors shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_rgba(0,0,0,0.5)] ${
+                      className={`relative inline-flex h-9 w-[4.5rem] items-center rounded-full transition-colors duration-200 ${
                         highContrast
                           ? reduceMotion
                             ? 'bg-hc-primary'
-                            : 'bg-hc-surface'
+                            : 'bg-hc-surface border-2 border-hc-border'
                           : reduceMotion
-                            ? 'bg-gradient-to-r from-purple-400 to-pink-500'
-                            : 'bg-gray-200 dark:bg-gray-700'
+                            ? 'bg-purple-500'
+                            : 'bg-gray-300 dark:bg-gray-600'
                       }`}
                       role="switch"
                       aria-checked={reduceMotion}
@@ -782,12 +766,8 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
                       <span
                         className={`${
                           reduceMotion ? 'translate-x-[2.125rem]' : 'translate-x-0.5'
-                        } inline-flex h-7 w-7 items-center justify-center transform rounded-full border-[2px] border-black dark:border-gray-600 shadow-[1px_1px_0px_rgba(0,0,0,1)] transition-transform ${
-                          highContrast
-                            ? 'bg-hc-background'
-                            : reduceMotion
-                              ? 'bg-pink-600'
-                              : 'bg-ghost-white dark:bg-gray-600'
+                        } inline-flex h-7 w-7 items-center justify-center transform rounded-full transition-transform duration-200 ${
+                          highContrast ? 'bg-hc-background' : 'bg-white dark:bg-gray-200'
                         }`}
                       >
                         <img src="/ui/shared/motion.png" alt="Motion" className="w-4 h-4" />
@@ -814,11 +794,11 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
                       className={`px-2 py-1.5 rounded-lg text-xs font-bold text-center transition-all border-[2px] ${
                         highContrast
                           ? keyboardLayout === 'QWERTY'
-                            ? 'bg-hc-primary text-white border-hc-border shadow-[2px_2px_0px_rgba(0,0,0,1)]'
-                            : 'bg-hc-surface text-hc-text border-hc-border shadow-[2px_2px_0px_rgba(0,0,0,1)]'
+                            ? 'bg-hc-primary text-white border-hc-border'
+                            : 'bg-hc-surface text-hc-text border-hc-border'
                           : keyboardLayout === 'QWERTY'
-                            ? 'bg-sky-500 text-white border-black dark:border-gray-600 shadow-[2px_2px_0px_rgba(0,0,0,1)]'
-                            : 'bg-ghost-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-black dark:border-gray-600 shadow-[2px_2px_0px_rgba(0,0,0,1)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_rgba(0,0,0,1)]'
+                            ? 'bg-sky-500 text-white'
+                            : 'bg-ghost-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:'
                       }`}
                     >
                       QWERTY
@@ -828,11 +808,11 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
                       className={`px-2 py-1.5 rounded-lg text-xs font-bold text-center transition-all border-[2px] ${
                         highContrast
                           ? keyboardLayout === 'QWERTZ'
-                            ? 'bg-hc-primary text-white border-hc-border shadow-[2px_2px_0px_rgba(0,0,0,1)]'
-                            : 'bg-hc-surface text-hc-text border-hc-border shadow-[2px_2px_0px_rgba(0,0,0,1)]'
+                            ? 'bg-hc-primary text-white border-hc-border'
+                            : 'bg-hc-surface text-hc-text border-hc-border'
                           : keyboardLayout === 'QWERTZ'
-                            ? 'bg-sky-500 text-white border-black dark:border-gray-600 shadow-[2px_2px_0px_rgba(0,0,0,1)]'
-                            : 'bg-ghost-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-black dark:border-gray-600 shadow-[2px_2px_0px_rgba(0,0,0,1)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_rgba(0,0,0,1)]'
+                            ? 'bg-sky-500 text-white'
+                            : 'bg-ghost-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:'
                       }`}
                     >
                       QWERTZ
@@ -842,11 +822,11 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
                       className={`px-2 py-1.5 rounded-lg text-xs font-bold text-center transition-all border-[2px] ${
                         highContrast
                           ? keyboardLayout === 'AZERTY'
-                            ? 'bg-hc-primary text-white border-hc-border shadow-[2px_2px_0px_rgba(0,0,0,1)]'
-                            : 'bg-hc-surface text-hc-text border-hc-border shadow-[2px_2px_0px_rgba(0,0,0,1)]'
+                            ? 'bg-hc-primary text-white border-hc-border'
+                            : 'bg-hc-surface text-hc-text border-hc-border'
                           : keyboardLayout === 'AZERTY'
-                            ? 'bg-sky-500 text-white border-black dark:border-gray-600 shadow-[2px_2px_0px_rgba(0,0,0,1)]'
-                            : 'bg-ghost-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-black dark:border-gray-600 shadow-[2px_2px_0px_rgba(0,0,0,1)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_rgba(0,0,0,1)]'
+                            ? 'bg-sky-500 text-white'
+                            : 'bg-ghost-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:'
                       }`}
                     >
                       AZERTY

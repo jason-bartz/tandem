@@ -47,10 +47,10 @@ export default function WelcomeBackModal({ isOpen, onClose }) {
           {/* Continue button */}
           <button
             onClick={onClose}
-            className={`w-full p-4 rounded-[20px] text-base font-bold cursor-pointer transition-all ${
+            className={`w-full p-4 rounded-md text-base font-bold cursor-pointer transition-all ${
               highContrast
-                ? 'bg-hc-surface text-hc-text border-[3px] border-hc-border shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]'
-                : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 border-[3px] border-gray-300 dark:border-gray-600 shadow-[4px_4px_0px_rgba(0,0,0,0.3)] dark:shadow-[4px_4px_0px_rgba(0,0,0,0.5)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,0.3)] dark:hover:shadow-[2px_2px_0px_rgba(0,0,0,0.5)]'
+                ? 'bg-hc-surface text-hc-text border-[3px] border-hc-border hover:'
+                : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 border-[3px] border-gray-300 dark:border-gray-600 dark: hover:dark:hover:'
             }`}
           >
             Start Playing

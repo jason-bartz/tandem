@@ -14,7 +14,7 @@ class ErrorBoundary extends React.Component {
       hasError: false,
       error: null,
       errorInfo: null,
-      errorCount: 0
+      errorCount: 0,
     };
   }
 
@@ -26,13 +26,13 @@ class ErrorBoundary extends React.Component {
     logger.error('React Error Boundary caught error', error, {
       componentStack: errorInfo.componentStack,
       errorBoundary: this.props.name || 'Unknown',
-      props: this.props.fallbackProps
+      props: this.props.fallbackProps,
     });
 
-    this.setState(prevState => ({
+    this.setState((prevState) => ({
       error,
       errorInfo,
-      errorCount: prevState.errorCount + 1
+      errorCount: prevState.errorCount + 1,
     }));
 
     // Call custom error handler if provided
@@ -45,7 +45,7 @@ class ErrorBoundary extends React.Component {
     this.setState({
       hasError: false,
       error: null,
-      errorInfo: null
+      errorInfo: null,
     });
 
     // Call custom reset handler if provided
@@ -71,8 +71,8 @@ class ErrorBoundary extends React.Component {
 
       // Default fallback UI
       return (
-        <div className="min-h-screen flex items-center justify-center p-4 bg-gray-50 dark:bg-gray-900">
-          <div className="max-w-md w-full bg-ghost-white dark:bg-gray-800 rounded-2xl shadow-lg p-8">
+        <div className="min-h-screen flex items-center justify-center p-4 bg-bg-primary">
+          <div className="max-w-md w-full bg-bg-surface dark:bg-bg-card rounded-2xl p-8">
             <div className="text-center">
               <div className="mb-4">
                 <svg
@@ -90,20 +90,20 @@ class ErrorBoundary extends React.Component {
                 </svg>
               </div>
 
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">
+              <h2 className="text-2xl font-bold text-text-primary mb-2">
                 Oops! Something went wrong
               </h2>
 
-              <p className="text-gray-600 dark:text-gray-400 mb-6">
+              <p className="text-text-secondary mb-6">
                 We encountered an unexpected error. Please try refreshing the page.
               </p>
 
               {process.env.NODE_ENV === 'development' && this.state.error && (
-                <details className="text-left mb-6 p-4 bg-gray-100 dark:bg-gray-700 rounded-lg">
-                  <summary className="cursor-pointer text-sm font-medium text-gray-700 dark:text-gray-300">
+                <details className="text-left mb-6 p-4 bg-bg-surface rounded-lg">
+                  <summary className="cursor-pointer text-sm font-medium text-text-primary">
                     Error Details (Development Only)
                   </summary>
-                  <pre className="mt-2 text-xs text-red-600 dark:text-red-400 whitespace-pre-wrap">
+                  <pre className="mt-2 text-xs text-accent-red whitespace-pre-wrap">
                     {this.state.error.toString()}
                     {this.state.errorInfo && this.state.errorInfo.componentStack}
                   </pre>
@@ -113,22 +113,23 @@ class ErrorBoundary extends React.Component {
               <div className="flex gap-3 justify-center">
                 <button
                   onClick={this.handleReset}
-                  className="px-6 py-3 bg-sky-600 hover:bg-sky-700 text-white font-medium rounded-xl transition-colors"
+                  className="px-6 py-3 bg-primary hover:bg-primary-hover text-white font-medium rounded-xl transition-colors"
                 >
                   Try Again
                 </button>
 
                 <button
                   onClick={() => window.location.reload()}
-                  className="px-6 py-3 bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 font-medium rounded-xl transition-colors"
+                  className="px-6 py-3 bg-bg-surface hover:bg-gray-300 dark:hover:bg-gray-600 text-text-primary font-medium rounded-xl transition-colors"
                 >
                   Refresh Page
                 </button>
               </div>
 
               {this.state.errorCount > 2 && (
-                <p className="mt-4 text-sm text-gray-500 dark:text-gray-400">
-                  Multiple errors detected. If the problem persists, please clear your browser cache.
+                <p className="mt-4 text-sm text-text-secondary">
+                  Multiple errors detected. If the problem persists, please clear your browser
+                  cache.
                 </p>
               )}
             </div>

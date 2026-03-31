@@ -112,7 +112,8 @@ export async function GET(request) {
       query.order('date', { ascending: false });
 
       if (limit) {
-        query.limit(parseInt(limit, 10));
+        const parsedLimit = parseInt(limit, 10);
+        query.limit(Number.isNaN(parsedLimit) ? 50 : Math.min(Math.max(1, parsedLimit), 100));
       }
 
       const { data, error, count } = await query;

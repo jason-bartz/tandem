@@ -98,7 +98,7 @@ export default function AchievementsModal({ isOpen, onClose }) {
           className={`p-6 rounded-2xl border-[3px] text-center ${
             highContrast
               ? 'bg-hc-surface border-hc-border'
-              : 'bg-amber-50 dark:bg-amber-900/20 border-amber-500 shadow-[4px_4px_0px_rgba(0,0,0,0.1)]'
+              : 'bg-amber-50 dark:bg-amber-900/20 border-amber-500'
           }`}
         >
           <div className="flex justify-center mb-4">
@@ -155,8 +155,8 @@ export default function AchievementsModal({ isOpen, onClose }) {
           <div
             className={`rounded-2xl border-[3px] p-4 mb-4 ${
               highContrast
-                ? 'bg-hc-primary text-white border-hc-border shadow-[4px_4px_0px_rgba(0,0,0,1)]'
-                : 'bg-accent-blue text-white border-black dark:border-gray-600 shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(0,0,0,0.5)]'
+                ? 'bg-hc-primary text-white border-hc-border'
+                : 'bg-accent-blue text-white dark:'
             }`}
           >
             <div className="flex justify-around items-center">
@@ -190,11 +190,11 @@ export default function AchievementsModal({ isOpen, onClose }) {
               className={`flex-1 py-2 px-2 rounded-xl border-[3px] font-bold text-xs transition-all ${
                 activeTab === 'tandem'
                   ? highContrast
-                    ? 'bg-hc-primary text-hc-text border-hc-border shadow-[3px_3px_0px_rgba(0,0,0,1)]'
-                    : 'bg-accent-blue text-white border-black dark:border-gray-600 shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)]'
+                    ? 'bg-hc-primary text-hc-text border-hc-border'
+                    : 'bg-accent-blue text-white dark:'
                   : highContrast
                     ? 'bg-hc-surface text-hc-text border-hc-border hover:bg-hc-surface/80'
-                    : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-black dark:border-gray-600 shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)] hover:bg-gray-200 dark:hover:bg-gray-700'
+                    : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 dark:hover:bg-gray-200 dark:hover:bg-gray-700'
               }`}
             >
               Tandem
@@ -204,11 +204,11 @@ export default function AchievementsModal({ isOpen, onClose }) {
               className={`flex-1 py-2 px-2 rounded-xl border-[3px] font-bold text-xs transition-all ${
                 activeTab === 'mini'
                   ? highContrast
-                    ? 'bg-hc-primary text-hc-text border-hc-border shadow-[3px_3px_0px_rgba(0,0,0,1)]'
-                    : 'bg-accent-yellow text-black border-black dark:border-gray-600 shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)]'
+                    ? 'bg-hc-primary text-hc-text border-hc-border'
+                    : 'bg-accent-yellow text-black dark:'
                   : highContrast
                     ? 'bg-hc-surface text-hc-text border-hc-border hover:bg-hc-surface/80'
-                    : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-black dark:border-gray-600 shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)] hover:bg-gray-200 dark:hover:bg-gray-700'
+                    : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 dark:hover:bg-gray-200 dark:hover:bg-gray-700'
               }`}
             >
               Mini
@@ -218,11 +218,11 @@ export default function AchievementsModal({ isOpen, onClose }) {
               className={`flex-1 py-2 px-2 rounded-xl border-[3px] font-bold text-xs transition-all ${
                 activeTab === 'reel'
                   ? highContrast
-                    ? 'bg-hc-primary text-hc-text border-hc-border shadow-[3px_3px_0px_rgba(0,0,0,1)]'
-                    : 'bg-red-500 text-white border-black dark:border-gray-600 shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)]'
+                    ? 'bg-hc-primary text-hc-text border-hc-border'
+                    : 'bg-red-500 text-white dark:'
                   : highContrast
                     ? 'bg-hc-surface text-hc-text border-hc-border hover:bg-hc-surface/80'
-                    : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-black dark:border-gray-600 shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)] hover:bg-gray-200 dark:hover:bg-gray-700'
+                    : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 dark:hover:bg-gray-200 dark:hover:bg-gray-700'
               }`}
             >
               Reel
@@ -232,11 +232,11 @@ export default function AchievementsModal({ isOpen, onClose }) {
               className={`flex-1 py-2 px-2 rounded-xl border-[3px] font-bold text-xs transition-all ${
                 activeTab === 'alchemy'
                   ? highContrast
-                    ? 'bg-hc-primary text-hc-text border-hc-border shadow-[3px_3px_0px_rgba(0,0,0,1)]'
-                    : 'bg-soup-primary text-white border-black dark:border-gray-600 shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)]'
+                    ? 'bg-hc-primary text-hc-text border-hc-border'
+                    : 'bg-soup-primary text-white dark:'
                   : highContrast
                     ? 'bg-hc-surface text-hc-text border-hc-border hover:bg-hc-surface/80'
-                    : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-black dark:border-gray-600 shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)] hover:bg-gray-200 dark:hover:bg-gray-700'
+                    : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 dark:hover:bg-gray-200 dark:hover:bg-gray-700'
               }`}
             >
               Alchemy

@@ -33,7 +33,7 @@ export default function MiniCompleteScreen({
 }) {
   const router = useRouter();
   const { celebration } = useHaptics();
-  const { reduceMotion } = useTheme();
+  const { reduceMotion, highContrast } = useTheme();
 
   const { user } = useAuth();
 
@@ -126,16 +126,13 @@ export default function MiniCompleteScreen({
       <div className="max-w-2xl mx-auto px-4 py-8">
         {/* Main completion card */}
         <div
-          className="
-            rounded-[32px]
-            border-[3px] border-black dark:border-gray-600
-            shadow-[6px_6px_0px_rgba(0,0,0,1)]
-            dark:shadow-[6px_6px_0px_rgba(0,0,0,0.5)]
-            bg-ghost-white dark:bg-gray-800
+          className={`
+            rounded-lg
+            ${highContrast ? 'bg-hc-surface border-4 border-hc-border' : 'bg-ghost-white dark:bg-gray-800'}
             p-10
             text-center
             mb-6
-          "
+          `}
         >
           {/* Header with back caret and hamburger menu */}
           <div className="flex items-center justify-between mb-8">
@@ -220,10 +217,10 @@ export default function MiniCompleteScreen({
               {/* Time box */}
               <div
                 className="
-                  rounded-[20px]
-                  border-[3px] border-black dark:border-gray-600
-                  shadow-[4px_4px_0px_rgba(0,0,0,1)]
-                  dark:shadow-[4px_4px_0px_rgba(0,0,0,0.5)]
+                  rounded-md
+                 
+                 
+                  dark:
                   bg-accent-yellow/20 dark:bg-accent-yellow/10
                   p-4
                 "
@@ -239,10 +236,10 @@ export default function MiniCompleteScreen({
               {/* Best Time box */}
               <div
                 className="
-                  rounded-[20px]
-                  border-[3px] border-black dark:border-gray-600
-                  shadow-[4px_4px_0px_rgba(0,0,0,1)]
-                  dark:shadow-[4px_4px_0px_rgba(0,0,0,0.5)]
+                  rounded-md
+                 
+                 
+                  dark:
                   bg-accent-yellow/20 dark:bg-accent-yellow/10
                   p-4
                 "
@@ -269,18 +266,18 @@ export default function MiniCompleteScreen({
               onClick={() => setShowLeaderboard(true)}
               className="
                 w-full h-14
-                rounded-[20px]
-                border-[3px] border-black dark:border-gray-600
-                shadow-[4px_4px_0px_rgba(0,0,0,1)]
-                dark:shadow-[4px_4px_0px_rgba(0,0,0,0.5)]
+                rounded-md
+               
+               
+                dark:
                 bg-accent-yellow dark:bg-accent-yellow
                 text-gray-900
                 font-black
                 tracking-wider
-                hover:translate-x-[2px] hover:translate-y-[2px]
-                hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]
-                active:translate-x-[4px] active:translate-y-[4px]
-                active:shadow-none
+               
+                hover:
+               
+               
                 transition-all
               "
             >
@@ -292,15 +289,15 @@ export default function MiniCompleteScreen({
               onClick={() => setShowArchive(true)}
               className={`
                 w-full h-12
-                rounded-[16px]
-                border-[3px] border-black dark:border-gray-600
-                shadow-[3px_3px_0px_rgba(0,0,0,1)]
-                dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)]
+                rounded-md
+               
+               
+                dark:
                 font-bold
-                hover:translate-x-[2px] hover:translate-y-[2px]
-                hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]
-                active:translate-x-[3px] active:translate-y-[3px]
-                active:shadow-none
+               
+                hover:
+               
+               
                 transition-all
                 bg-accent-yellow dark:bg-accent-yellow text-gray-900
               `}
@@ -337,8 +334,8 @@ export default function MiniCompleteScreen({
               bg-gray-50 dark:bg-gray-700
               border-[3px] border-gray-300 dark:border-gray-600
               rounded-xl
-              shadow-[3px_3px_0px_rgba(0,0,0,0.15)]
-              dark:shadow-[3px_3px_0px_rgba(0,0,0,0.3)]
+             
+              dark:
               hover:bg-gray-100 dark:hover:bg-gray-600
               hover:border-gray-400 dark:hover:border-gray-500
               transition-colors cursor-pointer

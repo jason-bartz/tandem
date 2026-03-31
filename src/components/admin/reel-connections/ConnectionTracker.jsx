@@ -307,15 +307,11 @@ export default function ConnectionTracker({ onEditPuzzle }) {
 
   if (error) {
     return (
-      <div
-        className="bg-accent-red/20 border-[3px] border-accent-red rounded-lg p-4"
-        style={{ boxShadow: 'var(--shadow-card)' }}
-      >
+      <div className="bg-accent-red/20 border-[3px] border-accent-red rounded-lg p-4">
         <p className="text-text-primary font-bold">Error: {error}</p>
         <button
           onClick={fetchAllPuzzles}
-          className="mt-2 px-4 py-2 bg-accent-red border-[3px] border-black text-white rounded font-bold hover:translate-y-[-2px] transition-transform"
-          style={{ boxShadow: 'var(--shadow-button)' }}
+          className="mt-2 px-4 py-2 bg-accent-red text-white rounded font-bold transition-transform"
         >
           Retry
         </button>
@@ -326,31 +322,19 @@ export default function ConnectionTracker({ onEditPuzzle }) {
   return (
     <div className="space-y-4 sm:space-y-6">
       {/* Stats Cards */}
-      <div
-        className="bg-bg-surface rounded-lg border-[3px] border-black p-4 sm:p-6"
-        style={{ boxShadow: 'var(--shadow-card)' }}
-      >
+      <div className="bg-bg-surface rounded-lg p-4 sm:p-6">
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4 text-center">
-          <div
-            className="p-3 bg-bg-card rounded-lg border-[2px] border-black"
-            style={{ boxShadow: 'var(--shadow-small)' }}
-          >
+          <div className="p-3 bg-bg-card rounded-lg">
             <div className="text-xl sm:text-2xl font-bold text-text-primary">{stats.total}</div>
             <div className="text-xs sm:text-sm text-text-secondary font-medium">Total Puzzles</div>
           </div>
-          <div
-            className="p-3 bg-bg-card rounded-lg border-[2px] border-accent-green"
-            style={{ boxShadow: 'var(--shadow-small)' }}
-          >
+          <div className="p-3 bg-bg-card rounded-lg border-[2px] border-accent-green">
             <div className="text-xl sm:text-2xl font-bold text-text-primary">{stats.unique}</div>
             <div className="text-xs sm:text-sm text-text-secondary font-medium">
               Unique Connections
             </div>
           </div>
-          <div
-            className="p-3 bg-bg-card rounded-lg border-[2px] border-accent-red"
-            style={{ boxShadow: 'var(--shadow-small)' }}
-          >
+          <div className="p-3 bg-bg-card rounded-lg border-[2px] border-accent-red">
             <div className="text-xl sm:text-2xl font-bold text-text-primary">
               {stats.duplicates}
             </div>
@@ -358,17 +342,11 @@ export default function ConnectionTracker({ onEditPuzzle }) {
               Duplicate Connections
             </div>
           </div>
-          <div
-            className="p-3 bg-bg-card rounded-lg border-[2px] border-accent-blue"
-            style={{ boxShadow: 'var(--shadow-small)' }}
-          >
+          <div className="p-3 bg-bg-card rounded-lg border-[2px] border-accent-blue">
             <div className="text-xl sm:text-2xl font-bold text-text-primary">{stats.past}</div>
             <div className="text-xs sm:text-sm text-text-secondary font-medium">Past Puzzles</div>
           </div>
-          <div
-            className="p-3 bg-bg-card rounded-lg border-[2px] border-accent-pink"
-            style={{ boxShadow: 'var(--shadow-small)' }}
-          >
+          <div className="p-3 bg-bg-card rounded-lg border-[2px] border-accent-pink">
             <div className="text-xl sm:text-2xl font-bold text-text-primary">{stats.future}</div>
             <div className="text-xs sm:text-sm text-text-secondary font-medium">Scheduled</div>
           </div>
@@ -376,19 +354,15 @@ export default function ConnectionTracker({ onEditPuzzle }) {
       </div>
 
       {/* Filters and Table */}
-      <div
-        className="bg-bg-surface rounded-lg border-[3px] border-black"
-        style={{ boxShadow: 'var(--shadow-card)' }}
-      >
-        <div className="p-3 sm:p-4 border-b-[3px] border-black">
+      <div className="bg-bg-surface rounded-lg">
+        <div className="p-3 sm:p-4 border-b-[3px]">
           <div className="flex flex-col gap-3 sm:gap-4">
             <input
               type="text"
               placeholder="Search connections, dates, or movies..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border-[3px] border-black rounded-lg bg-bg-card text-text-primary font-medium focus:outline-none focus:ring-2 focus:ring-accent-blue"
-              style={{ boxShadow: 'var(--shadow-small)' }}
+              className="w-full px-3 sm:px-4 py-2 text-sm sm:text-base rounded-lg bg-bg-card text-text-primary font-medium focus:outline-none focus:ring-2 focus:ring-accent-blue"
             />
 
             <div className="flex flex-col sm:flex-row gap-2">
@@ -396,16 +370,14 @@ export default function ConnectionTracker({ onEditPuzzle }) {
                 type="date"
                 value={dateRange.start}
                 onChange={(e) => setDateRange({ ...dateRange, start: e.target.value })}
-                className="flex-1 px-3 sm:px-4 py-2 text-sm sm:text-base border-[3px] border-black rounded-lg bg-bg-card text-text-primary font-medium focus:outline-none focus:ring-2 focus:ring-accent-blue"
-                style={{ boxShadow: 'var(--shadow-small)' }}
+                className="flex-1 px-3 sm:px-4 py-2 text-sm sm:text-base rounded-lg bg-bg-card text-text-primary font-medium focus:outline-none focus:ring-2 focus:ring-accent-blue"
                 placeholder="Start Date"
               />
               <input
                 type="date"
                 value={dateRange.end}
                 onChange={(e) => setDateRange({ ...dateRange, end: e.target.value })}
-                className="flex-1 px-3 sm:px-4 py-2 text-sm sm:text-base border-[3px] border-black rounded-lg bg-bg-card text-text-primary font-medium focus:outline-none focus:ring-2 focus:ring-accent-blue"
-                style={{ boxShadow: 'var(--shadow-small)' }}
+                className="flex-1 px-3 sm:px-4 py-2 text-sm sm:text-base rounded-lg bg-bg-card text-text-primary font-medium focus:outline-none focus:ring-2 focus:ring-accent-blue"
                 placeholder="End Date"
               />
             </div>
@@ -414,8 +386,7 @@ export default function ConnectionTracker({ onEditPuzzle }) {
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
-                className="flex-1 px-3 sm:px-4 py-2 text-sm sm:text-base border-[3px] border-black rounded-lg bg-bg-card text-text-primary font-bold focus:outline-none focus:ring-2 focus:ring-accent-blue"
-                style={{ boxShadow: 'var(--shadow-small)' }}
+                className="flex-1 px-3 sm:px-4 py-2 text-sm sm:text-base rounded-lg bg-bg-card text-text-primary font-bold focus:outline-none focus:ring-2 focus:ring-accent-blue"
               >
                 <option value="date">Sort by Date</option>
                 <option value="connection">Sort by Connection</option>
@@ -423,28 +394,25 @@ export default function ConnectionTracker({ onEditPuzzle }) {
 
               <button
                 onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
-                className="px-3 sm:px-4 py-2 text-sm sm:text-base border-[3px] border-black bg-bg-card text-text-primary rounded-lg font-bold hover:bg-accent-yellow/20 transition-colors"
-                style={{ boxShadow: 'var(--shadow-small)' }}
+                className="px-3 sm:px-4 py-2 text-sm sm:text-base bg-bg-card text-text-primary rounded-lg font-bold hover:bg-accent-yellow/20 transition-colors"
               >
                 {sortOrder === 'asc' ? '↑' : '↓'}
               </button>
 
               <button
                 onClick={() => setShowDuplicatesOnly(!showDuplicatesOnly)}
-                className={`px-3 sm:px-4 py-2 text-sm sm:text-base rounded-lg font-bold border-[3px] border-black transition-transform whitespace-nowrap ${
+                className={`px-3 sm:px-4 py-2 text-sm sm:text-base rounded-lg font-bold transition-transform whitespace-nowrap ${
                   showDuplicatesOnly
-                    ? 'bg-accent-red text-white hover:translate-y-[-2px]'
+                    ? 'bg-accent-red text-white'
                     : 'bg-bg-card text-text-primary hover:bg-accent-red/20'
                 }`}
-                style={{ boxShadow: 'var(--shadow-button)' }}
               >
                 {showDuplicatesOnly ? 'Show All' : 'Duplicates'}
               </button>
 
               <button
                 onClick={exportToCSV}
-                className="px-3 sm:px-4 py-2 text-sm sm:text-base bg-accent-blue border-[3px] border-black text-white rounded-lg font-bold hover:translate-y-[-2px] transition-transform whitespace-nowrap"
-                style={{ boxShadow: 'var(--shadow-button)' }}
+                className="px-3 sm:px-4 py-2 text-sm sm:text-base bg-accent-blue text-white rounded-lg font-bold transition-transform whitespace-nowrap"
               >
                 Export
               </button>
@@ -522,7 +490,7 @@ export default function ConnectionTracker({ onEditPuzzle }) {
                             {group.movies?.map((movie, midx) => (
                               <span
                                 key={midx}
-                                className="text-[10px] sm:text-xs bg-bg-card border-[1px] border-black px-1.5 py-0.5 rounded font-medium truncate max-w-[120px]"
+                                className="text-[10px] sm:text-xs bg-bg-card border-[1px] px-1.5 py-0.5 rounded font-medium truncate max-w-[120px]"
                                 title={`${movie.title} (${movie.year})`}
                               >
                                 {movie.title}
@@ -538,8 +506,7 @@ export default function ConnectionTracker({ onEditPuzzle }) {
                     <td className="px-3 sm:px-6 py-2 sm:py-4 whitespace-nowrap align-top">
                       <button
                         onClick={() => onEditPuzzle && onEditPuzzle(puzzle)}
-                        className="px-2 sm:px-3 py-1 bg-accent-green border-[2px] border-black text-white text-[10px] sm:text-xs rounded font-bold hover:translate-y-[-1px] transition-transform"
-                        style={{ boxShadow: 'var(--shadow-small)' }}
+                        className="px-2 sm:px-3 py-1 bg-accent-green text-white text-[10px] sm:text-xs rounded font-bold transition-transform"
                       >
                         Edit
                       </button>

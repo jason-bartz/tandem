@@ -1,7 +1,6 @@
 import './globals.css';
 import '@/styles/ios-optimizations.css';
-import localFont from 'next/font/local';
-import { Jua, Lilita_One } from 'next/font/google';
+import { Outfit, Jua, Lilita_One } from 'next/font/google';
 // Script import removed - not currently used
 import { siteConfig, generateFAQSchema } from '@/lib/seo-config';
 import IOSContainerWrapper from '@/components/shared/IOSContainerWrapper';
@@ -17,26 +16,11 @@ import { SpeedInsights } from '@vercel/speed-insights/next';
 import { ASSET_VERSION } from '@/lib/constants';
 import { isStandaloneAlchemy } from '@/lib/standalone';
 
-// Plus Jakarta Sans - Variable font for optimal performance
-// Following Apple HIG: Use variable fonts when available for better scaling
-const plusJakartaSans = localFont({
-  src: [
-    {
-      path: '../../public/fonts/PlusJakartaSans-VariableFont_wght.ttf',
-      style: 'normal',
-    },
-    {
-      path: '../../public/fonts/PlusJakartaSans-Italic-VariableFont_wght.ttf',
-      style: 'italic',
-    },
-  ],
-  variable: '--font-plus-jakarta-sans',
+// Outfit - Geometric sans-serif for flat design system
+const outfit = Outfit({
+  subsets: ['latin'],
+  variable: '--font-outfit',
   display: 'swap',
-  preload: true,
-  // Apple HIG: Always provide system fallbacks for accessibility
-  fallback: ['-apple-system', 'BlinkMacSystemFont', 'system-ui', 'sans-serif'],
-  // Adjust font metrics for better optical alignment (Apple HIG recommendation)
-  adjustFontFallback: 'Arial',
 });
 
 const jua = Jua({
@@ -205,7 +189,7 @@ export default function RootLayout({ children }) {
     <html
       lang="en"
       suppressHydrationWarning
-      className={`scroll-smooth ${jua.variable} ${lilitaOne.variable}${isStandaloneAlchemy ? ' standalone-alchemy' : ''}`}
+      className={`scroll-smooth ${outfit.variable} ${jua.variable} ${lilitaOne.variable}${isStandaloneAlchemy ? ' standalone-alchemy' : ''}`}
     >
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -251,17 +235,17 @@ export default function RootLayout({ children }) {
             <script
               dangerouslySetInnerHTML={{
                 __html: `
-                  window.dataLayer = window.dataLayer || [];
-                  function gtag(){dataLayer.push(arguments);}
-                  gtag('js', new Date());
-                  gtag('config', '${process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID}');
-                `,
+ window.dataLayer = window.dataLayer || [];
+ function gtag(){dataLayer.push(arguments);}
+ gtag('js', new Date());
+ gtag('config','${process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID}');
+ `,
               }}
             />
           </>
         )}
       </head>
-      <body className={`${plusJakartaSans.className} antialiased`}>
+      <body className={`${outfit.className} antialiased`}>
         {/* Cordova scripts are automatically injected by Capacitor WebView - do NOT load manually */}
         <ErrorBoundary name="RootLayout">
           <ThemeProvider>

@@ -66,7 +66,7 @@ export default function TipJarButton({ className = '' }) {
   if (showThankYou) {
     return (
       <div
-        className={`flex items-center justify-center gap-2 w-full px-4 py-2.5 bg-accent-green text-white font-semibold rounded-xl border-[3px] border-black transition-all ${className}`}
+        className={`flex items-center justify-center gap-2 w-full px-4 py-2.5 bg-accent-green text-white font-semibold rounded-xl transition-all ${className}`}
       >
         Thank you!
       </div>
@@ -77,7 +77,7 @@ export default function TipJarButton({ className = '' }) {
     <button
       onClick={handleTip}
       disabled={purchasing}
-      className={`flex items-center justify-center gap-2 w-full px-4 py-2.5 bg-accent-yellow hover:opacity-90 text-black font-semibold rounded-xl border-[3px] border-black transition-all disabled:opacity-50 ${className}`}
+      className={`flex items-center justify-center gap-2 w-full px-4 py-2.5 bg-flat-accent hover:bg-flat-accent-hover text-gray-900 font-semibold rounded-xl transition-all disabled:opacity-50 ${className}`}
     >
       {purchasing ? (
         'Processing...'

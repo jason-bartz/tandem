@@ -10,7 +10,7 @@ module.exports = {
     extend: {
       fontFamily: {
         sans: [
-          'var(--font-plus-jakarta-sans)',
+          'var(--font-outfit)',
           '-apple-system',
           'BlinkMacSystemFont',
           'system-ui',
@@ -38,6 +38,13 @@ module.exports = {
         dvh: '100dvh',
       },
       colors: {
+        // Flat design system - structural colors
+        primary: 'var(--primary)',
+        'primary-hover': 'var(--primary-hover)',
+        secondary: 'var(--secondary)',
+        'secondary-hover': 'var(--secondary-hover)',
+        'flat-accent': 'var(--flat-accent)',
+        'flat-accent-hover': 'var(--flat-accent-hover)',
         // High Contrast colors
         hc: {
           primary: 'var(--hc-primary)',
@@ -54,7 +61,7 @@ module.exports = {
           border: 'var(--hc-border)',
           focus: 'var(--hc-focus)',
         },
-        // WCAG AAA compliant accent colors (use CSS variables for theme support)
+        // Game identity accent colors (CSS variables for theme support)
         accent: {
           green: 'var(--accent-green)',
           yellow: 'var(--accent-yellow)',
@@ -76,18 +83,15 @@ module.exports = {
         // Border
         'border-main': 'var(--border-color)',
         'border-light': 'var(--border-light)',
-        // Ghost white (replaces pure white)
-        'ghost-white': '#F4F5F9',
-        // Element Soup color palette (based on #7ed957)
-        'soup-green': '#7ed957', // Page background (matches primary button)
-        'soup-primary': '#7ed957', // Primary button/accent color
-        'soup-light': '#d4f4c4', // Light backgrounds for cards/sections
-        'soup-hover': '#6bc447', // Hover state for primary buttons
-        'soup-dark': '#4a9c2e', // Darker shade for text accents
-        // Legacy colors for backward compatibility
-        'gray-text': '#6B7280',
-        'dark-text': '#1F2937',
-        'border-color': '#E5E7EB',
+        // Muted background (flat design Gray 100)
+        'ghost-white': '#F3F4F6',
+        muted: '#F3F4F6',
+        // Element Soup color palette (Daily Alchemy)
+        'soup-green': '#7ed957',
+        'soup-primary': '#7ed957',
+        'soup-light': '#d4f4c4',
+        'soup-hover': '#6bc447',
+        'soup-dark': '#4a9c2e',
       },
       animation: {
         // Legacy animations (keep for compatibility)
@@ -278,8 +282,8 @@ module.exports = {
           '100%': { backgroundPosition: '-200% center' },
         },
         softGlowPulse: {
-          '0%, 100%': { boxShadow: '0 0 0 rgba(13, 148, 136, 0)' },
-          '50%': { boxShadow: '0 0 20px rgba(13, 148, 136, 0.4)' },
+          '0%, 100%': { opacity: '1', transform: 'scale(1)' },
+          '50%': { opacity: '0.9', transform: 'scale(1.01)' },
         },
         enhancedShake: {
           '0%, 100%': { transform: 'translateX(0) rotate(0deg)' },
@@ -292,11 +296,11 @@ module.exports = {
         focusPulse: {
           '0%, 100%': {
             transform: 'scale(1)',
-            boxShadow: '0 0 0 2px rgba(14, 165, 233, 0.5)',
+            outline: '2px solid rgba(59, 130, 246, 0.5)',
           },
           '50%': {
             transform: 'scale(1.01)',
-            boxShadow: '0 0 0 3px rgba(14, 165, 233, 0.3)',
+            outline: '3px solid rgba(59, 130, 246, 0.3)',
           },
         },
         // Emoji animations (1.4)
@@ -329,15 +333,9 @@ module.exports = {
           '100%': { transform: 'scale(1)' },
         },
         milestoneBurst: {
-          '0%': {
-            transform: 'scale(1)',
-            boxShadow: '0 0 0 0 rgba(59, 130, 246, 0.7)',
-          },
-          '50%': { transform: 'scale(1.15)' },
-          '100%': {
-            transform: 'scale(1)',
-            boxShadow: '0 0 0 20px rgba(59, 130, 246, 0)',
-          },
+          '0%': { transform: 'scale(1)', opacity: '1' },
+          '50%': { transform: 'scale(1.15)', opacity: '0.9' },
+          '100%': { transform: 'scale(1)', opacity: '1' },
         },
         progressFill: {
           '0%': { width: '0%', opacity: '0' },
@@ -346,14 +344,8 @@ module.exports = {
         },
         // Button animations (3.1, 3.2, 3.3)
         hoverLift: {
-          '0%': {
-            transform: 'translateY(0)',
-            boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
-          },
-          '100%': {
-            transform: 'translateY(-2px)',
-            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
-          },
+          '0%': { transform: 'scale(1)' },
+          '100%': { transform: 'scale(1.02)' },
         },
         touchPress: {
           '0%': { transform: 'scale(1)' },
@@ -407,14 +399,8 @@ module.exports = {
           '100%': { opacity: '1', transform: 'translateY(0)' },
         },
         attentionPulse: {
-          '0%, 100%': {
-            transform: 'scale(1)',
-            boxShadow: '3px 3px 0px rgba(0,0,0,1)',
-          },
-          '50%': {
-            transform: 'scale(1.02)',
-            boxShadow: '3px 3px 0px rgba(0,0,0,1), 0 0 20px rgba(74, 222, 128, 0.5)',
-          },
+          '0%, 100%': { transform: 'scale(1)' },
+          '50%': { transform: 'scale(1.03)' },
         },
         hoverShine: {
           '0%': { backgroundPosition: '-100% center' },

@@ -16,6 +16,7 @@ import CompleteScreen from './CompleteScreen';
 import AdmireScreen from './AdmireScreen';
 import WelcomeScreenSkeleton from '@/components/shared/WelcomeScreenSkeleton';
 import ServiceOutage from '@/components/shared/ServiceOutage';
+import ErrorBoundary from '@/components/shared/ErrorBoundary';
 import { useAuth } from '@/contexts/AuthContext';
 import VersionChecker from '@/components/shared/VersionChecker';
 import AchievementToast from './AchievementToast';
@@ -33,7 +34,7 @@ function StandaloneRedirect() {
   useEffect(() => {
     window.location.replace('/daily-alchemy');
   }, []);
-  return <div className="fixed inset-0 bg-white dark:bg-gray-900" />;
+  return <div className="fixed inset-0 bg-bg-primary" />;
 }
 
 export default function GameContainerClient({ initialPuzzleData }) {
@@ -303,8 +304,8 @@ function TandemGameContainer({ initialPuzzleData }) {
     );
   }
 
-  // Use blue background for playing, complete, and admire states; yellow for welcome
-  const bgClass = game.gameState === GAME_STATES.WELCOME ? 'bg-bg-primary' : 'bg-bg-tandem';
+  // White canvas for all states (flat design)
+  const bgClass = 'bg-bg-primary';
 
   return (
     <div className={`fixed inset-0 w-full h-full overflow-y-auto overflow-x-hidden ${bgClass}`}>
@@ -315,94 +316,96 @@ function TandemGameContainer({ initialPuzzleData }) {
       {/* Content container - centered scrollable layout for all devices */}
       <div className="min-h-screen flex items-center justify-center py-6 px-4">
         <div className="w-full max-w-md mx-auto relative z-10 my-auto">
-          {/* Welcome screen */}
-          {game.gameState === GAME_STATES.WELCOME && (
-            <div key="welcome">
-              <WelcomeScreen
-                onStart={game.startGame}
-                theme={theme}
-                toggleTheme={toggleTheme}
-                onSelectPuzzle={handleSelectPuzzle}
-                puzzle={game.puzzle}
-                tandemError={game.error}
-              />
-            </div>
-          )}
+          <ErrorBoundary name="GameContent" onReset={() => window.location.reload()}>
+            {/* Welcome screen */}
+            {game.gameState === GAME_STATES.WELCOME && (
+              <div key="welcome">
+                <WelcomeScreen
+                  onStart={game.startGame}
+                  theme={theme}
+                  toggleTheme={toggleTheme}
+                  onSelectPuzzle={handleSelectPuzzle}
+                  puzzle={game.puzzle}
+                  tandemError={game.error}
+                />
+              </div>
+            )}
 
-          {/* Playing screen - no animation, instant load */}
-          {game.gameState === GAME_STATES.PLAYING && (
-            <div key="playing">
-              <PlayingScreen
-                puzzle={game.puzzle}
-                answers={game.answers}
-                correctAnswers={game.correctAnswers}
-                checkedWrongAnswers={game.checkedWrongAnswers}
-                mistakes={game.mistakes}
-                solved={game.solved}
-                time={timer.elapsed}
-                onUpdateAnswer={game.updateAnswer}
-                onCheckAnswers={handleCheckAnswers}
-                onCheckSingleAnswer={game.checkSingleAnswer}
-                theme={theme}
-                toggleTheme={toggleTheme}
-                onSelectPuzzle={handleSelectPuzzle}
-                hintsUsed={game.hintsUsed}
-                hintedAnswers={game.hintedAnswers}
-                unlockedHints={game.unlockedHints}
-                activeHintIndex={game.activeHintIndex}
-                lockedLetters={game.lockedLetters}
-                onUseHint={game.useHint}
-                hasCheckedAnswers={game.hasCheckedAnswers}
-                onReturnToWelcome={game.returnToWelcome}
-                game={game}
-                isMobilePhone={isMobilePhone}
-                isSmallPhone={isSmallPhone}
-                isHardMode={game.isHardMode}
-                hardModeTimeLimit={GAME_CONFIG.HARD_MODE_TIME_LIMIT}
-                onTutorialClose={() => {
-                  setShowTutorial(false);
-                  game.resetStartTime();
-                  timer.reset();
-                }}
-              />
-            </div>
-          )}
+            {/* Playing screen - no animation, instant load */}
+            {game.gameState === GAME_STATES.PLAYING && (
+              <div key="playing">
+                <PlayingScreen
+                  puzzle={game.puzzle}
+                  answers={game.answers}
+                  correctAnswers={game.correctAnswers}
+                  checkedWrongAnswers={game.checkedWrongAnswers}
+                  mistakes={game.mistakes}
+                  solved={game.solved}
+                  time={timer.elapsed}
+                  onUpdateAnswer={game.updateAnswer}
+                  onCheckAnswers={handleCheckAnswers}
+                  onCheckSingleAnswer={game.checkSingleAnswer}
+                  theme={theme}
+                  toggleTheme={toggleTheme}
+                  onSelectPuzzle={handleSelectPuzzle}
+                  hintsUsed={game.hintsUsed}
+                  hintedAnswers={game.hintedAnswers}
+                  unlockedHints={game.unlockedHints}
+                  activeHintIndex={game.activeHintIndex}
+                  lockedLetters={game.lockedLetters}
+                  onUseHint={game.useHint}
+                  hasCheckedAnswers={game.hasCheckedAnswers}
+                  onReturnToWelcome={game.returnToWelcome}
+                  game={game}
+                  isMobilePhone={isMobilePhone}
+                  isSmallPhone={isSmallPhone}
+                  isHardMode={game.isHardMode}
+                  hardModeTimeLimit={GAME_CONFIG.HARD_MODE_TIME_LIMIT}
+                  onTutorialClose={() => {
+                    setShowTutorial(false);
+                    game.resetStartTime();
+                    timer.reset();
+                  }}
+                />
+              </div>
+            )}
 
-          {game.gameState === GAME_STATES.ADMIRE && (
-            <div key="admire" className="animate-screen-enter">
-              <AdmireScreen
-                puzzle={game.puzzle}
-                admireData={game.admireData}
-                onReplay={game.replayFromAdmire}
-                onSelectPuzzle={handleSelectPuzzle}
-                onReturnToWelcome={game.returnToWelcome}
-                theme={theme}
-              />
-            </div>
-          )}
+            {game.gameState === GAME_STATES.ADMIRE && (
+              <div key="admire" className="animate-screen-enter">
+                <AdmireScreen
+                  puzzle={game.puzzle}
+                  admireData={game.admireData}
+                  onReplay={game.replayFromAdmire}
+                  onSelectPuzzle={handleSelectPuzzle}
+                  onReturnToWelcome={game.returnToWelcome}
+                  theme={theme}
+                />
+              </div>
+            )}
 
-          {game.gameState === GAME_STATES.COMPLETE && (
-            <div key="complete" className="animate-screen-enter">
-              <CompleteScreen
-                won={game.won}
-                time={timer.elapsed}
-                mistakes={game.mistakes}
-                correctAnswers={game.solved}
-                puzzle={game.puzzle}
-                puzzleTheme={game.puzzle?.theme}
-                onPlayAgain={game.resetGame}
-                theme={theme}
-                toggleTheme={toggleTheme}
-                hintsUsed={game.hintsUsed}
-                hintedAnswers={game.hintedAnswers}
-                onSelectPuzzle={handleSelectPuzzle}
-                onReturnToWelcome={game.returnToWelcome}
-                isHardMode={game.isHardMode}
-                hardModeTimeUp={game.hardModeTimeUp}
-                difficultyRating={game.puzzle?.difficultyRating}
-              />
-            </div>
-          )}
+            {game.gameState === GAME_STATES.COMPLETE && (
+              <div key="complete" className="animate-screen-enter">
+                <CompleteScreen
+                  won={game.won}
+                  time={timer.elapsed}
+                  mistakes={game.mistakes}
+                  correctAnswers={game.solved}
+                  puzzle={game.puzzle}
+                  puzzleTheme={game.puzzle?.theme}
+                  onPlayAgain={game.resetGame}
+                  theme={theme}
+                  toggleTheme={toggleTheme}
+                  hintsUsed={game.hintsUsed}
+                  hintedAnswers={game.hintedAnswers}
+                  onSelectPuzzle={handleSelectPuzzle}
+                  onReturnToWelcome={game.returnToWelcome}
+                  isHardMode={game.isHardMode}
+                  hardModeTimeUp={game.hardModeTimeUp}
+                  difficultyRating={game.puzzle?.difficultyRating}
+                />
+              </div>
+            )}
+          </ErrorBoundary>
         </div>
       </div>
     </div>

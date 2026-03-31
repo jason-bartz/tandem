@@ -41,10 +41,7 @@ export default function AdminLogin() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-bg-primary p-4">
       <div className="relative">
-        <div
-          className="bg-bg-surface p-8 rounded-2xl border-[3px] border-border-main w-full max-w-md"
-          style={{ boxShadow: 'var(--shadow-card)' }}
-        >
+        <div className="bg-bg-surface p-8 rounded-2xl border-2 border-border-main w-full max-w-md">
           <div className="text-center mb-8">
             <div className="flex justify-center mb-4">
               <img src="/branding/admin-login-logo.png" alt="Tandem Admin" className="h-16" />
@@ -53,10 +50,7 @@ export default function AdminLogin() {
           </div>
 
           {error && (
-            <div
-              className="p-3 mb-6 bg-accent-red/20 border-[3px] border-accent-red rounded-lg text-center"
-              style={{ boxShadow: 'var(--shadow-small)' }}
-            >
+            <div className="p-3 mb-6 bg-accent-red/20 border-[3px] border-accent-red rounded-lg text-center">
               <p className="text-accent-red font-bold">{error}</p>
             </div>
           )}
@@ -72,8 +66,7 @@ export default function AdminLogin() {
                 required
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                className="w-full px-4 py-3 border-[3px] border-border-main rounded-lg bg-bg-card text-text-primary font-medium focus:outline-none focus:ring-2 focus:ring-accent-blue"
-                style={{ boxShadow: 'var(--shadow-small)' }}
+                className="w-full px-4 py-3 border-2 border-border-main rounded-lg bg-bg-card text-text-primary font-medium focus:outline-none focus:ring-2 focus:ring-accent-blue"
                 placeholder="Enter username"
               />
             </div>
@@ -88,8 +81,7 @@ export default function AdminLogin() {
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-4 py-3 border-[3px] border-border-main rounded-lg bg-bg-card text-text-primary font-medium focus:outline-none focus:ring-2 focus:ring-accent-blue"
-                style={{ boxShadow: 'var(--shadow-small)' }}
+                className="w-full px-4 py-3 border-2 border-border-main rounded-lg bg-bg-card text-text-primary font-medium focus:outline-none focus:ring-2 focus:ring-accent-blue"
                 placeholder="Enter password"
               />
             </div>
@@ -97,8 +89,7 @@ export default function AdminLogin() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full px-6 py-3 bg-accent-blue text-white border-[3px] border-border-main font-bold rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:translate-y-[-2px] transition-transform"
-              style={{ boxShadow: 'var(--shadow-button)' }}
+              className="w-full px-6 py-3 bg-accent-blue text-white border-2 border-border-main font-bold rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-transform"
             >
               {loading ? 'Signing in...' : 'Sign In'}
             </button>

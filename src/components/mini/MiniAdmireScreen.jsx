@@ -63,10 +63,10 @@ export default function MiniAdmireScreen({
         {/* Main game card */}
         <div className="flex-1 flex flex-col justify-center max-w-md w-full mx-auto pt-safe">
           <div
-            className={`rounded-[32px] border-[3px] overflow-hidden flex flex-col m-4 ${
+            className={`rounded-lg border-[3px] overflow-hidden flex flex-col m-4 ${
               highContrast
-                ? 'bg-hc-surface border-hc-border shadow-[6px_6px_0px_rgba(0,0,0,1)]'
-                : 'bg-ghost-white dark:bg-bg-card border-border-main shadow-[6px_6px_0px_rgba(0,0,0,1)]'
+                ? 'bg-hc-surface border-hc-border'
+                : 'bg-ghost-white dark:bg-bg-card border-border-main'
             }`}
           >
             {/* Header - back button, title/date, and hamburger menu */}
@@ -130,10 +130,10 @@ export default function MiniAdmireScreen({
               <div className="mb-4">
                 <div
                   className="
-                    rounded-[16px]
-                    border-[2px] border-black dark:border-gray-600
-                    shadow-[3px_3px_0px_rgba(0,0,0,1)]
-                    dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)]
+                    rounded-md
+                   
+                   
+                    dark:
                     bg-accent-yellow/20 dark:bg-accent-yellow/10
                     p-4
                     text-center
@@ -178,17 +178,17 @@ export default function MiniAdmireScreen({
                   }}
                   className="
                     w-full h-10
-                    rounded-[12px]
-                    border-[2px] border-black dark:border-gray-600
-                    shadow-[3px_3px_0px_rgba(0,0,0,1)]
-                    dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)]
+                    rounded-md
+                   
+                   
+                    dark:
                     bg-ghost-white dark:bg-gray-700
                     text-text-primary
                     font-bold text-sm
-                    hover:translate-x-[2px] hover:translate-y-[2px]
-                    hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]
-                    active:translate-x-[3px] active:translate-y-[3px]
-                    active:shadow-none
+                   
+                    hover:
+                   
+                   
                     transition-all
                   "
                 >
@@ -202,17 +202,17 @@ export default function MiniAdmireScreen({
                   }}
                   className="
                     w-full h-10
-                    rounded-[12px]
-                    border-[2px] border-black dark:border-gray-600
-                    shadow-[3px_3px_0px_rgba(0,0,0,1)]
-                    dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)]
+                    rounded-md
+                   
+                   
+                    dark:
                     bg-ghost-white dark:bg-gray-700
                     text-text-primary
                     font-bold text-sm
-                    hover:translate-x-[2px] hover:translate-y-[2px]
-                    hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]
-                    active:translate-x-[3px] active:translate-y-[3px]
-                    active:shadow-none
+                   
+                    hover:
+                   
+                   
                     transition-all
                   "
                 >

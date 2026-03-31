@@ -45,9 +45,9 @@ export default function ElementManager() {
       <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
         <button
           onClick={() => setActiveTab('library')}
-          className={`px-2.5 sm:px-3.5 py-1.5 sm:py-2 text-xs sm:text-sm font-bold rounded-md sm:rounded-lg border-[2px] border-black dark:border-white transition-all flex items-center gap-1 sm:gap-1.5 ${
+          className={`px-2.5 sm:px-3.5 py-1.5 sm:py-2 text-xs sm:text-sm font-bold rounded-md sm:rounded-lg transition-all flex items-center gap-1 sm:gap-1.5 ${
             activeTab === 'library'
-              ? 'bg-blue-500 text-white shadow-[2px_2px_0px_rgba(0,0,0,1)]'
+              ? 'bg-blue-500 text-white'
               : 'bg-bg-card text-text-secondary hover:bg-blue-100 dark:hover:bg-blue-900/20'
           }`}
         >
@@ -56,9 +56,9 @@ export default function ElementManager() {
         </button>
         <button
           onClick={() => setActiveTab('create')}
-          className={`px-2.5 sm:px-3.5 py-1.5 sm:py-2 text-xs sm:text-sm font-bold rounded-md sm:rounded-lg border-[2px] border-black dark:border-white transition-all flex items-center gap-1 sm:gap-1.5 ${
+          className={`px-2.5 sm:px-3.5 py-1.5 sm:py-2 text-xs sm:text-sm font-bold rounded-md sm:rounded-lg transition-all flex items-center gap-1 sm:gap-1.5 ${
             activeTab === 'create'
-              ? 'bg-green-500 text-white shadow-[2px_2px_0px_rgba(0,0,0,1)]'
+              ? 'bg-green-500 text-white'
               : 'bg-bg-card text-text-secondary hover:bg-green-100 dark:hover:bg-green-900/20'
           }`}
         >
@@ -67,9 +67,9 @@ export default function ElementManager() {
         </button>
         <button
           onClick={() => setActiveTab('discoveries')}
-          className={`px-2.5 sm:px-3.5 py-1.5 sm:py-2 text-xs sm:text-sm font-bold rounded-md sm:rounded-lg border-[2px] border-black dark:border-white transition-all flex items-center gap-1 sm:gap-1.5 ${
+          className={`px-2.5 sm:px-3.5 py-1.5 sm:py-2 text-xs sm:text-sm font-bold rounded-md sm:rounded-lg transition-all flex items-center gap-1 sm:gap-1.5 ${
             activeTab === 'discoveries'
-              ? 'bg-amber-500 text-white shadow-[2px_2px_0px_rgba(0,0,0,1)]'
+              ? 'bg-amber-500 text-white'
               : 'bg-bg-card text-text-secondary hover:bg-amber-100 dark:hover:bg-amber-900/20'
           }`}
         >
@@ -96,7 +96,7 @@ function CreateSection() {
   return (
     <div className="space-y-4">
       {/* Mode Selector */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg sm:rounded-xl border-[2px] sm:border-[3px] border-black dark:border-white p-3 sm:p-4">
+      <div className="bg-white dark:bg-gray-800 rounded-lg sm:rounded-xl border-[2px] sm:p-3 sm:p-4">
         <p className="text-xs sm:text-sm text-text-secondary mb-2 sm:mb-3 font-medium">
           Choose how to add elements:
         </p>
@@ -105,7 +105,7 @@ function CreateSection() {
             onClick={() => setCreateMode('ai')}
             className={`px-2.5 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-bold rounded-md sm:rounded-lg border-[2px] transition-all flex items-center gap-1.5 sm:gap-2 ${
               createMode === 'ai'
-                ? 'bg-green-500 text-white border-black shadow-[2px_2px_0px_rgba(0,0,0,1)]'
+                ? 'bg-green-500 text-white'
                 : 'bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400 border-green-300 dark:border-green-700 hover:bg-green-100 dark:hover:bg-green-900/30'
             }`}
           >
@@ -116,7 +116,7 @@ function CreateSection() {
             onClick={() => setCreateMode('pathway')}
             className={`px-2.5 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-bold rounded-md sm:rounded-lg border-[2px] transition-all flex items-center gap-1.5 sm:gap-2 ${
               createMode === 'pathway'
-                ? 'bg-purple-500 text-white border-black shadow-[2px_2px_0px_rgba(0,0,0,1)]'
+                ? 'bg-purple-500 text-white'
                 : 'bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-400 border-purple-300 dark:border-purple-700 hover:bg-purple-100 dark:hover:bg-purple-900/30'
             }`}
           >
@@ -369,7 +369,7 @@ function MultiPathGenerator() {
             onChange={(e) => setTargetInput(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && !isGenerating && generatePaths()}
             placeholder="Enter target element (e.g., Robot, Volcano, Pizza)"
-            className="w-full px-3 py-2 pl-9 rounded-md border-[2px] border-black dark:border-white bg-ghost-white dark:bg-gray-700 text-text-primary text-sm"
+            className="w-full px-3 py-2 pl-9 rounded-md bg-ghost-white dark:bg-gray-700 text-text-primary text-sm"
             disabled={isGenerating}
           />
           <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
@@ -377,8 +377,7 @@ function MultiPathGenerator() {
         <button
           onClick={generatePaths}
           disabled={isGenerating || !targetInput.trim()}
-          className="px-3 py-2 text-sm bg-green-500 text-white font-bold rounded-md border-[2px] border-black hover:bg-green-600 transition-colors disabled:opacity-50 flex items-center gap-1.5"
-          style={{ boxShadow: '2px 2px 0px rgba(0, 0, 0, 1)' }}
+          className="px-3 py-2 text-sm bg-green-500 text-white font-bold rounded-md hover:bg-green-600 transition-colors disabled:opacity-50 flex items-center gap-1.5"
         >
           {isGenerating ? (
             <>
@@ -512,7 +511,7 @@ function MultiPathGenerator() {
               <button
                 onClick={regenerate}
                 disabled={isGenerating}
-                className="px-4 py-2 bg-orange-500 text-white font-bold rounded-lg border-[2px] border-black flex items-center gap-2 hover:bg-orange-600 transition-colors disabled:opacity-50"
+                className="px-4 py-2 bg-orange-500 text-white font-bold rounded-lg flex items-center gap-2 hover:bg-orange-600 transition-colors disabled:opacity-50"
               >
                 <RotateCcw className="w-4 h-4" />
                 Regenerate
@@ -538,8 +537,7 @@ function MultiPathGenerator() {
             <button
               onClick={saveSelectedPaths}
               disabled={isSaving || selectedPaths.size === 0}
-              className="px-8 py-4 bg-green-500 text-white text-lg font-bold rounded-xl border-[3px] border-black hover:bg-green-600 transition-colors disabled:opacity-50 flex items-center gap-3"
-              style={{ boxShadow: '4px 4px 0px rgba(0, 0, 0, 1)' }}
+              className="px-8 py-4 bg-green-500 text-white text-lg font-bold rounded-xl hover:bg-green-600 transition-colors disabled:opacity-50 flex items-center gap-3"
             >
               {isSaving ? (
                 <>
@@ -660,7 +658,7 @@ function PathCardWithCheckbox({ path, isSelected, onToggle, onDeleteConflict }) 
       onClick={onToggle}
     >
       {/* Header */}
-      <div className="p-4 border-b-[2px] border-black/10 dark:border-white/10">
+      <div className="p-4 border-b-[2px] dark:border-white/10">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <input
@@ -963,8 +961,7 @@ function PathwayBuilder() {
           <button
             onClick={savePathway}
             disabled={isSaving || !isValid}
-            className="px-3 sm:px-4 py-1.5 sm:py-2 text-sm bg-purple-500 text-white font-bold rounded-md border-[2px] border-black hover:bg-purple-600 transition-colors disabled:opacity-50 flex items-center gap-1.5"
-            style={{ boxShadow: '2px 2px 0px rgba(0, 0, 0, 1)' }}
+            className="px-3 sm:px-4 py-1.5 sm:py-2 text-sm bg-purple-500 text-white font-bold rounded-md hover:bg-purple-600 transition-colors disabled:opacity-50 flex items-center gap-1.5"
           >
             {isSaving ? (
               <>
@@ -1072,7 +1069,7 @@ function PathwayRow({ row, index, onUpdate, onRemove, canRemove }) {
   }, []);
 
   return (
-    <div className="p-2 sm:p-3 bg-white dark:bg-gray-800 rounded-lg border-[2px] border-black/10 dark:border-white/10">
+    <div className="p-2 sm:p-3 bg-white dark:bg-gray-800 rounded-lg/10 dark:border-white/10">
       {/* Desktop: single row | Mobile: stacked rows */}
       <div className="hidden sm:flex items-center gap-2">
         {/* Step number */}
@@ -1093,7 +1090,7 @@ function PathwayRow({ row, index, onUpdate, onRemove, canRemove }) {
             />
           </div>
           {showSuggestions.a && suggestions.a.length > 0 && (
-            <div className="absolute z-20 w-full mt-1 bg-white dark:bg-gray-800 border-[2px] border-black dark:border-white rounded-lg shadow-lg max-h-40 overflow-y-auto">
+            <div className="absolute z-20 w-full mt-1 bg-white dark:bg-gray-800 rounded-lg max-h-40 overflow-y-auto">
               {suggestions.a.map((s, i) => (
                 <button
                   key={i}
@@ -1125,7 +1122,7 @@ function PathwayRow({ row, index, onUpdate, onRemove, canRemove }) {
             />
           </div>
           {showSuggestions.b && suggestions.b.length > 0 && (
-            <div className="absolute z-20 w-full mt-1 bg-white dark:bg-gray-800 border-[2px] border-black dark:border-white rounded-lg shadow-lg max-h-40 overflow-y-auto">
+            <div className="absolute z-20 w-full mt-1 bg-white dark:bg-gray-800 rounded-lg max-h-40 overflow-y-auto">
               {suggestions.b.map((s, i) => (
                 <button
                   key={i}
@@ -1157,7 +1154,7 @@ function PathwayRow({ row, index, onUpdate, onRemove, canRemove }) {
             />
           </div>
           {showSuggestions.result && suggestions.result.length > 0 && (
-            <div className="absolute z-20 w-full mt-1 bg-white dark:bg-gray-800 border-[2px] border-black dark:border-white rounded-lg shadow-lg max-h-40 overflow-y-auto">
+            <div className="absolute z-20 w-full mt-1 bg-white dark:bg-gray-800 rounded-lg max-h-40 overflow-y-auto">
               {suggestions.result.map((s, i) => (
                 <button
                   key={i}
@@ -1215,7 +1212,7 @@ function PathwayRow({ row, index, onUpdate, onRemove, canRemove }) {
             />
           </div>
           {showSuggestions.a && suggestions.a.length > 0 && (
-            <div className="absolute z-20 left-8 right-0 mt-1 bg-white dark:bg-gray-800 border-[2px] border-black dark:border-white rounded-lg shadow-lg max-h-40 overflow-y-auto">
+            <div className="absolute z-20 left-8 right-0 mt-1 bg-white dark:bg-gray-800 rounded-lg max-h-40 overflow-y-auto">
               {suggestions.a.map((s, i) => (
                 <button
                   key={i}
@@ -1248,7 +1245,7 @@ function PathwayRow({ row, index, onUpdate, onRemove, canRemove }) {
             />
           </div>
           {showSuggestions.b && suggestions.b.length > 0 && (
-            <div className="absolute z-20 left-8 right-0 mt-1 bg-white dark:bg-gray-800 border-[2px] border-black dark:border-white rounded-lg shadow-lg max-h-40 overflow-y-auto">
+            <div className="absolute z-20 left-8 right-0 mt-1 bg-white dark:bg-gray-800 rounded-lg max-h-40 overflow-y-auto">
               {suggestions.b.map((s, i) => (
                 <button
                   key={i}
@@ -1281,7 +1278,7 @@ function PathwayRow({ row, index, onUpdate, onRemove, canRemove }) {
             />
           </div>
           {showSuggestions.result && suggestions.result.length > 0 && (
-            <div className="absolute z-20 left-8 right-0 mt-1 bg-white dark:bg-gray-800 border-[2px] border-black dark:border-white rounded-lg shadow-lg max-h-40 overflow-y-auto">
+            <div className="absolute z-20 left-8 right-0 mt-1 bg-white dark:bg-gray-800 rounded-lg max-h-40 overflow-y-auto">
               {suggestions.result.map((s, i) => (
                 <button
                   key={i}
@@ -1415,7 +1412,7 @@ function EmojiEditor({ pathway, saveResults, onDone }) {
           {uniqueElements.map((name) => (
             <div
               key={name}
-              className="flex items-center gap-2 p-2 bg-white dark:bg-gray-800 rounded-lg border-[2px] border-black/10 dark:border-white/10"
+              className="flex items-center gap-2 p-2 bg-white dark:bg-gray-800 rounded-lg/10 dark:border-white/10"
             >
               <input
                 type="text"
@@ -1442,8 +1439,7 @@ function EmojiEditor({ pathway, saveResults, onDone }) {
           <button
             onClick={saveEmojis}
             disabled={isSaving}
-            className="px-6 py-3 bg-purple-500 text-white font-bold rounded-lg border-[2px] border-black hover:bg-purple-600 transition-colors disabled:opacity-50 flex items-center gap-2"
-            style={{ boxShadow: '3px 3px 0px rgba(0, 0, 0, 1)' }}
+            className="px-6 py-3 bg-purple-500 text-white font-bold rounded-lg hover:bg-purple-600 transition-colors disabled:opacity-50 flex items-center gap-2"
           >
             {isSaving ? (
               <>
@@ -1598,7 +1594,7 @@ function ElementBrowser({ onSelectElement, externalSearch = '', onSearchChange }
   );
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-xl border-[3px] border-black dark:border-white p-6">
+    <div className="bg-white dark:bg-gray-800 rounded-xl p-6">
       {/* Header with Search */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
         <h3 className="text-lg font-bold text-text-primary flex items-center gap-2">
@@ -1611,7 +1607,7 @@ function ElementBrowser({ onSelectElement, externalSearch = '', onSearchChange }
             value={localSearch}
             onChange={(e) => handleSearchChange(e.target.value)}
             placeholder="Search elements..."
-            className="w-full px-4 py-2 pl-10 rounded-lg border-[2px] border-black dark:border-white bg-white dark:bg-gray-700 text-text-primary"
+            className="w-full px-4 py-2 pl-10 rounded-lg bg-white dark:bg-gray-700 text-text-primary"
           />
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
           {localSearch && (
@@ -1631,7 +1627,7 @@ function ElementBrowser({ onSelectElement, externalSearch = '', onSearchChange }
           onClick={() => handleLetterChange('all')}
           className={`px-2 py-0.5 text-xs font-semibold rounded transition-all ${
             selectedLetter === 'all'
-              ? 'bg-blue-500 text-white shadow-sm'
+              ? 'bg-blue-500 text-white'
               : 'bg-gray-100 dark:bg-gray-700 text-text-primary hover:bg-gray-200 dark:hover:bg-gray-600'
           }`}
         >
@@ -1645,7 +1641,7 @@ function ElementBrowser({ onSelectElement, externalSearch = '', onSearchChange }
               onClick={() => handleLetterChange(letter)}
               className={`w-6 h-6 text-xs font-semibold rounded transition-all ${
                 selectedLetter === letter
-                  ? 'bg-blue-500 text-white shadow-sm'
+                  ? 'bg-blue-500 text-white'
                   : 'bg-gray-100 dark:bg-gray-700 text-text-primary hover:bg-gray-200 dark:hover:bg-gray-600'
               }`}
               title={count > 0 ? `${count} elements` : 'No elements'}
@@ -1677,7 +1673,7 @@ function ElementBrowser({ onSelectElement, externalSearch = '', onSearchChange }
             <button
               key={element.name}
               onClick={() => onSelectElement(element)}
-              className="flex flex-col items-center p-2 rounded-lg border-[2px] border-black dark:border-white bg-gray-50 dark:bg-gray-700 hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:border-blue-500 transition-all group"
+              className="flex flex-col items-center p-2 rounded-lg bg-gray-50 dark:bg-gray-700 hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:border-blue-500 transition-all group"
               title={element.name}
             >
               <span className="text-2xl mb-1">{element.emoji}</span>
@@ -1720,7 +1716,7 @@ function ElementBrowser({ onSelectElement, externalSearch = '', onSearchChange }
             <button
               onClick={() => handlePageChange(pagination.page - 1)}
               disabled={pagination.page <= 1}
-              className="px-3 py-1.5 text-sm font-bold rounded-lg border-[2px] border-black dark:border-white bg-white dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1"
+              className="px-3 py-1.5 text-sm font-bold rounded-lg bg-white dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1"
             >
               <ChevronLeft className="w-4 h-4" />
               Prev
@@ -1728,7 +1724,7 @@ function ElementBrowser({ onSelectElement, externalSearch = '', onSearchChange }
             <button
               onClick={() => handlePageChange(pagination.page + 1)}
               disabled={pagination.page >= pagination.totalPages}
-              className="px-3 py-1.5 text-sm font-bold rounded-lg border-[2px] border-black dark:border-white bg-white dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1"
+              className="px-3 py-1.5 text-sm font-bold rounded-lg bg-white dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1"
             >
               Next
               <ChevronRight className="w-4 h-4" />
@@ -1791,13 +1787,13 @@ function ElementSearchInput({ value, onChange, onSelect, placeholder = 'Search e
         onFocus={() => setShowDropdown(true)}
         onBlur={() => setTimeout(() => setShowDropdown(false), 200)}
         placeholder={placeholder}
-        className="w-full px-3 py-2 rounded-lg border-[2px] border-black dark:border-white bg-white dark:bg-gray-700 text-sm"
+        className="w-full px-3 py-2 rounded-lg bg-white dark:bg-gray-700 text-sm"
       />
       {isSearching && (
         <Loader2 className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 animate-spin text-gray-400" />
       )}
       {showDropdown && searchResults.length > 0 && (
-        <div className="absolute z-10 top-full left-0 right-0 mt-1 bg-white dark:bg-gray-800 border-[2px] border-black dark:border-white rounded-lg shadow-lg max-h-48 overflow-y-auto">
+        <div className="absolute z-10 top-full left-0 right-0 mt-1 bg-white dark:bg-gray-800 rounded-lg max-h-48 overflow-y-auto">
           {searchResults.map((el) => (
             <button
               key={el.name}
@@ -1898,7 +1894,7 @@ function AddCombinationForm({ elementName, elementEmoji, mode, onSave, onCancel 
               type="text"
               value={emoji}
               onChange={(e) => setEmoji(e.target.value)}
-              className="w-12 px-2 py-2 rounded-lg border-[2px] border-black dark:border-white text-center text-sm"
+              className="w-12 px-2 py-2 rounded-lg text-center text-sm"
               placeholder="✨"
             />
             <span className="font-bold text-sm bg-blue-100 dark:bg-blue-900/30 px-2 py-1 rounded">
@@ -1924,7 +1920,7 @@ function AddCombinationForm({ elementName, elementEmoji, mode, onSave, onCancel 
               type="text"
               value={emoji}
               onChange={(e) => setEmoji(e.target.value)}
-              className="w-12 px-2 py-2 rounded-lg border-[2px] border-black dark:border-white text-center text-sm"
+              className="w-12 px-2 py-2 rounded-lg text-center text-sm"
               placeholder="✨"
             />
             <div className="flex-1 min-w-[100px]">
@@ -2236,11 +2232,11 @@ function ElementDetailModal({ element, onClose, onElementUpdated, onElementDelet
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
       <div
-        className="bg-white dark:bg-gray-800 rounded-2xl border-4 border-black dark:border-white shadow-[8px_8px_0px_rgba(0,0,0,1)] w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col"
+        className="bg-white dark:bg-gray-800 rounded-2xl border-4 w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b-[3px] border-black dark:border-white">
+        <div className="flex items-center justify-between p-4 border-b border-border-light">
           <div className="flex items-center gap-3">
             {isEditing ? (
               <>
@@ -2248,14 +2244,14 @@ function ElementDetailModal({ element, onClose, onElementUpdated, onElementDelet
                   type="text"
                   value={editEmoji}
                   onChange={(e) => setEditEmoji(e.target.value.slice(0, 4))}
-                  className="w-16 px-2 py-1 text-3xl text-center rounded border-[2px] border-black dark:border-white bg-white dark:bg-gray-700"
+                  className="w-16 px-2 py-1 text-3xl text-center rounded bg-white dark:bg-gray-700"
                   maxLength={4}
                 />
                 <input
                   type="text"
                   value={editName}
                   onChange={(e) => setEditName(e.target.value)}
-                  className="px-3 py-1 text-xl font-bold rounded border-[2px] border-black dark:border-white bg-white dark:bg-gray-700"
+                  className="px-3 py-1 text-xl font-bold rounded bg-white dark:bg-gray-700"
                   placeholder="Element name"
                 />
               </>
@@ -2697,7 +2693,7 @@ function FirstDiscoveriesSection() {
   const weekGroups = groupDiscoveriesByWeek(filteredDiscoveries);
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-xl border-[3px] border-black dark:border-white p-6">
+    <div className="bg-white dark:bg-gray-800 rounded-xl p-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
         <h3 className="text-lg font-bold text-text-primary flex items-center gap-2">
@@ -2715,7 +2711,7 @@ function FirstDiscoveriesSection() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search elements or users..."
-              className="pl-9 pr-3 py-1.5 text-sm rounded-lg border-[2px] border-black dark:border-white bg-white dark:bg-gray-700 text-text-primary placeholder:text-gray-400 w-48 sm:w-56 focus:outline-none focus:ring-2 focus:ring-amber-500"
+              className="pl-9 pr-3 py-1.5 text-sm rounded-lg bg-white dark:bg-gray-700 text-text-primary placeholder:text-gray-400 w-48 sm:w-56 focus:outline-none focus:ring-2 focus:ring-amber-500"
             />
             {searchQuery && (
               <button
@@ -2729,7 +2725,7 @@ function FirstDiscoveriesSection() {
           <button
             onClick={() => fetchDiscoveries(pagination.page)}
             disabled={isLoading}
-            className="p-1.5 sm:px-3 sm:py-1.5 text-sm font-medium rounded-lg border-[2px] border-black dark:border-white bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors flex items-center gap-1.5"
+            className="p-1.5 sm:px-3 sm:py-1.5 text-sm font-medium rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors flex items-center gap-1.5"
           >
             <RotateCcw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
             <span className="hidden sm:inline">Refresh</span>
@@ -2797,7 +2793,7 @@ function FirstDiscoveriesSection() {
                   <button
                     key={discovery.id}
                     onClick={() => setSelectedDiscovery(discovery)}
-                    className="flex flex-col items-center p-2 rounded-lg border-[2px] border-black dark:border-white bg-gray-50 dark:bg-gray-700 hover:bg-amber-50 dark:hover:bg-amber-900/30 hover:border-amber-500 transition-all group"
+                    className="flex flex-col items-center p-2 rounded-lg bg-gray-50 dark:bg-gray-700 hover:bg-amber-50 dark:hover:bg-amber-900/30 hover:border-amber-500 transition-all group"
                     title={`${discovery.resultElement} - discovered by ${discovery.username || 'Anonymous'}`}
                   >
                     <span className="text-2xl mb-1">{discovery.resultEmoji}</span>
@@ -2820,7 +2816,7 @@ function FirstDiscoveriesSection() {
           <button
             onClick={() => fetchDiscoveries(pagination.page - 1)}
             disabled={pagination.page <= 1}
-            className="p-2 rounded-lg border-[2px] border-black dark:border-white disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100 dark:hover:bg-gray-700"
+            className="p-2 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100 dark:hover:bg-gray-700"
           >
             <ChevronLeft className="w-5 h-5" />
           </button>
@@ -2830,7 +2826,7 @@ function FirstDiscoveriesSection() {
           <button
             onClick={() => fetchDiscoveries(pagination.page + 1)}
             disabled={pagination.page >= pagination.totalPages}
-            className="p-2 rounded-lg border-[2px] border-black dark:border-white disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100 dark:hover:bg-gray-700"
+            className="p-2 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100 dark:hover:bg-gray-700"
           >
             <ChevronRight className="w-5 h-5" />
           </button>
@@ -2933,7 +2929,7 @@ function FirstDiscoveryDetailModal({ discovery, onClose }) {
       onClick={onClose}
     >
       <div
-        className="bg-white dark:bg-gray-800 rounded-xl border-[3px] border-black dark:border-white p-6 max-w-md w-full shadow-[6px_6px_0px_rgba(0,0,0,1)] relative my-auto"
+        className="bg-white dark:bg-gray-800 rounded-xl p-6 max-w-md w-full relative my-auto"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Close button */}
@@ -2951,7 +2947,7 @@ function FirstDiscoveryDetailModal({ discovery, onClose }) {
             {/* Shadow element - positioned behind the card */}
             <div className="absolute top-[6px] left-[6px] right-[-6px] bottom-[-6px] bg-black rounded-xl" />
             {/* Main card */}
-            <div className="relative bg-amber-50 rounded-xl border-[3px] border-black p-6">
+            <div className="relative bg-amber-50 rounded-xl p-6">
               {/* Element display */}
               <div className="text-center mb-6">
                 <span className="text-6xl mb-3 block">{discovery.resultEmoji}</span>
@@ -2977,7 +2973,7 @@ function FirstDiscoveryDetailModal({ discovery, onClose }) {
                 {/* Shadow element */}
                 <div className="absolute top-[4px] left-[4px] right-[-4px] bottom-[-4px] bg-black rounded-xl" />
                 {/* Main combining box */}
-                <div className="relative bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl border-[2px] border-black p-4">
+                <div className="relative bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl p-4">
                   <p className="text-xs text-gray-500 mb-3 tracking-wide font-bold text-center">
                     Created By Combining
                   </p>
@@ -3030,7 +3026,7 @@ function FirstDiscoveryDetailModal({ discovery, onClose }) {
           <button
             onClick={handleSaveAsPng}
             disabled={isSaving}
-            className="flex-1 py-3 bg-blue-500 text-white font-bold rounded-xl border-[3px] border-black hover:bg-blue-600 transition-colors shadow-[3px_3px_0px_rgba(0,0,0,1)] flex items-center justify-center gap-2 disabled:opacity-50"
+            className="flex-1 py-3 bg-blue-500 text-white font-bold rounded-xl hover:bg-blue-600 transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
           >
             {isSaving ? (
               <Loader2 className="w-5 h-5 animate-spin" />
@@ -3041,7 +3037,7 @@ function FirstDiscoveryDetailModal({ discovery, onClose }) {
           </button>
           <button
             onClick={onClose}
-            className="flex-1 py-3 bg-amber-500 text-white font-bold rounded-xl border-[3px] border-black hover:bg-amber-600 transition-colors shadow-[3px_3px_0px_rgba(0,0,0,1)]"
+            className="flex-1 py-3 bg-amber-500 text-white font-bold rounded-xl hover:bg-amber-600 transition-colors"
           >
             Close
           </button>

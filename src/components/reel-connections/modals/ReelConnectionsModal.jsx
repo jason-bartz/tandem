@@ -183,7 +183,7 @@ export default function ReelConnectionsModal({
           onTouchEnd={handleTouchEnd}
         >
           {/* Modal Content Card */}
-          <div className="bg-gradient-to-b from-[#1a1a2e] to-[#0f0f1e] rounded-2xl border-[3px] border-[#ffce00] shadow-[6px_6px_0px_rgba(0,0,0,0.8)] overflow-hidden">
+          <div className="bg-gradient-to-b from-[#1a1a2e] to-[#0f0f1e] rounded-2xl border-[3px] border-[#ffce00] overflow-hidden">
             {/* Header */}
             <div className="flex items-center justify-between px-5 py-4 border-b-2 border-white/10">
               {/* Drag Handle */}

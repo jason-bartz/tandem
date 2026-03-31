@@ -113,12 +113,12 @@ export default function StatsModal({ isOpen, onClose }) {
           {!showLeaderboard ? (
             <button
               onClick={() => setShowLeaderboard(true)}
-              className="w-full py-4 bg-[#39b6ff] border-[3px] border-black rounded-xl shadow-[3px_3px_0px_rgba(0,0,0,0.8)] hover:shadow-[2px_2px_0px_rgba(0,0,0,0.8)] active:shadow-[0px_0px_0px_rgba(0,0,0,0.8)] transform hover:-translate-y-0.5 active:translate-y-0 transition-all text-[#2c2c2c] font-black text-lg capitalize tracking-wide"
+              className="w-full py-4 bg-[#39b6ff] rounded-xl hover: active: transform hover:-translate-y-0.5 active:translate-y-0 transition-all text-[#2c2c2c] font-black text-lg capitalize tracking-wide"
             >
               View Leaderboard
             </button>
           ) : (
-            <div className="bg-ghost-white/5 rounded-xl border-[2px] border-black shadow-[3px_3px_0px_rgba(0,0,0,0.8)] overflow-hidden">
+            <div className="bg-ghost-white/5 rounded-xl overflow-hidden">
               {/* Tab Navigation */}
               <div className="flex border-b-2 border-white/10">
                 <button
@@ -206,7 +206,7 @@ export default function StatsModal({ isOpen, onClose }) {
                   <div className="mt-4 pt-4 border-t-2 border-white/10">
                     <button
                       onClick={() => setShowAuthModal(true)}
-                      className="w-full py-3 bg-[#ffce00] border-[2px] border-black rounded-xl shadow-[2px_2px_0px_rgba(0,0,0,0.8)] hover:shadow-[1px_1px_0px_rgba(0,0,0,0.8)] transition-all text-[#2c2c2c] font-bold text-sm"
+                      className="w-full py-3 bg-[#ffce00] rounded-xl hover: transition-all text-[#2c2c2c] font-bold text-sm"
                     >
                       Sign In to Join Leaderboard
                     </button>
@@ -226,7 +226,7 @@ export default function StatsModal({ isOpen, onClose }) {
 
           {/* Recent Games */}
           {isLoaded && stats.gameHistory.length > 0 && (
-            <div className="bg-ghost-white/5 rounded-xl p-4 border-[2px] border-black shadow-[3px_3px_0px_rgba(0,0,0,0.8)]">
+            <div className="bg-ghost-white/5 rounded-xl p-4">
               <h3 className="text-sm font-bold text-white/70 mb-3">Recent Games</h3>
               <div className="space-y-2">
                 {stats.gameHistory.slice(0, 5).map((game, index) => (
@@ -305,7 +305,7 @@ export default function StatsModal({ isOpen, onClose }) {
  */
 function StatCard({ icon, value, label, color }) {
   return (
-    <div className="relative bg-ghost-white/5 rounded-xl p-4 border-[2px] border-black shadow-[3px_3px_0px_rgba(0,0,0,0.8)]">
+    <div className="relative bg-ghost-white/5 rounded-xl p-4">
       <div
         className={`absolute top-3 right-3 w-8 h-8 ${color} rounded-lg flex items-center justify-center text-[#0f0f1e]`}
       >

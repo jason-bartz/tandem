@@ -398,9 +398,9 @@ export function ElementBank({
                     'min-w-[140px]',
                     'py-1',
                     'bg-white dark:bg-gray-800',
-                    'border-[2px] border-black dark:border-gray-600',
+                    'dark:border-gray-600',
                     'rounded-xl',
-                    'shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(75,85,99,1)]',
+                    'dark:',
                     highContrast && 'border-[3px] border-hc-border'
                   )}
                   initial={{ opacity: 0, scale: 0.95, y: -4 }}
@@ -452,9 +452,9 @@ export function ElementBank({
             className={cn(
               'w-full px-4 py-2 pl-10',
               'bg-white dark:bg-gray-800',
-              'border-[2px] border-black dark:border-gray-600',
+              'dark:border-gray-600',
               'rounded-xl text-sm',
-              'shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_rgba(75,85,99,1)]',
+              'dark:',
               'focus:outline-none focus:ring-2 focus:ring-soup-primary',
               'placeholder:text-gray-400',
               highContrast && 'border-[3px] border-hc-border'
@@ -488,11 +488,11 @@ export function ElementBank({
               'flex-shrink-0',
               'h-10',
               'flex items-center justify-center gap-2',
-              'border-[2px] border-black dark:border-gray-600',
+              'dark:border-gray-600',
               'rounded-xl',
-              'shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_rgba(75,85,99,1)]',
-              'hover:translate-y-[-1px] hover:shadow-[3px_3px_0px_rgba(0,0,0,1)]',
-              'active:translate-y-0 active:shadow-none',
+              'dark:',
+              ' hover:',
+              'active:translate-y-0',
               // Background colors based on state
               !touchOverFavorites &&
                 !isDraggingToFavorites &&

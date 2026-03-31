@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
 import { STORAGE_KEYS, THEME_CONFIG } from '@/lib/constants';
 import cloudKitService from '@/services/cloudkit.service';
 
@@ -167,16 +167,29 @@ export function ThemeProvider({ children }) {
       });
   }, [reduceMotion, highContrast, theme, applyThemeToDOM]);
 
-  const value = {
-    theme,
-    highContrast,
-    reduceMotion,
-    toggleTheme,
-    toggleHighContrast,
-    toggleReduceMotion,
-    isDark: theme === THEME_CONFIG.DARK,
-    mounted,
-  };
+  const isDark = theme === THEME_CONFIG.DARK;
+  const value = useMemo(
+    () => ({
+      theme,
+      highContrast,
+      reduceMotion,
+      toggleTheme,
+      toggleHighContrast,
+      toggleReduceMotion,
+      isDark,
+      mounted,
+    }),
+    [
+      theme,
+      highContrast,
+      reduceMotion,
+      toggleTheme,
+      toggleHighContrast,
+      toggleReduceMotion,
+      isDark,
+      mounted,
+    ]
+  );
 
   return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;
 }

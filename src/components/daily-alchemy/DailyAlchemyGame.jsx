@@ -59,12 +59,12 @@ function ErrorDisplay({ error, onGoBack }) {
         className={cn(
           'flex items-center gap-2 px-6 py-3',
           'bg-soup-primary text-white',
-          'border-[3px] border-black',
+          '',
           'rounded-xl font-bold',
-          'shadow-[3px_3px_0px_rgba(0,0,0,1)]',
+          '',
           'hover:bg-soup-hover',
-          'hover:translate-y-[-1px]',
-          'active:translate-y-0 active:shadow-none',
+          '',
+          'active:translate-y-0',
           'transition-all duration-150',
           highContrast && 'border-[4px]'
         )}

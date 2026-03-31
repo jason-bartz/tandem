@@ -260,10 +260,10 @@ function ResultAnimation({ result, onComplete, onSelectElement, isAnonymous, onS
         className={cn(
           'relative flex flex-col items-center gap-2 px-8 pt-6 pb-4',
           'bg-white dark:bg-gray-800',
-          'border-[4px] border-black dark:border-gray-600',
+          'border-[4px]',
           result.isFirstDiscovery && 'bg-yellow-50 dark:bg-gray-800',
           'rounded-2xl',
-          'shadow-[6px_6px_0px_rgba(0,0,0,1)]',
+          '',
           'cursor-grab active:cursor-grabbing',
           'select-none'
         )}
@@ -346,17 +346,16 @@ function ResultAnimation({ result, onComplete, onSelectElement, isAnonymous, onS
             className={cn(
               'mt-2 flex items-center justify-center gap-2 px-5 py-2',
               'bg-yellow-500 text-white',
-              'border-[2px] border-black',
+              '',
               'rounded-xl font-bold text-sm',
               'transition-colors duration-150',
               'disabled:opacity-70',
               highContrast && 'border-[3px]'
             )}
-            initial={{ opacity: 0, y: 10, boxShadow: '2px 2px 0px rgba(0,0,0,1)' }}
-            animate={{ opacity: 1, y: 0, boxShadow: '2px 2px 0px rgba(0,0,0,1)' }}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
             whileHover={{
               y: -1,
-              boxShadow: '3px 3px 0px rgba(0,0,0,1)',
               backgroundColor: '#ca8a04', // yellow-600
             }}
             whileTap={{ scale: 0.98 }}
@@ -454,7 +453,7 @@ function ResultAnimation({ result, onComplete, onSelectElement, isAnonymous, onS
             {/* Outer card with shadow */}
             <div className="relative">
               <div className="absolute top-[6px] left-[6px] right-[-6px] bottom-[-6px] bg-black rounded-xl" />
-              <div className="relative bg-amber-50 rounded-xl border-[3px] border-black p-6 w-[340px]">
+              <div className="relative bg-amber-50 rounded-xl p-6 w-[340px]">
                 {/* Element display */}
                 <div className="text-center mb-6">
                   <span className="text-6xl mb-3 block">{result.emoji}</span>
@@ -468,7 +467,7 @@ function ResultAnimation({ result, onComplete, onSelectElement, isAnonymous, onS
                 {/* Combination box with shadow */}
                 <div className="relative mb-6">
                   <div className="absolute top-[4px] left-[4px] right-[-4px] bottom-[-4px] bg-black rounded-xl" />
-                  <div className="relative bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl border-[2px] border-black p-4">
+                  <div className="relative bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl p-4">
                     <p className="text-xs text-gray-500 mb-3 tracking-wide font-bold text-center">
                       Created By Combining
                     </p>

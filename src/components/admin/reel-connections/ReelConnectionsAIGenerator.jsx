@@ -81,7 +81,7 @@ export default function ReelConnectionsAIGenerator({
       aria-modal="true"
     >
       <div
-        className="bg-ghost-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+        className="bg-ghost-white dark:bg-gray-800 rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
@@ -332,7 +332,7 @@ export default function ReelConnectionsAIGenerator({
           <button
             onClick={handleGenerate}
             disabled={loading || !connection.trim()}
-            className="flex-1 px-6 py-3 bg-accent-red text-white rounded-lg hover:bg-accent-red/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-semibold flex items-center justify-center gap-2 shadow-lg"
+            className="flex-1 px-6 py-3 bg-accent-red text-white rounded-lg hover:bg-accent-red/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-semibold flex items-center justify-center gap-2"
           >
             {loading ? (
               <>

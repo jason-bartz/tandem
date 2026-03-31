@@ -156,8 +156,8 @@ export default function BotLeaderboardManager() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="bg-bg-surface rounded-lg border-[3px] border-black dark:border-white shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(255,255,255,0.3)]">
-        <div className="px-6 py-4 border-b-[3px] border-black dark:border-white">
+      <div className="bg-bg-surface rounded-lg dark:">
+        <div className="px-6 py-4 border-b border-border-light">
           <div className="flex items-center gap-3">
             <Image src="/ui/shared/leaderboard-admin.png" alt="" width={24} height={24} />
             <h3 className="text-lg font-bold text-text-primary">Leaderboards Manager</h3>
@@ -181,17 +181,17 @@ export default function BotLeaderboardManager() {
           )}
 
           {/* Enable/Disable Toggle */}
-          <div className="bg-bg-card rounded-lg border-[2px] border-black dark:border-white p-4">
+          <div className="bg-bg-card rounded-lg p-4">
             <div className="flex items-center justify-between">
               <h4 className="font-bold text-text-primary">Automatic Generation</h4>
               <button
                 onClick={() => handleInputChange('enabled', !formData.enabled)}
-                className={`relative w-14 h-7 rounded-full border-[3px] border-black dark:border-white transition-colors flex-shrink-0 ${
+                className={`relative w-14 h-7 rounded-full transition-colors flex-shrink-0 ${
                   formData.enabled ? 'bg-accent-green' : 'bg-gray-300'
                 }`}
               >
                 <div
-                  className={`absolute top-0.5 w-5 h-5 bg-white rounded-full border-[2px] border-black dark:border-white transition-transform ${
+                  className={`absolute top-0.5 w-5 h-5 bg-white rounded-full transition-transform ${
                     formData.enabled ? 'left-[calc(100%-22px)]' : 'left-0.5'
                   }`}
                 />
@@ -200,7 +200,7 @@ export default function BotLeaderboardManager() {
           </div>
 
           {/* General Settings */}
-          <div className="bg-bg-card rounded-lg border-[2px] border-black dark:border-white p-4 space-y-4">
+          <div className="bg-bg-card rounded-lg p-4 space-y-4">
             <h4 className="font-bold text-text-primary">General Settings</h4>
 
             <div>
@@ -211,7 +211,7 @@ export default function BotLeaderboardManager() {
                 type="number"
                 value={formData.carryover_bot_count}
                 onChange={(e) => handleInputChange('carryover_bot_count', parseInt(e.target.value))}
-                className="w-full px-3 py-2 border-[3px] border-black dark:border-white rounded-lg bg-bg-surface text-text-primary font-medium focus:outline-none focus:ring-2 focus:ring-accent-blue"
+                className="w-full px-3 py-2 rounded-lg bg-bg-surface text-text-primary font-medium focus:outline-none focus:ring-2 focus:ring-accent-blue"
                 min="0"
                 max="50"
               />
@@ -223,7 +223,7 @@ export default function BotLeaderboardManager() {
                 id="spread"
                 checked={formData.spread_throughout_day}
                 onChange={(e) => handleInputChange('spread_throughout_day', e.target.checked)}
-                className="w-5 h-5 border-[3px] border-black dark:border-white rounded"
+                className="w-5 h-5 rounded"
               />
               <label htmlFor="spread" className="text-sm font-medium text-text-primary">
                 Spread scores throughout the day (vs. clustered at puzzle release)
@@ -245,10 +245,7 @@ export default function BotLeaderboardManager() {
                 icon: `/ui/games/daily-alchemy.png?v=${ASSET_VERSION}`,
               },
             ].map((game) => (
-              <div
-                key={game.key}
-                className="bg-bg-card rounded-lg border-[2px] border-black dark:border-white p-4"
-              >
+              <div key={game.key} className="bg-bg-card rounded-lg p-4">
                 <div className="flex items-center gap-2 mb-3">
                   <Image src={game.icon} alt="" width={20} height={20} />
                   <h5 className="font-bold text-text-primary">{game.name}</h5>
@@ -265,7 +262,7 @@ export default function BotLeaderboardManager() {
                       onChange={(e) =>
                         handleInputChange(`${game.key}_entries_per_day`, parseInt(e.target.value))
                       }
-                      className="w-full px-3 py-2 border-[3px] border-black dark:border-white rounded-lg bg-bg-surface text-text-primary font-medium focus:outline-none focus:ring-2 focus:ring-accent-blue"
+                      className="w-full px-3 py-2 rounded-lg bg-bg-surface text-text-primary font-medium focus:outline-none focus:ring-2 focus:ring-accent-blue"
                       min="0"
                       max="100"
                     />
@@ -282,7 +279,7 @@ export default function BotLeaderboardManager() {
                         onChange={(e) =>
                           handleInputChange(`${game.key}_min_score`, parseInt(e.target.value))
                         }
-                        className="w-full px-3 py-2 border-[3px] border-black dark:border-white rounded-lg bg-bg-surface text-text-primary font-medium focus:outline-none focus:ring-2 focus:ring-accent-blue"
+                        className="w-full px-3 py-2 rounded-lg bg-bg-surface text-text-primary font-medium focus:outline-none focus:ring-2 focus:ring-accent-blue"
                         min="1"
                       />
                     </div>
@@ -297,7 +294,7 @@ export default function BotLeaderboardManager() {
                         onChange={(e) =>
                           handleInputChange(`${game.key}_max_score`, parseInt(e.target.value))
                         }
-                        className="w-full px-3 py-2 border-[3px] border-black dark:border-white rounded-lg bg-bg-surface text-text-primary font-medium focus:outline-none focus:ring-2 focus:ring-accent-blue"
+                        className="w-full px-3 py-2 rounded-lg bg-bg-surface text-text-primary font-medium focus:outline-none focus:ring-2 focus:ring-accent-blue"
                         min="1"
                       />
                     </div>
@@ -308,11 +305,11 @@ export default function BotLeaderboardManager() {
           </div>
 
           {/* Actions */}
-          <div className="flex gap-3 pt-4 border-t-[3px] border-black dark:border-white">
+          <div className="flex gap-3 pt-4 border-t border-border-light">
             <button
               onClick={handleSave}
               disabled={saving}
-              className="px-6 py-3 bg-accent-blue text-white border-[3px] border-black dark:border-white font-bold rounded-xl hover:translate-y-[-2px] active:translate-y-0 transition-transform shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(255,255,255,0.3)] disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-6 py-3 bg-accent-blue text-white font-bold rounded-xl active:translate-y-0 transition-transform dark: disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {saving ? 'Saving...' : 'Save'}
             </button>
@@ -320,7 +317,7 @@ export default function BotLeaderboardManager() {
             <button
               onClick={handleGenerate}
               disabled={generating || !formData.enabled}
-              className="px-6 py-3 bg-accent-green text-white border-[3px] border-black dark:border-white font-bold rounded-xl hover:translate-y-[-2px] active:translate-y-0 transition-transform shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(255,255,255,0.3)] disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-6 py-3 bg-accent-green text-white font-bold rounded-xl active:translate-y-0 transition-transform dark: disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {generating ? 'Running...' : 'Run Now'}
             </button>

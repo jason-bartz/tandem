@@ -30,7 +30,7 @@ export default function OnScreenKeyboard({
   layout = 'QWERTY',
   isSmallPhone = false,
   isMobilePhone = false,
-  checkButtonColor = '#3B82F6', // Default blue for Daily Tandem
+  checkButtonColor = 'var(--primary)', // Default blue for Daily Tandem
   actionKeyType = 'check', // 'check' for checkmark (ENTER), 'tab' for tab arrow (TAB)
 }) {
   const { lightTap } = useHaptics();
@@ -121,12 +121,12 @@ export default function OnScreenKeyboard({
 
     let baseClasses = `
       select-none cursor-pointer touch-manipulation font-bold
-      rounded-xl border-[3px] border-black dark:border-gray-600
+      rounded-xl
       flex items-center justify-center
-      shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)]
+      dark:
       transition-all duration-150 ease-out
       ${isSpecialKey ? 'text-sm sm:text-base px-1 sm:px-2' : 'text-lg sm:text-xl'}
-      ${isPressed ? 'translate-x-[2px] translate-y-[2px] shadow-[1px_1px_0px_rgba(0,0,0,1)]' : 'active:translate-x-[2px] active:translate-y-[2px] active:shadow-[1px_1px_0px_rgba(0,0,0,1)]'}
+      ${isPressed ? 'translate-x-[2px] translate-y-[2px]' : ' active:'}
     `;
 
     if (highContrast) {
@@ -361,8 +361,8 @@ export default function OnScreenKeyboard({
                     key === 'ENTER' && !highContrast
                       ? {
                           backgroundColor: checkButtonColor,
-                          color: '#1F2937',
-                          borderColor: '#000000',
+                          color: isDark ? 'var(--text-primary)' : 'var(--text-primary)',
+                          borderColor: isDark ? 'transparent' : 'var(--border-main)',
                         }
                       : {}
                   }

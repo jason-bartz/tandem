@@ -26,7 +26,7 @@ const loadingMessages = [
  */
 export default function MiniWelcomeCard({ currentStreak = 0 }) {
   const router = useRouter();
-  const { highContrast, isDark } = useTheme();
+  const { highContrast, isDark, reduceMotion } = useTheme();
   const { mediumTap } = useHaptics();
   const [puzzle, setPuzzle] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -124,10 +124,10 @@ export default function MiniWelcomeCard({ currentStreak = 0 }) {
   if (loading) {
     return (
       <div
-        className={`rounded-[32px] border-[3px] overflow-hidden p-10 text-center relative ${
+        className={`rounded-lg border-[3px] overflow-hidden p-10 text-center relative ${
           highContrast
-            ? 'bg-hc-surface border-hc-border shadow-[6px_6px_0px_rgba(0,0,0,1)]'
-            : 'bg-ghost-white dark:bg-bg-card border-border-main shadow-[6px_6px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_rgba(0,0,0,0.5)]'
+            ? 'bg-hc-surface border-hc-border'
+            : 'bg-ghost-white dark:bg-bg-card border-border-main dark:'
         }`}
       >
         <div className="absolute inset-0 flex items-center justify-center z-10">
@@ -153,13 +153,19 @@ export default function MiniWelcomeCard({ currentStreak = 0 }) {
         </div>
 
         {/* Title skeleton */}
-        <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded-[12px] mx-auto mb-3 w-48 skeleton-shimmer"></div>
+        <div
+          className={`h-8 bg-gray-200 dark:bg-gray-700 rounded-md mx-auto mb-3 w-48 ${!reduceMotion ? 'skeleton-shimmer' : ''}`}
+        ></div>
 
         {/* Info skeleton */}
-        <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded-[8px] mx-auto mb-8 w-32 skeleton-shimmer"></div>
+        <div
+          className={`h-4 bg-gray-200 dark:bg-gray-700 rounded-[8px] mx-auto mb-8 w-32 ${!reduceMotion ? 'skeleton-shimmer' : ''}`}
+        ></div>
 
         {/* Button skeleton */}
-        <div className="h-14 bg-gray-200 dark:bg-gray-700 rounded-[20px] w-full skeleton-shimmer"></div>
+        <div
+          className={`h-14 bg-gray-200 dark:bg-gray-700 rounded-md w-full ${!reduceMotion ? 'skeleton-shimmer' : ''}`}
+        ></div>
       </div>
     );
   }
@@ -167,16 +173,16 @@ export default function MiniWelcomeCard({ currentStreak = 0 }) {
   if (error) {
     return (
       <div
-        className={`rounded-[32px] border-[3px] overflow-hidden p-10 text-center ${
+        className={`rounded-lg border-[3px] overflow-hidden p-10 text-center ${
           highContrast
-            ? 'bg-hc-surface border-hc-border shadow-[6px_6px_0px_rgba(0,0,0,1)]'
-            : 'bg-ghost-white dark:bg-bg-card border-border-main shadow-[6px_6px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_rgba(0,0,0,0.5)]'
+            ? 'bg-hc-surface border-hc-border'
+            : 'bg-ghost-white dark:bg-bg-card border-border-main dark:'
         }`}
       >
         <p className="text-text-secondary mb-4">{error}</p>
         <button
           onClick={loadPuzzlePreview}
-          className="px-6 py-2 rounded-[16px] border-[2px] border-black dark:border-gray-600 bg-accent-yellow dark:bg-accent-yellow text-gray-900 font-bold"
+          className="px-6 py-2 rounded-md bg-accent-yellow dark:bg-accent-yellow text-gray-900 font-bold"
         >
           Try Again
         </button>
@@ -186,10 +192,10 @@ export default function MiniWelcomeCard({ currentStreak = 0 }) {
 
   return (
     <div
-      className={`rounded-[32px] border-[3px] overflow-hidden p-10 text-center ${
+      className={`rounded-lg border-[3px] overflow-hidden p-10 text-center ${
         highContrast
-          ? 'bg-hc-surface border-hc-border shadow-[6px_6px_0px_rgba(0,0,0,1)]'
-          : 'bg-ghost-white dark:bg-bg-card border-border-main shadow-[6px_6px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_rgba(0,0,0,0.5)]'
+          ? 'bg-hc-surface border-hc-border'
+          : 'bg-ghost-white dark:bg-bg-card border-border-main dark:'
       }`}
     >
       {/* Header with Icon */}
@@ -246,11 +252,11 @@ export default function MiniWelcomeCard({ currentStreak = 0 }) {
       <button
         onClick={handlePlayClick}
         disabled={loading}
-        className={`w-full h-14 text-white rounded-[20px] text-base font-bold cursor-pointer transition-all tracking-wider disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none
+        className={`w-full h-14 text-white rounded-md text-base font-bold cursor-pointer transition-all tracking-wider disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none
           ${
             highContrast
-              ? 'bg-hc-primary border-[3px] border-hc-border hover:bg-hc-focus shadow-[4px_4px_0px_rgba(0,0,0,1)]'
-              : 'border-[3px] border-black dark:border-gray-600 shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(0,0,0,0.5)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0px_rgba(0,0,0,0.5)] active:translate-x-[4px] active:translate-y-[4px] active:shadow-none'
+              ? 'bg-hc-primary border-[3px] border-hc-border hover:bg-hc-focus'
+              : 'dark: hover:dark:hover:'
           }
         `}
         style={!highContrast ? { backgroundColor: '#ffce00' } : {}}

@@ -316,7 +316,7 @@ export default function UnifiedPuzzleCalendar({ onSelectDate, onRefresh }) {
 
           {/* Month picker dropdown */}
           {showMonthPicker && (
-            <div className="absolute top-full left-0 mt-2 bg-bg-surface border-[3px] border-black dark:border-white rounded-lg shadow-lg z-50 p-3 min-w-[280px]">
+            <div className="absolute top-full left-0 mt-2 bg-bg-surface rounded-lg z-50 p-3 min-w-[280px]">
               <div className="grid grid-cols-3 gap-2 mb-3">
                 {monthNames.map((name, index) => (
                   <button
@@ -327,8 +327,8 @@ export default function UnifiedPuzzleCalendar({ onSelectDate, onRefresh }) {
                     }}
                     className={`px-2 py-1.5 text-xs font-bold rounded-lg border-[2px] transition-all ${
                       index === currentMonth.getMonth()
-                        ? 'bg-accent-yellow border-black text-gray-900'
-                        : 'bg-bg-card border-gray-300 dark:border-gray-600 text-text-primary hover:border-black dark:hover:border-white'
+                        ? 'bg-accent-yellow text-gray-900'
+                        : 'bg-bg-card border-gray-300 dark:border-gray-600 text-text-primary hover:dark:hover:border-white'
                     }`}
                   >
                     {name.slice(0, 3)}
@@ -342,7 +342,7 @@ export default function UnifiedPuzzleCalendar({ onSelectDate, onRefresh }) {
                       new Date(currentMonth.getFullYear() - 1, currentMonth.getMonth(), 1)
                     )
                   }
-                  className="px-3 py-1 text-sm font-bold bg-bg-card border-[2px] border-black dark:border-white rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
+                  className="px-3 py-1 text-sm font-bold bg-bg-card rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
                 >
                   ←
                 </button>
@@ -355,7 +355,7 @@ export default function UnifiedPuzzleCalendar({ onSelectDate, onRefresh }) {
                       new Date(currentMonth.getFullYear() + 1, currentMonth.getMonth(), 1)
                     )
                   }
-                  className="px-3 py-1 text-sm font-bold bg-bg-card border-[2px] border-black dark:border-white rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
+                  className="px-3 py-1 text-sm font-bold bg-bg-card rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
                 >
                   →
                 </button>
@@ -367,8 +367,7 @@ export default function UnifiedPuzzleCalendar({ onSelectDate, onRefresh }) {
         <div className="flex items-center gap-2">
           <button
             onClick={goToToday}
-            className="px-3 py-1.5 text-xs sm:text-sm font-bold bg-accent-yellow text-gray-900 border-[2px] border-black rounded-lg hover:translate-y-[-1px] transition-all"
-            style={{ boxShadow: '2px 2px 0px rgba(0, 0, 0, 1)' }}
+            className="px-3 py-1.5 text-xs sm:text-sm font-bold bg-accent-yellow text-gray-900 rounded-lg transition-all"
           >
             Today
           </button>
@@ -436,9 +435,9 @@ export default function UnifiedPuzzleCalendar({ onSelectDate, onRefresh }) {
       </div>
 
       {/* Calendar grid */}
-      <div className="border-[3px] border-black dark:border-white rounded-lg overflow-hidden">
+      <div className="rounded-lg overflow-hidden">
         {/* Day headers */}
-        <div className="grid grid-cols-7 bg-bg-card border-b-[3px] border-black dark:border-white">
+        <div className="grid grid-cols-7 bg-bg-card border-b border-border-light">
           {dayHeaders.map((day) => (
             <div
               key={day}

@@ -169,7 +169,7 @@ function CoopPartnerBarInner({
         'bg-indigo-50/50 dark:bg-indigo-950/20',
         'border-[2px] border-indigo-200 dark:border-indigo-800/50',
         'rounded-xl',
-        'shadow-[3px_3px_0px_rgba(99,102,241,0.6)] dark:shadow-[3px_3px_0px_rgba(99,102,241,0.5)]',
+        ' dark:',
         highContrast && 'border-hc-border'
       )}
     >

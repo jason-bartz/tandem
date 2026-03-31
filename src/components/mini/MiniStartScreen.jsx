@@ -54,35 +54,27 @@ export default function MiniStartScreen({ puzzle, onStart }) {
         <div className="absolute inset-0 flex items-center justify-center z-20">
           <div
             className={`
-              rounded-[32px]
-              border-[3px] border-black dark:border-gray-600
-              shadow-[6px_6px_0px_rgba(0,0,0,1)]
-              dark:shadow-[6px_6px_0px_rgba(0,0,0,0.5)]
+              rounded-lg
+             
+             
+              dark:
               p-8
-              ${
-                highContrast
-                  ? 'bg-hc-surface'
-                  : 'bg-ghost-white dark:bg-gray-800'
-              }
+              ${highContrast ? 'bg-hc-surface' : 'bg-ghost-white dark:bg-gray-800'}
             `}
           >
             <div className="text-center mb-6">
-              <h2 className="text-2xl font-black text-text-primary mb-2">
-                Ready to solve?
-              </h2>
-              <p className="text-sm text-text-secondary">
-                Click Start to begin the timer
-              </p>
+              <h2 className="text-2xl font-black text-text-primary mb-2">Ready to solve?</h2>
+              <p className="text-sm text-text-secondary">Click Start to begin the timer</p>
             </div>
 
             <button
               onClick={handleStartClick}
               className={`
                 w-full px-12 py-4
-                rounded-[20px]
-                border-[3px] border-black dark:border-gray-600
-                shadow-[4px_4px_0px_rgba(0,0,0,1)]
-                dark:shadow-[4px_4px_0px_rgba(0,0,0,0.5)]
+                rounded-md
+               
+               
+                dark:
                 font-black text-lg
                 tracking-wider
                 transition-all
@@ -93,10 +85,10 @@ export default function MiniStartScreen({ puzzle, onStart }) {
                 }
                 ${
                   !reduceMotion &&
-                  `hover:translate-x-[2px] hover:translate-y-[2px]
-                  hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]
-                  active:translate-x-[4px] active:translate-y-[4px]
-                  active:shadow-none`
+                  `
+                  hover:
+                 
+                 `
                 }
               `}
             >

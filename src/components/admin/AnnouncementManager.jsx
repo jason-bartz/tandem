@@ -161,8 +161,8 @@ export default function AnnouncementManager() {
       )}
 
       {/* Create new announcement */}
-      <div className="bg-bg-surface rounded-lg border-[3px] border-black dark:border-white shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(255,255,255,0.3)]">
-        <div className="px-4 py-3 border-b-[3px] border-black dark:border-white">
+      <div className="bg-bg-surface rounded-lg dark:">
+        <div className="px-4 py-3 border-b border-border-light">
           <div className="flex items-center gap-2">
             <Megaphone size={20} className="text-accent-blue" />
             <h3 className="text-base font-bold text-text-primary">New Announcement</h3>
@@ -182,13 +182,13 @@ export default function AnnouncementManager() {
               onClick={handleCreate}
               disabled={saving || !newText.trim()}
               className={`
-                self-end px-4 py-3 rounded-[20px] border-[3px] border-black dark:border-white font-bold text-sm
-                shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(255,255,255,0.3)]
-                transition-all active:translate-x-[3px] active:translate-y-[3px] active:shadow-none
+                self-end px-4 py-3 rounded-md font-bold text-sm
+                dark:
+                transition-all
                 ${
                   saving || !newText.trim()
                     ? 'bg-gray-200 dark:bg-gray-700 text-text-muted cursor-not-allowed'
-                    : 'bg-accent-blue text-white hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]'
+                    : 'bg-accent-blue text-white hover:'
                 }
               `}
             >
@@ -200,8 +200,8 @@ export default function AnnouncementManager() {
       </div>
 
       {/* Existing announcements */}
-      <div className="bg-bg-surface rounded-lg border-[3px] border-black dark:border-white shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(255,255,255,0.3)]">
-        <div className="px-4 py-3 border-b-[3px] border-black dark:border-white">
+      <div className="bg-bg-surface rounded-lg dark:">
+        <div className="px-4 py-3 border-b border-border-light">
           <h3 className="text-base font-bold text-text-primary">All Announcements</h3>
         </div>
         <div className="p-4">
