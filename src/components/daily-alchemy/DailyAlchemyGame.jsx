@@ -29,7 +29,7 @@ import HowToPlayModal from '@/components/game/HowToPlayModal';
 import AlchemyTutorialModal from './AlchemyTutorialModal';
 import AlchemyCreativeTutorialModal from './AlchemyCreativeTutorialModal';
 import HintTutorialBanner from '@/components/shared/HintTutorialBanner';
-import FavoritesTutorialBanner from '@/components/shared/FavoritesTutorialBanner';
+// FavoritesTutorialBanner removed — helper text now lives inside FavoritesPanel empty state
 import ServiceOutage from '@/components/shared/ServiceOutage';
 import Settings from '@/components/Settings';
 import FeedbackPane from '@/components/FeedbackPane';
@@ -801,16 +801,6 @@ export function DailyAlchemyGame({ initialDate = null }) {
       {/* Hint Tutorial Banner - shows after Learn to Play is dismissed, before first hint use */}
       {(gameState === SOUP_GAME_STATES.PLAYING || gameState === SOUP_GAME_STATES.ADMIRE) &&
         !freePlayMode && <HintTutorialBanner gameType="soup" hasUsedHint={hintsUsed > 0} />}
-
-      {/* Favorites Tutorial Banner - shows 30s after gameplay starts or 30s after hint tutorial dismissed */}
-      {(gameState === SOUP_GAME_STATES.PLAYING || gameState === SOUP_GAME_STATES.ADMIRE) && (
-        <FavoritesTutorialBanner
-          gameType="soup"
-          isPlaying={
-            gameState === SOUP_GAME_STATES.PLAYING || gameState === SOUP_GAME_STATES.ADMIRE
-          }
-        />
-      )}
 
       {/* Modals */}
       <UnifiedStatsModal isOpen={showStats} onClose={() => setShowStats(false)} />

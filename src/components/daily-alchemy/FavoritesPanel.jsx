@@ -92,10 +92,8 @@ export function FavoritesPanel({
       <div
         className={cn(
           'absolute left-0 right-0 top-full mt-2 z-50',
-          'bg-bg-card dark:bg-gray-800',
-          'dark:border-gray-600',
-          'rounded-xl',
-          'dark:',
+          'bg-bg-surface dark:bg-gray-800',
+          'rounded-lg',
           'overflow-hidden flex flex-col',
           'max-h-[50vh]',
           highContrast && 'border-2 border-hc-border'
@@ -146,11 +144,10 @@ export function FavoritesPanel({
         <div className="p-3 overflow-y-auto scrollable">
           {favoritesList.length === 0 ? (
             <div className="text-center py-4">
-              <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">No favorites yet</p>
-              <p className="text-xs text-gray-400 dark:text-gray-500">
+              <p className="text-sm text-gray-500 dark:text-gray-400">
                 {isTouchDevice
-                  ? 'Long press any element to add to favorites'
-                  : 'Drag any element to favorites'}
+                  ? 'Long press any element in the bank to add it here'
+                  : 'Drag elements from the bank into this panel to save them'}
               </p>
             </div>
           ) : (

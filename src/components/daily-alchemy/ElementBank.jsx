@@ -73,9 +73,8 @@ export function ElementBank({
 
     const update = () => {
       const rect = el.getBoundingClientRect();
-      // Available height = viewport bottom minus grid top, minus bottom padding/margins
-      // The 24px accounts for the scroll container's bottom padding + content area mb-4
-      const available = window.innerHeight - rect.top - 24;
+      // Available height = viewport bottom minus grid top, minus small bottom margin
+      const available = window.innerHeight - rect.top - 8;
       if (available > 100) {
         setGridMaxHeight(available);
       }
@@ -450,10 +449,8 @@ export function ElementBank({
             onDrop={(e) => e.preventDefault()}
             className={cn(
               'w-full px-4 py-2 pl-10',
-              'bg-bg-card dark:bg-gray-800',
-              'dark:border-gray-600',
-              'rounded-xl text-sm',
-              'dark:',
+              'bg-bg-surface dark:bg-gray-800',
+              'rounded-lg text-sm',
               'focus:outline-none focus:ring-2 focus:ring-soup-primary',
               'placeholder:text-gray-400',
               highContrast && 'border-2 border-hc-border'
@@ -487,25 +484,20 @@ export function ElementBank({
               'flex-shrink-0',
               'h-10 px-3',
               'flex items-center justify-center gap-1',
-              'dark:border-gray-600',
-              'rounded-xl',
-              'dark:',
-              ' hover:',
+              'rounded-lg',
               'active:translate-y-0',
-              // Background colors based on state
+              // Background colors based on state — fill-based, no outlines
               !touchOverFavorites &&
                 !isDraggingToFavorites &&
                 !showFavoritesPanel &&
-                'bg-bg-card dark:bg-gray-800',
-              showFavoritesPanel &&
-                !touchOverFavorites &&
-                'bg-soup-primary/20 ring-2 ring-soup-primary',
+                'bg-bg-surface dark:bg-gray-800',
+              showFavoritesPanel && !touchOverFavorites && 'bg-soup-primary/20',
               // Desktop drag feedback
               isDraggingToFavorites &&
                 !touchOverFavorites &&
-                'bg-yellow-100 dark:bg-yellow-900/30 ring-2 ring-yellow-500 scale-110',
-              // Mobile touch drag feedback - yellow highlight with ring
-              touchOverFavorites && 'bg-yellow-100 dark:bg-yellow-900/30 ring-2 ring-yellow-500',
+                'bg-yellow-100 dark:bg-yellow-900/30 scale-110',
+              // Mobile touch drag feedback
+              touchOverFavorites && 'bg-yellow-100 dark:bg-yellow-900/30',
               highContrast && 'border-2 border-hc-border'
             )}
             // Animate scale when touch dragging over
@@ -552,9 +544,8 @@ export function ElementBank({
           'scrollable',
           'p-2',
           'bg-bg-surface dark:bg-gray-900/50',
-          'border-[2px] border-border-main dark:border-gray-700',
-          'rounded-xl',
-          highContrast && 'md:border-hc-border'
+          'rounded-lg',
+          highContrast && 'border-2 border-hc-border'
         )}
         ref={gridContainerRef}
         style={gridMaxHeight ? { maxHeight: gridMaxHeight } : undefined}
