@@ -2,7 +2,6 @@
 
 import { useEffect } from 'react';
 import { StatusBar } from '@capacitor/status-bar';
-import { SplashScreen } from '@capacitor/splash-screen';
 import { Keyboard } from '@capacitor/keyboard';
 import platformService from '@/services/platform';
 
@@ -92,16 +91,12 @@ export default function IOSContainer({ children }) {
           platformService.cacheRecentPuzzles();
         }
 
-        // Hide splash screen now that the app is ready
-        await SplashScreen.hide();
-
         return () => {
           // Cleanup listeners
           Keyboard.removeAllListeners();
         };
       } catch (error) {
-        // Error setting up iOS container - non-critical, but still hide splash
-        SplashScreen.hide().catch(() => {});
+        // Error setting up iOS container - non-critical
       }
     };
 

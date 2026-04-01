@@ -20,17 +20,7 @@ const config: CapacitorConfig = {
     CapacitorHttp: {
       enabled: true, // This bypasses CORS on iOS by using native HTTP
     },
-    SplashScreen: {
-      launchShowDuration: 0,
-      launchAutoHide: false,
-      backgroundColor: '#F4F5F9',
-      androidSplashResourceName: 'splash',
-      androidScaleType: 'CENTER_CROP',
-      showSpinner: false,
-      splashFullScreen: false,
-      splashImmersive: false,
-    },
-    StatusBar: {
+StatusBar: {
       style: 'dark',
       backgroundColor: '#F4F5F9',
     },

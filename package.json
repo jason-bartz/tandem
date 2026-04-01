@@ -41,7 +41,6 @@
     "@capacitor/local-notifications": "^5.0.6",
     "@capacitor/preferences": "^5.0.6",
     "@capacitor/share": "^5.0.6",
-    "@capacitor/splash-screen": "^5.0.6",
     "@capacitor/status-bar": "^5.0.6",
     "@stripe/stripe-js": "^8.2.0",
     "@supabase/ssr": "^0.7.0",
