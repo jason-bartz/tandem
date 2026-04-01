@@ -1,20 +1,15 @@
 import { NextResponse } from 'next/server';
-import { requireAdmin } from '@/lib/auth';
-import { getAdminById, updateAdminUser } from '@/lib/adminUsers';
-import { passwordSchema } from '@/lib/security/validation';
-import logger from '@/lib/logger';
-import { z } from 'zod';
 
-const updateProfileSchema = z.object({
-  fullName: z.string().min(2).max(100).optional(),
-  email: z.string().email().max(255).optional(),
-  avatarId: z.string().nullable().optional(),
-  currentPassword: z.string().optional(),
-  newPassword: passwordSchema.optional(),
-});
+const isCapacitorBuild = process.env.BUILD_TARGET === 'capacitor';
 
 // GET: Get current user's profile
 export async function GET(request) {
+  // iOS static export — this route is never called on device
+  if (isCapacitorBuild) return NextResponse.json({});
+
+  const { requireAdmin } = await import('@/lib/auth');
+  const { getAdminById } = await import('@/lib/adminUsers');
+
   const auth = await requireAdmin(request);
   if (auth.error) return auth.error;
 
@@ -54,6 +49,23 @@ export async function GET(request) {
 
 // PUT: Update current user's profile
 export async function PUT(request) {
+  // iOS static export — this route is never called on device
+  if (isCapacitorBuild) return NextResponse.json({});
+
+  const { requireAdmin } = await import('@/lib/auth');
+  const { getAdminById: _, updateAdminUser } = await import('@/lib/adminUsers');
+  const { passwordSchema } = await import('@/lib/security/validation');
+  const { z } = await import('zod');
+  const logger = (await import('@/lib/logger')).default;
+
+  const updateProfileSchema = z.object({
+    fullName: z.string().min(2).max(100).optional(),
+    email: z.string().email().max(255).optional(),
+    avatarId: z.string().nullable().optional(),
+    currentPassword: z.string().optional(),
+    newPassword: passwordSchema.optional(),
+  });
+
   const auth = await requireAdmin(request);
   if (auth.error) return auth.error;
 
