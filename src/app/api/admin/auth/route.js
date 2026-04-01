@@ -14,7 +14,7 @@ import {
 } from '@/lib/security/rateLimiter';
 import { generateCSRFToken, getOrGenerateCSRFToken } from '@/lib/security/csrf';
 import { logFailedLogin, logSuccessfulLogin } from '@/lib/security/auditLog';
-import { authenticateAdmin } from '@/lib/adminUsers';
+import { authenticateAdmin, getAdminById } from '@/lib/adminUsers';
 import logger from '@/lib/logger';
 
 export async function POST(request) {
@@ -92,6 +92,8 @@ export async function POST(request) {
         fullName: user.fullName,
         email: user.email,
         role: user.role,
+        avatarId: user.avatarId || null,
+        avatar: user.avatar || null,
       },
     });
   } catch (error) {
@@ -142,6 +144,17 @@ export async function GET(request) {
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
       const csrfToken = await getOrGenerateCSRFToken();
 
+      // Fetch fresh user data (including avatar) from DB if available
+      let avatarId = null;
+      let avatar = null;
+      if (decoded.userId) {
+        const dbUser = await getAdminById(decoded.userId);
+        if (dbUser) {
+          avatarId = dbUser.avatar_id || null;
+          avatar = dbUser.avatars || null;
+        }
+      }
+
       return NextResponse.json({
         success: true,
         valid: true,
@@ -152,6 +165,8 @@ export async function GET(request) {
           fullName: decoded.fullName || decoded.username,
           email: decoded.email || null,
           role: decoded.role,
+          avatarId,
+          avatar,
         },
       });
     } catch (jwtError) {

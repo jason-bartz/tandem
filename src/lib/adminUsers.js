@@ -32,12 +32,32 @@ export async function authenticateAdmin(username, password) {
   try {
     const { data: user, error } = await supabase
       .from('admin_users')
-      .select('*')
+      .select('*, avatars:avatar_id(id, display_name, image_path)')
       .eq('username', username)
       .eq('is_active', true)
       .single();
 
-    if (error || !user) {
+    // If the table doesn't exist or there's a schema-level error, fall back to env vars.
+    // Supabase returns error codes like '42P01' (undefined table) or PGRST errors
+    // for missing relations. A "not found" single-row error (PGRST116) means the
+    // table exists but the user wasn't found.
+    if (error) {
+      const isTableError =
+        error.code === '42P01' ||
+        error.message?.includes('relation') ||
+        error.message?.includes('does not exist') ||
+        (error.code !== 'PGRST116' && !error.details?.includes('0 rows'));
+
+      if (isTableError) {
+        logger.warn('admin_users table not available, falling back to env var auth', error);
+        return authenticateFromEnv(username, password);
+      }
+
+      // Table exists but user not found
+      return { success: false, reason: 'Invalid username' };
+    }
+
+    if (!user) {
       return { success: false, reason: 'Invalid username' };
     }
 
@@ -60,11 +80,13 @@ export async function authenticateAdmin(username, password) {
         fullName: user.full_name,
         email: user.email,
         role: user.role,
+        avatarId: user.avatar_id,
+        avatar: user.avatars || null,
       },
     };
   } catch (err) {
-    // Fall back to env var auth if the table doesn't exist
-    logger.warn('admin_users table not available, falling back to env var auth', err);
+    // Fall back to env var auth if anything unexpected happens
+    logger.warn('admin_users auth failed, falling back to env var auth', err);
     return authenticateFromEnv(username, password);
   }
 }
@@ -94,7 +116,9 @@ export async function getAdminById(id) {
   const supabase = createServerClient();
   const { data, error } = await supabase
     .from('admin_users')
-    .select('id, username, full_name, email, role, is_active, last_login_at, created_at')
+    .select(
+      'id, username, full_name, email, role, is_active, last_login_at, created_at, avatar_id, avatars:avatar_id(id, display_name, image_path)'
+    )
     .eq('id', id)
     .single();
 
@@ -109,7 +133,9 @@ export async function getAdminByUsername(username) {
   const supabase = createServerClient();
   const { data, error } = await supabase
     .from('admin_users')
-    .select('id, username, full_name, email, role, is_active, last_login_at, created_at')
+    .select(
+      'id, username, full_name, email, role, is_active, last_login_at, created_at, avatar_id, avatars:avatar_id(id, display_name, image_path)'
+    )
     .eq('username', username)
     .single();
 
@@ -121,7 +147,9 @@ export async function listAdminUsers() {
   const supabase = createServerClient();
   const { data, error } = await supabase
     .from('admin_users')
-    .select('id, username, full_name, email, role, is_active, last_login_at, created_at')
+    .select(
+      'id, username, full_name, email, role, is_active, last_login_at, created_at, avatar_id, avatars:avatar_id(id, display_name, image_path)'
+    )
     .order('created_at', { ascending: true });
 
   if (error) {
@@ -168,6 +196,7 @@ export async function updateAdminUser(id, updates) {
   if (updates.email !== undefined) updateData.email = updates.email;
   if (updates.role !== undefined) updateData.role = updates.role;
   if (updates.isActive !== undefined) updateData.is_active = updates.isActive;
+  if (updates.avatarId !== undefined) updateData.avatar_id = updates.avatarId;
 
   if (updates.password) {
     updateData.password_hash = await bcrypt.hash(updates.password, BCRYPT_ROUNDS);
@@ -177,7 +206,9 @@ export async function updateAdminUser(id, updates) {
     .from('admin_users')
     .update(updateData)
     .eq('id', id)
-    .select('id, username, full_name, email, role, is_active')
+    .select(
+      'id, username, full_name, email, role, is_active, avatar_id, avatars:avatar_id(id, display_name, image_path)'
+    )
     .single();
 
   if (error) {

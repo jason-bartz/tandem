@@ -18,6 +18,7 @@ CREATE TABLE IF NOT EXISTS admin_users (
     last_login_at TIMESTAMP WITH TIME ZONE,
     password_reset_token TEXT,
     password_reset_expires TIMESTAMP WITH TIME ZONE,
+    avatar_id TEXT REFERENCES avatars(id) ON DELETE SET NULL,
     created_by UUID REFERENCES admin_users(id),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
@@ -34,6 +35,7 @@ COMMENT ON COLUMN admin_users.is_active IS 'Soft delete / deactivation flag';
 COMMENT ON COLUMN admin_users.last_login_at IS 'Timestamp of last successful login';
 COMMENT ON COLUMN admin_users.password_reset_token IS 'Hashed token for password reset flow';
 COMMENT ON COLUMN admin_users.password_reset_expires IS 'Expiry time for password reset token';
+COMMENT ON COLUMN admin_users.avatar_id IS 'FK to avatars table for profile picture';
 COMMENT ON COLUMN admin_users.created_by IS 'UUID of the admin who created this user';
 
 -- =============================================================

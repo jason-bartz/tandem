@@ -1,6 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { X, User, Lock } from 'lucide-react';
+import Image from 'next/image';
+import { X, User, Lock, Smile } from 'lucide-react';
 import authService from '@/services/auth.service';
 import logger from '@/lib/logger';
 
@@ -10,7 +11,7 @@ export default function ProfileModal({ onClose }) {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
-  const [activeSection, setActiveSection] = useState('profile'); // 'profile' | 'password'
+  const [activeSection, setActiveSection] = useState('profile'); // 'profile' | 'password' | 'avatar'
 
   // Profile form
   const [fullName, setFullName] = useState('');
@@ -20,6 +21,11 @@ export default function ProfileModal({ onClose }) {
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+
+  // Avatar form
+  const [avatars, setAvatars] = useState([]);
+  const [selectedAvatarId, setSelectedAvatarId] = useState(null);
+  const [avatarsLoading, setAvatarsLoading] = useState(false);
 
   useEffect(() => {
     fetchProfile();
@@ -35,11 +41,70 @@ export default function ProfileModal({ onClose }) {
         setProfile(data.profile);
         setFullName(data.profile.fullName || '');
         setEmail(data.profile.email || '');
+        setSelectedAvatarId(data.profile.avatarId || null);
       }
     } catch (err) {
       logger.error('Failed to fetch profile', err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchAvatars = async () => {
+    if (avatars.length > 0) return;
+    setAvatarsLoading(true);
+    try {
+      const response = await fetch('/api/admin/avatars', {
+        headers: await authService.getAuthHeaders(),
+      });
+      const data = await response.json();
+      if (data.success) {
+        setAvatars(data.avatars.filter((a) => a.is_active));
+      }
+    } catch (err) {
+      logger.error('Failed to fetch avatars', err);
+    } finally {
+      setAvatarsLoading(false);
+    }
+  };
+
+  const handleSaveAvatar = async (avatarId) => {
+    setError('');
+    setSuccess('');
+    setSaving(true);
+    try {
+      const response = await fetch('/api/admin/profile', {
+        method: 'PUT',
+        headers: await authService.getAuthHeaders(true),
+        body: JSON.stringify({ avatarId }),
+      });
+      const data = await response.json();
+      if (data.success) {
+        setSelectedAvatarId(avatarId);
+        setSuccess('Avatar updated');
+        // Update cached user data
+        const currentUser = authService.getCurrentUser();
+        if (currentUser) {
+          const avatarData = avatars.find((a) => a.id === avatarId);
+          authService.setCurrentUser({
+            ...currentUser,
+            avatarId,
+            avatar: avatarData
+              ? {
+                  id: avatarData.id,
+                  display_name: avatarData.display_name,
+                  image_path: avatarData.image_path,
+                }
+              : null,
+          });
+        }
+      } else {
+        setError(data.error);
+      }
+    } catch (err) {
+      setError('Failed to update avatar');
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -147,15 +212,25 @@ export default function ProfileModal({ onClose }) {
             <div className="p-6 space-y-6">
               {/* User card */}
               <div className="flex items-center gap-4 p-4 bg-bg-surface rounded-xl">
-                <div className="w-12 h-12 rounded-full bg-accent-blue/10 flex items-center justify-center">
-                  <span className="text-lg font-bold text-accent-blue">
-                    {(profile?.fullName || profile?.username || '?')
-                      .split(' ')
-                      .map((n) => n[0])
-                      .join('')
-                      .toUpperCase()
-                      .slice(0, 2)}
-                  </span>
+                <div className="w-12 h-12 rounded-full overflow-hidden bg-accent-blue/10 flex items-center justify-center flex-shrink-0">
+                  {profile?.avatar?.image_path ? (
+                    <Image
+                      src={profile.avatar.image_path}
+                      alt={profile.avatar.display_name || 'Avatar'}
+                      width={48}
+                      height={48}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <span className="text-lg font-bold text-accent-blue">
+                      {(profile?.fullName || profile?.username || '?')
+                        .split(' ')
+                        .map((n) => n[0])
+                        .join('')
+                        .toUpperCase()
+                        .slice(0, 2)}
+                    </span>
+                  )}
                 </div>
                 <div>
                   <p className="text-sm font-bold text-text-primary">{profile?.fullName}</p>
@@ -186,6 +261,22 @@ export default function ProfileModal({ onClose }) {
                 >
                   <User className="w-3.5 h-3.5" />
                   Profile
+                </button>
+                <button
+                  onClick={() => {
+                    setActiveSection('avatar');
+                    setError('');
+                    setSuccess('');
+                    fetchAvatars();
+                  }}
+                  className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-bold rounded-md transition-colors ${
+                    activeSection === 'avatar'
+                      ? 'bg-bg-card text-text-primary'
+                      : 'text-text-muted hover:text-text-secondary'
+                  }`}
+                >
+                  <Smile className="w-3.5 h-3.5" />
+                  Avatar
                 </button>
                 <button
                   onClick={() => {
@@ -266,6 +357,65 @@ export default function ProfileModal({ onClose }) {
                     {saving ? 'Saving...' : 'Save Profile'}
                   </button>
                 </form>
+              )}
+
+              {/* Avatar selection */}
+              {activeSection === 'avatar' && (
+                <div className="space-y-3">
+                  <p className="text-xs text-text-muted text-center">
+                    Choose an avatar for your admin profile
+                  </p>
+                  {avatarsLoading ? (
+                    <div className="grid grid-cols-4 gap-3">
+                      {[...Array(8)].map((_, i) => (
+                        <div key={i} className="aspect-square bg-bg-surface rounded-xl" />
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-4 gap-3">
+                      {/* No avatar option */}
+                      <button
+                        onClick={() => handleSaveAvatar(null)}
+                        disabled={saving}
+                        className={`flex flex-col items-center gap-1.5 p-3 rounded-xl border-2 transition-all ${
+                          !selectedAvatarId
+                            ? 'border-accent-blue bg-accent-blue/5'
+                            : 'border-border-light hover:border-border-main'
+                        } ${saving ? 'opacity-50' : ''}`}
+                      >
+                        <div className="w-12 h-12 rounded-full bg-bg-surface flex items-center justify-center">
+                          <User className="w-5 h-5 text-text-muted" />
+                        </div>
+                        <span className="text-[10px] font-bold text-text-secondary">Initials</span>
+                      </button>
+                      {avatars.map((avatar) => (
+                        <button
+                          key={avatar.id}
+                          onClick={() => handleSaveAvatar(avatar.id)}
+                          disabled={saving}
+                          className={`flex flex-col items-center gap-1.5 p-3 rounded-xl border-2 transition-all ${
+                            selectedAvatarId === avatar.id
+                              ? 'border-accent-blue bg-accent-blue/5'
+                              : 'border-border-light hover:border-border-main'
+                          } ${saving ? 'opacity-50' : ''}`}
+                        >
+                          <div className="w-12 h-12 rounded-full overflow-hidden flex-shrink-0">
+                            <Image
+                              src={avatar.image_path}
+                              alt={avatar.display_name}
+                              width={48}
+                              height={48}
+                              className="w-full h-full object-cover"
+                            />
+                          </div>
+                          <span className="text-[10px] font-bold text-text-secondary leading-tight text-center truncate w-full">
+                            {avatar.display_name}
+                          </span>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
               )}
 
               {/* Password form */}

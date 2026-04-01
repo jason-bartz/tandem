@@ -204,10 +204,20 @@ export default function AdminLayout({ children }) {
                   }}
                   className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-bold bg-bg-card border border-border-main hover:bg-bg-surface transition-colors"
                 >
-                  <div className="w-6 h-6 rounded-full bg-accent-blue/20 flex items-center justify-center">
-                    <span className="text-xs font-bold text-accent-blue">
-                      {getDisplayName().charAt(0).toUpperCase()}
-                    </span>
+                  <div className="w-6 h-6 rounded-full overflow-hidden bg-accent-blue/20 flex items-center justify-center">
+                    {currentUser?.avatar?.image_path ? (
+                      <Image
+                        src={currentUser.avatar.image_path}
+                        alt="Avatar"
+                        width={24}
+                        height={24}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <span className="text-xs font-bold text-accent-blue">
+                        {getDisplayName().charAt(0).toUpperCase()}
+                      </span>
+                    )}
                   </div>
                   <span className="hidden sm:inline text-text-primary">{getDisplayName()}</span>
                   <svg

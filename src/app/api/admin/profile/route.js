@@ -8,6 +8,7 @@ import { z } from 'zod';
 const updateProfileSchema = z.object({
   fullName: z.string().min(2).max(100).optional(),
   email: z.string().email().max(255).optional(),
+  avatarId: z.string().nullable().optional(),
   currentPassword: z.string().optional(),
   newPassword: passwordSchema.optional(),
 });
@@ -43,6 +44,8 @@ export async function GET(request) {
       fullName: user.full_name,
       email: user.email,
       role: user.role,
+      avatarId: user.avatar_id || null,
+      avatar: user.avatars || null,
       lastLoginAt: user.last_login_at,
       createdAt: user.created_at,
     },
@@ -68,6 +71,7 @@ export async function PUT(request) {
     const updates = {};
     if (validated.fullName) updates.fullName = validated.fullName;
     if (validated.email) updates.email = validated.email;
+    if (validated.avatarId !== undefined) updates.avatarId = validated.avatarId;
 
     // Password change requires current password verification
     if (validated.newPassword) {
