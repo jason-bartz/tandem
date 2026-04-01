@@ -4,11 +4,20 @@ import { sendEmail } from '@/lib/email/emailService';
 import logger from '@/lib/logger';
 
 const BATCH_SIZE = 50;
+const BATCH_DELAY_MS = 1000;
 const FROM_EMAIL = 'Tandem Daily <notifications@goodvibesgames.com>';
 
 /**
+ * Small delay between batches to respect Resend rate limits
+ */
+function delay(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+/**
  * Vercel Cron endpoint for sending scheduled email blasts
- * Should run every 5-10 minutes to check for due emails
+ * Runs every 10 minutes to check for due emails.
+ * Uses atomic status updates to prevent duplicate sends from overlapping cron runs.
  */
 export async function GET(request) {
   try {
@@ -29,7 +38,7 @@ export async function GET(request) {
       .eq('status', 'scheduled')
       .lte('scheduled_at', new Date().toISOString())
       .order('scheduled_at', { ascending: true })
-      .limit(5);
+      .limit(3);
 
     if (fetchError) throw fetchError;
 
@@ -40,8 +49,21 @@ export async function GET(request) {
     const results = [];
 
     for (const blast of dueBlasts) {
-      // Mark as sending
-      await supabase.from('email_blasts').update({ status: 'sending' }).eq('id', blast.id);
+      // Atomic claim: only update if status is still 'scheduled'
+      // This prevents duplicate sends from overlapping cron invocations
+      const { data: claimed, error: claimError } = await supabase
+        .from('email_blasts')
+        .update({ status: 'sending', updated_at: new Date().toISOString() })
+        .eq('id', blast.id)
+        .eq('status', 'scheduled')
+        .select('id')
+        .single();
+
+      if (claimError || !claimed) {
+        // Another cron instance already claimed this blast
+        logger.info(`[Cron Email] Blast ${blast.id} already claimed, skipping`);
+        continue;
+      }
 
       // Get recipients
       let recipients = [];
@@ -65,7 +87,7 @@ export async function GET(request) {
         continue;
       }
 
-      // Send in batches
+      // Send in batches with delay between batches
       let sent = 0;
       let failed = 0;
       const errors = [];
@@ -93,6 +115,11 @@ export async function GET(request) {
               result.status === 'rejected' ? result.reason?.message : result.value?.error;
             if (errMsg && errors.length < 10) errors.push(errMsg);
           }
+        }
+
+        // Delay between batches to avoid Resend rate limits
+        if (i + BATCH_SIZE < recipients.length) {
+          await delay(BATCH_DELAY_MS);
         }
       }
 

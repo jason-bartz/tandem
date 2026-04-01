@@ -12,8 +12,12 @@ const MAX_SUBJECT_LENGTH = 200;
 const MAX_BODY_LENGTH = 10000;
 const FROM_EMAIL = 'Tandem Daily <notifications@goodvibesgames.com>';
 
-// Resend allows up to 100 recipients per API call
 const BATCH_SIZE = 50;
+const BATCH_DELAY_MS = 1000;
+
+function delay(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
 
 /**
  * GET - List email blast history with optional filters
@@ -135,6 +139,11 @@ async function sendInBatches(recipients, subject, html) {
         }
       }
     }
+
+    // Delay between batches to avoid Resend rate limits
+    if (i + BATCH_SIZE < recipients.length) {
+      await delay(BATCH_DELAY_MS);
+    }
   }
 
   return results;
@@ -163,6 +172,8 @@ export async function POST(request) {
       recipientList = [],
       action = 'draft',
       scheduledAt,
+      buttonText,
+      buttonUrl,
     } = await request.json();
 
     // Validation
@@ -213,7 +224,13 @@ export async function POST(request) {
     }
 
     // Generate HTML
-    const html = generateEmailBlastHtml({ subject: subject.trim(), body: body.trim(), category });
+    const html = generateEmailBlastHtml({
+      subject: subject.trim(),
+      body: body.trim(),
+      category,
+      buttonText: buttonText?.trim() || undefined,
+      buttonUrl: buttonUrl?.trim() || undefined,
+    });
 
     const supabase = createServerClient();
 
@@ -251,6 +268,8 @@ export async function POST(request) {
         status,
         scheduled_at: action === 'schedule' ? scheduledAt : null,
         sent_by: authResult.admin.username,
+        button_text: buttonText?.trim() || null,
+        button_url: buttonUrl?.trim() || null,
       })
       .select()
       .single();
@@ -303,8 +322,19 @@ export async function PUT(request) {
     const authResult = await requireAdmin(request);
     if (authResult.error) return authResult.error;
 
-    const { id, subject, body, category, tags, recipientType, recipientList, action, scheduledAt } =
-      await request.json();
+    const {
+      id,
+      subject,
+      body,
+      category,
+      tags,
+      recipientType,
+      recipientList,
+      action,
+      scheduledAt,
+      buttonText,
+      buttonUrl,
+    } = await request.json();
 
     if (!id) {
       return NextResponse.json({ error: 'Blast ID is required' }, { status: 400 });
@@ -327,6 +357,9 @@ export async function PUT(request) {
       return NextResponse.json({ error: 'Cannot edit a sent or sending blast' }, { status: 400 });
     }
 
+    // Store the updated_at for optimistic concurrency check
+    const expectedUpdatedAt = existing.updated_at;
+
     // Build update object
     const updates = {};
     if (subject !== undefined) updates.subject = subject.trim();
@@ -335,13 +368,24 @@ export async function PUT(request) {
     if (tags !== undefined) updates.tags = tags;
     if (recipientType !== undefined) updates.recipient_type = recipientType;
     if (recipientList !== undefined) updates.recipient_list = recipientList;
+    if (buttonText !== undefined) updates.button_text = buttonText?.trim() || null;
+    if (buttonUrl !== undefined) updates.button_url = buttonUrl?.trim() || null;
 
     // Regenerate HTML if content changed
-    if (subject !== undefined || body !== undefined || category !== undefined) {
+    if (
+      subject !== undefined ||
+      body !== undefined ||
+      category !== undefined ||
+      buttonText !== undefined ||
+      buttonUrl !== undefined
+    ) {
       updates.html = generateEmailBlastHtml({
         subject: (subject || existing.subject).trim(),
         body: (body || existing.body).trim(),
         category: category || existing.category,
+        buttonText:
+          (buttonText !== undefined ? buttonText : existing.button_text)?.trim() || undefined,
+        buttonUrl: (buttonUrl !== undefined ? buttonUrl : existing.button_url)?.trim() || undefined,
       });
     }
 
@@ -364,7 +408,20 @@ export async function PUT(request) {
       }
 
       updates.status = 'sending';
-      await supabase.from('email_blasts').update(updates).eq('id', id);
+      const { data: claimed } = await supabase
+        .from('email_blasts')
+        .update(updates)
+        .eq('id', id)
+        .eq('updated_at', expectedUpdatedAt)
+        .select('id')
+        .single();
+
+      if (!claimed) {
+        return NextResponse.json(
+          { error: 'This blast was modified by another session. Please refresh and try again.' },
+          { status: 409 }
+        );
+      }
 
       const finalHtml = updates.html || existing.html;
       const finalSubject = updates.subject || existing.subject;
@@ -393,16 +450,32 @@ export async function PUT(request) {
       if (!scheduledAt) {
         return NextResponse.json({ error: 'Scheduled time is required' }, { status: 400 });
       }
+      const schedDate = new Date(scheduledAt);
+      if (isNaN(schedDate.getTime()) || schedDate <= new Date()) {
+        return NextResponse.json(
+          { error: 'Scheduled time must be in the future' },
+          { status: 400 }
+        );
+      }
       updates.status = 'scheduled';
       updates.scheduled_at = scheduledAt;
     }
 
+    // Optimistic concurrency: only update if record hasn't changed since we read it
     const { data, error: updateError } = await supabase
       .from('email_blasts')
       .update(updates)
       .eq('id', id)
+      .eq('updated_at', expectedUpdatedAt)
       .select()
       .single();
+
+    if (!data && !updateError) {
+      return NextResponse.json(
+        { error: 'This blast was modified by another session. Please refresh and try again.' },
+        { status: 409 }
+      );
+    }
 
     if (updateError) throw updateError;
 

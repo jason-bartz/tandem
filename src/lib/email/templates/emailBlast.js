@@ -65,12 +65,32 @@ function bodyToHtml(body) {
  * @param {string} params.subject - Email subject
  * @param {string} params.body - Plain text body content
  * @param {string} [params.category='general'] - Email category
+ * @param {string} [params.buttonText] - Optional button text
+ * @param {string} [params.buttonUrl] - Optional button URL
  * @returns {string} Full HTML email
  */
-export function generateEmailBlastHtml({ subject, body, category = 'general' }) {
+export function generateEmailBlastHtml({
+  subject,
+  body,
+  category = 'general',
+  buttonText,
+  buttonUrl,
+}) {
   const safeSubject = escapeHtml(subject);
   const categoryInfo = CATEGORY_COLORS[category] || CATEGORY_COLORS.general;
   const htmlBody = bodyToHtml(body);
+
+  const buttonHtml =
+    buttonText && buttonUrl
+      ? `
+          <tr>
+            <td style="padding: 0 40px 32px 40px;" align="center">
+              <a href="${escapeHtml(buttonUrl)}" style="display: inline-block; padding: 16px 32px; background-color: #3B82F6; color: #FFFFFF; text-decoration: none; border-radius: 6px; font-weight: 700; font-size: 18px;">
+                ${escapeHtml(buttonText)}
+              </a>
+            </td>
+          </tr>`
+      : '';
 
   return `
 <!DOCTYPE html>
@@ -84,15 +104,15 @@ export function generateEmailBlastHtml({ subject, body, category = 'general' }) 
   <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f9fafb; padding: 40px 20px;">
     <tr>
       <td align="center">
-        <table width="100%" cellpadding="0" cellspacing="0" style="max-width: 600px; background-color: #F3F4F6; border-radius: 8px; overflow: hidden;">
+        <table width="100%" cellpadding="0" cellspacing="0" style="max-width: 600px; background-color: #FFFFFF; border-radius: 8px; overflow: hidden;">
 
           <!-- Header -->
           <tr>
             <td style="background-color: ${categoryInfo.bg}; padding: 32px 40px; text-align: center;">
-              <h1 style="margin: 0; color: #111827; font-size: 28px; font-weight: 800; letter-spacing: -0.5px;">
+              <h1 style="margin: 0; color: #FFFFFF; font-size: 28px; font-weight: 800; letter-spacing: -0.5px;">
                 ${safeSubject}
               </h1>
-              <p style="margin: 8px 0 0 0; color: #111827; font-size: 16px; font-weight: 600;">
+              <p style="margin: 8px 0 0 0; color: rgba(255,255,255,0.9); font-size: 16px; font-weight: 600;">
                 Tandem Daily Games
               </p>
             </td>
@@ -105,14 +125,19 @@ export function generateEmailBlastHtml({ subject, body, category = 'general' }) 
             </td>
           </tr>
 
+          <!-- Optional Button -->
+          ${buttonHtml}
+
           <!-- Footer -->
           <tr>
-            <td style="background-color: #F3F4F6; padding: 24px 40px; text-align: center;">
-              <p style="margin: 0 0 8px 0; color: #111827; font-size: 14px; font-weight: 700;">
-                Tandem Daily Games
+            <td style="background-color: #F3F4F6; padding: 20px 40px; text-align: center;">
+              <p style="margin: 0 0 12px 0; color: #6B7280; font-size: 14px; font-weight: 500;">
+                You're receiving this because you have an account on one of our games
               </p>
-              <p style="margin: 0; color: #6B7280; font-size: 12px; font-weight: 500;">
-                You're receiving this because you have an account at tandemdaily.com
+              <p style="margin: 0; font-size: 14px; text-align: center;">
+                <a href="https://tandemdaily.com" style="color: #3B82F6; text-decoration: none; font-weight: 600;">Tandem Daily Games</a>
+                &nbsp;&nbsp;&middot;&nbsp;&nbsp;
+                <a href="https://dailyalchemy.fun" style="color: #3B82F6; text-decoration: none; font-weight: 600;">Daily Alchemy</a>
               </p>
             </td>
           </tr>

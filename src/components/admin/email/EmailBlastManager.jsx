@@ -73,6 +73,8 @@ export default function EmailBlastManager() {
   const [manualEmails, setManualEmails] = useState('');
   const [importedEmails, setImportedEmails] = useState([]);
   const [scheduledAt, setScheduledAt] = useState('');
+  const [buttonText, setButtonText] = useState('');
+  const [buttonUrl, setButtonUrl] = useState('');
   const [allUserCount, setAllUserCount] = useState(null);
 
   // UI state
@@ -129,6 +131,8 @@ export default function EmailBlastManager() {
     setManualEmails('');
     setImportedEmails([]);
     setScheduledAt('');
+    setButtonText('');
+    setButtonUrl('');
     setEditingBlast(null);
   };
 
@@ -153,6 +157,8 @@ export default function EmailBlastManager() {
       const d = new Date(blast.scheduled_at);
       setScheduledAt(d.toISOString().slice(0, 16));
     }
+    setButtonText(blast.button_text || '');
+    setButtonUrl(blast.button_url || '');
     setView('compose');
   };
 
@@ -176,12 +182,22 @@ export default function EmailBlastManager() {
     setTags(tags.filter((t) => t !== tag));
   };
 
-  // Import CSV/text file of emails
+  // Import CSV/text file of emails (max 1MB)
   const handleFileImport = (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
+    if (file.size > 1024 * 1024) {
+      showMessage('File too large. Maximum size is 1MB.', 'error');
+      if (fileInputRef.current) fileInputRef.current.value = '';
+      return;
+    }
+
     const reader = new FileReader();
+    reader.onerror = () => {
+      showMessage('Failed to read file', 'error');
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    };
     reader.onload = (event) => {
       const text = event.target.result;
       // Parse emails from CSV or newline-separated text
@@ -253,6 +269,8 @@ export default function EmailBlastManager() {
         recipientList: getRecipientList(),
         action,
         scheduledAt: action === 'schedule' ? new Date(scheduledAt).toISOString() : undefined,
+        buttonText: buttonText.trim() || undefined,
+        buttonUrl: buttonUrl.trim() || undefined,
       };
 
       let result;
@@ -589,6 +607,33 @@ Use blank lines for paragraph breaks."
             <p className="text-xs text-text-muted text-right">{body.length}/10,000</p>
           </div>
 
+          {/* Button (Optional) */}
+          <div className="bg-bg-surface rounded-lg p-4 space-y-3">
+            <label className="block text-xs font-bold text-text-secondary uppercase tracking-wider">
+              Button (Optional)
+            </label>
+            <div className="grid grid-cols-2 gap-3">
+              <input
+                type="text"
+                value={buttonText}
+                onChange={(e) => setButtonText(e.target.value)}
+                placeholder="Button text..."
+                maxLength={100}
+                className="p-3 rounded-lg border border-border-main bg-bg-surface dark:bg-gray-800 text-text-primary text-sm focus:outline-none focus:ring-2 focus:ring-accent-blue"
+              />
+              <input
+                type="url"
+                value={buttonUrl}
+                onChange={(e) => setButtonUrl(e.target.value)}
+                placeholder="https://..."
+                className="p-3 rounded-lg border border-border-main bg-bg-surface dark:bg-gray-800 text-text-primary text-sm focus:outline-none focus:ring-2 focus:ring-accent-blue"
+              />
+            </div>
+            {buttonText && !buttonUrl && (
+              <p className="text-xs text-accent-red">Enter a URL for the button</p>
+            )}
+          </div>
+
           {/* Category + Tags */}
           <div className="bg-bg-surface rounded-lg p-4 space-y-4">
             <div>
@@ -774,7 +819,13 @@ Use blank lines for paragraph breaks."
             </span>
           </div>
           <div className="bg-gray-100 dark:bg-gray-800 rounded-lg p-4 sticky top-4">
-            <EmailPreview subject={subject} body={body} category={category} />
+            <EmailPreview
+              subject={subject}
+              body={body}
+              category={category}
+              buttonText={buttonText}
+              buttonUrl={buttonUrl}
+            />
           </div>
         </div>
       </div>

@@ -12,15 +12,17 @@ CREATE TABLE IF NOT EXISTS email_blasts (
     subject TEXT NOT NULL,
     body TEXT NOT NULL,
     html TEXT NOT NULL,
-    category TEXT NOT NULL DEFAULT 'general',
+    category TEXT NOT NULL DEFAULT 'general' CHECK (category IN ('general', 'update', 'promotion', 'announcement', 'maintenance')),
     tags TEXT[] DEFAULT '{}',
-    recipient_type TEXT NOT NULL DEFAULT 'all',
+    recipient_type TEXT NOT NULL DEFAULT 'all' CHECK (recipient_type IN ('all', 'manual', 'import')),
     recipient_list TEXT[] DEFAULT '{}',
     recipient_count INTEGER DEFAULT 0,
-    status TEXT NOT NULL DEFAULT 'draft',
+    status TEXT NOT NULL DEFAULT 'draft' CHECK (status IN ('draft', 'scheduled', 'sending', 'sent', 'failed')),
     scheduled_at TIMESTAMP WITH TIME ZONE,
     sent_at TIMESTAMP WITH TIME ZONE,
     sent_by TEXT,
+    button_text TEXT,
+    button_url TEXT,
     error_message TEXT,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
@@ -40,6 +42,8 @@ COMMENT ON COLUMN email_blasts.status IS 'Email status: draft, scheduled, sendin
 COMMENT ON COLUMN email_blasts.scheduled_at IS 'When the email is scheduled to be sent (null for immediate)';
 COMMENT ON COLUMN email_blasts.sent_at IS 'When the email was actually sent';
 COMMENT ON COLUMN email_blasts.sent_by IS 'Admin username who sent the email';
+COMMENT ON COLUMN email_blasts.button_text IS 'Optional CTA button text';
+COMMENT ON COLUMN email_blasts.button_url IS 'Optional CTA button URL';
 COMMENT ON COLUMN email_blasts.error_message IS 'Error details if sending failed';
 
 -- Indexes
