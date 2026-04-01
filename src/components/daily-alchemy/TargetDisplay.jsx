@@ -109,7 +109,8 @@ export function StatsAndTargetRow({
               'flex items-center gap-1 transition-all duration-200',
               hintDisabled
                 ? 'opacity-40 cursor-not-allowed'
-                : 'hover:scale-105 hover:opacity-80 active:scale-95 cursor-pointer'
+                : 'hover:scale-105 hover:opacity-80 active:scale-95 cursor-pointer',
+              !hintDisabled && hintCooldownRemaining === 0 && 'animate-attention-pulse'
             )}
             aria-label="Use hint"
             title={

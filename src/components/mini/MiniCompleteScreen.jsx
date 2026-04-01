@@ -13,6 +13,7 @@ import { formatMiniTime, getMiniPuzzleInfoForDate } from '@/lib/miniUtils';
 import { generateMiniShareText } from '@/lib/miniShareText';
 import { loadMiniStats } from '@/lib/miniStorage';
 import ShareButton from '../game/ShareButton';
+import ShareImageCard from '@/components/shared/ShareImageCard';
 import LeaderboardModal from '../leaderboard/LeaderboardModal';
 import UnifiedArchiveCalendar from '../game/UnifiedArchiveCalendar';
 import SidebarMenu from '../navigation/SidebarMenu';
@@ -44,6 +45,18 @@ export default function MiniCompleteScreen({
   const [showLoginPopup, setShowLoginPopup] = useState(true);
 
   const perfectSolve = checksUsed === 0 && revealsUsed === 0 && mistakes === 0;
+
+  const getTimeBadge = (seconds) => {
+    if (seconds <= 30) return { label: 'Lightning!', color: 'text-yellow-500', emoji: '\u26A1' };
+    if (seconds <= 60)
+      return { label: 'Impressive!', color: 'text-green-500', emoji: '\uD83C\uDF1F' };
+    if (seconds <= 120) return { label: 'Solid!', color: 'text-blue-500', emoji: '\uD83D\uDC4D' };
+    if (seconds <= 300)
+      return { label: 'Steady!', color: 'text-purple-500', emoji: '\uD83C\uDFAF' };
+    return { label: 'Persevered!', color: 'text-orange-500', emoji: '\uD83D\uDCAA' };
+  };
+
+  const timeBadge = getTimeBadge(elapsedTime);
   const puzzleInfo = getMiniPuzzleInfoForDate(currentPuzzleDate);
   const puzzleNumber = puzzleInfo?.number || puzzle?.number || 0;
 
@@ -252,11 +265,34 @@ export default function MiniCompleteScreen({
                 </div>
               </div>
             </div>
+
+            {/* Time performance badge */}
+            <div className="mt-3 text-center">
+              <span className={`text-sm font-bold ${timeBadge.color}`}>
+                {timeBadge.emoji} {timeBadge.label}
+              </span>
+            </div>
           </div>
 
-          {/* Share button */}
-          <div className="mb-6">
+          {/* Share buttons */}
+          <div className="mb-6 space-y-2">
             <ShareButton shareText={shareText} />
+            <ShareImageCard
+              gameName="Daily Mini"
+              date={currentPuzzleDate || ''}
+              emoji="✏️"
+              message={
+                checksUsed === 0 && revealsUsed === 0 && mistakes === 0 ? 'Perfect Solve!' : ''
+              }
+              stats={[
+                { label: 'Time', value: formatMiniTime(elapsedTime) },
+                { label: 'Checks', value: String(checksUsed) },
+                { label: 'Reveals', value: String(revealsUsed) },
+              ]}
+              accentColor="bg-accent-yellow"
+              buttonLabel="Share as Image"
+              buttonClassName="bg-bg-surface dark:bg-gray-700 text-text-primary border-border-main hover:bg-gray-200 dark:hover:bg-gray-600"
+            />
           </div>
 
           {/* Action buttons */}

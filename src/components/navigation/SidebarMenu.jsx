@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useRouter, usePathname } from 'next/navigation';
 import { useTheme } from '@/contexts/ThemeContext';
@@ -44,18 +44,42 @@ export default function SidebarMenu({
   const router = useRouter();
   const pathname = usePathname();
 
-  // Close on escape key
+  const sidebarRef = useRef(null);
+  const closeButtonRef = useRef(null);
+
+  // Focus trap and escape key
   useEffect(() => {
     if (!isOpen) return;
 
-    const handleEscape = (e) => {
+    // Auto-focus close button when sidebar opens
+    setTimeout(() => closeButtonRef.current?.focus(), 100);
+
+    const handleKeyDown = (e) => {
       if (e.key === 'Escape') {
         onClose();
+        return;
+      }
+
+      // Trap focus within sidebar
+      if (e.key === 'Tab' && sidebarRef.current) {
+        const focusable = sidebarRef.current.querySelectorAll(
+          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+        );
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last?.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first?.focus();
+        }
       }
     };
 
-    document.addEventListener('keydown', handleEscape);
-    return () => document.removeEventListener('keydown', handleEscape);
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
   }, [isOpen, onClose]);
 
   // Prevent body scroll when open
@@ -204,6 +228,7 @@ export default function SidebarMenu({
               stiffness: 300,
               duration: reduceMotion ? 0.2 : undefined,
             }}
+            ref={sidebarRef}
             className={`fixed top-0 right-0 bottom-0 w-[22rem] max-w-[85vw] z-50 overflow-y-auto font-sans ${
               highContrast
                 ? 'bg-hc-surface border-l-2 border-hc-border'
@@ -211,6 +236,7 @@ export default function SidebarMenu({
             }`}
             role="dialog"
             aria-label="Navigation menu"
+            aria-modal="true"
           >
             {/* Header with Close button and Theme/Sound toggles */}
             <div className="sticky top-0 z-10 flex justify-between items-center p-4 pt-safe bg-inherit">
@@ -255,6 +281,7 @@ export default function SidebarMenu({
 
               {/* Close button */}
               <motion.button
+                ref={closeButtonRef}
                 onClick={onClose}
                 className="w-10 h-10 flex items-center justify-center transition-opacity hover:opacity-70 active:opacity-50"
                 aria-label="Close menu"

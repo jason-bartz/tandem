@@ -6,46 +6,35 @@ import { isStandaloneAlchemy } from '@/lib/standalone';
  * Skeleton for a single stats section
  */
 function SectionSkeleton({ themeColor, reduceMotion, highContrast, index }) {
-  // Define theme-specific colors matching StatsSection
-  const getBackgroundColors = () => {
-    if (highContrast) {
-      return 'bg-hc-surface border border-hc-border';
-    }
-
-    if (themeColor === 'blue') {
-      return 'bg-sky-500 dark:bg-sky-600';
-    } else if (themeColor === 'yellow') {
-      return 'bg-yellow-500 dark:bg-yellow-600';
-    } else if (themeColor === 'green') {
-      return 'bg-soup-primary dark:bg-soup-hover';
-    } else if (themeColor === 'red') {
-      return 'bg-red-500 dark:bg-red-600';
-    }
-
-    return 'bg-gray-50 dark:bg-gray-800/50 border-gray-200 dark:border-gray-700';
+  // Left accent border color per game (matches StatsSection)
+  const getAccentBorder = () => {
+    if (highContrast) return 'border-l-hc-border';
+    if (themeColor === 'blue') return 'border-l-sky-500';
+    if (themeColor === 'yellow') return 'border-l-yellow-500';
+    if (themeColor === 'green') return 'border-l-soup-primary';
+    if (themeColor === 'red') return 'border-l-red-500';
+    return 'border-l-gray-300';
   };
 
-  // Skeleton shimmer overlay color based on theme
-  const getShimmerColor = () => {
-    if (themeColor === 'yellow') {
-      return 'bg-black/10';
-    }
-    return 'bg-white/20';
-  };
+  const shimmer = 'bg-gray-200 dark:bg-gray-700';
 
   return (
-    <div className={`rounded-lg overflow-hidden mb-4 ${getBackgroundColors()}`}>
+    <div
+      className={`rounded-lg overflow-hidden mb-4 border-l-4 ${getAccentBorder()} ${
+        highContrast ? 'bg-hc-surface' : 'bg-bg-surface dark:bg-gray-800'
+      }`}
+    >
       {/* Section Header */}
       <div className="px-4 py-3">
         <div className="flex items-center">
           {/* Icon placeholder */}
           <div
-            className={`w-6 h-6 rounded ${getShimmerColor()} mr-2 ${!reduceMotion ? 'skeleton-shimmer' : ''}`}
+            className={`w-6 h-6 rounded ${shimmer} mr-2 ${!reduceMotion ? 'skeleton-shimmer' : ''}`}
             style={{ animationDelay: `${index * 200}ms` }}
           />
           {/* Title placeholder */}
           <div
-            className={`h-6 w-32 rounded ${getShimmerColor()} ${!reduceMotion ? 'skeleton-shimmer' : ''}`}
+            className={`h-6 w-32 rounded ${shimmer} ${!reduceMotion ? 'skeleton-shimmer' : ''}`}
             style={{ animationDelay: `${index * 200 + 50}ms` }}
           />
         </div>
@@ -56,20 +45,15 @@ function SectionSkeleton({ themeColor, reduceMotion, highContrast, index }) {
         {/* Stats Cards Grid - 4 columns like actual layout */}
         <div className="grid grid-cols-4 gap-3">
           {[0, 1, 2, 3].map((i) => (
-            <div
-              key={i}
-              className={`rounded-xl p-2 text-center ${
-                highContrast ? 'bg-hc-surface/50' : `${getShimmerColor()}`
-              }`}
-            >
+            <div key={i} className="text-center">
               {/* Stat value */}
               <div
-                className={`h-6 w-10 mx-auto rounded ${getShimmerColor()} mb-1 ${!reduceMotion ? 'skeleton-shimmer' : ''}`}
+                className={`h-7 w-12 mx-auto rounded ${shimmer} mb-1 ${!reduceMotion ? 'skeleton-shimmer' : ''}`}
                 style={{ animationDelay: `${index * 200 + i * 100}ms` }}
               />
               {/* Stat label */}
               <div
-                className={`h-3 w-full rounded ${getShimmerColor()} ${!reduceMotion ? 'skeleton-shimmer' : ''}`}
+                className={`h-3 w-full rounded ${shimmer} ${!reduceMotion ? 'skeleton-shimmer' : ''}`}
                 style={{ animationDelay: `${index * 200 + i * 100 + 50}ms` }}
               />
             </div>
@@ -84,31 +68,26 @@ export default function StatsModalSkeleton() {
   const { reduceMotion, highContrast } = useTheme();
 
   if (isStandaloneAlchemy) {
+    const shimmer = 'bg-gray-200 dark:bg-gray-700';
+
     return (
       <>
         {/* Stats card (no header) */}
         <div
-          className={`rounded-lg overflow-hidden mb-4 ${
-            highContrast
-              ? 'bg-hc-surface border border-hc-border'
-              : 'bg-soup-primary dark:bg-soup-hover'
+          className={`rounded-lg overflow-hidden mb-4 border-l-4 border-l-soup-primary ${
+            highContrast ? 'bg-hc-surface' : 'bg-bg-surface dark:bg-gray-800'
           }`}
         >
           <div className="px-4 pt-4 pb-4">
             <div className="grid grid-cols-4 gap-3">
               {[0, 1, 2, 3].map((i) => (
-                <div
-                  key={i}
-                  className={`rounded-xl p-2 text-center ${
-                    highContrast ? 'bg-hc-surface/50' : 'bg-white/20'
-                  }`}
-                >
+                <div key={i} className="text-center">
                   <div
-                    className={`h-6 w-10 mx-auto rounded bg-white/20 mb-1 ${!reduceMotion ? 'skeleton-shimmer' : ''}`}
+                    className={`h-7 w-12 mx-auto rounded ${shimmer} mb-1 ${!reduceMotion ? 'skeleton-shimmer' : ''}`}
                     style={{ animationDelay: `${i * 100}ms` }}
                   />
                   <div
-                    className={`h-3 w-full rounded bg-white/20 ${!reduceMotion ? 'skeleton-shimmer' : ''}`}
+                    className={`h-3 w-full rounded ${shimmer} ${!reduceMotion ? 'skeleton-shimmer' : ''}`}
                     style={{ animationDelay: `${i * 100 + 50}ms` }}
                   />
                 </div>

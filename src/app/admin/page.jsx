@@ -16,9 +16,21 @@ import BotLeaderboardManager from '@/components/admin/BotLeaderboardManager';
 import AvatarManager from '@/components/admin/AvatarManager';
 import UserManagement from '@/components/admin/users/UserManagement';
 import AnnouncementManager from '@/components/admin/AnnouncementManager';
+import AnalyticsDashboard from '@/components/admin/AnalyticsDashboard';
 import authService from '@/services/auth.service';
 import logger from '@/lib/logger';
 import { ASSET_VERSION } from '@/lib/constants';
+
+const TABS = [
+  { id: 'calendar', label: 'Calendar' },
+  { id: 'elements', label: 'Elements' },
+  { id: 'feedback', label: 'Feedback', hasBadge: true },
+  { id: 'avatars', label: 'Avatars' },
+  { id: 'leaderboards', label: 'Leaderboards' },
+  { id: 'users', label: 'Users' },
+  { id: 'announcements', label: 'Announce' },
+  { id: 'analytics', label: 'Analytics' },
+];
 
 export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState('calendar');
@@ -354,180 +366,74 @@ export default function AdminDashboard() {
     }
   };
 
-  return (
-    <div className="px-2 py-3 sm:px-4 sm:py-5 md:p-6">
-      <div className="mb-6">
-        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mb-4">
-          <h2 className="text-xl sm:text-2xl font-bold text-text-primary">
-            Puzzle & Game Management
-          </h2>
-        </div>
-        <p className="text-sm text-text-secondary font-medium">Manage Daily Puzzles and Settings</p>
-      </div>
+  const handleTabClick = (tabId) => {
+    setActiveTab(tabId);
+    if (tabId === 'calendar') {
+      setActiveEditor(null);
+    }
+  };
 
-      {/* Main tabs: Calendar and Feedback */}
-      <div className="border-b border-border-light mb-6">
-        <nav className="-mb-[3px] flex space-x-2 sm:space-x-4 md:space-x-8">
-          <button
-            onClick={() => {
-              setActiveTab('calendar');
-              setActiveEditor(null);
-            }}
-            className={`
-              py-3 px-2 sm:px-4 border-b-2 font-bold text-sm sm:text-base whitespace-nowrap transition-all flex items-center gap-1 sm:gap-2
-              ${
-                activeTab === 'calendar'
-                  ? 'border-accent-yellow text-text-primary bg-accent-yellow/20'
-                  : 'border-transparent text-text-secondary hover:text-text-primary hover:border-text-muted'
-              }
-            `}
-          >
-            <Image src="/ui/shared/archive.png" alt="" width={20} height={20} />
-            <span className="hidden sm:inline">Calendar</span>
-          </button>
-          <button
-            onClick={() => setActiveTab('elements')}
-            className={`
-              py-3 px-2 sm:px-4 border-b-2 font-bold text-sm sm:text-base whitespace-nowrap transition-all flex items-center gap-1 sm:gap-2
-              ${
-                activeTab === 'elements'
-                  ? 'border-green-500 text-text-primary bg-green-500/20'
-                  : 'border-transparent text-text-secondary hover:text-text-primary hover:border-text-muted'
-              }
-            `}
-          >
-            <Image
-              src={`/ui/games/daily-alchemy.png?v=${ASSET_VERSION}`}
-              alt=""
-              width={20}
-              height={20}
-            />
-            <span className="hidden sm:inline">Elements</span>
-          </button>
-          <button
-            onClick={() => setActiveTab('feedback')}
-            className={`
-              py-3 px-2 sm:px-4 border-b-2 font-bold text-sm sm:text-base whitespace-nowrap transition-all flex items-center gap-1 sm:gap-2 relative
-              ${
-                activeTab === 'feedback'
-                  ? 'border-accent-blue text-text-primary bg-accent-blue/20'
-                  : 'border-transparent text-text-secondary hover:text-text-primary hover:border-text-muted'
-              }
-            `}
-          >
-            <Image src="/ui/shared/feedback.png" alt="" width={20} height={20} />
-            <span className="hidden sm:inline">Feedback</span>
-            {feedbackCounts?.new > 0 && (
-              <span className="absolute -top-1 -right-1 flex items-center justify-center min-w-[20px] h-5 px-1.5 bg-accent-red text-white text-xs font-bold rounded-full">
-                {feedbackCounts.new}
-              </span>
-            )}
-          </button>
-          <button
-            onClick={() => setActiveTab('avatars')}
-            className={`
-              py-3 px-2 sm:px-4 border-b-2 font-bold text-sm sm:text-base whitespace-nowrap transition-all flex items-center gap-1 sm:gap-2
-              ${
-                activeTab === 'avatars'
-                  ? 'border-accent-pink text-text-primary bg-accent-pink/20'
-                  : 'border-transparent text-text-secondary hover:text-text-primary hover:border-text-muted'
-              }
-            `}
-          >
-            <Image src="/ui/shared/avatars.png" alt="" width={20} height={20} />
-            <span className="hidden sm:inline">Avatars</span>
-          </button>
-          <button
-            onClick={() => setActiveTab('leaderboards')}
-            className={`
-              py-3 px-2 sm:px-4 border-b-2 font-bold text-sm sm:text-base whitespace-nowrap transition-all flex items-center gap-1 sm:gap-2
-              ${
-                activeTab === 'leaderboards'
-                  ? 'border-accent-purple text-text-primary bg-accent-purple/20'
-                  : 'border-transparent text-text-secondary hover:text-text-primary hover:border-text-muted'
-              }
-            `}
-          >
-            <Image src="/ui/shared/leaderboard-admin.png" alt="" width={20} height={20} />
-            <span className="hidden sm:inline">Leaderboards</span>
-          </button>
-          <button
-            onClick={() => setActiveTab('users')}
-            className={`
-              py-3 px-2 sm:px-4 border-b-2 font-bold text-sm sm:text-base whitespace-nowrap transition-all flex items-center gap-1 sm:gap-2
-              ${
-                activeTab === 'users'
-                  ? 'border-orange-500 text-text-primary bg-orange-500/20'
-                  : 'border-transparent text-text-secondary hover:text-text-primary hover:border-text-muted'
-              }
-            `}
-          >
-            <Image src="/ui/shared/users.png" alt="" width={20} height={20} />
-            <span className="hidden sm:inline">Users</span>
-          </button>
-          <button
-            onClick={() => setActiveTab('announcements')}
-            className={`
-              py-3 px-2 sm:px-4 border-b-2 font-bold text-sm sm:text-base whitespace-nowrap transition-all flex items-center gap-1 sm:gap-2
-              ${
-                activeTab === 'announcements'
-                  ? 'border-accent-blue text-text-primary bg-accent-blue/20'
-                  : 'border-transparent text-text-secondary hover:text-text-primary hover:border-text-muted'
-              }
-            `}
-          >
-            <span className="text-base">📢</span>
-            <span className="hidden sm:inline">Announce</span>
-          </button>
+  return (
+    <div className="px-2 py-3 sm:px-4 sm:py-4 md:px-6 md:py-5">
+      {/* Tabs */}
+      <div className="border-b border-border-light">
+        <nav className="-mb-px flex gap-1">
+          {TABS.map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => handleTabClick(tab.id)}
+              className={`
+                relative py-2.5 px-4 text-sm font-semibold whitespace-nowrap transition-colors
+                ${
+                  activeTab === tab.id
+                    ? 'border-b-2 border-text-primary text-text-primary'
+                    : 'text-text-muted hover:text-text-secondary'
+                }
+              `}
+            >
+              {tab.label}
+              {tab.hasBadge && feedbackCounts?.new > 0 && (
+                <span className="absolute -top-0.5 -right-0.5 flex items-center justify-center min-w-[18px] h-[18px] px-1 bg-accent-red text-white text-[10px] font-bold rounded-full">
+                  {feedbackCounts.new}
+                </span>
+              )}
+            </button>
+          ))}
         </nav>
       </div>
 
-      <div className="mt-4 sm:mt-6 min-h-[400px] sm:min-h-[500px]">
+      {/* Content */}
+      <div className="mt-5 min-h-[500px]">
         {activeTab === 'calendar' && (
           <>
             {activeEditor ? (
-              // Show editor when a game is selected
               renderEditor()
-            ) : (
-              // Show unified calendar with sub-tabs
-              <div className="bg-bg-surface rounded-lg dark:">
-                <div className="px-3 sm:px-6 py-3 sm:py-4 border-b border-border-light">
-                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                    <h3 className="text-base sm:text-lg font-bold text-text-primary">
-                      {calendarSubTab === 'calendar' ? 'All Games Calendar' : 'Theme Tracker'}
-                    </h3>
-                    {calendarSubTab === 'themes' && (
-                      <button
-                        onClick={() => setCalendarSubTab('calendar')}
-                        className="px-2 sm:px-3 py-1 text-xs sm:text-sm rounded-lg font-bold transition-all flex items-center gap-1 bg-bg-card text-text-secondary hover:bg-accent-yellow/20"
-                      >
-                        <Image src="/ui/shared/archive.png" alt="" width={16} height={16} />
-                        <span className="hidden sm:inline">← Back to Calendar</span>
-                      </button>
-                    )}
-                  </div>
+            ) : calendarSubTab === 'themes' ? (
+              <div>
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-lg font-bold text-text-primary">Theme Tracker</h3>
+                  <button
+                    onClick={() => setCalendarSubTab('calendar')}
+                    className="px-3 py-1.5 text-sm rounded-md font-semibold text-text-secondary bg-bg-surface hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+                  >
+                    Back to Calendar
+                  </button>
                 </div>
-
-                <div className="p-3 sm:p-6">
-                  {calendarSubTab === 'calendar' && (
-                    <UnifiedPuzzleCalendar
-                      onSelectDate={handleDateSelect}
-                      onRefresh={(fn) => {
-                        refreshCalendarRef.current = fn;
-                      }}
-                    />
-                  )}
-                  {calendarSubTab === 'themes' && (
-                    <ThemeTracker
-                      onEditPuzzle={(puzzle) => {
-                        setSelectedDate(puzzle.date);
-                        setEditingPuzzle(puzzle);
-                        setActiveEditor('tandem');
-                      }}
-                    />
-                  )}
-                </div>
+                <ThemeTracker
+                  onEditPuzzle={(puzzle) => {
+                    setSelectedDate(puzzle.date);
+                    setEditingPuzzle(puzzle);
+                    setActiveEditor('tandem');
+                  }}
+                />
               </div>
+            ) : (
+              <UnifiedPuzzleCalendar
+                onSelectDate={handleDateSelect}
+                onRefresh={(fn) => {
+                  refreshCalendarRef.current = fn;
+                }}
+              />
             )}
           </>
         )}
@@ -537,6 +443,7 @@ export default function AdminDashboard() {
         {activeTab === 'avatars' && <AvatarManager />}
         {activeTab === 'users' && <UserManagement />}
         {activeTab === 'announcements' && <AnnouncementManager />}
+        {activeTab === 'analytics' && <AnalyticsDashboard />}
       </div>
 
       {/* Game selector modal */}
@@ -565,7 +472,7 @@ export default function AdminDashboard() {
       {showThemesModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="bg-bg-surface rounded-lg w-full max-w-6xl max-h-[90vh] flex flex-col">
-            <div className="px-4 sm:px-6 py-3 sm:py-4 border-b-2 flex items-center justify-between">
+            <div className="px-4 sm:px-6 py-3 sm:py-4 border-b border-border-light flex items-center justify-between">
               <h3 className="text-base sm:text-lg font-bold text-text-primary">Theme Tracker</h3>
               <button
                 onClick={() => setShowThemesModal(false)}
@@ -604,7 +511,7 @@ export default function AdminDashboard() {
       {showConnectionsModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="bg-bg-surface rounded-lg w-full max-w-6xl max-h-[90vh] flex flex-col">
-            <div className="px-4 sm:px-6 py-3 sm:py-4 border-b-2 flex items-center justify-between">
+            <div className="px-4 sm:px-6 py-3 sm:py-4 border-b border-border-light flex items-center justify-between">
               <h3 className="text-base sm:text-lg font-bold text-text-primary">
                 Connection Tracker
               </h3>

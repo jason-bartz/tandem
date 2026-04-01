@@ -49,6 +49,6 @@ export function useTimer(isRunning = false) {
     elapsed,
     reset,
     pause,
-    resume
+    resume,
   };
 }

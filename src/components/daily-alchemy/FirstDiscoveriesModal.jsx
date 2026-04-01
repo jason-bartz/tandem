@@ -1,8 +1,8 @@
 'use client';
 
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import Image from 'next/image';
-import { X } from 'lucide-react';
+import { X, Search, ArrowUpDown } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useAuth } from '@/contexts/AuthContext';
@@ -263,6 +263,26 @@ function DiscoveryCard({ discovery, onClick }) {
   );
 }
 
+const SORT_OPTIONS = [
+  { value: 'date', label: 'Date Discovered' },
+  { value: 'alpha', label: 'A–Z' },
+  { value: 'random', label: 'Random' },
+];
+
+/**
+ * Deterministic shuffle using a seed so it stays stable within a session
+ */
+function seededShuffle(arr, seed) {
+  const shuffled = [...arr];
+  let s = seed;
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    s = (s * 16807 + 0) % 2147483647;
+    const j = s % (i + 1);
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled;
+}
+
 /**
  * FirstDiscoveriesModal - Modal showing all user's first discoveries
  */
@@ -274,28 +294,44 @@ export default function FirstDiscoveriesModal({ isOpen, onClose }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedDiscovery, setSelectedDiscovery] = useState(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [sortBy, setSortBy] = useState('date');
+  const [randomSeed] = useState(() => Math.floor(Math.random() * 2147483647));
+  const PAGE_SIZE = 60;
+  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
+  const scrollRef = useRef(null);
 
-  const fetchDiscoveries = useCallback(async () => {
+  const fetchAllDiscoveries = useCallback(async () => {
     if (!session) return;
 
     setLoading(true);
     setError(null);
 
     try {
-      const response = await fetch('/api/daily-alchemy/discoveries?limit=200', {
-        credentials: 'include',
-        headers: {
-          ...(session?.access_token && { Authorization: `Bearer ${session.access_token}` }),
-        },
-      });
+      const allDiscoveries = [];
+      let page = 1;
+      let totalPages = 1;
 
-      if (!response.ok) {
-        throw new Error('Failed to fetch discoveries');
+      while (page <= totalPages) {
+        const response = await fetch(`/api/daily-alchemy/discoveries?page=${page}&limit=1000`, {
+          credentials: 'include',
+          headers: {
+            ...(session?.access_token && {
+              Authorization: `Bearer ${session.access_token}`,
+            }),
+          },
+        });
+
+        if (!response.ok) throw new Error('Failed to fetch discoveries');
+
+        const data = await response.json();
+        allDiscoveries.push(...(data.discoveries || []));
+        totalPages = data.pagination?.totalPages ?? 1;
+        setTotalCount(data.pagination?.total ?? allDiscoveries.length);
+        page++;
       }
 
-      const data = await response.json();
-      setDiscoveries(data.discoveries || []);
-      setTotalCount(data.pagination?.total ?? (data.discoveries || []).length);
+      setDiscoveries(allDiscoveries);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -305,9 +341,52 @@ export default function FirstDiscoveriesModal({ isOpen, onClose }) {
 
   useEffect(() => {
     if (isOpen && session) {
-      fetchDiscoveries();
+      fetchAllDiscoveries();
     }
-  }, [isOpen, session, fetchDiscoveries]);
+  }, [isOpen, session, fetchAllDiscoveries]);
+
+  // Reset visible count when search/sort changes
+  useEffect(() => {
+    setVisibleCount(PAGE_SIZE);
+  }, [searchQuery, sortBy]);
+
+  const filteredAndSorted = useMemo(() => {
+    let result = discoveries;
+
+    // Filter by search
+    if (searchQuery.trim()) {
+      const q = searchQuery.trim().toLowerCase();
+      result = result.filter((d) => d.resultElement.toLowerCase().includes(q));
+    }
+
+    // Sort
+    switch (sortBy) {
+      case 'alpha':
+        result = [...result].sort((a, b) => a.resultElement.localeCompare(b.resultElement));
+        break;
+      case 'random':
+        result = seededShuffle(result, randomSeed);
+        break;
+      case 'date':
+      default:
+        // Already sorted by date from API (newest first)
+        break;
+    }
+
+    return result;
+  }, [discoveries, searchQuery, sortBy, randomSeed]);
+
+  const visibleDiscoveries = filteredAndSorted.slice(0, visibleCount);
+  const hasMore = visibleCount < filteredAndSorted.length;
+
+  // Infinite scroll handler
+  const handleScroll = useCallback(() => {
+    const el = scrollRef.current;
+    if (!el || !hasMore) return;
+    if (el.scrollTop + el.clientHeight >= el.scrollHeight - 200) {
+      setVisibleCount((prev) => prev + PAGE_SIZE);
+    }
+  }, [hasMore]);
 
   return (
     <LeftSidePanel
@@ -317,6 +396,8 @@ export default function FirstDiscoveriesModal({ isOpen, onClose }) {
       maxWidth="550px"
       headerClassName="border-b-0"
       contentClassName="p-0 relative"
+      scrollRef={scrollRef}
+      onScroll={handleScroll}
     >
       {/* Game name header with icon - hidden on standalone */}
       {!isStandaloneAlchemy && (
@@ -364,7 +445,7 @@ export default function FirstDiscoveriesModal({ isOpen, onClose }) {
           <div className="text-center py-12">
             <p className="text-red-500 dark:text-red-400">{error}</p>
             <button
-              onClick={fetchDiscoveries}
+              onClick={fetchAllDiscoveries}
               className="mt-4 px-4 py-2 text-sm font-medium text-soup-primary hover:underline"
             >
               Try again
@@ -389,15 +470,83 @@ export default function FirstDiscoveriesModal({ isOpen, onClose }) {
             <p className="text-xs text-gray-500 dark:text-gray-400 mb-3">
               You discovered {totalCount} element{totalCount !== 1 ? 's' : ''} before anyone else
             </p>
-            <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
-              {discoveries.map((discovery) => (
-                <DiscoveryCard
-                  key={discovery.id}
-                  discovery={discovery}
-                  onClick={() => setSelectedDiscovery(discovery)}
+
+            {/* Search and sort controls */}
+            <div className="flex gap-2 mb-3">
+              <div className="relative flex-1">
+                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                <input
+                  type="text"
+                  placeholder="Search elements..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className={cn(
+                    'w-full pl-8 pr-3 py-2 text-sm rounded-xl',
+                    'bg-bg-card dark:bg-gray-800',
+                    'border-2 border-gray-200 dark:border-gray-600',
+                    'text-gray-900 dark:text-white',
+                    'placeholder:text-gray-400',
+                    'focus:outline-none focus:border-soup-primary',
+                    'transition-colors',
+                    highContrast && 'border-hc-border'
+                  )}
                 />
-              ))}
+              </div>
+              <div className="relative">
+                <ArrowUpDown className="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+                <select
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value)}
+                  className={cn(
+                    'appearance-none pl-8 pr-8 py-2 text-sm rounded-xl cursor-pointer',
+                    'bg-bg-card dark:bg-gray-800',
+                    'border-2 border-gray-200 dark:border-gray-600',
+                    'text-gray-900 dark:text-white',
+                    'focus:outline-none focus:border-soup-primary',
+                    'transition-colors',
+                    highContrast && 'border-hc-border'
+                  )}
+                >
+                  {SORT_OPTIONS.map((opt) => (
+                    <option key={opt.value} value={opt.value}>
+                      {opt.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
             </div>
+
+            {filteredAndSorted.length === 0 ? (
+              <div className="text-center py-8">
+                <p className="text-sm text-gray-500 dark:text-gray-400">
+                  No elements matching &ldquo;{searchQuery}&rdquo;
+                </p>
+              </div>
+            ) : (
+              <>
+                {searchQuery && (
+                  <p className="text-xs text-gray-400 dark:text-gray-500 mb-2">
+                    {filteredAndSorted.length} result{filteredAndSorted.length !== 1 ? 's' : ''}
+                  </p>
+                )}
+                <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
+                  {visibleDiscoveries.map((discovery) => (
+                    <DiscoveryCard
+                      key={discovery.id}
+                      discovery={discovery}
+                      onClick={() => setSelectedDiscovery(discovery)}
+                    />
+                  ))}
+                </div>
+                {hasMore && (
+                  <div className="text-center py-4">
+                    <p className="text-xs text-gray-400 dark:text-gray-500">
+                      Showing {visibleCount} of {filteredAndSorted.length} — scroll for more
+                    </p>
+                  </div>
+                )}
+              </>
+            )}
           </>
         )}
       </div>

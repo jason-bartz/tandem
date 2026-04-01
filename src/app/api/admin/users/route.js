@@ -27,7 +27,7 @@ async function getOverviewMetrics(supabase) {
   const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString();
   const weekStart = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 7).toISOString();
 
-  const [totalResult, newTodayResult, newWeekResult, subscriberResult] = await Promise.all([
+  const [totalResult, newTodayResult, newWeekResult] = await Promise.all([
     supabase.from('users').select('id', { count: 'exact', head: true }),
     supabase
       .from('users')
@@ -37,17 +37,12 @@ async function getOverviewMetrics(supabase) {
       .from('users')
       .select('id', { count: 'exact', head: true })
       .gte('created_at', weekStart),
-    supabase
-      .from('subscriptions')
-      .select('id', { count: 'exact', head: true })
-      .eq('status', 'active'),
   ]);
 
   return {
     totalUsers: totalResult.count || 0,
     newToday: newTodayResult.count || 0,
     newThisWeek: newWeekResult.count || 0,
-    activeSubscriptions: subscriberResult.count || 0,
   };
 }
 
@@ -98,15 +93,6 @@ export async function GET(request) {
       throw new Error('Failed to fetch users');
     }
 
-    // Fetch active subscription user IDs for this page
-    const userIds = (users || []).map((u) => u.id);
-    const { data: activeSubscriptions } = await supabase
-      .from('subscriptions')
-      .select('user_id')
-      .in('user_id', userIds)
-      .eq('status', 'active');
-    const subscriberSet = new Set((activeSubscriptions || []).map((s) => s.user_id));
-
     // Enrich with auth data for this page
     const enrichedUsers = await Promise.all(
       (users || []).map(async (user) => {
@@ -122,7 +108,6 @@ export async function GET(request) {
             isAnonymous: authData?.user?.is_anonymous || false,
             createdAt: authData?.user?.created_at || user.created_at,
             lastSignInAt: authData?.user?.last_sign_in_at || null,
-            hasSubscription: subscriberSet.has(user.id),
           };
         } catch {
           // If auth lookup fails, return what we have
@@ -136,7 +121,6 @@ export async function GET(request) {
             isAnonymous: false,
             createdAt: user.created_at,
             lastSignInAt: null,
-            hasSubscription: subscriberSet.has(user.id),
           };
         }
       })

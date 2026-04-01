@@ -21,6 +21,7 @@ export default function PuzzleRow({
   isMobilePhone = false,
   onKeyboardInput = null, // Callback for keyboard events (ENTER)
   themeColor = '#3B82F6', // Theme color for active blocks
+  showCorrectFlash = false,
 }) {
   const { highContrast, reduceMotion } = useTheme();
   const { hoverHandlers } = useHoverAnimation();
@@ -78,6 +79,10 @@ export default function PuzzleRow({
           >
             {emoji}
           </span>
+          {/* Correct answer flash */}
+          {showCorrectFlash && !reduceMotion && (
+            <span className="absolute -top-1 -right-1 text-sm animate-fade-in">✓</span>
+          )}
         </div>
       </div>
       <div className="flex-1 min-w-0">

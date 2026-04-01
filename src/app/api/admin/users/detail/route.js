@@ -42,6 +42,7 @@ export async function GET(request) {
       reelResult,
       alchemyResult,
       achievementsResult,
+      firstDiscoveriesResult,
     ] = await Promise.all([
       supabase.auth.admin.getUserById(userId),
       supabase.from('users').select('*').eq('id', userId).maybeSingle(),
@@ -59,6 +60,10 @@ export async function GET(request) {
       supabase
         .from('user_achievements')
         .select('achievement_id, unlocked_at')
+        .eq('user_id', userId),
+      supabase
+        .from('element_soup_first_discoveries')
+        .select('id', { count: 'exact', head: true })
         .eq('user_id', userId),
     ]);
 
@@ -147,6 +152,7 @@ export async function GET(request) {
                 totalSolved: alchemyStats.total_puzzles_solved || 0,
                 currentStreak: alchemyStats.current_streak || 0,
                 bestStreak: alchemyStats.best_streak || 0,
+                firstDiscoveries: firstDiscoveriesResult?.count || 0,
               }
             : null,
         },

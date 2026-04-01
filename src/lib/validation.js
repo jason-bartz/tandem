@@ -11,7 +11,7 @@ const patterns = {
   date: /^\d{4}-\d{2}-\d{2}$/,
   email: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
   alphanumeric: /^[a-zA-Z0-9]+$/,
-  safeString: /^[a-zA-Z0-9\s\-_.,!?'"]+$/
+  safeString: /^[a-zA-Z0-9\s\-_.,!?'"]+$/,
 };
 
 // Common schemas
@@ -22,12 +22,18 @@ export const schemas = {
   // Puzzle validation
   puzzle: z.object({
     theme: z.string().min(1).max(100),
-    puzzles: z.array(
-      z.object({
-        emoji: z.string().min(1).max(20),
-        answer: z.string().min(1).max(50).transform(val => val.toUpperCase())
-      })
-    ).length(4)
+    puzzles: z
+      .array(
+        z.object({
+          emoji: z.string().min(1).max(20),
+          answer: z
+            .string()
+            .min(1)
+            .max(50)
+            .transform((val) => val.toUpperCase()),
+        })
+      )
+      .length(4),
   }),
 
   // Game state validation
@@ -36,12 +42,12 @@ export const schemas = {
     time: z.number().min(0).max(86400), // Max 24 hours
     mistakes: z.number().min(0).max(4),
     hintsUsed: z.number().min(0).max(1).optional(),
-    shared: z.boolean().optional()
+    shared: z.boolean().optional(),
   }),
 
   // Admin authentication
   adminAuth: z.object({
-    password: z.string().min(8).max(100)
+    password: z.string().min(8).max(100),
   }),
 
   // Stats validation
@@ -51,31 +57,37 @@ export const schemas = {
     currentStreak: z.number().min(0),
     maxStreak: z.number().min(0),
     averageTime: z.number().min(0).optional(),
-    averageMistakes: z.number().min(0).max(4).optional()
+    averageMistakes: z.number().min(0).max(4).optional(),
   }),
 
   // User answer validation
-  userAnswer: z.string()
+  userAnswer: z
+    .string()
     .min(1)
     .max(30)
-    .transform(val => val.trim().toUpperCase())
-    .refine(val => patterns.safeString.test(val), 'Invalid characters in answer'),
+    .transform((val) => val.trim().toUpperCase())
+    .refine((val) => patterns.safeString.test(val), 'Invalid characters in answer'),
 
   // Bulk import validation
   bulkImport: z.object({
-    puzzles: z.array(
-      z.object({
-        date: z.string().regex(patterns.date),
-        theme: z.string().min(1).max(100),
-        puzzles: z.array(
-          z.object({
-            emoji: z.string().min(1).max(20),
-            answer: z.string().min(1).max(50)
-          })
-        ).length(4)
-      })
-    ).min(1).max(100) // Max 100 puzzles at once
-  })
+    puzzles: z
+      .array(
+        z.object({
+          date: z.string().regex(patterns.date),
+          theme: z.string().min(1).max(100),
+          puzzles: z
+            .array(
+              z.object({
+                emoji: z.string().min(1).max(20),
+                answer: z.string().min(1).max(50),
+              })
+            )
+            .length(4),
+        })
+      )
+      .min(1)
+      .max(100), // Max 100 puzzles at once
+  }),
 };
 
 /**
@@ -93,20 +105,20 @@ class ValidationService {
       if (error instanceof z.ZodError) {
         logger.warn('Validation failed', {
           errors: error.errors,
-          data: this.sanitizeForLogging(data)
+          data: this.sanitizeForLogging(data),
         });
         return {
           success: false,
-          errors: error.errors.map(e => ({
+          errors: error.errors.map((e) => ({
             field: e.path.join('.'),
-            message: e.message
-          }))
+            message: e.message,
+          })),
         };
       }
       logger.error('Unexpected validation error', error);
       return {
         success: false,
-        errors: [{ field: 'unknown', message: 'Validation error occurred' }]
+        errors: [{ field: 'unknown', message: 'Validation error occurred' }],
       };
     }
   }
@@ -130,13 +142,15 @@ class ValidationService {
    * Sanitize data for logging (remove sensitive info)
    */
   sanitizeForLogging(data) {
-    if (!data || typeof data !== 'object') {return data;}
+    if (!data || typeof data !== 'object') {
+      return data;
+    }
 
     const sanitized = { ...data };
     const sensitiveKeys = ['password', 'token', 'secret', 'auth', 'key'];
 
-    Object.keys(sanitized).forEach(key => {
-      if (sensitiveKeys.some(sensitive => key.toLowerCase().includes(sensitive))) {
+    Object.keys(sanitized).forEach((key) => {
+      if (sensitiveKeys.some((sensitive) => key.toLowerCase().includes(sensitive))) {
         sanitized[key] = '[REDACTED]';
       }
     });
@@ -154,12 +168,12 @@ class ValidationService {
         success: false,
         status: 400,
         error: 'Validation failed',
-        details: validation.errors
+        details: validation.errors,
       };
     }
     return {
       success: true,
-      data: validation.data
+      data: validation.data,
     };
   }
 
@@ -180,7 +194,9 @@ class ValidationService {
    * Sanitize user input
    */
   sanitizeInput(input, type = 'text') {
-    if (typeof input !== 'string') {return '';}
+    if (typeof input !== 'string') {
+      return '';
+    }
 
     let sanitized = input.trim();
 
@@ -213,7 +229,7 @@ class ValidationService {
       NODE_ENV: z.enum(['development', 'test', 'production']).optional(),
       NEXT_PUBLIC_GA_MEASUREMENT_ID: z.string().optional(),
       NEXT_PUBLIC_API_URL: z.string().url().optional(),
-      NEXT_PUBLIC_LOG_LEVEL: z.enum(['DEBUG', 'INFO', 'WARN', 'ERROR', 'NONE']).optional()
+      NEXT_PUBLIC_LOG_LEVEL: z.enum(['DEBUG', 'INFO', 'WARN', 'ERROR', 'NONE']).optional(),
     });
 
     try {

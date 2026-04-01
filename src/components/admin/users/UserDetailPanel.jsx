@@ -11,19 +11,6 @@ function formatTime(seconds) {
   return mins > 0 ? `${mins}m ${secs}s` : `${secs}s`;
 }
 
-function formatDate(dateStr) {
-  if (!dateStr) return '--';
-  try {
-    return new Date(dateStr).toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric',
-    });
-  } catch {
-    return dateStr;
-  }
-}
-
 function formatDateTime(dateStr) {
   if (!dateStr) return '--';
   try {
@@ -76,6 +63,60 @@ function GameStatsCard({ title, color, stats }) {
   );
 }
 
+const GAME_BARS = [
+  { key: 'tandem', label: 'Tandem', barClass: 'bg-accent-blue', getValue: (s) => s?.played || 0 },
+  {
+    key: 'mini',
+    label: 'Mini',
+    barClass: 'bg-accent-yellow',
+    getValue: (s) => s?.totalCompleted || 0,
+  },
+  { key: 'reel', label: 'Reel', barClass: 'bg-accent-red', getValue: (s) => s?.gamesPlayed || 0 },
+  {
+    key: 'alchemy',
+    label: 'Alchemy',
+    barClass: 'bg-accent-green',
+    getValue: (s) => s?.totalPlayed || 0,
+  },
+];
+
+function GamesCompletedChart({ stats }) {
+  const values = GAME_BARS.map((g) => g.getValue(stats[g.key]));
+  const max = Math.max(...values, 1);
+  const total = values.reduce((a, b) => a + b, 0);
+
+  if (total === 0) return null;
+
+  return (
+    <div className="mt-3 rounded-lg border border-border-main p-3">
+      <div className="flex justify-between items-center mb-2">
+        <span className="text-xs font-bold text-text-secondary">Games Completed</span>
+        <span className="text-xs font-bold text-text-primary">{total}</span>
+      </div>
+      <div className="space-y-1.5">
+        {GAME_BARS.map((game, i) => (
+          <div key={game.key} className="flex items-center gap-2">
+            <span className="text-[10px] font-bold text-text-secondary w-14 text-right">
+              {game.label}
+            </span>
+            <div className="flex-1 h-4 bg-bg-surface rounded-full overflow-hidden">
+              <div
+                className={`h-full rounded-full transition-all opacity-70 ${game.barClass}`}
+                style={{
+                  width: `${Math.max((values[i] / max) * 100, values[i] > 0 ? 4 : 0)}%`,
+                }}
+              />
+            </div>
+            <span className="text-[10px] font-bold text-text-primary w-6 text-right">
+              {values[i]}
+            </span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export default function UserDetailPanel({ user, onClose }) {
   const [resetting, setResetting] = useState(false);
   const [resetMessage, setResetMessage] = useState('');
@@ -97,11 +138,10 @@ export default function UserDetailPanel({ user, onClose }) {
   };
 
   const stats = user.stats || {};
-  const sub = user.subscription;
 
   return (
     <tr>
-      <td colSpan="8" className="p-0">
+      <td colSpan="7" className="p-0">
         <div className="border-t border-border-light bg-bg-card">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-0 divide-y lg:divide-y-0 lg:divide-x divide-border-main">
             {/* Profile Section */}
@@ -218,12 +258,19 @@ export default function UserDetailPanel({ user, onClose }) {
                           { label: 'Played', value: stats.alchemy.totalPlayed },
                           { label: 'Solved', value: stats.alchemy.totalSolved },
                           { label: 'Current', value: stats.alchemy.currentStreak, sub: 'streak' },
-                          { label: 'Best', value: stats.alchemy.bestStreak, sub: 'streak' },
+                          {
+                            label: '1st Disc.',
+                            value: stats.alchemy.firstDiscoveries,
+                            sub: 'creative',
+                          },
                         ]
                       : null
                   }
                 />
               </div>
+
+              {/* Games Completed Visualization */}
+              <GamesCompletedChart stats={stats} />
 
               {/* Achievements */}
               <div className="mt-3 rounded-lg border border-border-main p-3">
@@ -238,48 +285,6 @@ export default function UserDetailPanel({ user, onClose }) {
 
             {/* Actions Section */}
             <div className="p-4 sm:p-5">
-              <h4 className="text-sm font-bold text-text-primary mb-3">Subscription</h4>
-
-              {sub ? (
-                <div className="rounded-lg border border-border-main p-3 space-y-2 text-sm mb-4">
-                  <div className="flex justify-between">
-                    <span className="text-text-secondary font-medium">Status</span>
-                    <span
-                      className={`text-xs font-bold px-2 py-0.5 rounded-full border ${
-                        sub.status === 'active'
-                          ? 'bg-accent-green/20 border-accent-green text-accent-green'
-                          : 'bg-accent-red/20 border-accent-red text-accent-red'
-                      }`}
-                    >
-                      {sub.status}
-                    </span>
-                  </div>
-                  {sub.tier && (
-                    <div className="flex justify-between">
-                      <span className="text-text-secondary font-medium">Tier</span>
-                      <span className="text-text-primary font-bold capitalize">{sub.tier}</span>
-                    </div>
-                  )}
-                  {sub.currentPeriodEnd && (
-                    <div className="flex justify-between">
-                      <span className="text-text-secondary font-medium">Renews</span>
-                      <span className="text-text-primary text-xs">
-                        {formatDate(sub.currentPeriodEnd)}
-                      </span>
-                    </div>
-                  )}
-                  {sub.cancelAtPeriodEnd && (
-                    <div className="text-xs text-accent-red font-bold mt-1">
-                      Cancels at period end
-                    </div>
-                  )}
-                </div>
-              ) : (
-                <div className="rounded-lg border border-border-main p-3 mb-4">
-                  <p className="text-xs text-text-muted">No active subscription</p>
-                </div>
-              )}
-
               <h4 className="text-sm font-bold text-text-primary mb-3">Actions</h4>
 
               <div className="space-y-2">

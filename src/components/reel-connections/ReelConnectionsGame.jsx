@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useRef, useCallback, useEffect } from 'react';
+import { motion } from 'framer-motion';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { X, Menu, ChevronLeft } from 'lucide-react';
 import { createPortal } from 'react-dom';
@@ -30,6 +31,7 @@ import LeaderboardModal from '@/components/leaderboard/LeaderboardModal';
 import LoginReminderPopup from '@/components/shared/LoginReminderPopup';
 import ServiceOutage from '@/components/shared/ServiceOutage';
 import { useFloatingStatsBar } from '@/hooks/useFloatingStatsBar';
+import ShareImageCard from '@/components/shared/ShareImageCard';
 
 // Long press duration in milliseconds
 const LONG_PRESS_DURATION = 650;
@@ -283,6 +285,7 @@ const ReelConnectionsGame = ({ titleFont = '' }) => {
     gameWon,
     gameOver,
     shakeGrid,
+    isShuffling,
     movies,
     puzzle,
     startTime,
@@ -1005,12 +1008,28 @@ const ReelConnectionsGame = ({ titleFont = '' }) => {
 
               {/* Share Results - Green with pulse animation (only on win) */}
               {isWin && (
-                <button
-                  onClick={handleShare}
-                  className={`w-full py-4 rounded-xl hover:scale-105 transition-all font-bold text-lg capitalize tracking-wide ${!reduceMotion ? 'animate-attention-pulse' : ''} ${highContrast ? 'bg-hc-success text-white border-hc-border' : 'bg-accent-green text-gray-900'}`}
-                >
-                  Share Results
-                </button>
+                <>
+                  <button
+                    onClick={handleShare}
+                    className={`w-full py-4 rounded-xl hover:scale-105 transition-all font-bold text-lg capitalize tracking-wide ${!reduceMotion ? 'animate-attention-pulse' : ''} ${highContrast ? 'bg-hc-success text-white border-hc-border' : 'bg-accent-green text-gray-900'}`}
+                  >
+                    Share Results
+                  </button>
+                  <ShareImageCard
+                    gameName="Reel Connections"
+                    date={puzzle?.date || ''}
+                    emoji="🎬"
+                    message={mistakes === 0 ? 'Flawless!' : ''}
+                    stats={[
+                      { label: 'Time', value: formatTime(currentTime) },
+                      { label: 'Mistakes', value: String(mistakes) },
+                      { label: 'Groups', value: `${solvedGroups.length}/4` },
+                    ]}
+                    accentColor="bg-accent-yellow"
+                    buttonLabel="Share as Image"
+                    buttonClassName="bg-gray-800 text-white border-gray-600 hover:bg-gray-700"
+                  />
+                </>
               )}
 
               {/* Back To Puzzle - Yellow (first on loss) */}
@@ -1370,23 +1389,30 @@ const ReelConnectionsGame = ({ titleFont = '' }) => {
                             key={i}
                             className="w-6 h-6 sm:w-7 sm:h-7 flex items-center justify-center transition-all"
                           >
-                            {isMistake ? (
-                              <Image
-                                src="/game/reel-connections/wrong.png"
-                                alt="Mistake"
-                                width={20}
-                                height={20}
-                                className="w-full h-full object-contain"
-                              />
-                            ) : (
-                              <Image
-                                src="/game/reel-connections/popcorn.png"
-                                alt="Remaining"
-                                width={20}
-                                height={20}
-                                className="w-full h-full object-contain"
-                              />
-                            )}
+                            <motion.div
+                              key={isMistake ? 'mistake' : 'remaining'}
+                              initial={isMistake ? { scale: 0, rotate: -180 } : false}
+                              animate={{ scale: 1, rotate: 0 }}
+                              transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+                            >
+                              {isMistake ? (
+                                <Image
+                                  src="/game/reel-connections/wrong.png"
+                                  alt="Mistake"
+                                  width={20}
+                                  height={20}
+                                  className="w-full h-full object-contain"
+                                />
+                              ) : (
+                                <Image
+                                  src="/game/reel-connections/popcorn.png"
+                                  alt="Remaining"
+                                  width={20}
+                                  height={20}
+                                  className="w-full h-full object-contain"
+                                />
+                              )}
+                            </motion.div>
                           </div>
                         );
                       })}
@@ -1531,7 +1557,7 @@ const ReelConnectionsGame = ({ titleFont = '' }) => {
             <div className="relative pb-[140px] sm:pb-[160px]" ref={gameAreaRef}>
               {/* Movie Grid */}
               <div
-                className={`grid grid-cols-4 gap-2 sm:gap-3 mb-4 sm:mb-6 ${shakeGrid && !reduceMotion ? 'animate-error-shake' : ''} ${!gameStarted ? 'blur-md pointer-events-none select-none' : ''}`}
+                className={`grid grid-cols-4 gap-2 sm:gap-3 mb-4 sm:mb-6 ${shakeGrid && !reduceMotion ? 'animate-error-shake' : ''} ${!gameStarted ? 'blur-md pointer-events-none select-none' : ''} ${isShuffling && !reduceMotion ? 'scale-95 opacity-70' : 'scale-100 opacity-100'} transition-all duration-150`}
               >
                 {movies.map((movie) => {
                   const selected = isSelected(movie);

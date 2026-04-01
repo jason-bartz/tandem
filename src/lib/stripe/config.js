@@ -43,7 +43,9 @@ export function getPriceId(tier) {
   const priceId = STRIPE_PRICES[tier];
 
   if (!priceId) {
-    throw new Error(`Invalid tier: ${tier}. Must be one of: ${Object.keys(STRIPE_PRICES).join(', ')}`);
+    throw new Error(
+      `Invalid tier: ${tier}. Must be one of: ${Object.keys(STRIPE_PRICES).join(', ')}`
+    );
   }
 
   return priceId;

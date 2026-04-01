@@ -58,6 +58,7 @@ function ElementChipInner({
   // Visual state for hold-to-drag feedback and long press pop
   const [isHoldReady, setIsHoldReady] = useState(false);
   const [isLongPressPop, setIsLongPressPop] = useState(false);
+  const [showFavFlash, setShowFavFlash] = useState(false);
 
   const sizeClasses = {
     small: 'px-2 py-1 text-xs gap-1',
@@ -98,11 +99,16 @@ function ElementChipInner({
             longPressTriggeredRef.current = true;
             setIsLongPressPop(true);
             onLongPress(element);
+            // Show favorite flash indicator
+            setShowFavFlash(true);
             // Reset pop state after animation
             setTimeout(() => {
               setIsLongPressPop(false);
               setIsHoldReady(false);
             }, 200);
+            setTimeout(() => {
+              setShowFavFlash(false);
+            }, 800);
           }
         }, LONG_PRESS_DURATION);
       }
@@ -291,6 +297,23 @@ function ElementChipInner({
                 'linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.4) 50%, transparent 100%)',
             }}
           />
+        </span>
+      )}
+
+      {/* Favorite flash overlay */}
+      {showFavFlash && (
+        <span
+          className={cn(
+            'absolute inset-0 rounded-lg pointer-events-none z-20',
+            'flex items-center justify-center',
+            'bg-accent-green/20 dark:bg-accent-green/30',
+            'animate-fade-in'
+          )}
+          aria-hidden="true"
+        >
+          <span className="text-xs font-bold text-soup-dark dark:text-accent-green">
+            {isFavorite ? '★' : '☆'}
+          </span>
         </span>
       )}
 

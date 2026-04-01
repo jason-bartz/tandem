@@ -46,13 +46,6 @@ export async function GET(request) {
       throw new Error('Failed to fetch users');
     }
 
-    // Fetch all active subscriptions
-    const { data: activeSubs } = await supabase
-      .from('subscriptions')
-      .select('user_id')
-      .eq('status', 'active');
-    const subscriberSet = new Set((activeSubs || []).map((s) => s.user_id));
-
     // Enrich with auth data in batches to avoid overwhelming the API
     const BATCH_SIZE = 50;
     const enrichedUsers = [];
@@ -81,7 +74,6 @@ export async function GET(request) {
               isAnonymous: authUser?.is_anonymous ? 'Yes' : 'No',
               provider,
               countryCode: user.country_code || '',
-              hasSubscription: subscriberSet.has(user.id) ? 'Yes' : 'No',
             };
           } catch {
             return {
@@ -93,7 +85,6 @@ export async function GET(request) {
               isAnonymous: '',
               provider: '',
               countryCode: user.country_code || '',
-              hasSubscription: subscriberSet.has(user.id) ? 'Yes' : 'No',
             };
           }
         })
@@ -111,7 +102,6 @@ export async function GET(request) {
       'Anonymous',
       'Provider',
       'Country',
-      'Subscriber',
     ];
 
     const rows = enrichedUsers.map((u) =>
@@ -124,7 +114,6 @@ export async function GET(request) {
         u.isAnonymous,
         u.provider,
         u.countryCode,
-        u.hasSubscription,
       ]
         .map(escapeCsvField)
         .join(',')

@@ -71,9 +71,15 @@ export default function MiniClueBar({
               py-1
             "
           aria-label={`Clue: ${clueText}`}
+          aria-live="polite"
+          role="status"
         >
           {/* Clue text - centered, allows wrapping */}
           <p className="text-sm sm:text-base font-medium text-text-primary line-clamp-2">
+            <span className="inline-flex items-center justify-center w-5 h-5 text-[10px] font-black rounded bg-accent-blue text-white mr-1.5 align-middle">
+              {clueNumber}
+              {direction === 'across' ? 'A' : 'D'}
+            </span>
             {clueText}
           </p>
         </button>

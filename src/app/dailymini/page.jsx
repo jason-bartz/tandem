@@ -87,23 +87,32 @@ export default function DailyMiniPage() {
           </div>
           <p className="text-text-secondary mb-6">{game.error}</p>
           <button
-            onClick={() => router.push('/')}
+            onClick={() => window.location.reload()}
             className="
               w-full h-14
               rounded-md
-             
-             
-              dark:
               bg-accent-yellow dark:bg-accent-yellow
               text-gray-900
               font-black
               tracking-wider
               uppercase
-             
-              hover:
-             
-             
               transition-all
+              mb-3
+              hover:scale-105
+            "
+          >
+            Try Again
+          </button>
+          <button
+            onClick={() => router.push('/')}
+            className="
+              w-full h-12
+              rounded-md
+              bg-gray-200 dark:bg-gray-700
+              text-gray-700 dark:text-gray-300
+              font-bold
+              transition-all
+              hover:scale-105
             "
           >
             Go Back

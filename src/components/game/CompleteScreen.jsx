@@ -16,6 +16,7 @@ import UnifiedArchiveCalendar from './UnifiedArchiveCalendar';
 import HowToPlayModal from './HowToPlayModal';
 import RevealAnswersModal from './RevealAnswersModal';
 import ShareButton from './ShareButton';
+import ShareImageCard from '@/components/shared/ShareImageCard';
 import { useHaptics } from '@/hooks/useHaptics';
 import { useTheme } from '@/contexts/ThemeContext';
 
@@ -362,8 +363,22 @@ export default function CompleteScreen({
 
           <div className="space-y-3 mb-6">
             {won && (
-              <div className="animate-fade-in-up delay-200">
+              <div className="animate-fade-in-up delay-200 space-y-2">
                 <ShareButton shareText={shareText} />
+                <ShareImageCard
+                  gameName="Daily Tandem"
+                  date={formatDateShort(puzzleDate)}
+                  emoji="🔗"
+                  message={puzzleTheme ? `Theme: ${puzzleTheme}` : ''}
+                  stats={[
+                    { label: 'Time', value: formatTime(time) },
+                    { label: 'Mistakes', value: String(mistakes) },
+                    { label: 'Hints', value: String(hintsUsed) },
+                  ]}
+                  accentColor="bg-accent-blue"
+                  buttonLabel="Share as Image"
+                  buttonClassName="bg-bg-surface dark:bg-gray-700 text-text-primary border-border-main hover:bg-gray-200 dark:hover:bg-gray-600"
+                />
               </div>
             )}
 

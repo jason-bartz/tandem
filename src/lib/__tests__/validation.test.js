@@ -27,8 +27,8 @@ describe('ValidationService', () => {
           { emoji: '🐶', answer: 'DOG' },
           { emoji: '🐱', answer: 'CAT' },
           { emoji: '🐭', answer: 'MOUSE' },
-          { emoji: '🐰', answer: 'RABBIT' }
-        ]
+          { emoji: '🐰', answer: 'RABBIT' },
+        ],
       };
       const result = validationService.validate(schemas.puzzle, puzzle);
       expect(result.success).toBe(true);
@@ -39,8 +39,8 @@ describe('ValidationService', () => {
         theme: 'Animals',
         puzzles: [
           { emoji: '🐶', answer: 'DOG' },
-          { emoji: '🐱', answer: 'CAT' }
-        ]
+          { emoji: '🐱', answer: 'CAT' },
+        ],
       };
       const result = validationService.validate(schemas.puzzle, puzzle);
       expect(result.success).toBe(false);
@@ -53,8 +53,8 @@ describe('ValidationService', () => {
           { emoji: '🐶', answer: 'dog' },
           { emoji: '🐱', answer: 'cat' },
           { emoji: '🐭', answer: 'mouse' },
-          { emoji: '🐰', answer: 'rabbit' }
-        ]
+          { emoji: '🐰', answer: 'rabbit' },
+        ],
       };
       const result = validationService.validate(schemas.puzzle, puzzle);
       expect(result.success).toBe(true);
@@ -69,7 +69,7 @@ describe('ValidationService', () => {
         time: 300,
         mistakes: 2,
         hintsUsed: 1,
-        shared: false
+        shared: false,
       };
       const result = validationService.validate(schemas.gameCompletion, completion);
       expect(result.success).toBe(true);
@@ -79,7 +79,7 @@ describe('ValidationService', () => {
       const completion = {
         completed: true,
         time: 300,
-        mistakes: 5
+        mistakes: 5,
       };
       const result = validationService.validate(schemas.gameCompletion, completion);
       expect(result.success).toBe(false);
@@ -89,7 +89,7 @@ describe('ValidationService', () => {
       const completion = {
         completed: true,
         time: -1,
-        mistakes: 2
+        mistakes: 2,
       };
       const result = validationService.validate(schemas.gameCompletion, completion);
       expect(result.success).toBe(false);
@@ -142,19 +142,15 @@ describe('ValidationService', () => {
 
   describe('API Request Validation', () => {
     it('should validate API request successfully', () => {
-      const result = validationService.validateApiRequest(
-        schemas.adminAuth,
-        { password: 'securePassword123' }
-      );
+      const result = validationService.validateApiRequest(schemas.adminAuth, {
+        password: 'securePassword123',
+      });
       expect(result.success).toBe(true);
       expect(result.data).toBeDefined();
     });
 
     it('should return error for invalid API request', () => {
-      const result = validationService.validateApiRequest(
-        schemas.adminAuth,
-        { password: '123' }
-      );
+      const result = validationService.validateApiRequest(schemas.adminAuth, { password: '123' });
       expect(result.success).toBe(false);
       expect(result.status).toBe(400);
       expect(result.error).toBe('Validation failed');

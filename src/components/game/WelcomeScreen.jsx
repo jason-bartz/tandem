@@ -18,6 +18,7 @@ import GameCard from '@/components/home/GameCard';
 import Footer from '@/components/home/Footer';
 import AboutSection from '@/components/home/AboutSection';
 import AnnouncementBanner from '@/components/home/AnnouncementBanner';
+import ErrorBoundary from '@/components/shared/ErrorBoundary';
 import { useHaptics } from '@/hooks/useHaptics';
 import { useTheme } from '@/contexts/ThemeContext';
 import { Capacitor } from '@capacitor/core';
@@ -251,61 +252,78 @@ export default function WelcomeScreen({
           <AnnouncementBanner />
 
           {/* Game Cards */}
-          <div className="space-y-4">
-            {/* Daily Tandem */}
-            <GameCard
-              icon="/ui/games/tandem.png"
-              title="Daily Tandem"
-              description="Decipher four emoji pairs that share a hidden theme."
-              puzzleNumber={tandemPuzzleNumber}
-              onClick={handleTandemClick}
-              loading={!puzzle && !tandemError}
-              unavailable={!!tandemError && !puzzle}
-              completed={tandemCompleted}
-              completedMessage="You discovered today's theme"
-              animationDelay={0}
-            />
+          <ErrorBoundary
+            name="GameCards"
+            fallback={({ onReset }) => (
+              <div className="text-center py-8 px-4 rounded-lg bg-bg-surface dark:bg-bg-card">
+                <p className="text-text-primary font-bold mb-2">
+                  Something went wrong loading games.
+                </p>
+                <button
+                  onClick={onReset}
+                  className="text-sm font-semibold text-accent-blue hover:underline"
+                >
+                  Try again
+                </button>
+              </div>
+            )}
+          >
+            <div className="space-y-4">
+              {/* Daily Tandem */}
+              <GameCard
+                icon="/ui/games/tandem.png"
+                title="Daily Tandem"
+                description="Decipher four emoji pairs that share a hidden theme."
+                puzzleNumber={tandemPuzzleNumber}
+                onClick={handleTandemClick}
+                loading={!puzzle && !tandemError}
+                unavailable={!!tandemError && !puzzle}
+                completed={tandemCompleted}
+                completedMessage="You discovered today's theme"
+                animationDelay={0}
+              />
 
-            {/* Daily Mini */}
-            <GameCard
-              icon="/ui/games/mini.png"
-              title="Daily Mini"
-              description="Race the clock to solve this classic 5x5 crossword."
-              puzzleNumber={miniPuzzle?.number || miniPuzzleInfo.number}
-              onClick={handleMiniClick}
-              loading={miniLoading}
-              completed={miniCompleted}
-              completedMessage="You solved today's puzzle"
-              animationDelay={0.1}
-            />
+              {/* Daily Mini */}
+              <GameCard
+                icon="/ui/games/mini.png"
+                title="Daily Mini"
+                description="Race the clock to solve this classic 5x5 crossword."
+                puzzleNumber={miniPuzzle?.number || miniPuzzleInfo.number}
+                onClick={handleMiniClick}
+                loading={miniLoading}
+                completed={miniCompleted}
+                completedMessage="You solved today's puzzle"
+                animationDelay={0.1}
+              />
 
-            {/* Daily Alchemy */}
-            <GameCard
-              icon="/ui/games/daily-alchemy.png"
-              title="Daily Alchemy"
-              description="Combine elements to discover today's target, or play creative mode."
-              puzzleNumber={soupPuzzle?.number || 1}
-              onClick={handleSoupClick}
-              loading={soupLoading}
-              completed={soupCompleted}
-              completedMessage="You created today's element"
-              animationDelay={0.15}
-            />
+              {/* Daily Alchemy */}
+              <GameCard
+                icon="/ui/games/daily-alchemy.png"
+                title="Daily Alchemy"
+                description="Combine elements to discover today's target, or play creative mode."
+                puzzleNumber={soupPuzzle?.number || 1}
+                onClick={handleSoupClick}
+                loading={soupLoading}
+                completed={soupCompleted}
+                completedMessage="You created today's element"
+                animationDelay={0.15}
+              />
 
-            {/* Reel Connections */}
-            <GameCard
-              icon="/ui/games/movie.png"
-              title="Reel Connections"
-              description="Group movies that share a common theme."
-              puzzleNumber={reelPuzzle?.number || reelPuzzleNumber}
-              creator={reelPuzzle?.creator_name}
-              onClick={handleReelClick}
-              loading={reelLoading}
-              completed={reelCompleted}
-              completedMessage="You grouped all movies"
-              animationDelay={0.25}
-            />
-          </div>
+              {/* Reel Connections */}
+              <GameCard
+                icon="/ui/games/movie.png"
+                title="Reel Connections"
+                description="Group movies that share a common theme."
+                puzzleNumber={reelPuzzle?.number || reelPuzzleNumber}
+                creator={reelPuzzle?.creator_name}
+                onClick={handleReelClick}
+                loading={reelLoading}
+                completed={reelCompleted}
+                completedMessage="You grouped all movies"
+                animationDelay={0.25}
+              />
+            </div>
+          </ErrorBoundary>
 
           {/* About Section */}
           <AboutSection />

@@ -67,7 +67,7 @@ export async function GET(request) {
   try {
     const { searchParams } = new URL(request.url);
     const page = Math.max(1, parseInt(searchParams.get('page') || '1', 10));
-    const limit = Math.min(200, Math.max(1, parseInt(searchParams.get('limit') || '100', 10)));
+    const limit = Math.min(1000, Math.max(1, parseInt(searchParams.get('limit') || '100', 10)));
 
     // Get authenticated user (supports both cookie and Bearer token auth for iOS)
     const { user, supabase } = await getAuthenticatedUser(request);

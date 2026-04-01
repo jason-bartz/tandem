@@ -43,14 +43,14 @@ function MetricCard({ label, value, color = 'text-text-primary' }) {
 function LoadingSkeleton() {
   return (
     <div className="space-y-6 animate-pulse">
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
-        {[...Array(5)].map((_, i) => (
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+        {[...Array(4)].map((_, i) => (
           <div key={i} className="bg-bg-card rounded-lg border border-border-main p-3 h-16" />
         ))}
       </div>
       <div className="bg-bg-card rounded-lg border border-border-main h-12" />
       <div className="space-y-2">
-        {[...Array(5)].map((_, i) => (
+        {[...Array(4)].map((_, i) => (
           <div key={i} className="bg-bg-card rounded-lg border border-border-main h-14" />
         ))}
       </div>
@@ -253,18 +253,13 @@ export default function UserManagement() {
       <div className="p-3 sm:p-6 space-y-4 sm:space-y-6">
         {/* Metrics Bar */}
         {metrics && (
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
             <MetricCard label="Total Users" value={metrics.totalUsers} />
             <MetricCard label="New Today" value={metrics.newToday} color="text-accent-green" />
             <MetricCard
               label="New This Week"
               value={metrics.newThisWeek}
               color="text-accent-blue"
-            />
-            <MetricCard
-              label="Subscribers"
-              value={metrics.activeSubscriptions}
-              color="text-accent-purple"
             />
             <MetricCard
               label="In Users Table"
@@ -346,9 +341,6 @@ export default function UserManagement() {
                 <th className="text-center px-3 py-2.5 font-bold text-text-secondary text-xs uppercase tracking-wide hidden md:table-cell">
                   Type
                 </th>
-                <th className="text-center px-3 py-2.5 font-bold text-text-secondary text-xs uppercase tracking-wide hidden md:table-cell">
-                  Sub
-                </th>
                 <th className="text-center px-3 py-2.5 font-bold text-text-secondary text-xs uppercase tracking-wide hidden lg:table-cell">
                   Country
                 </th>
@@ -366,7 +358,7 @@ export default function UserManagement() {
             <tbody className="divide-y divide-border-main">
               {users.length === 0 && !loading ? (
                 <tr>
-                  <td colSpan="8" className="text-center py-12 text-text-muted font-medium">
+                  <td colSpan="7" className="text-center py-12 text-text-muted font-medium">
                     {debouncedSearch
                       ? `No users found matching "${debouncedSearch}"`
                       : 'No users found'}
@@ -409,13 +401,6 @@ export default function UserManagement() {
                           {user.isAnonymous ? 'Anon' : 'Reg'}
                         </span>
                       </td>
-                      <td className="px-3 py-3 text-center hidden md:table-cell">
-                        {user.hasSubscription && (
-                          <span className="text-[10px] font-bold px-2 py-0.5 rounded-full border bg-accent-purple/20 border-accent-purple text-accent-purple">
-                            Member
-                          </span>
-                        )}
-                      </td>
                       <td className="px-3 py-3 text-center hidden lg:table-cell">
                         {user.countryFlag ? (
                           <span title={user.countryCode || ''} className="text-base">
@@ -452,7 +437,7 @@ export default function UserManagement() {
                     {expandedUserId === user.id &&
                       (detailLoading ? (
                         <tr key={`${user.id}-detail`}>
-                          <td colSpan="8" className="p-0">
+                          <td colSpan="7" className="p-0">
                             <div className="border-t border-border-light bg-bg-card p-8 text-center">
                               <div className="inline-block w-6 h-6 border-2 border-orange-500 border-t-transparent rounded-full animate-spin" />
                               <p className="text-sm text-text-secondary mt-2 font-medium">
@@ -472,7 +457,7 @@ export default function UserManagement() {
                         />
                       ) : (
                         <tr key={`${user.id}-detail`}>
-                          <td colSpan="8" className="p-0">
+                          <td colSpan="7" className="p-0">
                             <div className="border-t border-border-light bg-bg-card p-6 text-center">
                               <p className="text-sm text-accent-red font-bold">
                                 Failed to load user details

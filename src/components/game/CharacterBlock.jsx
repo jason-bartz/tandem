@@ -119,8 +119,17 @@ export default function CharacterBlock({
     },
     wrong: {
       x: reduceMotion ? 0 : [-2, 2, -2, 2, 0],
+      backgroundColor: reduceMotion
+        ? undefined
+        : [
+            'rgba(239,68,68,0.3)',
+            'rgba(239,68,68,0.3)',
+            'rgba(239,68,68,0)',
+            'rgba(239,68,68,0)',
+            'rgba(239,68,68,0)',
+          ],
       transition: {
-        duration: 0.3,
+        duration: 0.4,
         ease: 'easeInOut',
       },
     },
@@ -203,7 +212,7 @@ export default function CharacterBlock({
       {value ? (
         <motion.span
           key={`char-${position}-${value}`}
-          className={getTextSize()}
+          className={`${getTextSize()} relative`}
           initial={{ scale: 0.9, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{
@@ -212,6 +221,7 @@ export default function CharacterBlock({
           }}
         >
           {value.toUpperCase()}
+          {isLocked && <span className="absolute -top-1 -right-2.5 text-[8px] opacity-60">🔒</span>}
         </motion.span>
       ) : null}
     </motion.div>

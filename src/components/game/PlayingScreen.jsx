@@ -67,6 +67,7 @@ export default function PlayingScreen({
   const [showSecondHintCelebration, setShowSecondHintCelebration] = useState(false);
   const [previousUnlockedHints, setPreviousUnlockedHints] = useState(unlockedHints);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [correctFlashIndex, setCorrectFlashIndex] = useState(null);
   const { lightTap, correctAnswer, incorrectAnswer, hintUsed } = useHaptics();
   const { highContrast, reduceMotion } = useTheme();
 
@@ -169,6 +170,8 @@ export default function PlayingScreen({
               if (result.isCorrect) {
                 playCorrectSound();
                 correctAnswer();
+                setCorrectFlashIndex(focusedIndex);
+                setTimeout(() => setCorrectFlashIndex(null), 800);
               } else {
                 playErrorSound();
                 incorrectAnswer();
@@ -298,6 +301,8 @@ export default function PlayingScreen({
             if (result.isCorrect) {
               playCorrectSound();
               correctAnswer();
+              setCorrectFlashIndex(focusedIndex);
+              setTimeout(() => setCorrectFlashIndex(null), 800);
             } else {
               playErrorSound();
               incorrectAnswer();
@@ -492,6 +497,20 @@ export default function PlayingScreen({
                     hasActiveHint={activeHintIndex !== null}
                   />
 
+                  {mistakes === 3 && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className={`text-center py-1.5 px-3 rounded-md text-xs font-bold mt-2 ${
+                        highContrast
+                          ? 'bg-hc-error text-white'
+                          : 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300'
+                      }`}
+                    >
+                      ⚠️ Last chance! One more mistake ends the game.
+                    </motion.div>
+                  )}
+
                   <div
                     className={`flex flex-col ${
                       // Reduce spacing when a hint is active on mobile
@@ -529,6 +548,7 @@ export default function PlayingScreen({
                             themeColor={puzzle?.themeColor || 'var(--primary)'}
                             isSmallPhone={isSmallPhone}
                             isMobilePhone={isMobilePhone}
+                            showCorrectFlash={correctFlashIndex === index}
                           />
                           {/* Show hint below this answer if it's the active hint */}
                           <HintDisplay

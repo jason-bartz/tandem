@@ -30,6 +30,8 @@ import { useTheme } from '@/contexts/ThemeContext';
  * @param {React.ReactNode} props.footer - Optional sticky footer content
  * @param {string} props.headerClassName - Additional header classes
  * @param {string} props.contentClassName - Additional content classes
+ * @param {React.RefObject} props.scrollRef - Optional ref for the scrollable content area
+ * @param {function} props.onScroll - Optional scroll handler for the content area
  */
 export default function LeftSidePanel({
   isOpen,
@@ -45,6 +47,8 @@ export default function LeftSidePanel({
   footer,
   headerClassName = '',
   contentClassName = '',
+  scrollRef,
+  onScroll,
 }) {
   const { theme, highContrast } = useTheme();
   const panelRef = useRef(null);
@@ -264,7 +268,11 @@ export default function LeftSidePanel({
 
         {/* Content */}
         <div
-          ref={contentRef}
+          ref={(el) => {
+            contentRef.current = el;
+            if (scrollRef) scrollRef.current = el;
+          }}
+          onScroll={onScroll}
           className={`flex-1 min-h-0 overflow-y-auto modal-scrollbar ${
             footer ? 'pb-0' : 'pb-6'
           } ${contentClassName}`}

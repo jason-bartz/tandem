@@ -93,7 +93,7 @@ export default function MiniGrid({
 
     const cursorClass = disabled ? 'cursor-not-allowed' : 'cursor-pointer hover:bg-accent-blue/20';
 
-    return `${baseClasses} ${bgClass} ${cursorClass} transition-colors duration-150`;
+    return `${baseClasses} ${bgClass} ${cursorClass} transition-colors duration-100`;
   };
 
   const handleCellClick = (row, col) => {

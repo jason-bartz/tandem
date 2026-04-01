@@ -109,6 +109,7 @@ export function useReelConnectionsGame() {
   const [gameWon, setGameWon] = useState(false);
   const [gameOver, setGameOver] = useState(false);
   const [shakeGrid, setShakeGrid] = useState(false);
+  const [isShuffling, setIsShuffling] = useState(false);
   const [movies, setMovies] = useState([]);
   const [puzzle, setPuzzle] = useState(null);
 
@@ -490,12 +491,10 @@ export function useReelConnectionsGame() {
         setShowOneAway(true);
         setTimeout(() => setShowOneAway(false), REEL_CONFIG.ONE_AWAY_DISPLAY_MS);
 
-        setTimeout(() => {
-          playErrorSound();
-          incorrectAnswer();
-          setShakeGrid(true);
-          setTimeout(() => setShakeGrid(false), REEL_CONFIG.SHAKE_DURATION_MS);
-        }, REEL_CONFIG.ONE_AWAY_SHAKE_DELAY_MS);
+        // Shake immediately - synced with toast
+        incorrectAnswer();
+        setShakeGrid(true);
+        setTimeout(() => setShakeGrid(false), REEL_CONFIG.SHAKE_DURATION_MS);
       } else {
         playErrorSound();
         incorrectAnswer();
@@ -531,7 +530,11 @@ export function useReelConnectionsGame() {
   // Handle shuffle
   const handleShuffle = useCallback(() => {
     lightTap();
-    setMovies((prev) => shuffleArray(prev));
+    setIsShuffling(true);
+    setTimeout(() => {
+      setMovies((prev) => shuffleArray(prev));
+      setIsShuffling(false);
+    }, 150);
   }, [lightTap]);
 
   // Handle deselect
@@ -664,6 +667,7 @@ export function useReelConnectionsGame() {
     gameWon,
     gameOver,
     shakeGrid,
+    isShuffling,
     movies,
     puzzle,
     startTime,

@@ -76,7 +76,7 @@ export default function Footer() {
             className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-colors ${
               highContrast
                 ? 'border-hc-border bg-hc-surface text-hc-text hover:opacity-80'
-                : 'border-border-main bg-bg-surface dark:bg-gray-700 text-text-secondary hover:text-text-primary hover:opacity-80'
+                : 'border-border-main bg-bg-surface dark:bg-gray-700 text-text-secondary dark:text-gray-300 hover:text-text-primary dark:hover:text-white hover:opacity-80'
             }`}
             aria-label="Follow us on TikTok"
           >
@@ -91,7 +91,7 @@ export default function Footer() {
             className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-colors ${
               highContrast
                 ? 'border-hc-border bg-hc-surface text-hc-text hover:opacity-80'
-                : 'border-border-main bg-bg-surface dark:bg-gray-700 text-text-secondary hover:text-text-primary hover:opacity-80'
+                : 'border-border-main bg-bg-surface dark:bg-gray-700 text-text-secondary dark:text-gray-300 hover:text-text-primary dark:hover:text-white hover:opacity-80'
             }`}
             aria-label="Follow us on Instagram"
           >
@@ -106,7 +106,7 @@ export default function Footer() {
             className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-colors ${
               highContrast
                 ? 'border-hc-border bg-hc-surface text-hc-text hover:opacity-80'
-                : 'border-border-main bg-bg-surface dark:bg-gray-700 text-text-secondary hover:text-text-primary hover:opacity-80'
+                : 'border-border-main bg-bg-surface dark:bg-gray-700 text-text-secondary dark:text-gray-300 hover:text-text-primary dark:hover:text-white hover:opacity-80'
             }`}
             aria-label="Join us on Discord"
           >

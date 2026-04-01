@@ -6,6 +6,7 @@ import { Plus, Minus, X } from 'lucide-react';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useHaptics } from '@/hooks/useHaptics';
 import { playSwitchClickSound, playClearSound } from '@/lib/sounds';
 
 const COMBINE_ICONS = [
@@ -362,6 +363,7 @@ export function CombinationArea({
   activeSlot = null, // 'first' | 'second' | null
 }) {
   const { highContrast, reduceMotion } = useTheme();
+  const { lightTap } = useHaptics();
 
   const canCombine = selectedA && selectedB && !isCombining && !isAnimating && !disabled;
 
@@ -484,6 +486,7 @@ export function CombinationArea({
             onClick={() => {
               if (!isCombining && !isAnimating && isSubtractMode) {
                 playSwitchClickSound();
+                lightTap();
                 onToggleOperator?.();
               }
             }}
@@ -506,6 +509,7 @@ export function CombinationArea({
             onClick={() => {
               if (!isCombining && !isAnimating && !isSubtractMode) {
                 playSwitchClickSound();
+                lightTap();
                 onToggleOperator?.();
               }
             }}
@@ -540,6 +544,7 @@ export function CombinationArea({
         <button
           onClick={() => {
             playClearSound();
+            lightTap();
             onClear();
           }}
           disabled={(!selectedA && !selectedB) || isCombining || isAnimating || disabled}

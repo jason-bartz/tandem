@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { useTheme } from '@/contexts/ThemeContext';
@@ -34,9 +35,10 @@ export default function GameCard({
 }) {
   const { highContrast, reduceMotion } = useTheme();
   const { lightTap } = useHaptics();
+  const [isNavigating, setIsNavigating] = useState(false);
 
   const handleClick = () => {
-    if (loading) return;
+    if (loading || isNavigating) return;
 
     try {
       playButtonTone();
@@ -45,8 +47,11 @@ export default function GameCard({
       // Sound might fail on some browsers
     }
 
+    setIsNavigating(true);
     onClick?.();
   };
+
+  const isDisabled = loading || isNavigating;
 
   const cardVariants = {
     initial: { opacity: 0, y: 20 },
@@ -86,7 +91,7 @@ export default function GameCard({
   return (
     <motion.button
       onClick={handleClick}
-      disabled={loading}
+      disabled={isDisabled}
       className={`relative w-full text-left rounded-lg overflow-hidden p-5 cursor-pointer disabled:cursor-wait focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 transition-all duration-200 hover:scale-[1.02] ${
         highContrast
           ? 'bg-hc-surface border-hc-border focus-visible:ring-hc-focus'
@@ -98,6 +103,13 @@ export default function GameCard({
       whileTap="tap"
       aria-label={`Play ${title}${completed ? ' - Completed' : ''}${showNewBadge ? ' - New' : ''}`}
     >
+      {/* Loading overlay when navigating */}
+      {isNavigating && (
+        <div className="absolute inset-0 z-20 flex items-center justify-center bg-ghost-white/60 dark:bg-bg-card/60 rounded-lg">
+          <div className="w-5 h-5 border-2 border-gray-400 border-t-gray-900 dark:border-gray-500 dark:border-t-white rounded-full animate-spin" />
+        </div>
+      )}
+
       {/* Completed Badge */}
       {completed && !showNewBadge && (
         <motion.span

@@ -17,7 +17,7 @@ export default function LeaderboardEntry({
   rank,
   isCurrentUser,
   isStreak = false,
-  gameType,
+  gameType: _gameType,
 }) {
   const { highContrast } = useTheme();
 
@@ -91,8 +91,8 @@ export default function LeaderboardEntry({
           {entry.country_flag && <span className="ml-1 text-xs">{entry.country_flag}</span>}
           {isCurrentUser && <span className="text-xs ml-2">(You)</span>}
         </p>
-        {/* Show streak info, hints (except for mini which doesn't use hints), or nothing */}
-        {isStreak ? (
+        {/* Show streak info for streak leaderboards */}
+        {isStreak && (
           <p
             className={`text-xs ${highContrast ? 'text-hc-text/60' : 'text-gray-500 dark:text-gray-400'}`}
           >
@@ -101,15 +101,7 @@ export default function LeaderboardEntry({
               {entry.score} day streak
             </span>
           </p>
-        ) : gameType !== 'mini' ? (
-          <p
-            className={`text-xs ${highContrast ? 'text-hc-text/60' : 'text-gray-500 dark:text-gray-400'}`}
-          >
-            {entry.metadata?.hintsUsed > 0
-              ? `${entry.metadata.hintsUsed} hint${entry.metadata.hintsUsed > 1 ? 's' : ''} used`
-              : 'No hints'}
-          </p>
-        ) : null}
+        )}
       </div>
 
       {/* Score */}

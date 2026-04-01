@@ -70,18 +70,57 @@ export default function UnifiedStatsModal({ isOpen, onClose }) {
             }`}
           >
             <p
-              className={`text-center ${
+              className={`text-center mb-3 ${
                 highContrast ? 'text-hc-text' : 'text-red-600 dark:text-red-400'
               }`}
             >
               {error}
             </p>
+            <button
+              onClick={() => window.location.reload()}
+              className={`w-full py-2 rounded-md font-semibold text-sm transition-all ${
+                highContrast
+                  ? 'bg-hc-primary text-hc-text'
+                  : 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 hover:bg-red-200 dark:hover:bg-red-900/50'
+              }`}
+            >
+              Try Again
+            </button>
           </div>
         )}
 
         {/* Stats Sections */}
         {!loading && !error && (
           <>
+            {/* Empty state for new users */}
+            {(() => {
+              const hasAnyStats = [tandemStats, miniStats, soupStats, reelStats].some(
+                (s) => s && (s.played > 0 || s.gamesPlayed > 0)
+              );
+              if (!hasAnyStats) {
+                return (
+                  <div className="text-center py-8">
+                    <div className="text-4xl mb-3">🎮</div>
+                    <p
+                      className={`text-lg font-bold mb-2 ${
+                        highContrast ? 'text-hc-text' : 'text-text-primary'
+                      }`}
+                    >
+                      No stats yet!
+                    </p>
+                    <p
+                      className={`text-sm ${
+                        highContrast ? 'text-hc-text opacity-70' : 'text-text-secondary'
+                      }`}
+                    >
+                      Play a game to start tracking your progress.
+                    </p>
+                  </div>
+                );
+              }
+              return null;
+            })()}
+
             {!isStandaloneAlchemy && (
               <>
                 <TandemStatsSection stats={tandemStats} animationKey={animationKey} />

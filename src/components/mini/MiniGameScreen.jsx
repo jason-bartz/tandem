@@ -236,6 +236,14 @@ export default function MiniGameScreen({
     } else if (key === 'BACKSPACE') {
       handleBackspace();
     } else {
+      // Check if typing this letter will complete the current word
+      if (currentClue?.cells) {
+        const emptyCells = currentClue.cells.filter((c) => !userGrid[c.row]?.[c.col]);
+        // If exactly one empty cell remains (the one we're about to fill), word will be complete
+        if (emptyCells.length === 1) {
+          lightTap();
+        }
+      }
       handleLetterInput(key);
     }
   };

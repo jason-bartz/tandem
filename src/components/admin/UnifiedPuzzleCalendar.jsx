@@ -279,12 +279,23 @@ export default function UnifiedPuzzleCalendar({ onSelectDate, onRefresh }) {
     const today = new Date();
     const todayStr = formatDateKey(today.getFullYear(), today.getMonth(), today.getDate());
 
+    // Cache holidays for months that appear in this week
+    const holidayCache = {};
+    const getHolidayForDate = (year, month, day) => {
+      const cacheKey = `${year}-${month}`;
+      if (!holidayCache[cacheKey]) {
+        holidayCache[cacheKey] = getHolidaysForMonth(year, month);
+      }
+      return holidayCache[cacheKey][day] || null;
+    };
+
     for (let i = 0; i < 7; i++) {
       const d = new Date(currentWeekStart);
       d.setDate(d.getDate() + i);
       const dateKey = formatDateKey(d.getFullYear(), d.getMonth(), d.getDate());
       const dayData = puzzleData[dateKey] || {};
       const isToday = dateKey === todayStr;
+      const holiday = getHolidayForDate(d.getFullYear(), d.getMonth(), d.getDate());
 
       days.push({
         day: d.getDate(),
@@ -302,6 +313,8 @@ export default function UnifiedPuzzleCalendar({ onSelectDate, onRefresh }) {
           (dayData.mini ? 1 : 0) +
           (dayData.soup ? 1 : 0) +
           (dayData.reel ? 1 : 0),
+        holiday,
+        holidayEmoji: holiday ? getHolidayEmoji(holiday) : null,
       });
     }
     return days;
@@ -500,44 +513,18 @@ export default function UnifiedPuzzleCalendar({ onSelectDate, onRefresh }) {
           )}
         </div>
 
-        <div className="flex items-center gap-2">
-          {/* View mode toggle */}
-          <div className="flex rounded-lg border border-border-main overflow-hidden">
-            <button
-              onClick={() => setViewMode('month')}
-              className={`px-2.5 py-1 text-xs font-bold transition-all ${
-                viewMode === 'month'
-                  ? 'bg-accent-yellow text-gray-900'
-                  : 'bg-bg-card text-text-secondary hover:bg-gray-100 dark:hover:bg-gray-700'
-              }`}
-            >
-              Month
-            </button>
-            <button
-              onClick={() => {
-                setViewMode('week');
-                setShowMonthPicker(false);
-              }}
-              className={`px-2.5 py-1 text-xs font-bold transition-all border-l border-border-main ${
-                viewMode === 'week'
-                  ? 'bg-accent-yellow text-gray-900'
-                  : 'bg-bg-card text-text-secondary hover:bg-gray-100 dark:hover:bg-gray-700'
-              }`}
-            >
-              Week
-            </button>
-          </div>
-          <button
-            onClick={goToToday}
-            className="px-3 py-1.5 text-xs sm:text-sm font-bold bg-accent-yellow text-gray-900 rounded-lg transition-all"
-          >
-            Today
-          </button>
+        <div className="flex items-center gap-1.5">
+          {/* Prev/Next arrows */}
           <button
             onClick={viewMode === 'month' ? goToPreviousMonth : goToPreviousWeek}
-            className="p-2 font-bold bg-bg-card rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-all"
+            className="h-8 w-8 flex items-center justify-center rounded-md bg-bg-surface hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
           >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg
+              className="w-4 h-4 text-text-secondary"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -548,12 +535,56 @@ export default function UnifiedPuzzleCalendar({ onSelectDate, onRefresh }) {
           </button>
           <button
             onClick={viewMode === 'month' ? goToNextMonth : goToNextWeek}
-            className="p-2 font-bold bg-bg-card rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-all"
+            className="h-8 w-8 flex items-center justify-center rounded-md bg-bg-surface hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
           >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg
+              className="w-4 h-4 text-text-secondary"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
           </button>
+
+          <div className="w-px h-5 bg-border-main mx-1" />
+
+          {/* Today button */}
+          <button
+            onClick={goToToday}
+            className="h-8 px-3 text-xs font-semibold rounded-md bg-bg-surface text-text-secondary hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+          >
+            Today
+          </button>
+
+          <div className="w-px h-5 bg-border-main mx-1" />
+
+          {/* View mode toggle */}
+          <div className="flex h-8 rounded-md bg-bg-surface overflow-hidden">
+            <button
+              onClick={() => {
+                setViewMode('week');
+                setShowMonthPicker(false);
+              }}
+              className={`px-3 text-xs font-semibold transition-colors ${
+                viewMode === 'week'
+                  ? 'bg-text-primary text-bg-primary dark:bg-gray-100 dark:text-gray-900'
+                  : 'text-text-secondary hover:bg-gray-200 dark:hover:bg-gray-700'
+              }`}
+            >
+              Week
+            </button>
+            <button
+              onClick={() => setViewMode('month')}
+              className={`px-3 text-xs font-semibold transition-colors ${
+                viewMode === 'month'
+                  ? 'bg-text-primary text-bg-primary dark:bg-gray-100 dark:text-gray-900'
+                  : 'text-text-secondary hover:bg-gray-200 dark:hover:bg-gray-700'
+              }`}
+            >
+              Month
+            </button>
+          </div>
         </div>
       </div>
 
@@ -744,6 +775,7 @@ export default function UnifiedPuzzleCalendar({ onSelectDate, onRefresh }) {
                     transition-all hover:bg-accent-yellow/10 active:scale-95
                     ${dayInfo.isToday ? 'bg-accent-yellow/20 ring-2 ring-inset ring-accent-yellow' : 'bg-bg-surface'}
                     ${hasPuzzles && !dayInfo.isToday ? 'bg-accent-green/5' : ''}
+                    ${dayInfo.holiday && !hasPuzzles && !dayInfo.isToday ? 'bg-accent-orange/10' : ''}
                   `}
                 >
                   <span className="text-xs font-bold text-text-secondary uppercase">{dayName}</span>
@@ -757,6 +789,16 @@ export default function UnifiedPuzzleCalendar({ onSelectDate, onRefresh }) {
                   <span className="text-[10px] text-text-muted">
                     {monthNames[dayInfo.month].slice(0, 3)}
                   </span>
+
+                  {/* Holiday indicator */}
+                  {dayInfo.holiday && (
+                    <div className="flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-accent-orange/10 max-w-full">
+                      <span className="text-xs">{dayInfo.holidayEmoji}</span>
+                      <span className="hidden sm:inline text-[10px] font-medium text-accent-orange truncate">
+                        {dayInfo.holiday}
+                      </span>
+                    </div>
+                  )}
 
                   {/* Game indicators */}
                   <div className="flex flex-col gap-1.5 mt-1">
