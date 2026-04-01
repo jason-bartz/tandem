@@ -9,6 +9,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import LeftSidePanel from '@/components/shared/LeftSidePanel';
 import { cn } from '@/lib/utils';
 import { isStandaloneAlchemy } from '@/lib/standalone';
+import { capacitorFetch, getApiUrl } from '@/lib/api-config';
 
 /**
  * IngredientChip - Displays an ingredient with emoji and auto-scrolling name for overflow
@@ -313,14 +314,10 @@ export default function FirstDiscoveriesModal({ isOpen, onClose }) {
       let totalPages = 1;
 
       while (page <= totalPages) {
-        const response = await fetch(`/api/daily-alchemy/discoveries?page=${page}&limit=1000`, {
-          credentials: 'include',
-          headers: {
-            ...(session?.access_token && {
-              Authorization: `Bearer ${session.access_token}`,
-            }),
-          },
-        });
+        const response = await capacitorFetch(
+          getApiUrl(`/api/daily-alchemy/discoveries?page=${page}&limit=1000`),
+          { credentials: 'include' }
+        );
 
         if (!response.ok) throw new Error('Failed to fetch discoveries');
 

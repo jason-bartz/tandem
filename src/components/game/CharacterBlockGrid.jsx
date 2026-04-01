@@ -84,7 +84,7 @@ export default function CharacterBlockGrid({
     if (
       isFocused &&
       !isCorrect &&
-      answerLength > 8 &&
+      answerLength > 5 &&
       activeBlockRef.current &&
       scrollContainerRef.current
     ) {
@@ -334,13 +334,8 @@ export default function CharacterBlockGrid({
   // No outer border or shadow — tiles define structure via background color and gaps
 
   // Determine if we need horizontal scrolling
-  const needsScroll = answerLength > 8;
-
-  // Debug logging
-  useEffect(() => {
-    if (answerLength > 8) {
-    }
-  }, [answerLength, isMobilePhone, isSmallPhone, needsScroll, answerIndex]);
+  // Lowered from >8 to >5: gap-1 between tiles makes rows wider than before
+  const needsScroll = answerLength > 5;
 
   return (
     <div className="relative">
@@ -363,7 +358,7 @@ export default function CharacterBlockGrid({
         <div className="relative max-w-full">
           <div
             ref={scrollContainerRef}
-            className="overflow-x-auto scroll-smooth snap-x snap-proximity hide-scrollbar max-w-full"
+            className="overflow-x-auto hide-scrollbar max-w-full"
             style={{
               scrollPaddingLeft: '0px',
               WebkitOverflowScrolling: 'touch',
