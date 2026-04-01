@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { createServerClient } from '@/lib/supabase/server';
 import { sendEmail } from '@/lib/email/emailService';
+import { generateUnsubscribeUrl } from '@/lib/email/unsubscribe';
 import logger from '@/lib/logger';
 
 const BATCH_SIZE = 50;
@@ -65,7 +66,10 @@ export async function GET(request) {
         continue;
       }
 
-      // Get recipients
+      // Get recipients, excluding unsubscribed
+      const { data: unsubs } = await supabase.from('email_unsubscribes').select('email');
+      const unsubscribed = new Set((unsubs || []).map((u) => u.email.toLowerCase()));
+
       let recipients = [];
       if (blast.recipient_type === 'all') {
         const { data } = await supabase
@@ -73,9 +77,11 @@ export async function GET(request) {
           .select('email')
           .not('email', 'is', null)
           .neq('email', '');
-        recipients = [...new Set((data || []).map((u) => u.email).filter(Boolean))];
+        recipients = [...new Set((data || []).map((u) => u.email).filter(Boolean))].filter(
+          (e) => !unsubscribed.has(e.toLowerCase())
+        );
       } else {
-        recipients = blast.recipient_list || [];
+        recipients = (blast.recipient_list || []).filter((e) => !unsubscribed.has(e.toLowerCase()));
       }
 
       if (recipients.length === 0) {
@@ -95,15 +101,21 @@ export async function GET(request) {
       for (let i = 0; i < recipients.length; i += BATCH_SIZE) {
         const batch = recipients.slice(i, i + BATCH_SIZE);
         const batchResults = await Promise.allSettled(
-          batch.map((email) =>
-            sendEmail({
+          batch.map((email) => {
+            const unsubUrl = generateUnsubscribeUrl(email);
+            const personalizedHtml = blast.html.replace(/\{\{unsubscribeUrl\}\}/g, unsubUrl);
+            return sendEmail({
               from: FROM_EMAIL,
               to: email,
               subject: blast.subject,
-              html: blast.html,
+              html: personalizedHtml,
+              headers: {
+                'List-Unsubscribe': `<${unsubUrl}>`,
+                'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',
+              },
               metadata: { type: 'email_blast', blastId: blast.id },
-            })
-          )
+            });
+          })
         );
 
         for (const result of batchResults) {

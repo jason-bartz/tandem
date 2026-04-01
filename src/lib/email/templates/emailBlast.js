@@ -134,10 +134,13 @@ export function generateEmailBlastHtml({
               <p style="margin: 0 0 12px 0; color: #6B7280; font-size: 14px; font-weight: 500;">
                 You're receiving this because you have an account on one of our games
               </p>
-              <p style="margin: 0; font-size: 14px; text-align: center;">
+              <p style="margin: 0 0 12px 0; font-size: 14px; text-align: center;">
                 <a href="https://tandemdaily.com" style="color: #3B82F6; text-decoration: none; font-weight: 600;">Tandem Daily Games</a>
                 &nbsp;&nbsp;&middot;&nbsp;&nbsp;
                 <a href="https://dailyalchemy.fun" style="color: #3B82F6; text-decoration: none; font-weight: 600;">Daily Alchemy</a>
+              </p>
+              <p style="margin: 0; font-size: 12px;">
+                <a href="{{unsubscribeUrl}}" style="color: #9CA3AF; text-decoration: underline;">Unsubscribe</a>
               </p>
             </td>
           </tr>

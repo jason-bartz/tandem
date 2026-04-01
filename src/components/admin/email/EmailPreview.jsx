@@ -67,10 +67,13 @@ export default function EmailPreview({
             <p style="margin: 0 0 8px 0; color: #6B7280; font-size: 10px; font-weight: 500;">
               You&apos;re receiving this because you have an account on one of our games
             </p>
-            <p style="margin: 0; font-size: 10px;">
+            <p style="margin: 0 0 8px 0; font-size: 10px;">
               <a href="https://tandemdaily.com" style="color: #3B82F6; text-decoration: none; font-weight: 600;">Tandem Daily Games</a>
               &nbsp;&middot;&nbsp;
               <a href="https://dailyalchemy.fun" style="color: #3B82F6; text-decoration: none; font-weight: 600;">Daily Alchemy</a>
+            </p>
+            <p style="margin: 0; font-size: 10px;">
+              <a href="#" style="color: #9CA3AF; text-decoration: underline;">Unsubscribe</a>
             </p>
           </div>
         </div>

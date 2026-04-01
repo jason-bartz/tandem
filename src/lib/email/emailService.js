@@ -88,10 +88,11 @@ function validateEmailParams({ from, to, subject, html }) {
  * @param {string} params.subject - Email subject line
  * @param {string} params.html - HTML email content
  * @param {string} [params.replyTo] - Optional reply-to address
+ * @param {Object} [params.headers] - Optional custom headers (e.g. List-Unsubscribe)
  * @param {Object} [params.metadata] - Optional metadata for tracking
  * @returns {Promise<Object>} Result object with success status and data/error
  */
-export async function sendEmail({ from, to, subject, html, replyTo, metadata = {} }) {
+export async function sendEmail({ from, to, subject, html, replyTo, headers, metadata = {} }) {
   // Validate parameters
   const validation = validateEmailParams({ from, to, subject, html });
   if (!validation.isValid) {
@@ -124,6 +125,9 @@ export async function sendEmail({ from, to, subject, html, replyTo, metadata = {
     // Add optional parameters
     if (replyTo) {
       emailPayload.replyTo = replyTo;
+    }
+    if (headers && typeof headers === 'object') {
+      emailPayload.headers = headers;
     }
 
     // Send email via Resend

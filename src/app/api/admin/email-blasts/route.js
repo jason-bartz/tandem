@@ -4,6 +4,7 @@ import { requireAdmin } from '@/lib/auth';
 import { withRateLimit } from '@/lib/security/rateLimiter';
 import { sendEmail } from '@/lib/email/emailService';
 import { generateEmailBlastHtml } from '@/lib/email/templates/emailBlast';
+import { generateUnsubscribeUrl } from '@/lib/email/unsubscribe';
 import logger from '@/lib/logger';
 
 const CATEGORIES = ['general', 'update', 'promotion', 'announcement', 'maintenance'];
@@ -92,18 +93,39 @@ export async function GET(request) {
 }
 
 /**
- * Fetch all user emails from the database
+ * Fetch all unsubscribed email addresses
+ */
+async function getUnsubscribedEmails(supabase) {
+  const { data, error } = await supabase.from('email_unsubscribes').select('email');
+  if (error) {
+    logger.error('Error fetching unsubscribes', error);
+    return new Set();
+  }
+  return new Set((data || []).map((u) => u.email.toLowerCase()));
+}
+
+/**
+ * Fetch all user emails from the database, excluding unsubscribed
  */
 async function getAllUserEmails(supabase) {
-  const { data, error } = await supabase
-    .from('users')
-    .select('email')
-    .not('email', 'is', null)
-    .neq('email', '');
+  const [usersResult, unsubscribed] = await Promise.all([
+    supabase.from('users').select('email').not('email', 'is', null).neq('email', ''),
+    getUnsubscribedEmails(supabase),
+  ]);
 
-  if (error) throw error;
+  if (usersResult.error) throw usersResult.error;
 
-  return [...new Set(data.map((u) => u.email).filter(Boolean))];
+  return [...new Set(usersResult.data.map((u) => u.email).filter(Boolean))].filter(
+    (e) => !unsubscribed.has(e.toLowerCase())
+  );
+}
+
+/**
+ * Filter a recipient list against unsubscribes
+ */
+async function filterUnsubscribed(supabase, emails) {
+  const unsubscribed = await getUnsubscribedEmails(supabase);
+  return emails.filter((e) => !unsubscribed.has(e.toLowerCase()));
 }
 
 /**
@@ -115,17 +137,23 @@ async function sendInBatches(recipients, subject, html) {
   for (let i = 0; i < recipients.length; i += BATCH_SIZE) {
     const batch = recipients.slice(i, i + BATCH_SIZE);
 
-    // Send individually to avoid exposing recipient lists (BCC behavior)
+    // Send individually with per-recipient unsubscribe link
     const batchResults = await Promise.allSettled(
-      batch.map((email) =>
-        sendEmail({
+      batch.map((email) => {
+        const unsubUrl = generateUnsubscribeUrl(email);
+        const personalizedHtml = html.replace(/\{\{unsubscribeUrl\}\}/g, unsubUrl);
+        return sendEmail({
           from: FROM_EMAIL,
           to: email,
           subject,
-          html,
+          html: personalizedHtml,
+          headers: {
+            'List-Unsubscribe': `<${unsubUrl}>`,
+            'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',
+          },
           metadata: { type: 'email_blast' },
-        })
-      )
+        });
+      })
     );
 
     for (const result of batchResults) {
@@ -234,14 +262,15 @@ export async function POST(request) {
 
     const supabase = createServerClient();
 
-    // Determine recipients
+    // Determine recipients (excluding unsubscribed)
     let recipients = [];
     if (recipientType === 'all') {
       recipients = await getAllUserEmails(supabase);
     } else {
-      recipients = [
+      const raw = [
         ...new Set(recipientList.filter((e) => e && typeof e === 'string' && e.includes('@'))),
       ];
+      recipients = action !== 'draft' ? await filterUnsubscribed(supabase, raw) : raw;
     }
 
     if (action !== 'draft' && recipients.length === 0) {
@@ -396,11 +425,12 @@ export async function PUT(request) {
       if (rType === 'all') {
         recipients = await getAllUserEmails(supabase);
       } else {
-        recipients = [
+        const raw = [
           ...new Set(
             (recipientList || existing.recipient_list).filter((e) => e && e.includes('@'))
           ),
         ];
+        recipients = await filterUnsubscribed(supabase, raw);
       }
 
       if (recipients.length === 0) {
