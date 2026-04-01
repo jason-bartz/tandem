@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import Image from 'next/image';
 import authService from '@/services/auth.service';
 import { getHolidaysForMonth } from '@/lib/holidays';
@@ -71,11 +71,26 @@ const getHolidayEmoji = (holidayName) => {
   return emojiMap[holidayName] || '🎉';
 };
 
+// Get the Monday of the week containing the given date
+const getWeekStart = (date) => {
+  const d = new Date(date);
+  const day = d.getDay();
+  // Shift to Monday-based week (0=Mon, 6=Sun)
+  const diff = day === 0 ? -6 : 1 - day;
+  d.setDate(d.getDate() + diff);
+  d.setHours(0, 0, 0, 0);
+  return d;
+};
+
 export default function UnifiedPuzzleCalendar({ onSelectDate, onRefresh }) {
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [puzzleData, setPuzzleData] = useState({});
   const [loading, setLoading] = useState(true);
   const [showMonthPicker, setShowMonthPicker] = useState(false);
+  const [viewMode, setViewMode] = useState('month'); // 'month' or 'week'
+  const [currentWeekStart, setCurrentWeekStart] = useState(() => getWeekStart(new Date()));
+  const weekContainerRef = useRef(null);
+  const lastScrollTime = useRef(0);
 
   // Format date as YYYY-MM-DD
   const formatDateKey = (year, month, day) => {
@@ -190,6 +205,121 @@ export default function UnifiedPuzzleCalendar({ onSelectDate, onRefresh }) {
 
   const goToToday = () => {
     setCurrentMonth(new Date());
+    setCurrentWeekStart(getWeekStart(new Date()));
+  };
+
+  // Week navigation
+  const goToPreviousWeek = useCallback(() => {
+    setCurrentWeekStart((prev) => {
+      const d = new Date(prev);
+      d.setDate(d.getDate() - 7);
+      return d;
+    });
+  }, []);
+
+  const goToNextWeek = useCallback(() => {
+    setCurrentWeekStart((prev) => {
+      const d = new Date(prev);
+      d.setDate(d.getDate() + 7);
+      return d;
+    });
+  }, []);
+
+  // Arrow key navigation for week view
+  useEffect(() => {
+    if (viewMode !== 'week') return;
+
+    const handleKeyDown = (e) => {
+      if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        goToPreviousWeek();
+      } else if (e.key === 'ArrowRight') {
+        e.preventDefault();
+        goToNextWeek();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [viewMode, goToPreviousWeek, goToNextWeek]);
+
+  // Trackpad horizontal scroll for week view
+  const handleWeekWheel = useCallback(
+    (e) => {
+      // Only respond to horizontal scroll (trackpad swipe)
+      if (Math.abs(e.deltaX) > Math.abs(e.deltaY) && Math.abs(e.deltaX) > 30) {
+        e.preventDefault();
+        const now = Date.now();
+        // Debounce to avoid rapid-fire navigation
+        if (now - lastScrollTime.current < 300) return;
+        lastScrollTime.current = now;
+
+        if (e.deltaX > 0) {
+          goToNextWeek();
+        } else {
+          goToPreviousWeek();
+        }
+      }
+    },
+    [goToNextWeek, goToPreviousWeek]
+  );
+
+  // Attach wheel handler with passive: false to allow preventDefault
+  useEffect(() => {
+    const container = weekContainerRef.current;
+    if (!container || viewMode !== 'week') return;
+
+    container.addEventListener('wheel', handleWeekWheel, { passive: false });
+    return () => container.removeEventListener('wheel', handleWeekWheel);
+  }, [viewMode, handleWeekWheel]);
+
+  // Generate week days
+  const generateWeekDays = () => {
+    const days = [];
+    const today = new Date();
+    const todayStr = formatDateKey(today.getFullYear(), today.getMonth(), today.getDate());
+
+    for (let i = 0; i < 7; i++) {
+      const d = new Date(currentWeekStart);
+      d.setDate(d.getDate() + i);
+      const dateKey = formatDateKey(d.getFullYear(), d.getMonth(), d.getDate());
+      const dayData = puzzleData[dateKey] || {};
+      const isToday = dateKey === todayStr;
+
+      days.push({
+        day: d.getDate(),
+        dateKey,
+        isToday,
+        dayOfWeek: d.getDay(),
+        month: d.getMonth(),
+        year: d.getFullYear(),
+        hasTandem: !!dayData.tandem,
+        hasMini: !!dayData.mini,
+        hasSoup: !!dayData.soup,
+        hasReel: !!dayData.reel,
+        puzzleCount:
+          (dayData.tandem ? 1 : 0) +
+          (dayData.mini ? 1 : 0) +
+          (dayData.soup ? 1 : 0) +
+          (dayData.reel ? 1 : 0),
+      });
+    }
+    return days;
+  };
+
+  // Format week range for display
+  const formatWeekRange = () => {
+    const end = new Date(currentWeekStart);
+    end.setDate(end.getDate() + 6);
+    const startMonth = monthNames[currentWeekStart.getMonth()];
+    const endMonth = monthNames[end.getMonth()];
+    if (currentWeekStart.getMonth() === end.getMonth()) {
+      return `${startMonth} ${currentWeekStart.getDate()}–${end.getDate()}, ${currentWeekStart.getFullYear()}`;
+    }
+    if (currentWeekStart.getFullYear() === end.getFullYear()) {
+      return `${startMonth} ${currentWeekStart.getDate()} – ${endMonth} ${end.getDate()}, ${end.getFullYear()}`;
+    }
+    return `${startMonth} ${currentWeekStart.getDate()}, ${currentWeekStart.getFullYear()} – ${endMonth} ${end.getDate()}, ${end.getFullYear()}`;
   };
 
   // Generate calendar days
@@ -294,25 +424,31 @@ export default function UnifiedPuzzleCalendar({ onSelectDate, onRefresh }) {
       {/* Header with navigation */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
         <div className="relative">
-          <button
-            onClick={() => setShowMonthPicker(!showMonthPicker)}
-            className="text-lg sm:text-xl font-bold text-text-primary hover:text-accent-blue transition-colors flex items-center gap-2"
-          >
-            {monthNames[currentMonth.getMonth()]} {currentMonth.getFullYear()}
-            <svg
-              className={`w-4 h-4 transition-transform ${showMonthPicker ? 'rotate-180' : ''}`}
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
+          {viewMode === 'month' ? (
+            <button
+              onClick={() => setShowMonthPicker(!showMonthPicker)}
+              className="text-lg sm:text-xl font-bold text-text-primary hover:text-accent-blue transition-colors flex items-center gap-2"
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M19 9l-7 7-7-7"
-              />
-            </svg>
-          </button>
+              {monthNames[currentMonth.getMonth()]} {currentMonth.getFullYear()}
+              <svg
+                className={`w-4 h-4 transition-transform ${showMonthPicker ? 'rotate-180' : ''}`}
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M19 9l-7 7-7-7"
+                />
+              </svg>
+            </button>
+          ) : (
+            <span className="text-lg sm:text-xl font-bold text-text-primary">
+              {formatWeekRange()}
+            </span>
+          )}
 
           {/* Month picker dropdown */}
           {showMonthPicker && (
@@ -365,6 +501,32 @@ export default function UnifiedPuzzleCalendar({ onSelectDate, onRefresh }) {
         </div>
 
         <div className="flex items-center gap-2">
+          {/* View mode toggle */}
+          <div className="flex rounded-lg border-[2px] border-gray-300 dark:border-gray-600 overflow-hidden">
+            <button
+              onClick={() => setViewMode('month')}
+              className={`px-2.5 py-1 text-xs font-bold transition-all ${
+                viewMode === 'month'
+                  ? 'bg-accent-yellow text-gray-900'
+                  : 'bg-bg-card text-text-secondary hover:bg-gray-100 dark:hover:bg-gray-700'
+              }`}
+            >
+              Month
+            </button>
+            <button
+              onClick={() => {
+                setViewMode('week');
+                setShowMonthPicker(false);
+              }}
+              className={`px-2.5 py-1 text-xs font-bold transition-all border-l-[2px] border-gray-300 dark:border-gray-600 ${
+                viewMode === 'week'
+                  ? 'bg-accent-yellow text-gray-900'
+                  : 'bg-bg-card text-text-secondary hover:bg-gray-100 dark:hover:bg-gray-700'
+              }`}
+            >
+              Week
+            </button>
+          </div>
           <button
             onClick={goToToday}
             className="px-3 py-1.5 text-xs sm:text-sm font-bold bg-accent-yellow text-gray-900 rounded-lg transition-all"
@@ -372,7 +534,7 @@ export default function UnifiedPuzzleCalendar({ onSelectDate, onRefresh }) {
             Today
           </button>
           <button
-            onClick={goToPreviousMonth}
+            onClick={viewMode === 'month' ? goToPreviousMonth : goToPreviousWeek}
             className="p-2 font-bold bg-bg-card rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-all"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -385,7 +547,7 @@ export default function UnifiedPuzzleCalendar({ onSelectDate, onRefresh }) {
             </svg>
           </button>
           <button
-            onClick={goToNextMonth}
+            onClick={viewMode === 'month' ? goToNextMonth : goToNextWeek}
             className="p-2 font-bold bg-bg-card rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-all"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -434,133 +596,209 @@ export default function UnifiedPuzzleCalendar({ onSelectDate, onRefresh }) {
         </div>
       </div>
 
-      {/* Calendar grid */}
-      <div className="rounded-lg overflow-hidden">
-        {/* Day headers */}
-        <div className="grid grid-cols-7 bg-bg-card border-b border-border-light">
-          {dayHeaders.map((day) => (
-            <div
-              key={day}
-              className="py-2 text-center text-xs sm:text-sm font-bold text-text-primary border-r last:border-r-0 border-gray-200 dark:border-gray-700"
-            >
-              <span className="hidden sm:inline">{day}</span>
-              <span className="sm:hidden">{day.charAt(0)}</span>
-            </div>
-          ))}
-        </div>
-
-        {/* Calendar days */}
-        <div className="grid grid-cols-7">
-          {days.map((dayInfo) => {
-            if (dayInfo.empty) {
-              return (
-                <div
-                  key={dayInfo.key}
-                  className="aspect-square bg-gray-50 dark:bg-gray-900/50 border-r border-b last:border-r-0 border-gray-200 dark:border-gray-700"
-                />
-              );
-            }
-
-            const hasPuzzles = dayInfo.puzzleCount > 0;
-
-            return (
-              <button
-                key={dayInfo.dateKey}
-                onClick={() => onSelectDate(dayInfo.dateKey, puzzleData[dayInfo.dateKey] || {})}
-                className={`
-                  aspect-square p-1 sm:p-2 flex flex-col items-start justify-start
-                  border-r border-b last:border-r-0 border-gray-200 dark:border-gray-700
-                  transition-all hover:bg-accent-yellow/10 active:scale-95
-                  ${dayInfo.isToday ? 'bg-accent-yellow/20 ring-2 ring-inset ring-accent-yellow' : 'bg-bg-surface'}
-                  ${hasPuzzles ? 'bg-accent-green/5' : ''}
-                  ${dayInfo.holiday && !hasPuzzles ? 'bg-accent-orange/10' : ''}
-                `}
+      {/* Calendar grid - Month view */}
+      {viewMode === 'month' && (
+        <div className="rounded-lg overflow-hidden">
+          {/* Day headers */}
+          <div className="grid grid-cols-7 bg-bg-card border-b border-border-light">
+            {dayHeaders.map((day) => (
+              <div
+                key={day}
+                className="py-2 text-center text-xs sm:text-sm font-bold text-text-primary border-r last:border-r-0 border-gray-200 dark:border-gray-700"
               >
-                {/* Day number with mobile holiday emoji */}
-                <div className="flex items-center gap-1">
+                <span className="hidden sm:inline">{day}</span>
+                <span className="sm:hidden">{day.charAt(0)}</span>
+              </div>
+            ))}
+          </div>
+
+          {/* Calendar days */}
+          <div className="grid grid-cols-7">
+            {days.map((dayInfo) => {
+              if (dayInfo.empty) {
+                return (
+                  <div
+                    key={dayInfo.key}
+                    className="aspect-square bg-gray-50 dark:bg-gray-900/50 border-r border-b last:border-r-0 border-gray-200 dark:border-gray-700"
+                  />
+                );
+              }
+
+              const hasPuzzles = dayInfo.puzzleCount > 0;
+
+              return (
+                <button
+                  key={dayInfo.dateKey}
+                  onClick={() => onSelectDate(dayInfo.dateKey, puzzleData[dayInfo.dateKey] || {})}
+                  className={`
+                    aspect-square p-1 sm:p-2 flex flex-col items-start justify-start
+                    border-r border-b last:border-r-0 border-gray-200 dark:border-gray-700
+                    transition-all hover:bg-accent-yellow/10 active:scale-95
+                    ${dayInfo.isToday ? 'bg-accent-yellow/20 ring-2 ring-inset ring-accent-yellow' : 'bg-bg-surface'}
+                    ${hasPuzzles ? 'bg-accent-green/5' : ''}
+                    ${dayInfo.holiday && !hasPuzzles ? 'bg-accent-orange/10' : ''}
+                  `}
+                >
+                  {/* Day number with mobile holiday emoji */}
+                  <div className="flex items-center gap-1">
+                    <span
+                      className={`text-xs sm:text-sm font-bold ${
+                        dayInfo.isToday ? 'text-accent-yellow' : 'text-text-primary'
+                      }`}
+                    >
+                      {dayInfo.day}
+                    </span>
+                    {/* Holiday emoji inline on mobile */}
+                    {dayInfo.holiday && (
+                      <span className="sm:hidden text-xs">{dayInfo.holidayEmoji}</span>
+                    )}
+                  </div>
+
+                  {/* Holiday indicator - desktop only */}
+                  {dayInfo.holiday && (
+                    <div className="hidden sm:block mt-0.5 text-left">
+                      <span className="text-base">{dayInfo.holidayEmoji}</span>
+                      <p className="hidden lg:block text-[10px] text-text-secondary leading-tight truncate max-w-full">
+                        {dayInfo.holiday}
+                      </p>
+                    </div>
+                  )}
+
+                  {/* Game indicators - dots on mobile, icons on desktop */}
+                  {/* Use 2x2 grid when all 4 puzzles exist, otherwise single row */}
+                  <div
+                    className={`mt-auto ${
+                      dayInfo.puzzleCount === 4
+                        ? 'grid grid-cols-2 gap-0.5 sm:gap-1'
+                        : 'flex items-center justify-start gap-0.5 sm:gap-1'
+                    }`}
+                  >
+                    {dayInfo.hasTandem && (
+                      <>
+                        {/* Mobile: colored dot */}
+                        <span className="sm:hidden w-2 h-2 rounded-full bg-accent-yellow"></span>
+                        {/* Desktop: icon */}
+                        <div className="hidden sm:block w-5 h-5 relative">
+                          <Image
+                            src={GAMES.tandem.icon}
+                            alt="Tandem"
+                            fill
+                            className="object-contain"
+                          />
+                        </div>
+                      </>
+                    )}
+                    {dayInfo.hasMini && (
+                      <>
+                        {/* Mobile: colored dot */}
+                        <span className="sm:hidden w-2 h-2 rounded-full bg-accent-blue"></span>
+                        {/* Desktop: icon */}
+                        <div className="hidden sm:block w-5 h-5 relative">
+                          <Image src={GAMES.mini.icon} alt="Mini" fill className="object-contain" />
+                        </div>
+                      </>
+                    )}
+                    {dayInfo.hasSoup && (
+                      <>
+                        {/* Mobile: colored dot */}
+                        <span className="sm:hidden w-2 h-2 rounded-full bg-accent-green"></span>
+                        {/* Desktop: icon */}
+                        <div className="hidden sm:block w-5 h-5 relative">
+                          <Image src={GAMES.soup.icon} alt="Soup" fill className="object-contain" />
+                        </div>
+                      </>
+                    )}
+                    {dayInfo.hasReel && (
+                      <>
+                        {/* Mobile: colored dot */}
+                        <span className="sm:hidden w-2 h-2 rounded-full bg-accent-red"></span>
+                        {/* Desktop: icon */}
+                        <div className="hidden sm:block w-5 h-5 relative">
+                          <Image src={GAMES.reel.icon} alt="Reel" fill className="object-contain" />
+                        </div>
+                      </>
+                    )}
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* Calendar grid - Week view */}
+      {viewMode === 'week' && (
+        <div ref={weekContainerRef} className="rounded-lg overflow-hidden select-none">
+          <div className="grid grid-cols-7">
+            {generateWeekDays().map((dayInfo) => {
+              const hasPuzzles = dayInfo.puzzleCount > 0;
+              const dayName = dayHeaders[dayInfo.dayOfWeek];
+
+              return (
+                <button
+                  key={dayInfo.dateKey}
+                  onClick={() => onSelectDate(dayInfo.dateKey, puzzleData[dayInfo.dateKey] || {})}
+                  className={`
+                    p-3 sm:p-4 flex flex-col items-center gap-2
+                    border-r last:border-r-0 border-gray-200 dark:border-gray-700
+                    transition-all hover:bg-accent-yellow/10 active:scale-95
+                    ${dayInfo.isToday ? 'bg-accent-yellow/20 ring-2 ring-inset ring-accent-yellow' : 'bg-bg-surface'}
+                    ${hasPuzzles && !dayInfo.isToday ? 'bg-accent-green/5' : ''}
+                  `}
+                >
+                  <span className="text-xs font-bold text-text-secondary uppercase">{dayName}</span>
                   <span
-                    className={`text-xs sm:text-sm font-bold ${
+                    className={`text-lg sm:text-2xl font-bold ${
                       dayInfo.isToday ? 'text-accent-yellow' : 'text-text-primary'
                     }`}
                   >
                     {dayInfo.day}
                   </span>
-                  {/* Holiday emoji inline on mobile */}
-                  {dayInfo.holiday && (
-                    <span className="sm:hidden text-xs">{dayInfo.holidayEmoji}</span>
-                  )}
-                </div>
+                  <span className="text-[10px] text-text-muted">
+                    {monthNames[dayInfo.month].slice(0, 3)}
+                  </span>
 
-                {/* Holiday indicator - desktop only */}
-                {dayInfo.holiday && (
-                  <div className="hidden sm:block mt-0.5 text-left">
-                    <span className="text-base">{dayInfo.holidayEmoji}</span>
-                    <p className="hidden lg:block text-[10px] text-text-secondary leading-tight truncate max-w-full">
-                      {dayInfo.holiday}
-                    </p>
+                  {/* Game indicators */}
+                  <div className="flex flex-col gap-1.5 mt-1">
+                    {Object.entries(GAMES).map(([key, game]) => {
+                      const hasGame =
+                        (key === 'tandem' && dayInfo.hasTandem) ||
+                        (key === 'mini' && dayInfo.hasMini) ||
+                        (key === 'soup' && dayInfo.hasSoup) ||
+                        (key === 'reel' && dayInfo.hasReel);
+
+                      return (
+                        <div key={key} className="flex items-center gap-1.5">
+                          <div
+                            className={`w-4 h-4 sm:w-5 sm:h-5 relative ${!hasGame ? 'opacity-20' : ''}`}
+                          >
+                            <Image
+                              src={game.icon}
+                              alt={game.name}
+                              fill
+                              className="object-contain"
+                            />
+                          </div>
+                          <span
+                            className={`hidden sm:inline text-[10px] font-medium ${
+                              hasGame ? 'text-text-primary' : 'text-text-muted'
+                            }`}
+                          >
+                            {game.name.replace('Daily ', '')}
+                          </span>
+                        </div>
+                      );
+                    })}
                   </div>
-                )}
-
-                {/* Game indicators - dots on mobile, icons on desktop */}
-                {/* Use 2x2 grid when all 4 puzzles exist, otherwise single row */}
-                <div
-                  className={`mt-auto ${
-                    dayInfo.puzzleCount === 4
-                      ? 'grid grid-cols-2 gap-0.5 sm:gap-1'
-                      : 'flex items-center justify-start gap-0.5 sm:gap-1'
-                  }`}
-                >
-                  {dayInfo.hasTandem && (
-                    <>
-                      {/* Mobile: colored dot */}
-                      <span className="sm:hidden w-2 h-2 rounded-full bg-accent-yellow"></span>
-                      {/* Desktop: icon */}
-                      <div className="hidden sm:block w-5 h-5 relative">
-                        <Image
-                          src={GAMES.tandem.icon}
-                          alt="Tandem"
-                          fill
-                          className="object-contain"
-                        />
-                      </div>
-                    </>
-                  )}
-                  {dayInfo.hasMini && (
-                    <>
-                      {/* Mobile: colored dot */}
-                      <span className="sm:hidden w-2 h-2 rounded-full bg-accent-blue"></span>
-                      {/* Desktop: icon */}
-                      <div className="hidden sm:block w-5 h-5 relative">
-                        <Image src={GAMES.mini.icon} alt="Mini" fill className="object-contain" />
-                      </div>
-                    </>
-                  )}
-                  {dayInfo.hasSoup && (
-                    <>
-                      {/* Mobile: colored dot */}
-                      <span className="sm:hidden w-2 h-2 rounded-full bg-accent-green"></span>
-                      {/* Desktop: icon */}
-                      <div className="hidden sm:block w-5 h-5 relative">
-                        <Image src={GAMES.soup.icon} alt="Soup" fill className="object-contain" />
-                      </div>
-                    </>
-                  )}
-                  {dayInfo.hasReel && (
-                    <>
-                      {/* Mobile: colored dot */}
-                      <span className="sm:hidden w-2 h-2 rounded-full bg-accent-red"></span>
-                      {/* Desktop: icon */}
-                      <div className="hidden sm:block w-5 h-5 relative">
-                        <Image src={GAMES.reel.icon} alt="Reel" fill className="object-contain" />
-                      </div>
-                    </>
-                  )}
-                </div>
-              </button>
-            );
-          })}
+                </button>
+              );
+            })}
+          </div>
+          <p className="text-center text-xs text-text-muted mt-3">
+            Use ← → arrow keys or trackpad swipe to navigate weeks
+          </p>
         </div>
-      </div>
+      )}
     </div>
   );
 }
