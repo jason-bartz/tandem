@@ -175,10 +175,15 @@ export default function WelcomeScreen({
     }
   }, [welcomeMelody]);
 
-  // Handle keyboard shortcut
+  // Handle keyboard shortcut (only when not typing in an input/form/modal)
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === 'Enter') {
+        // Ignore Enter presses inside inputs, forms, textareas, or modals
+        const tag = e.target.tagName;
+        if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'BUTTON' || tag === 'SELECT') return;
+        if (e.target.closest('[role="dialog"]') || e.target.closest('form')) return;
+
         e.preventDefault();
         handleTandemClick();
       }

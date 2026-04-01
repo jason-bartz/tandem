@@ -323,54 +323,48 @@ export default function AccountPage() {
 
   if (authLoading) {
     return (
-      <div
-        className={`fixed inset-0 w-full h-full overflow-y-auto overflow-x-hidden ${isStandaloneAlchemy ? 'bg-bg-card dark:bg-gray-900' : 'bg-accent-yellow'}`}
-      >
+      <div className="fixed inset-0 w-full h-full overflow-y-auto overflow-x-hidden bg-bg-primary dark:bg-gray-900">
         <div className="min-h-screen flex items-center justify-center py-6">
           <div className="w-full max-w-2xl mx-auto p-6 relative z-10 my-auto">
-            <div className="relative">
-              {/* Skeleton card */}
-              <div className="bg-ghost-white dark:bg-gray-800 rounded-lg overflow-hidden relative z-10">
-                {/* Header skeleton */}
-                <div className="flex items-center justify-between p-6 pb-4">
-                  <div className="w-10 h-10 bg-gray-200 dark:bg-gray-700 rounded-lg animate-pulse"></div>
-                  <div className="w-24 h-6 bg-gray-200 dark:bg-gray-700 rounded-lg animate-pulse"></div>
-                  <div className="w-10 h-10 bg-gray-200 dark:bg-gray-700 rounded-lg animate-pulse"></div>
+            {/* Skeleton card */}
+            <div className="bg-bg-surface dark:bg-gray-800 rounded-lg overflow-hidden">
+              {/* Header skeleton */}
+              <div className="flex items-center justify-between p-6 pb-4">
+                <div className="w-10 h-10 bg-gray-200 dark:bg-gray-700 rounded-lg skeleton-shimmer"></div>
+                <div className="w-24 h-6 bg-gray-200 dark:bg-gray-700 rounded-lg skeleton-shimmer"></div>
+                <div className="w-10 h-10 bg-gray-200 dark:bg-gray-700 rounded-lg skeleton-shimmer"></div>
+              </div>
+
+              <div className="p-6 space-y-8">
+                {/* Profile skeleton */}
+                <div>
+                  <div className="w-16 h-7 bg-gray-200 dark:bg-gray-700 rounded-lg skeleton-shimmer mb-4"></div>
+                  <div className="flex items-start gap-4 p-4 bg-bg-surface dark:bg-gray-900/30 rounded-lg">
+                    <div className="w-20 h-20 bg-gray-200 dark:bg-gray-700 rounded-lg skeleton-shimmer"></div>
+                    <div className="flex-1 space-y-3">
+                      <div className="w-32 h-5 bg-gray-200 dark:bg-gray-700 rounded skeleton-shimmer"></div>
+                      <div className="w-48 h-4 bg-gray-200 dark:bg-gray-700 rounded skeleton-shimmer"></div>
+                      <div className="w-40 h-4 bg-gray-200 dark:bg-gray-700 rounded skeleton-shimmer"></div>
+                    </div>
+                  </div>
                 </div>
 
-                <div className="p-6 space-y-8">
-                  {/* Profile skeleton */}
-                  <div>
-                    <div className="w-16 h-7 bg-gray-200 dark:bg-gray-700 rounded-lg animate-pulse mb-4"></div>
-                    <div className="flex items-start gap-4 p-4 bg-gray-50 dark:bg-gray-900/30 rounded-lg border-2 border-gray-200 dark:border-gray-700">
-                      <div className="w-20 h-20 bg-gray-200 dark:bg-gray-700 rounded-xl animate-pulse"></div>
-                      <div className="flex-1 space-y-3">
-                        <div className="w-32 h-5 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
-                        <div className="w-48 h-4 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
-                        <div className="w-40 h-4 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
-                      </div>
-                    </div>
+                {/* Subscription skeleton */}
+                <div>
+                  <div className="w-32 h-7 bg-gray-200 dark:bg-gray-700 rounded-lg skeleton-shimmer mb-4"></div>
+                  <div className="p-4 bg-bg-surface dark:bg-gray-900/30 rounded-lg space-y-3">
+                    <div className="w-full h-5 bg-gray-200 dark:bg-gray-700 rounded skeleton-shimmer"></div>
+                    <div className="w-3/4 h-4 bg-gray-200 dark:bg-gray-700 rounded skeleton-shimmer"></div>
+                    <div className="w-full h-12 bg-gray-200 dark:bg-gray-700 rounded-md skeleton-shimmer mt-4"></div>
                   </div>
+                </div>
 
-                  {/* Subscription skeleton */}
-                  <div>
-                    <div className="w-32 h-7 bg-gray-200 dark:bg-gray-700 rounded-lg animate-pulse mb-4"></div>
-                    <div className="p-4 bg-gray-50 dark:bg-gray-900/30 rounded-lg border-2 border-gray-200 dark:border-gray-700 space-y-3">
-                      <div className="w-full h-5 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
-                      <div className="w-3/4 h-4 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
-                      <div className="w-full h-12 bg-gray-200 dark:bg-gray-700 rounded-xl animate-pulse mt-4"></div>
-                    </div>
-                  </div>
-
-                  {/* Actions skeleton */}
-                  <div className="space-y-3">
-                    <div className="w-full h-12 bg-gray-200 dark:bg-gray-700 rounded-xl animate-pulse"></div>
-                    <div className="w-full h-12 bg-gray-200 dark:bg-gray-700 rounded-xl animate-pulse"></div>
-                  </div>
+                {/* Actions skeleton */}
+                <div className="space-y-3">
+                  <div className="w-full h-12 bg-gray-200 dark:bg-gray-700 rounded-md skeleton-shimmer"></div>
+                  <div className="w-full h-12 bg-gray-200 dark:bg-gray-700 rounded-md skeleton-shimmer"></div>
                 </div>
               </div>
-              {/* Shadow element */}
-              <div className="absolute inset-0 bg-black dark:bg-ghost-white rounded-lg -z-10"></div>
             </div>
           </div>
         </div>
@@ -389,282 +383,279 @@ export default function AccountPage() {
 
   return (
     <>
-      <div
-        className={`fixed inset-0 w-full h-full overflow-y-auto overflow-x-hidden ${isStandaloneAlchemy ? 'bg-bg-card dark:bg-gray-900' : 'bg-accent-yellow'}`}
-      >
+      <div className="fixed inset-0 w-full h-full overflow-y-auto overflow-x-hidden bg-bg-primary dark:bg-gray-900">
         {/* Scrollable content container */}
         <div className="min-h-screen flex items-center justify-center py-6 pt-safe">
           <div className="w-full max-w-2xl mx-auto p-6 relative z-10 my-auto">
-            <div className="relative">
-              {/* Main content card */}
-              <div className="bg-ghost-white dark:bg-gray-800 rounded-lg overflow-hidden relative z-10">
-                {/* Header with back button, title, and hamburger menu */}
-                <div className="flex items-start justify-between p-6 pb-4">
-                  <Link
-                    href={homePath}
-                    className="flex items-center justify-center w-10 h-10 hover:opacity-70 transition-opacity"
-                    aria-label="Back to game"
+            {/* Main content card */}
+            <div className="bg-bg-surface dark:bg-gray-800 rounded-lg overflow-hidden">
+              {/* Header with back button, title, and hamburger menu */}
+              <div className="flex items-start justify-between p-6 pb-4">
+                <Link
+                  href={homePath}
+                  className="flex items-center justify-center w-10 h-10 hover:opacity-70 transition-opacity"
+                  aria-label="Back to game"
+                >
+                  <svg
+                    className="w-6 h-6 text-gray-800 dark:text-gray-200"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
                   >
-                    <svg
-                      className="w-6 h-6 text-gray-800 dark:text-gray-200"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M15 19l-7-7 7-7"
-                      />
-                    </svg>
-                  </Link>
-                  <h1 className="text-xl font-bold text-gray-800 dark:text-gray-200">Account</h1>
-                  <HamburgerMenu
-                    isOpen={isSidebarOpen}
-                    onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-                  />
-                </div>
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M15 19l-7-7 7-7"
+                    />
+                  </svg>
+                </Link>
+                <h1 className="text-xl font-bold text-gray-800 dark:text-gray-200">Account</h1>
+                <HamburgerMenu
+                  isOpen={isSidebarOpen}
+                  onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+                />
+              </div>
 
-                {/* Content */}
-                <div className="p-6 space-y-6">
-                  {/* Profile Section */}
-                  <section>
-                    <h2 className="text-xl font-bold text-gray-800 dark:text-gray-200 mb-4">
-                      Profile
-                    </h2>
+              {/* Content */}
+              <div className="p-6 space-y-6">
+                {/* Profile Section */}
+                <section>
+                  <h2 className="text-xl font-bold text-gray-800 dark:text-gray-200 mb-4">
+                    Profile
+                  </h2>
 
-                    {/* Profile Card */}
-                    <div className="bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 rounded-lg p-4 dark:">
-                      <div className="flex items-start gap-4">
-                        {/* Avatar */}
-                        <div className="flex-shrink-0 flex flex-col items-center gap-2">
-                          {!loadingAvatar ? (
-                            <button
-                              onClick={() => {
-                                setShowAvatarModal(true);
-                                lightTap();
-                              }}
-                              className="relative w-20 h-20 rounded-xl overflow-hidden border-2 border-purple-500 hover:scale-105 transition-transform"
-                              aria-label={
-                                userAvatar?.selected_avatar_id ? 'Change avatar' : 'Select avatar'
+                  {/* Profile Card */}
+                  <div className="bg-bg-card dark:bg-gray-700 rounded-lg p-4">
+                    <div className="flex items-start gap-4">
+                      {/* Avatar */}
+                      <div className="flex-shrink-0 flex flex-col items-center gap-2">
+                        {!loadingAvatar ? (
+                          <button
+                            onClick={() => {
+                              setShowAvatarModal(true);
+                              lightTap();
+                            }}
+                            className="relative w-20 h-20 rounded-lg overflow-hidden hover:scale-105 transition-transform"
+                            aria-label={
+                              userAvatar?.selected_avatar_id ? 'Change avatar' : 'Select avatar'
+                            }
+                          >
+                            <Image
+                              src={
+                                userAvatar?.selected_avatar_id && userAvatar?.avatar_image_path
+                                  ? userAvatar.avatar_image_path
+                                  : '/avatars/default.png'
                               }
-                            >
-                              <Image
-                                src={
-                                  userAvatar?.selected_avatar_id && userAvatar?.avatar_image_path
-                                    ? userAvatar.avatar_image_path
-                                    : '/avatars/default.png'
-                                }
-                                alt={userAvatar?.avatar_display_name || 'Profile'}
-                                fill
-                                className="object-cover"
-                                sizes="80px"
-                                priority
-                              />
-                            </button>
-                          ) : (
-                            <div className="w-20 h-20 rounded-xl bg-gray-200 dark:bg-gray-700 animate-pulse"></div>
-                          )}
-                          {/* Avatar Name */}
-                          {userAvatar?.avatar_display_name && (
-                            <span className="text-sm font-medium text-gray-700 dark:text-gray-300 text-center">
-                              {userAvatar.avatar_display_name}
-                            </span>
-                          )}
-                        </div>
-
-                        {/* Profile Info */}
-                        <div className="flex-1 min-w-0">
-                          {/* Greeting */}
-                          <h3 className="text-lg font-bold text-gray-800 dark:text-gray-200 mb-3">
-                            👋 Hey {username || 'there'}
-                          </h3>
-
-                          {/* Username */}
-                          <div className="mb-2">
-                            {editingUsername ? (
-                              <div className="space-y-2">
-                                <input
-                                  type="text"
-                                  value={usernameInput}
-                                  onChange={(e) => {
-                                    const sanitized = e.target.value.replace(/[^a-zA-Z0-9_]/g, '');
-                                    setUsernameInput(sanitized);
-                                  }}
-                                  className="w-full px-3 py-2 border-2 border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 dark:bg-gray-700 dark:text-white text-sm"
-                                  placeholder="your_username"
-                                  minLength={3}
-                                  maxLength={20}
-                                  disabled={loadingUsername}
-                                />
-                                <p className="text-xs text-gray-600 dark:text-gray-400">
-                                  3-20 characters, letters, numbers, and underscores only
-                                </p>
-                                {usernameError && (
-                                  <div className="p-2 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
-                                    <p className="text-xs text-red-600 dark:text-red-400">
-                                      {usernameError}
-                                    </p>
-                                  </div>
-                                )}
-                                <div className="flex gap-2">
-                                  <button
-                                    onClick={handleSaveUsername}
-                                    disabled={loadingUsername}
-                                    className={`flex-1 py-2 px-3 rounded-xl border-2 font-medium text-sm transition-all ${
-                                      loadingUsername
-                                        ? 'opacity-50 cursor-not-allowed'
-                                        : 'bg-purple-500 text-white hover:'
-                                    }`}
-                                  >
-                                    {loadingUsername ? 'Saving...' : 'Save'}
-                                  </button>
-                                  <button
-                                    onClick={handleCancelEditUsername}
-                                    disabled={loadingUsername}
-                                    className={`flex-1 py-2 px-3 rounded-xl border-2 font-medium text-sm transition-all ${
-                                      loadingUsername
-                                        ? 'opacity-50 cursor-not-allowed'
-                                        : 'bg-ghost-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:'
-                                    }`}
-                                  >
-                                    Cancel
-                                  </button>
-                                </div>
-                              </div>
-                            ) : (
-                              <div className="flex items-center gap-2">
-                                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                  @{username || 'not_set'}
-                                </span>
-                                <button
-                                  onClick={handleEditUsername}
-                                  className="text-xs font-medium text-purple-600 dark:text-purple-400 hover:underline"
-                                >
-                                  Edit
-                                </button>
-                              </div>
-                            )}
-                            {usernameSuccess && !editingUsername && (
-                              <div className="mt-2 p-2 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
-                                <p className="text-xs text-green-600 dark:text-green-400">
-                                  {usernameSuccess}
-                                </p>
-                              </div>
-                            )}
-                          </div>
-
-                          {/* Change Avatar Link */}
-                          {!loadingAvatar && (
-                            <button
-                              onClick={() => {
-                                setShowAvatarModal(true);
-                                lightTap();
-                              }}
-                              className="inline-block text-xs font-medium text-purple-600 dark:text-purple-400 hover:underline"
-                            >
-                              {userAvatar?.selected_avatar_id ? 'Change Avatar' : 'Select Avatar'}
-                            </button>
-                          )}
-                        </div>
-                      </div>
-
-                      {/* Account Details */}
-                      <div className="mt-4 pt-4 border-t-2 border-purple-200 dark:border-purple-800 space-y-2">
-                        <div className="flex justify-between items-center">
-                          <span className="text-xs font-medium text-gray-600 dark:text-gray-400">
-                            Email
+                              alt={userAvatar?.avatar_display_name || 'Profile'}
+                              fill
+                              className="object-cover"
+                              sizes="80px"
+                              priority
+                            />
+                          </button>
+                        ) : (
+                          <div className="w-20 h-20 rounded-lg bg-gray-200 dark:bg-gray-700 skeleton-shimmer"></div>
+                        )}
+                        {/* Avatar Name */}
+                        {userAvatar?.avatar_display_name && (
+                          <span className="text-sm font-medium text-gray-700 dark:text-gray-300 text-center">
+                            {userAvatar.avatar_display_name}
                           </span>
-                          <span className="text-sm text-gray-800 dark:text-gray-200">
-                            {user?.email || 'Not available'}
-                          </span>
-                        </div>
-                        <div className="flex justify-between items-center">
-                          <span className="text-xs font-medium text-gray-600 dark:text-gray-400">
-                            Timezone
-                          </span>
-                          <span className="text-sm text-gray-800 dark:text-gray-200">
-                            {userTimezone}
-                          </span>
-                        </div>
-                        <div className="flex justify-between items-center">
-                          <span className="text-xs font-medium text-gray-600 dark:text-gray-400">
-                            Member Since
-                          </span>
-                          <span className="text-sm text-gray-800 dark:text-gray-200">
-                            {formatDate(user?.created_at)}
-                          </span>
-                        </div>
-                        {!isStandaloneAlchemy && zodiacData && (
-                          <div className="flex justify-between items-center">
-                            <span className="text-xs font-medium text-gray-600 dark:text-gray-400">
-                              Tandem Zodiac Sign
-                            </span>
-                            <span className="text-sm text-gray-800 dark:text-gray-200">
-                              {zodiacData.display}
-                            </span>
-                          </div>
                         )}
                       </div>
 
-                      {/* Daily Horoscope */}
-                      {!isStandaloneAlchemy && zodiacData && horoscope && (
-                        <div className="mt-4 pt-4 border-t-2 border-purple-200 dark:border-purple-800">
-                          <p className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-2">
-                            Today&apos;s Horoscope
-                          </p>
-                          {horoscopeLoading ? (
-                            <div className="flex items-center justify-center py-4">
-                              <div className="animate-spin rounded-full h-5 w-5 border-2 border-purple-500 border-t-transparent"></div>
+                      {/* Profile Info */}
+                      <div className="flex-1 min-w-0">
+                        {/* Greeting */}
+                        <h3 className="text-lg font-bold text-gray-800 dark:text-gray-200 mb-3">
+                          👋 Hey {username || 'there'}
+                        </h3>
+
+                        {/* Username */}
+                        <div className="mb-2">
+                          {editingUsername ? (
+                            <div className="space-y-2">
+                              <input
+                                type="text"
+                                value={usernameInput}
+                                onChange={(e) => {
+                                  const sanitized = e.target.value.replace(/[^a-zA-Z0-9_]/g, '');
+                                  setUsernameInput(sanitized);
+                                }}
+                                className="w-full px-4 h-12 bg-bg-surface dark:bg-gray-700 rounded-md border-0 focus:border-2 focus:border-primary focus:outline-none text-text-primary text-sm"
+                                placeholder="your_username"
+                                minLength={3}
+                                maxLength={20}
+                                disabled={loadingUsername}
+                              />
+                              <p className="text-xs text-gray-600 dark:text-gray-400">
+                                3-20 characters, letters, numbers, and underscores only
+                              </p>
+                              {usernameError && (
+                                <div className="p-2 bg-red-50 dark:bg-red-900/20 rounded-md">
+                                  <p className="text-xs text-red-600 dark:text-red-400">
+                                    {usernameError}
+                                  </p>
+                                </div>
+                              )}
+                              <div className="flex gap-2">
+                                <button
+                                  onClick={handleSaveUsername}
+                                  disabled={loadingUsername}
+                                  className={`flex-1 py-2 px-3 rounded-md font-medium text-sm transition-all duration-200 ${
+                                    loadingUsername
+                                      ? 'opacity-50 cursor-not-allowed'
+                                      : 'bg-primary text-white hover:bg-primary-hover hover:scale-105'
+                                  }`}
+                                >
+                                  {loadingUsername ? 'Saving...' : 'Save'}
+                                </button>
+                                <button
+                                  onClick={handleCancelEditUsername}
+                                  disabled={loadingUsername}
+                                  className={`flex-1 py-2 px-3 rounded-md font-medium text-sm transition-all duration-200 ${
+                                    loadingUsername
+                                      ? 'opacity-50 cursor-not-allowed'
+                                      : 'bg-bg-surface dark:bg-gray-700 text-text-primary hover:bg-gray-200 dark:hover:bg-gray-600 hover:scale-105'
+                                  }`}
+                                >
+                                  Cancel
+                                </button>
+                              </div>
                             </div>
                           ) : (
-                            <p className="text-sm leading-relaxed text-gray-700 dark:text-gray-300 italic">
-                              {horoscope.text}
-                            </p>
+                            <div className="flex items-center gap-2">
+                              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                @{username || 'not_set'}
+                              </span>
+                              <button
+                                onClick={handleEditUsername}
+                                className="text-xs font-medium text-accent-blue hover:underline"
+                              >
+                                Edit
+                              </button>
+                            </div>
                           )}
+                          {usernameSuccess && !editingUsername && (
+                            <div className="mt-2 p-2 bg-green-50 dark:bg-green-900/20 rounded-md">
+                              <p className="text-xs text-green-600 dark:text-green-400">
+                                {usernameSuccess}
+                              </p>
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Change Avatar Link */}
+                        {!loadingAvatar && (
+                          <button
+                            onClick={() => {
+                              setShowAvatarModal(true);
+                              lightTap();
+                            }}
+                            className="inline-block text-xs font-medium text-accent-blue hover:underline"
+                          >
+                            {userAvatar?.selected_avatar_id ? 'Change Avatar' : 'Select Avatar'}
+                          </button>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Account Details */}
+                    <div className="mt-4 pt-4 border-t border-border-light space-y-2">
+                      <div className="flex justify-between items-center">
+                        <span className="text-xs font-medium text-gray-600 dark:text-gray-400">
+                          Email
+                        </span>
+                        <span className="text-sm text-gray-800 dark:text-gray-200">
+                          {user?.email || 'Not available'}
+                        </span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-xs font-medium text-gray-600 dark:text-gray-400">
+                          Timezone
+                        </span>
+                        <span className="text-sm text-gray-800 dark:text-gray-200">
+                          {userTimezone}
+                        </span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-xs font-medium text-gray-600 dark:text-gray-400">
+                          Member Since
+                        </span>
+                        <span className="text-sm text-gray-800 dark:text-gray-200">
+                          {formatDate(user?.created_at)}
+                        </span>
+                      </div>
+                      {!isStandaloneAlchemy && zodiacData && (
+                        <div className="flex justify-between items-center">
+                          <span className="text-xs font-medium text-gray-600 dark:text-gray-400">
+                            Tandem Zodiac Sign
+                          </span>
+                          <span className="text-sm text-gray-800 dark:text-gray-200">
+                            {zodiacData.display}
+                          </span>
                         </div>
                       )}
                     </div>
-                  </section>
 
-                  {/* Account Actions Section */}
-                  <section className="space-y-3">
-                    <h2 className="text-xl font-bold text-gray-800 dark:text-gray-200 mb-4">
-                      Account Actions
-                    </h2>
-
-                    {/* Sign Out Button */}
-                    <button
-                      onClick={handleSignOut}
-                      className="w-full py-3 px-4 rounded-xl border-2 font-semibold transition-all bg-ghost-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:"
-                    >
-                      Sign Out
-                    </button>
-
-                    {/* Force Logout - shows on iOS when session appears corrupted */}
-                    {!isWeb && !user?.email && (
-                      <button
-                        onClick={forceLogout}
-                        className="w-full py-3 px-4 rounded-xl border-2 font-semibold transition-all bg-orange-500 text-white hover:"
-                      >
-                        Force Logout (Clear All Data)
-                      </button>
+                    {/* Daily Horoscope */}
+                    {!isStandaloneAlchemy && zodiacData && horoscope && (
+                      <div className="mt-4 pt-4 border-t border-border-light">
+                        <p className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-2">
+                          Today&apos;s Horoscope
+                        </p>
+                        {horoscopeLoading ? (
+                          <div className="flex items-center justify-center py-4">
+                            <div
+                              className="animate-spin rounded-full h-5 w-5 border-4 border-primary border-t-transparent"
+                              role="status"
+                              aria-label="Loading"
+                            ></div>
+                          </div>
+                        ) : (
+                          <p className="text-sm leading-relaxed text-gray-700 dark:text-gray-300 italic">
+                            {horoscope.text}
+                          </p>
+                        )}
+                      </div>
                     )}
+                  </div>
+                </section>
 
-                    {/* Delete Account Button */}
+                {/* Account Actions Section */}
+                <section className="space-y-3">
+                  <h2 className="text-xl font-bold text-gray-800 dark:text-gray-200 mb-4">
+                    Account Actions
+                  </h2>
+
+                  {/* Sign Out Button */}
+                  <button
+                    onClick={handleSignOut}
+                    className="w-full h-14 rounded-md font-semibold transition-all duration-200 bg-bg-surface dark:bg-gray-700 text-text-primary hover:bg-gray-200 dark:hover:bg-gray-600 hover:scale-105"
+                  >
+                    Sign Out
+                  </button>
+
+                  {/* Force Logout - shows on iOS when session appears corrupted */}
+                  {!isWeb && !user?.email && (
                     <button
-                      onClick={handleDeleteAccount}
-                      className="w-full py-3 px-4 rounded-xl border-2 font-semibold transition-all bg-red-600 text-white hover:"
+                      onClick={forceLogout}
+                      className="w-full h-14 rounded-md font-semibold transition-all duration-200 bg-accent-orange text-white hover:scale-105"
                     >
-                      Delete Account
+                      Force Logout (Clear All Data)
                     </button>
-                  </section>
-                </div>
-              </div>
+                  )}
 
-              {/* Neo-brutalist shadow element */}
-              <div className="absolute inset-0 bg-black dark:bg-ghost-white rounded-lg -z-10"></div>
+                  {/* Delete Account Button */}
+                  <button
+                    onClick={handleDeleteAccount}
+                    className="w-full h-14 rounded-md font-semibold transition-all duration-200 bg-accent-red text-white hover:scale-105"
+                  >
+                    Delete Account
+                  </button>
+                </section>
+              </div>
             </div>
           </div>
         </div>
