@@ -365,6 +365,96 @@ class AdminService {
       throw error;
     }
   }
+  // ==========================================
+  // Email Blasts
+  // ==========================================
+
+  async getEmailBlasts({ status, category, limit, offset } = {}) {
+    try {
+      const params = new URLSearchParams();
+      if (status) params.append('status', status);
+      if (category) params.append('category', category);
+      if (limit) params.append('limit', String(limit));
+      if (offset) params.append('offset', String(offset));
+
+      const url = `/api/admin/email-blasts${params.toString() ? `?${params.toString()}` : ''}`;
+      const response = await fetch(getApiUrl(url), {
+        headers: await this.getAuthHeaders(),
+      });
+
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || `Server error: ${response.status}`);
+      return data;
+    } catch (error) {
+      logger.error('AdminService.getEmailBlasts error', error);
+      throw error;
+    }
+  }
+
+  async createEmailBlast(blastData) {
+    try {
+      const response = await fetch(getApiUrl('/api/admin/email-blasts'), {
+        method: 'POST',
+        headers: await this.getAuthHeaders(true),
+        body: JSON.stringify(blastData),
+      });
+
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || `Server error: ${response.status}`);
+      return data;
+    } catch (error) {
+      logger.error('AdminService.createEmailBlast error', error);
+      throw error;
+    }
+  }
+
+  async updateEmailBlast(blastData) {
+    try {
+      const response = await fetch(getApiUrl('/api/admin/email-blasts'), {
+        method: 'PUT',
+        headers: await this.getAuthHeaders(true),
+        body: JSON.stringify(blastData),
+      });
+
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || `Server error: ${response.status}`);
+      return data;
+    } catch (error) {
+      logger.error('AdminService.updateEmailBlast error', error);
+      throw error;
+    }
+  }
+
+  async deleteEmailBlast(id) {
+    try {
+      const response = await fetch(getApiUrl(`/api/admin/email-blasts?id=${id}`), {
+        method: 'DELETE',
+        headers: await this.getAuthHeaders(true),
+      });
+
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || `Server error: ${response.status}`);
+      return data;
+    } catch (error) {
+      logger.error('AdminService.deleteEmailBlast error', error);
+      throw error;
+    }
+  }
+
+  async getEmailRecipients() {
+    try {
+      const response = await fetch(getApiUrl('/api/admin/email-blasts/recipients'), {
+        headers: await this.getAuthHeaders(),
+      });
+
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || `Server error: ${response.status}`);
+      return data;
+    } catch (error) {
+      logger.error('AdminService.getEmailRecipients error', error);
+      throw error;
+    }
+  }
 }
 
 export default new AdminService();

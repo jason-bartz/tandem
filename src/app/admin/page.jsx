@@ -16,6 +16,7 @@ import BotLeaderboardManager from '@/components/admin/BotLeaderboardManager';
 import AvatarManager from '@/components/admin/AvatarManager';
 import UserManagement from '@/components/admin/users/UserManagement';
 import AnnouncementManager from '@/components/admin/AnnouncementManager';
+import EmailBlastManager from '@/components/admin/email/EmailBlastManager';
 import AnalyticsDashboard from '@/components/admin/AnalyticsDashboard';
 import authService from '@/services/auth.service';
 import logger from '@/lib/logger';
@@ -29,6 +30,7 @@ const TABS = [
   { id: 'leaderboards', label: 'Leaderboards' },
   { id: 'users', label: 'Users' },
   { id: 'announcements', label: 'Announce' },
+  { id: 'email', label: 'Email' },
   { id: 'analytics', label: 'Analytics' },
 ];
 
@@ -443,6 +445,7 @@ export default function AdminDashboard() {
         {activeTab === 'avatars' && <AvatarManager />}
         {activeTab === 'users' && <UserManagement />}
         {activeTab === 'announcements' && <AnnouncementManager />}
+        {activeTab === 'email' && <EmailBlastManager />}
         {activeTab === 'analytics' && <AnalyticsDashboard />}
       </div>
 

@@ -64,10 +64,10 @@ function sanitizeFeedbackData(feedback) {
  */
 function getCategoryBadgeColors(category) {
   const colors = {
-    'Bug Report': { bg: '#ff5757', text: '#2c2c2c', border: '#2c2c2c' },
-    'Feature Request': { bg: '#38b6ff', text: '#2c2c2c', border: '#2c2c2c' },
-    'Game Feedback': { bg: '#7ed957', text: '#2c2c2c', border: '#2c2c2c' },
-    Other: { bg: '#ffce00', text: '#2c2c2c', border: '#2c2c2c' },
+    'Bug Report': { bg: '#ff5757', text: '#FFFFFF' },
+    'Feature Request': { bg: '#38b6ff', text: '#FFFFFF' },
+    'Game Feedback': { bg: '#7ed957', text: '#111827' },
+    Other: { bg: '#ffce00', text: '#111827' },
   };
 
   return colors[category] || colors.Other;
@@ -103,15 +103,15 @@ export function generateFeedbackNotificationEmail(feedback) {
   <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f9fafb; padding: 40px 20px;">
     <tr>
       <td align="center">
-        <table width="100%" cellpadding="0" cellspacing="0" style="max-width: 600px; background-color: #F4F5F9; border: 3px solid #2c2c2c; border-radius: 24px; box-shadow: 6px 6px 0px rgba(0, 0, 0, 1); overflow: hidden;">
+        <table width="100%" cellpadding="0" cellspacing="0" style="max-width: 600px; background-color: #F3F4F6; border-radius: 8px; overflow: hidden;">
 
           <!-- Header -->
           <tr>
-            <td style="background-color: #a855f7; padding: 32px 40px; text-align: center; border-bottom: 3px solid #2c2c2c;">
-              <h1 style="margin: 0; color: #2c2c2c; font-size: 28px; font-weight: 800; letter-spacing: -0.5px;">
+            <td style="background-color: #a855f7; padding: 32px 40px; text-align: center;">
+              <h1 style="margin: 0; color: #FFFFFF; font-size: 28px; font-weight: 800; letter-spacing: -0.5px;">
                 New Feedback Received
               </h1>
-              <p style="margin: 8px 0 0 0; color: #2c2c2c; font-size: 16px; font-weight: 600;">
+              <p style="margin: 8px 0 0 0; color: rgba(255,255,255,0.9); font-size: 16px; font-weight: 600;">
                 Tandem Daily Games
               </p>
             </td>
@@ -122,7 +122,7 @@ export function generateFeedbackNotificationEmail(feedback) {
             <td style="padding: 24px 40px 0 40px;">
               <table cellpadding="0" cellspacing="0">
                 <tr>
-                  <td style="background-color: ${badgeColors.bg}; color: ${badgeColors.text}; padding: 10px 20px; border: 3px solid ${badgeColors.border}; border-radius: 12px; box-shadow: 3px 3px 0px rgba(0, 0, 0, 1); font-size: 14px; font-weight: 700; display: inline-block;">
+                  <td style="background-color: ${badgeColors.bg}; color: ${badgeColors.text}; padding: 8px 16px; border-radius: 20px; font-size: 13px; font-weight: 700; display: inline-block;">
                     ${safe.category}
                   </td>
                 </tr>
@@ -133,8 +133,8 @@ export function generateFeedbackNotificationEmail(feedback) {
           <!-- Message Content -->
           <tr>
             <td style="padding: 24px 40px;">
-              <div style="background-color: #F4F5F9; border: 3px solid #2c2c2c; border-radius: 16px; padding: 20px; box-shadow: 3px 3px 0px rgba(0, 0, 0, 1);">
-                <p style="margin: 0; color: #2c2c2c; font-size: 15px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">
+              <div style="background-color: #FFFFFF; border-radius: 8px; padding: 20px;">
+                <p style="margin: 0; color: #111827; font-size: 15px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">
 ${safe.message}
                 </p>
               </div>
@@ -144,15 +144,15 @@ ${safe.message}
           <!-- User Information -->
           <tr>
             <td style="padding: 0 40px 32px 40px;">
-              <table width="100%" cellpadding="0" cellspacing="0" style="border-top: 3px solid #2c2c2c; padding-top: 24px;">
+              <table width="100%" cellpadding="0" cellspacing="0" style="border-top: 1px solid #E5E7EB; padding-top: 24px;">
                 <tr>
                   <td style="padding: 8px 0;">
                     <table cellpadding="0" cellspacing="0">
                       <tr>
-                        <td style="color: #2c2c2c; font-size: 13px; font-weight: 700; padding-right: 12px; vertical-align: top; width: 120px;">
+                        <td style="color: #6B7280; font-size: 13px; font-weight: 600; padding-right: 12px; vertical-align: top; width: 120px;">
                           Username:
                         </td>
-                        <td style="color: #2c2c2c; font-size: 14px; font-weight: 500;">
+                        <td style="color: #111827; font-size: 14px; font-weight: 500;">
                           ${safe.username}
                         </td>
                       </tr>
@@ -163,11 +163,11 @@ ${safe.message}
                   <td style="padding: 8px 0;">
                     <table cellpadding="0" cellspacing="0">
                       <tr>
-                        <td style="color: #2c2c2c; font-size: 13px; font-weight: 700; padding-right: 12px; vertical-align: top; width: 120px;">
+                        <td style="color: #6B7280; font-size: 13px; font-weight: 600; padding-right: 12px; vertical-align: top; width: 120px;">
                           Email:
                         </td>
-                        <td style="color: #2c2c2c; font-size: 14px; font-weight: 500;">
-                          <a href="mailto:${safe.email}" style="color: #38b6ff; text-decoration: none; font-weight: 600;">
+                        <td style="color: #111827; font-size: 14px; font-weight: 500;">
+                          <a href="mailto:${safe.email}" style="color: #3B82F6; text-decoration: none; font-weight: 600;">
                             ${safe.email}
                           </a>
                         </td>
@@ -179,14 +179,14 @@ ${safe.message}
                   <td style="padding: 8px 0;">
                     <table cellpadding="0" cellspacing="0">
                       <tr>
-                        <td style="color: #2c2c2c; font-size: 13px; font-weight: 700; padding-right: 12px; vertical-align: top; width: 120px;">
+                        <td style="color: #6B7280; font-size: 13px; font-weight: 600; padding-right: 12px; vertical-align: top; width: 120px;">
                           Contact OK:
                         </td>
-                        <td style="color: #2c2c2c; font-size: 14px; font-weight: 500;">
+                        <td style="color: #111827; font-size: 14px; font-weight: 500;">
                           ${
                             safe.allowContact
-                              ? '<span style="color: #7ed957; font-weight: 700;">✓ Yes</span>'
-                              : '<span style="color: #ff5757; font-weight: 700;">✗ No</span>'
+                              ? '<span style="color: #10B981; font-weight: 700;">Yes</span>'
+                              : '<span style="color: #ff5757; font-weight: 700;">No</span>'
                           }
                         </td>
                       </tr>
@@ -197,10 +197,10 @@ ${safe.message}
                   <td style="padding: 8px 0;">
                     <table cellpadding="0" cellspacing="0">
                       <tr>
-                        <td style="color: #2c2c2c; font-size: 13px; font-weight: 700; padding-right: 12px; vertical-align: top; width: 120px;">
+                        <td style="color: #6B7280; font-size: 13px; font-weight: 600; padding-right: 12px; vertical-align: top; width: 120px;">
                           Platform:
                         </td>
-                        <td style="color: #2c2c2c; font-size: 14px; font-weight: 500;">
+                        <td style="color: #111827; font-size: 14px; font-weight: 500;">
                           ${safe.platform}
                         </td>
                       </tr>
@@ -211,10 +211,10 @@ ${safe.message}
                   <td style="padding: 8px 0;">
                     <table cellpadding="0" cellspacing="0">
                       <tr>
-                        <td style="color: #2c2c2c; font-size: 13px; font-weight: 700; padding-right: 12px; vertical-align: top; width: 120px;">
+                        <td style="color: #6B7280; font-size: 13px; font-weight: 600; padding-right: 12px; vertical-align: top; width: 120px;">
                           Submitted:
                         </td>
-                        <td style="color: #2c2c2c; font-size: 14px; font-weight: 500;">
+                        <td style="color: #111827; font-size: 14px; font-weight: 500;">
                           ${safe.createdAt}
                         </td>
                       </tr>
@@ -225,10 +225,10 @@ ${safe.message}
                   <td style="padding: 8px 0;">
                     <table cellpadding="0" cellspacing="0">
                       <tr>
-                        <td style="color: #2c2c2c; font-size: 13px; font-weight: 700; padding-right: 12px; vertical-align: top; width: 120px;">
+                        <td style="color: #6B7280; font-size: 13px; font-weight: 600; padding-right: 12px; vertical-align: top; width: 120px;">
                           User Agent:
                         </td>
-                        <td style="color: #6b7280; font-size: 12px; font-weight: 400; word-break: break-all;">
+                        <td style="color: #9CA3AF; font-size: 12px; font-weight: 400; word-break: break-all;">
                           ${safe.userAgent}
                         </td>
                       </tr>
@@ -241,8 +241,8 @@ ${safe.message}
 
           <!-- Footer -->
           <tr>
-            <td style="background-color: #ffce00; padding: 24px 40px; border-top: 3px solid #2c2c2c; text-align: center;">
-              <p style="margin: 0; color: #2c2c2c; font-size: 13px; font-weight: 600;">
+            <td style="background-color: #F3F4F6; padding: 24px 40px; text-align: center;">
+              <p style="margin: 0; color: #6B7280; font-size: 13px; font-weight: 500;">
                 This is an automated notification from Tandem Daily Games feedback system.
               </p>
             </td>
