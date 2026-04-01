@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import Image from 'next/image';
 import authService from '@/services/auth.service';
@@ -10,12 +10,18 @@ import logger from '@/lib/logger';
 export default function AdminLayout({ children }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [showUserMenu, setShowUserMenu] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
 
-  // Special pages that don't need authentication
   const isPublicPage =
-    pathname === '/admin/login' || pathname === '/admin/debug' || pathname === '/admin/test';
+    pathname === '/admin/login' ||
+    pathname === '/admin/debug' ||
+    pathname === '/admin/test' ||
+    pathname === '/admin/forgot-password' ||
+    pathname === '/admin/reset-password';
+
+  const currentUser = authService.getCurrentUser();
 
   useEffect(() => {
     if (isPublicPage) {
@@ -24,12 +30,12 @@ export default function AdminLayout({ children }) {
     }
 
     checkAuth();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname, isPublicPage]);
 
   useEffect(() => {
     const originalValues = new Map();
 
-    // Swap favicons to admin variants
     const faviconLinks = document.querySelectorAll('link[rel*="icon"]');
     faviconLinks.forEach((link) => {
       originalValues.set(link, link.href);
@@ -47,21 +53,18 @@ export default function AdminLayout({ children }) {
       }
     });
 
-    // Swap manifest to admin-specific manifest
     const manifestLink = document.querySelector('link[rel="manifest"]');
     if (manifestLink) {
       originalValues.set(manifestLink, manifestLink.href);
       manifestLink.href = '/admin.webmanifest';
     }
 
-    // Swap apple-mobile-web-app-title
     const appTitleMeta = document.querySelector('meta[name="apple-mobile-web-app-title"]');
     if (appTitleMeta) {
       originalValues.set(appTitleMeta, appTitleMeta.content);
       appTitleMeta.content = 'Tandem Admin';
     }
 
-    // Cleanup: restore originals when leaving admin
     return () => {
       faviconLinks.forEach((link) => {
         const original = originalValues.get(link);
@@ -76,9 +79,16 @@ export default function AdminLayout({ children }) {
     };
   }, []);
 
+  // Close user menu on outside click
+  useEffect(() => {
+    if (!showUserMenu) return;
+    const handleClick = () => setShowUserMenu(false);
+    document.addEventListener('click', handleClick);
+    return () => document.removeEventListener('click', handleClick);
+  }, [showUserMenu]);
+
   const checkAuth = async () => {
     try {
-      // Use storageService to support fallback storage (IndexedDB, memory)
       const token = await storageService.get('adminToken');
       if (!token) {
         router.push('/admin/login');
@@ -86,10 +96,8 @@ export default function AdminLayout({ children }) {
         return;
       }
 
-      // Verify token and ensure CSRF token is fetched
       const isValid = await authService.verifyToken(token);
       if (isValid) {
-        // Verify that CSRF token was set
         const csrfToken = authService.getCSRFToken();
         if (!csrfToken) {
           logger.warn('CSRF token not set after verification', null);
@@ -108,7 +116,39 @@ export default function AdminLayout({ children }) {
     }
   };
 
-  // For public pages, render directly without auth wrapper
+  const handleLogout = useCallback(async () => {
+    await authService.logout();
+    router.push('/admin/login');
+  }, [router]);
+
+  const getGreeting = () => {
+    const hour = new Date().getHours();
+    if (hour < 12) return 'Good morning';
+    if (hour < 17) return 'Good afternoon';
+    return 'Good evening';
+  };
+
+  const getDisplayName = () => {
+    if (!currentUser) return '';
+    if (currentUser.fullName && currentUser.fullName !== currentUser.username) {
+      return currentUser.fullName.split(' ')[0];
+    }
+    return currentUser.username;
+  };
+
+  const getRoleBadgeColor = (role) => {
+    switch (role) {
+      case 'owner':
+        return 'bg-accent-purple text-white';
+      case 'admin':
+        return 'bg-accent-blue text-white';
+      case 'editor':
+        return 'bg-accent-green text-white';
+      default:
+        return 'bg-bg-surface text-text-secondary';
+    }
+  };
+
   if (isPublicPage) {
     return children;
   }
@@ -121,21 +161,30 @@ export default function AdminLayout({ children }) {
     );
   }
 
-  // Don't render anything if not authenticated (redirecting to login)
   if (!isAuthenticated) {
     return null;
   }
 
-  // Render authenticated admin layout
   return (
     <div className="admin-theme min-h-screen bg-ghost-white">
       <nav className="bg-bg-surface border-b-[1.5px] dark:">
         <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            <div className="flex-1"></div>
-            <div className="flex items-center justify-center">
+            {/* Left: Greeting */}
+            <div className="flex-1 min-w-0">
+              {currentUser && (
+                <p className="text-sm font-semibold text-text-secondary truncate">
+                  {getGreeting()}, <span className="text-text-primary">{getDisplayName()}</span>
+                </p>
+              )}
+            </div>
+
+            {/* Center: Logo */}
+            <div className="flex items-center justify-center px-4">
               <Image src="/branding/admin-logo.png" alt="Tandem Admin" width={120} height={40} />
             </div>
+
+            {/* Right: Actions + User Menu */}
             <div className="flex-1 flex items-center justify-end space-x-3 sm:space-x-4">
               <a
                 href="/"
@@ -145,15 +194,80 @@ export default function AdminLayout({ children }) {
               >
                 View Game
               </a>
-              <button
-                onClick={async () => {
-                  await storageService.remove('adminToken');
-                  router.push('/admin/login');
-                }}
-                className="px-3 py-1 text-sm bg-accent-red text-white rounded-lg font-bold active:translate-y-0 transition-transform dark:"
-              >
-                Logout
-              </button>
+
+              {/* User menu button */}
+              <div className="relative">
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setShowUserMenu(!showUserMenu);
+                  }}
+                  className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-bold bg-bg-card border border-border-main hover:bg-bg-surface transition-colors"
+                >
+                  <div className="w-6 h-6 rounded-full bg-accent-blue/20 flex items-center justify-center">
+                    <span className="text-xs font-bold text-accent-blue">
+                      {getDisplayName().charAt(0).toUpperCase()}
+                    </span>
+                  </div>
+                  <span className="hidden sm:inline text-text-primary">{getDisplayName()}</span>
+                  <svg
+                    className="w-3.5 h-3.5 text-text-muted"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
+                </button>
+
+                {showUserMenu && (
+                  <div
+                    className="absolute right-0 top-full mt-2 w-56 bg-bg-card border border-border-main rounded-lg overflow-hidden z-50"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <div className="px-4 py-3 border-b border-border-light">
+                      <p className="text-sm font-bold text-text-primary truncate">
+                        {currentUser?.fullName || currentUser?.username}
+                      </p>
+                      <p className="text-xs text-text-muted truncate">
+                        {currentUser?.email || 'No email set'}
+                      </p>
+                      {currentUser?.role && (
+                        <span
+                          className={`inline-block mt-1.5 px-2 py-0.5 text-[10px] font-bold rounded-full uppercase tracking-wider ${getRoleBadgeColor(currentUser.role)}`}
+                        >
+                          {currentUser.role}
+                        </span>
+                      )}
+                    </div>
+                    <div className="py-1">
+                      <button
+                        onClick={() => {
+                          setShowUserMenu(false);
+                          // Dispatch event to open profile modal from dashboard
+                          window.dispatchEvent(new CustomEvent('open-admin-profile'));
+                        }}
+                        className="w-full text-left px-4 py-2 text-sm text-text-primary hover:bg-bg-surface transition-colors"
+                      >
+                        Profile & Settings
+                      </button>
+                    </div>
+                    <div className="py-1 border-t border-border-light">
+                      <button
+                        onClick={handleLogout}
+                        className="w-full text-left px-4 py-2 text-sm text-accent-red font-semibold hover:bg-accent-red/10 transition-colors"
+                      >
+                        Sign Out
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>

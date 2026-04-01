@@ -7,29 +7,58 @@ class AuthService {
   constructor() {
     this.csrfToken = null;
     this.cachedToken = null;
+    this.currentUser = null;
     // Try to restore CSRF token from sessionStorage on init
     if (typeof window !== 'undefined') {
       const storedToken = sessionStorage.getItem('csrfToken');
       if (storedToken) {
         this.csrfToken = storedToken;
       }
+      // Restore user data from sessionStorage
+      const storedUser = sessionStorage.getItem('adminUser');
+      if (storedUser) {
+        try {
+          this.currentUser = JSON.parse(storedUser);
+        } catch {
+          // ignore
+        }
+      }
     }
   }
 
   setCSRFToken(token) {
     this.csrfToken = token;
-    // Persist to sessionStorage for page refreshes
     if (typeof window !== 'undefined') {
       sessionStorage.setItem('csrfToken', token);
     }
   }
 
   getCSRFToken() {
-    // If token is not in memory, try to restore from sessionStorage
     if (!this.csrfToken && typeof window !== 'undefined') {
       this.csrfToken = sessionStorage.getItem('csrfToken');
     }
     return this.csrfToken;
+  }
+
+  setCurrentUser(user) {
+    this.currentUser = user;
+    if (typeof window !== 'undefined') {
+      sessionStorage.setItem('adminUser', JSON.stringify(user));
+    }
+  }
+
+  getCurrentUser() {
+    if (!this.currentUser && typeof window !== 'undefined') {
+      const stored = sessionStorage.getItem('adminUser');
+      if (stored) {
+        try {
+          this.currentUser = JSON.parse(stored);
+        } catch {
+          // ignore
+        }
+      }
+    }
+    return this.currentUser;
   }
 
   async login(username, password) {
@@ -45,11 +74,12 @@ class AuthService {
       const data = await response.json();
 
       if (response.ok && data.success) {
-        // Store CSRF token if provided
         if (data.csrfToken) {
           this.setCSRFToken(data.csrfToken);
         }
-        // Cache the token in memory
+        if (data.user) {
+          this.setCurrentUser(data.user);
+        }
         this.cachedToken = data.token;
         return {
           success: true,
@@ -61,6 +91,8 @@ class AuthService {
       return {
         success: false,
         error: data.error || 'Login failed',
+        remainingAttempts: data.remainingAttempts,
+        locked: data.locked,
       };
     } catch (error) {
       logger.error('AuthService.login error', error);
@@ -84,7 +116,9 @@ class AuthService {
         } else {
           logger.warn('No CSRF token received from token verification');
         }
-        // Cache the verified token
+        if (data.user) {
+          this.setCurrentUser(data.user);
+        }
         this.cachedToken = token;
         return data.valid === true;
       }
@@ -100,8 +134,10 @@ class AuthService {
     await storageService.remove('adminToken');
     this.cachedToken = null;
     this.csrfToken = null;
+    this.currentUser = null;
     if (typeof window !== 'undefined') {
       sessionStorage.removeItem('csrfToken');
+      sessionStorage.removeItem('adminUser');
     }
   }
 
@@ -109,11 +145,9 @@ class AuthService {
     if (typeof window === 'undefined') {
       return null;
     }
-    // Return cached token if available
     if (this.cachedToken) {
       return this.cachedToken;
     }
-    // Otherwise fetch from storage
     const token = await storageService.get('adminToken');
     this.cachedToken = token;
     return token;
@@ -124,7 +158,6 @@ class AuthService {
     return token !== null;
   }
 
-  // Helper method to get headers with CSRF token for write operations
   async getAuthHeaders(includeCSRF = false) {
     const headers = {
       'Content-Type': 'application/json',

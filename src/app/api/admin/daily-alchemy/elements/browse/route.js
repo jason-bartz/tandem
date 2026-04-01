@@ -31,34 +31,47 @@ export async function GET(request) {
 
     const supabase = createServerClient();
 
-    // Get all unique elements from result_element column
-    // We need to aggregate to get unique elements with their emojis
-    let query = supabase
-      .from('element_combinations')
-      .select('result_element, result_emoji')
-      .not('element_a', 'eq', '_ADMIN'); // Exclude admin placeholders
+    // Fetch all unique elements - paginate through Supabase's 1000-row limit
+    const rawData = [];
+    const batchSize = 1000;
+    let from = 0;
+    let hasMore = true;
 
-    // Apply letter filter
-    if (letter !== 'all' && /^[A-Z]$/.test(letter)) {
-      query = query.ilike('result_element', `${letter}%`);
-    }
+    while (hasMore) {
+      // Rebuild query each iteration since .range() mutates the builder
+      let batchQuery = supabase
+        .from('element_combinations')
+        .select('result_element, result_emoji')
+        .not('element_a', 'eq', '_ADMIN');
 
-    // Apply search filter
-    if (search) {
-      query = query.ilike('result_element', `%${search}%`);
-    }
+      if (letter !== 'all' && /^[A-Z]$/.test(letter)) {
+        batchQuery = batchQuery.ilike('result_element', `${letter}%`);
+      }
+      if (search) {
+        batchQuery = batchQuery.ilike('result_element', `%${search}%`);
+      }
 
-    // Order by result_element for consistent pagination
-    query = query.order('result_element', { ascending: true });
+      batchQuery = batchQuery
+        .order('result_element', { ascending: true })
+        .range(from, from + batchSize - 1);
 
-    const { data: rawData, error } = await query;
+      const { data: batch, error } = await batchQuery;
 
-    if (error) {
-      logger.error('[ElementBrowse] Database error', { error: error.message });
-      return NextResponse.json(
-        { error: 'Database error', message: error.message },
-        { status: 500 }
-      );
+      if (error) {
+        logger.error('[ElementBrowse] Database error', { error: error.message });
+        return NextResponse.json(
+          { error: 'Database error', message: error.message },
+          { status: 500 }
+        );
+      }
+
+      if (batch && batch.length > 0) {
+        rawData.push(...batch);
+        from += batchSize;
+        hasMore = batch.length === batchSize;
+      } else {
+        hasMore = false;
+      }
     }
 
     // Deduplicate by element name (case-insensitive) and collect emojis

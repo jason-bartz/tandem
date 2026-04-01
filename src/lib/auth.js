@@ -3,10 +3,13 @@ import { NextResponse } from 'next/server';
 import { validateCSRFToken } from '@/lib/security/csrf';
 import logger from '@/lib/logger';
 
+// Role hierarchy for permission checks
+const ROLE_LEVELS = { owner: 3, admin: 2, editor: 1 };
+
 export function verifyAdminToken(token) {
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    if (decoded.role === 'admin') {
+    if (decoded.role && ROLE_LEVELS[decoded.role] >= 1) {
       return decoded;
     }
     return null;
@@ -16,32 +19,27 @@ export function verifyAdminToken(token) {
   }
 }
 
-export function generateAdminToken(username) {
-  return jwt.sign(
-    {
-      username,
-      role: 'admin',
-      iat: Math.floor(Date.now() / 1000),
-    },
-    process.env.JWT_SECRET,
-    { expiresIn: '7d' }
-  );
+export function generateAdminToken(user) {
+  const payload =
+    typeof user === 'string'
+      ? { username: user, role: 'admin', iat: Math.floor(Date.now() / 1000) }
+      : {
+          userId: user.id,
+          username: user.username,
+          fullName: user.fullName,
+          email: user.email,
+          role: user.role,
+          iat: Math.floor(Date.now() / 1000),
+        };
+
+  return jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '7d' });
 }
 
-/**
- * Extract and validate Bearer token from Authorization header
- * Uses regex to properly parse the header and prevent edge cases
- *
- * @param {string|null} authHeader - The Authorization header value
- * @returns {{ token: string|null, error: string|null }}
- */
 function extractBearerToken(authHeader) {
   if (!authHeader) {
     return { token: null, error: 'No authorization header provided' };
   }
 
-  // Use regex to properly extract token after "Bearer " prefix
-  // This prevents issues with multiple "Bearer " occurrences or malformed headers
   const match = authHeader.match(/^Bearer\s+(.+)$/i);
 
   if (!match || !match[1]) {
@@ -57,7 +55,15 @@ function extractBearerToken(authHeader) {
   return { token, error: null };
 }
 
-export async function requireAdmin(request) {
+/**
+ * Require admin authentication. Optionally require a minimum role level.
+ * @param {Request} request
+ * @param {Object} options
+ * @param {string} options.minRole - Minimum role required: 'editor', 'admin', or 'owner'
+ */
+export async function requireAdmin(request, options = {}) {
+  const { minRole = 'editor' } = options;
+
   const authHeader = request.headers.get('authorization');
   const { token, error: tokenError } = extractBearerToken(authHeader);
 
@@ -78,6 +84,16 @@ export async function requireAdmin(request) {
     };
   }
 
+  // Check role level
+  const requiredLevel = ROLE_LEVELS[minRole] || 1;
+  const userLevel = ROLE_LEVELS[decoded.role] || 0;
+
+  if (userLevel < requiredLevel) {
+    return {
+      error: NextResponse.json({ error: 'Forbidden - Insufficient permissions' }, { status: 403 }),
+    };
+  }
+
   // Validate CSRF token for state-changing operations
   if (request.method !== 'GET' && request.method !== 'HEAD') {
     const isValidCSRF = await validateCSRFToken(request);
@@ -88,5 +104,13 @@ export async function requireAdmin(request) {
     }
   }
 
-  return { admin: decoded }; // Auth passed, return admin info
+  return {
+    admin: {
+      userId: decoded.userId || null,
+      username: decoded.username,
+      fullName: decoded.fullName || decoded.username,
+      email: decoded.email || null,
+      role: decoded.role,
+    },
+  };
 }

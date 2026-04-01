@@ -1,5 +1,5 @@
 'use client';
-import { useState, useCallback, useRef } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import Image from 'next/image';
 import UnifiedPuzzleCalendar from '@/components/admin/UnifiedPuzzleCalendar';
 import GameSelectorModal from '@/components/admin/GameSelectorModal';
@@ -18,27 +18,45 @@ import UserManagement from '@/components/admin/users/UserManagement';
 import AnnouncementManager from '@/components/admin/AnnouncementManager';
 import EmailBlastManager from '@/components/admin/email/EmailBlastManager';
 import AnalyticsDashboard from '@/components/admin/AnalyticsDashboard';
+import TeamManager from '@/components/admin/team/TeamManager';
+import ProfileModal from '@/components/admin/team/ProfileModal';
 import authService from '@/services/auth.service';
 import logger from '@/lib/logger';
 import { ASSET_VERSION } from '@/lib/constants';
 
-const TABS = [
-  { id: 'calendar', label: 'Calendar' },
-  { id: 'elements', label: 'Elements' },
-  { id: 'feedback', label: 'Feedback', hasBadge: true },
-  { id: 'avatars', label: 'Avatars' },
-  { id: 'leaderboards', label: 'Leaderboards' },
-  { id: 'users', label: 'Users' },
-  { id: 'announcements', label: 'Announce' },
-  { id: 'email', label: 'Email' },
-  { id: 'analytics', label: 'Analytics' },
+// Tab definitions with minimum role required
+const ALL_TABS = [
+  { id: 'calendar', label: 'Calendar', minRole: 'editor' },
+  { id: 'elements', label: 'Elements', minRole: 'editor' },
+  { id: 'feedback', label: 'Feedback', hasBadge: true, minRole: 'admin' },
+  { id: 'avatars', label: 'Avatars', minRole: 'admin' },
+  { id: 'leaderboards', label: 'Leaderboards', minRole: 'admin' },
+  { id: 'users', label: 'Users', minRole: 'admin' },
+  { id: 'announcements', label: 'Announce', minRole: 'admin' },
+  { id: 'email', label: 'Email', minRole: 'admin' },
+  { id: 'analytics', label: 'Analytics', minRole: 'editor' },
+  { id: 'team', label: 'Team', minRole: 'admin' },
 ];
+
+const ROLE_LEVELS = { owner: 3, admin: 2, editor: 1 };
 
 export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState('calendar');
   const [calendarSubTab, setCalendarSubTab] = useState('calendar'); // 'calendar', 'themes'
   const [showBulkImport, setShowBulkImport] = useState(false);
   const [feedbackCounts, setFeedbackCounts] = useState(null);
+  const [showProfileModal, setShowProfileModal] = useState(false);
+
+  const currentUser = authService.getCurrentUser();
+  const userRoleLevel = ROLE_LEVELS[currentUser?.role] || 1;
+  const TABS = ALL_TABS.filter((tab) => userRoleLevel >= (ROLE_LEVELS[tab.minRole] || 1));
+
+  // Listen for profile modal open event from layout user menu
+  useEffect(() => {
+    const handleOpenProfile = () => setShowProfileModal(true);
+    window.addEventListener('open-admin-profile', handleOpenProfile);
+    return () => window.removeEventListener('open-admin-profile', handleOpenProfile);
+  }, []);
 
   // Game selector modal state
   const [showGameSelector, setShowGameSelector] = useState(false);
@@ -447,6 +465,7 @@ export default function AdminDashboard() {
         {activeTab === 'announcements' && <AnnouncementManager />}
         {activeTab === 'email' && <EmailBlastManager />}
         {activeTab === 'analytics' && <AnalyticsDashboard />}
+        {activeTab === 'team' && <TeamManager />}
       </div>
 
       {/* Game selector modal */}
@@ -550,6 +569,9 @@ export default function AdminDashboard() {
           </div>
         </div>
       )}
+
+      {/* Profile modal */}
+      {showProfileModal && <ProfileModal onClose={() => setShowProfileModal(false)} />}
     </div>
   );
 }

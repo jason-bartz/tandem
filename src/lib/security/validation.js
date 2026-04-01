@@ -327,8 +327,10 @@ export function sanitizeErrorMessage(error) {
 }
 
 // Validate environment variables
+// JWT_SECRET is always required. ADMIN_USERNAME/ADMIN_PASSWORD_HASH are only
+// needed as a fallback when the admin_users DB table hasn't been set up yet.
 export function validateEnvironmentVariables() {
-  const required = ['ADMIN_USERNAME', 'ADMIN_PASSWORD_HASH', 'JWT_SECRET'];
+  const required = ['JWT_SECRET'];
 
   const missing = required.filter((key) => !process.env[key]);
 
@@ -340,10 +342,6 @@ export function validateEnvironmentVariables() {
   if (process.env.NODE_ENV === 'production') {
     if (process.env.JWT_SECRET === 'tandem-jwt-secret-key-2024-change-in-production') {
       throw new Error('Default JWT secret detected in production. Please set a secure JWT_SECRET');
-    }
-
-    if (process.env.ADMIN_USERNAME === 'admin') {
-      logger.warn('Using default admin username in production is not recommended');
     }
   }
 }

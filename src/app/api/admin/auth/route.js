@@ -1,11 +1,9 @@
 import { NextResponse } from 'next/server';
-import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import {
   authCredentialsSchema,
   parseAndValidateJson,
   sanitizeErrorMessage,
-  validateEnvironmentVariables,
 } from '@/lib/security/validation';
 import {
   getClientIdentifier,
@@ -16,13 +14,11 @@ import {
 } from '@/lib/security/rateLimiter';
 import { generateCSRFToken, getOrGenerateCSRFToken } from '@/lib/security/csrf';
 import { logFailedLogin, logSuccessfulLogin } from '@/lib/security/auditLog';
+import { authenticateAdmin } from '@/lib/adminUsers';
 import logger from '@/lib/logger';
 
 export async function POST(request) {
   try {
-    // Validate environment variables
-    validateEnvironmentVariables();
-
     // Check rate limiting for auth endpoint
     const rateLimitResponse = await withRateLimit(request, 'auth');
     if (rateLimitResponse) {
@@ -48,24 +44,12 @@ export async function POST(request) {
     // Parse and validate request body
     const { username, password } = await parseAndValidateJson(request, authCredentialsSchema);
 
-    // Check credentials against environment variables
-    // No bypasses - all authentication must use proper credentials
-    const isValidUsername = username === process.env.ADMIN_USERNAME;
-    const isValidPassword =
-      isValidUsername && (await bcrypt.compare(password, process.env.ADMIN_PASSWORD_HASH));
+    // Authenticate against database (falls back to env vars if table doesn't exist)
+    const authResult = await authenticateAdmin(username, password);
 
-    const authSuccess = isValidUsername && isValidPassword;
-
-    if (!authSuccess) {
-      // Record failed attempt
+    if (!authResult.success) {
       const attemptResult = await recordFailedAttempt(clientId);
-
-      // Log failed login attempt
-      await logFailedLogin(
-        clientId,
-        username,
-        isValidUsername ? 'Invalid password' : 'Invalid username'
-      );
+      await logFailedLogin(clientId, username, authResult.reason);
 
       return NextResponse.json(
         {
@@ -79,62 +63,54 @@ export async function POST(request) {
     }
 
     await clearFailedAttempts(clientId);
-
-    // Log successful login
     await logSuccessfulLogin(clientId, username);
+
+    const { user } = authResult;
 
     const token = jwt.sign(
       {
-        username,
-        role: 'admin',
+        userId: user.id,
+        username: user.username,
+        fullName: user.fullName,
+        email: user.email,
+        role: user.role,
         iat: Math.floor(Date.now() / 1000),
       },
       process.env.JWT_SECRET,
       { expiresIn: '7d' }
     );
 
-    // Generate CSRF token for the session
     const csrfToken = await generateCSRFToken();
 
     return NextResponse.json({
       success: true,
       token,
       csrfToken,
-      user: { username, role: 'admin' },
+      user: {
+        id: user.id,
+        username: user.username,
+        fullName: user.fullName,
+        email: user.email,
+        role: user.role,
+      },
     });
   } catch (error) {
     logger.error('Admin authentication failed', error);
-
     const message = sanitizeErrorMessage(error);
 
     if (error.message.includes('Validation error')) {
       return NextResponse.json({ success: false, error: message }, { status: 400 });
     }
 
-    if (error.message.includes('environment variables')) {
-      return NextResponse.json(
-        { success: false, error: 'Server configuration error' },
-        { status: 500 }
-      );
-    }
-
     return NextResponse.json({ success: false, error: message }, { status: 500 });
   }
 }
 
-/**
- * Extract and validate Bearer token from Authorization header
- * Uses regex to properly parse the header and prevent edge cases
- *
- * @param {string|null} authHeader - The Authorization header value
- * @returns {{ token: string|null, error: string|null }}
- */
 function extractBearerToken(authHeader) {
   if (!authHeader) {
     return { token: null, error: 'No authorization header provided' };
   }
 
-  // Use regex to properly extract token after "Bearer " prefix
   const match = authHeader.match(/^Bearer\s+(.+)$/i);
 
   if (!match || !match[1]) {
@@ -164,8 +140,6 @@ export async function GET(request) {
 
     try {
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
-      // Get existing CSRF token or generate if missing (don't regenerate on every verification)
       const csrfToken = await getOrGenerateCSRFToken();
 
       return NextResponse.json({
@@ -173,7 +147,10 @@ export async function GET(request) {
         valid: true,
         csrfToken,
         user: {
+          id: decoded.userId || null,
           username: decoded.username,
+          fullName: decoded.fullName || decoded.username,
+          email: decoded.email || null,
           role: decoded.role,
         },
       });
