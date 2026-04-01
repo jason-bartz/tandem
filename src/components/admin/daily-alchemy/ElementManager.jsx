@@ -557,7 +557,7 @@ function MultiPathGenerator() {
 
       {/* Empty State */}
       {!isGenerating && !paths && !error && (
-        <div className="p-6 text-center bg-gray-50 dark:bg-gray-900 rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-600">
+        <div className="p-6 text-center bg-gray-50 dark:bg-gray-900 rounded-lg border border-dashed border-border-main">
           <p className="text-sm font-bold text-text-secondary">
             Enter a target element to generate paths
           </p>
@@ -980,13 +980,13 @@ function PathwayBuilder() {
       </div>
 
       {/* Starter Elements Reference */}
-      <div className="bg-gray-50 dark:bg-gray-900 rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-600 p-4">
+      <div className="bg-gray-50 dark:bg-gray-900 rounded-lg border border-dashed border-border-main p-4">
         <h4 className="font-bold text-text-secondary mb-2">Starter Elements</h4>
         <div className="flex flex-wrap gap-3">
           {STARTER_ELEMENTS.map((el) => (
             <span
               key={el.id}
-              className="px-3 py-1.5 bg-bg-card dark:bg-gray-800 rounded-full border border-gray-200 dark:border-gray-700 text-sm flex items-center gap-1.5"
+              className="px-3 py-1.5 bg-bg-card dark:bg-gray-800 rounded-full border border-border-main text-sm flex items-center gap-1.5"
             >
               <span>{el.emoji}</span>
               <span className="font-medium">{el.name}</span>
@@ -1086,7 +1086,7 @@ function PathwayRow({ row, index, onUpdate, onRemove, canRemove }) {
               onFocus={() => row.elementA && handleSearch('a', row.elementA)}
               onBlur={() => closeSuggestions('a')}
               placeholder="Element A"
-              className="w-full px-2 py-1.5 rounded border-2 border-gray-200 dark:border-gray-600 bg-bg-card dark:bg-gray-700 text-text-primary text-sm font-medium"
+              className="w-full px-2 py-1.5 rounded border border-border-main bg-bg-card dark:bg-gray-700 text-text-primary text-sm font-medium"
             />
           </div>
           {showSuggestions.a && suggestions.a.length > 0 && (
@@ -1118,7 +1118,7 @@ function PathwayRow({ row, index, onUpdate, onRemove, canRemove }) {
               onFocus={() => row.elementB && handleSearch('b', row.elementB)}
               onBlur={() => closeSuggestions('b')}
               placeholder="Element B"
-              className="w-full px-2 py-1.5 rounded border-2 border-gray-200 dark:border-gray-600 bg-bg-card dark:bg-gray-700 text-text-primary text-sm font-medium"
+              className="w-full px-2 py-1.5 rounded border border-border-main bg-bg-card dark:bg-gray-700 text-text-primary text-sm font-medium"
             />
           </div>
           {showSuggestions.b && suggestions.b.length > 0 && (
@@ -1150,7 +1150,7 @@ function PathwayRow({ row, index, onUpdate, onRemove, canRemove }) {
               onFocus={() => row.result && handleSearch('result', row.result)}
               onBlur={() => closeSuggestions('result')}
               placeholder="Result"
-              className="w-full px-2 py-1.5 rounded border-2 border-gray-200 dark:border-gray-600 bg-bg-card dark:bg-gray-700 text-text-primary text-sm font-bold"
+              className="w-full px-2 py-1.5 rounded border border-border-main bg-bg-card dark:bg-gray-700 text-text-primary text-sm font-bold"
             />
           </div>
           {showSuggestions.result && suggestions.result.length > 0 && (
@@ -1208,7 +1208,7 @@ function PathwayRow({ row, index, onUpdate, onRemove, canRemove }) {
               onFocus={() => row.elementA && handleSearch('a', row.elementA)}
               onBlur={() => closeSuggestions('a')}
               placeholder="Element A"
-              className="flex-1 px-2.5 py-1.5 rounded border-2 border-gray-200 dark:border-gray-600 bg-bg-card dark:bg-gray-700 text-text-primary text-sm font-medium"
+              className="flex-1 px-2.5 py-1.5 rounded border border-border-main bg-bg-card dark:bg-gray-700 text-text-primary text-sm font-medium"
             />
           </div>
           {showSuggestions.a && suggestions.a.length > 0 && (
@@ -1241,7 +1241,7 @@ function PathwayRow({ row, index, onUpdate, onRemove, canRemove }) {
               onFocus={() => row.elementB && handleSearch('b', row.elementB)}
               onBlur={() => closeSuggestions('b')}
               placeholder="Element B"
-              className="flex-1 px-2.5 py-1.5 rounded border-2 border-gray-200 dark:border-gray-600 bg-bg-card dark:bg-gray-700 text-text-primary text-sm font-medium"
+              className="flex-1 px-2.5 py-1.5 rounded border border-border-main bg-bg-card dark:bg-gray-700 text-text-primary text-sm font-medium"
             />
           </div>
           {showSuggestions.b && suggestions.b.length > 0 && (
@@ -1274,7 +1274,7 @@ function PathwayRow({ row, index, onUpdate, onRemove, canRemove }) {
               onFocus={() => row.result && handleSearch('result', row.result)}
               onBlur={() => closeSuggestions('result')}
               placeholder="Result"
-              className="flex-1 px-2.5 py-1.5 rounded border-2 border-gray-200 dark:border-gray-600 bg-bg-card dark:bg-gray-700 text-text-primary text-sm font-bold"
+              className="flex-1 px-2.5 py-1.5 rounded border border-border-main bg-bg-card dark:bg-gray-700 text-text-primary text-sm font-bold"
             />
           </div>
           {showSuggestions.result && suggestions.result.length > 0 && (
@@ -1418,7 +1418,7 @@ function EmojiEditor({ pathway, saveResults, onDone }) {
                 type="text"
                 value={editedEmojis[name] || ''}
                 onChange={(e) => updateEmoji(name, e.target.value.slice(0, 4))}
-                className="w-12 px-2 py-1 text-xl text-center rounded border-2 border-gray-200 dark:border-gray-600 bg-bg-card dark:bg-gray-700"
+                className="w-12 px-2 py-1 text-xl text-center rounded border border-border-main bg-bg-card dark:bg-gray-700"
                 maxLength={4}
               />
               <span className="font-medium text-sm text-text-primary truncate" title={name}>
@@ -1457,7 +1457,7 @@ function EmojiEditor({ pathway, saveResults, onDone }) {
       </div>
 
       {/* Pathway Preview */}
-      <div className="bg-gray-50 dark:bg-gray-900 rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-600 p-4">
+      <div className="bg-gray-50 dark:bg-gray-900 rounded-lg border border-dashed border-border-main p-4">
         <h4 className="font-bold text-text-secondary mb-3 flex items-center gap-2">
           <GitBranch className="w-4 h-4" />
           Pathway Preview
@@ -1466,7 +1466,7 @@ function EmojiEditor({ pathway, saveResults, onDone }) {
           {pathway.steps.map((step, idx) => (
             <div
               key={idx}
-              className="flex items-center gap-2 text-sm bg-bg-card dark:bg-gray-800 rounded-lg p-2 border border-gray-200 dark:border-gray-700"
+              className="flex items-center gap-2 text-sm bg-bg-card dark:bg-gray-800 rounded-lg p-2 border border-border-main"
             >
               <span className="text-xs font-bold text-gray-400 w-5">{step.step}.</span>
               <span className="text-lg">{editedEmojis[step.elementA] || step.emojiA}</span>
@@ -1622,7 +1622,7 @@ function ElementBrowser({ onSelectElement, externalSearch = '', onSearchChange }
       </div>
 
       {/* Letter Filter Row */}
-      <div className="flex flex-wrap gap-0.5 mb-4 pb-4 border-b border-gray-200 dark:border-gray-700">
+      <div className="flex flex-wrap gap-0.5 mb-4 pb-4 border-b border-border-main">
         <button
           onClick={() => handleLetterChange('all')}
           className={`px-2 py-0.5 text-xs font-semibold rounded transition-all ${
@@ -1708,7 +1708,7 @@ function ElementBrowser({ onSelectElement, externalSearch = '', onSearchChange }
 
       {/* Pagination */}
       {!isLoading && pagination.totalPages > 1 && (
-        <div className="flex items-center justify-between mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+        <div className="flex items-center justify-between mt-4 pt-4 border-t border-border-main">
           <p className="text-sm text-text-secondary">
             Page {pagination.page} of {pagination.totalPages} ({pagination.total} elements)
           </p>
@@ -2812,7 +2812,7 @@ function FirstDiscoveriesSection() {
 
       {/* Pagination */}
       {!isLoading && pagination.totalPages > 1 && (
-        <div className="flex items-center justify-center gap-2 mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
+        <div className="flex items-center justify-center gap-2 mt-6 pt-4 border-t border-border-main">
           <button
             onClick={() => fetchDiscoveries(pagination.page - 1)}
             disabled={pagination.page <= 1}
@@ -2997,7 +2997,7 @@ function FirstDiscoveryDetailModal({ discovery, onClose }) {
 
               {/* Discovery info - no time for export */}
               <div className="space-y-3">
-                <div className="flex items-center justify-between py-2 border-b border-gray-200">
+                <div className="flex items-center justify-between py-2 border-b border-border-main">
                   <span className="text-sm text-gray-500">Discovered by</span>
                   <span className="font-bold text-gray-900">
                     {discovery.username || 'Anonymous Player'}
@@ -3012,7 +3012,7 @@ function FirstDiscoveryDetailModal({ discovery, onClose }) {
               </div>
 
               {/* Branding */}
-              <div className="mt-4 pt-4 border-t border-gray-200 text-center">
+              <div className="mt-4 pt-4 border-t border-border-main text-center">
                 <span className="text-xs font-bold text-gray-400">
                   tandemdaily.com/daily-alchemy
                 </span>

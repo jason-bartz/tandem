@@ -31,7 +31,7 @@ function formatTimestamp(value) {
 
 function MetricCard({ label, value, color = 'text-text-primary' }) {
   return (
-    <div className="bg-bg-surface rounded-lg border-[2px] border-border-main p-3 text-center">
+    <div className="bg-bg-surface rounded-lg border border-border-main p-3 text-center">
       <div className={`text-xl font-bold ${color}`}>
         {value !== null && value !== undefined ? value.toLocaleString() : '--'}
       </div>
@@ -45,13 +45,13 @@ function LoadingSkeleton() {
     <div className="space-y-6 animate-pulse">
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
         {[...Array(5)].map((_, i) => (
-          <div key={i} className="bg-bg-card rounded-lg border-[2px] border-border-main p-3 h-16" />
+          <div key={i} className="bg-bg-card rounded-lg border border-border-main p-3 h-16" />
         ))}
       </div>
-      <div className="bg-bg-card rounded-lg border-[2px] border-border-main h-12" />
+      <div className="bg-bg-card rounded-lg border border-border-main h-12" />
       <div className="space-y-2">
         {[...Array(5)].map((_, i) => (
-          <div key={i} className="bg-bg-card rounded-lg border-[2px] border-border-main h-14" />
+          <div key={i} className="bg-bg-card rounded-lg border border-border-main h-14" />
         ))}
       </div>
     </div>
@@ -226,11 +226,11 @@ export default function UserManagement() {
           <button
             onClick={handleExport}
             disabled={exporting}
-            className="px-3 py-1.5 bg-bg-card border-[2px] border-border-main rounded-lg font-bold text-xs text-text-secondary hover:bg-bg-surface hover:dark:hover:border-white transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1.5"
+            className="px-3 py-1.5 bg-bg-card border border-border-main rounded-lg font-bold text-xs text-text-secondary hover:bg-bg-surface hover:dark:hover:border-white transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1.5"
           >
             {exporting ? (
               <>
-                <div className="w-3 h-3 border-[2px] border-orange-500 border-t-transparent rounded-full animate-spin" />
+                <div className="w-3 h-3 border border-orange-500 border-t-transparent rounded-full animate-spin" />
                 Exporting...
               </>
             ) : (
@@ -282,7 +282,7 @@ export default function UserManagement() {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search by username, email, or user ID..."
-              className="w-full px-4 py-2.5 border-2 border-border-main rounded-lg bg-bg-card text-text-primary font-medium text-sm placeholder:text-text-muted focus:outline-none focus:border-orange-500 transition-colors"
+              className="w-full px-4 py-2.5 border border-border-main rounded-lg bg-bg-card text-text-primary font-medium text-sm placeholder:text-text-muted focus:outline-none focus:border-orange-500 transition-colors"
             />
             {search && (
               <button
@@ -304,7 +304,7 @@ export default function UserManagement() {
           <select
             value={typeFilter}
             onChange={(e) => setTypeFilter(e.target.value)}
-            className="px-3 py-2.5 border-2 border-border-main rounded-lg bg-bg-card text-text-primary font-bold text-sm cursor-pointer focus:outline-none focus:border-orange-500"
+            className="px-3 py-2.5 border border-border-main rounded-lg bg-bg-card text-text-primary font-bold text-sm cursor-pointer focus:outline-none focus:border-orange-500"
           >
             {TYPE_OPTIONS.map((opt) => (
               <option key={opt.value} value={opt.value}>
@@ -316,7 +316,7 @@ export default function UserManagement() {
           <select
             value={sortOrder}
             onChange={(e) => setSortOrder(e.target.value)}
-            className="px-3 py-2.5 border-2 border-border-main rounded-lg bg-bg-card text-text-primary font-bold text-sm cursor-pointer focus:outline-none focus:border-orange-500"
+            className="px-3 py-2.5 border border-border-main rounded-lg bg-bg-card text-text-primary font-bold text-sm cursor-pointer focus:outline-none focus:border-orange-500"
           >
             {SORT_OPTIONS.map((opt) => (
               <option key={opt.value} value={opt.value}>
@@ -400,9 +400,9 @@ export default function UserManagement() {
                       </td>
                       <td className="px-3 py-3 text-center hidden md:table-cell">
                         <span
-                          className={`text-[10px] font-bold px-2 py-0.5 rounded-full border-[2px] ${
+                          className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${
                             user.isAnonymous
-                              ? 'bg-gray-100 dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-text-secondary'
+                              ? 'bg-gray-100 dark:bg-gray-800 border-border-main text-text-secondary'
                               : 'bg-accent-green/20 border-accent-green text-accent-green'
                           }`}
                         >
@@ -411,7 +411,7 @@ export default function UserManagement() {
                       </td>
                       <td className="px-3 py-3 text-center hidden md:table-cell">
                         {user.hasSubscription && (
-                          <span className="text-[10px] font-bold px-2 py-0.5 rounded-full border-[2px] bg-accent-purple/20 border-accent-purple text-accent-purple">
+                          <span className="text-[10px] font-bold px-2 py-0.5 rounded-full border bg-accent-purple/20 border-accent-purple text-accent-purple">
                             Member
                           </span>
                         )}
@@ -508,7 +508,7 @@ export default function UserManagement() {
               <button
                 onClick={() => handlePageChange(pagination.page - 1)}
                 disabled={pagination.page <= 1}
-                className="px-2.5 py-1.5 border-[2px] border-border-main rounded-lg font-bold text-xs text-text-secondary hover:bg-bg-card disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                className="px-2.5 py-1.5 border border-border-main rounded-lg font-bold text-xs text-text-secondary hover:bg-bg-card disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
               >
                 Prev
               </button>
@@ -517,7 +517,7 @@ export default function UserManagement() {
                 <button
                   key={num}
                   onClick={() => handlePageChange(num)}
-                  className={`px-2.5 py-1.5 border-[2px] rounded-lg font-bold text-xs transition-colors ${
+                  className={`px-2.5 py-1.5 border rounded-lg font-bold text-xs transition-colors ${
                     num === pagination.page
                       ? 'border-orange-500 bg-orange-500/20 text-text-primary'
                       : 'border-border-main text-text-secondary hover:bg-bg-card'
@@ -530,7 +530,7 @@ export default function UserManagement() {
               <button
                 onClick={() => handlePageChange(pagination.page + 1)}
                 disabled={pagination.page >= pagination.totalPages}
-                className="px-2.5 py-1.5 border-[2px] border-border-main rounded-lg font-bold text-xs text-text-secondary hover:bg-bg-card disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                className="px-2.5 py-1.5 border border-border-main rounded-lg font-bold text-xs text-text-secondary hover:bg-bg-card disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
               >
                 Next
               </button>

@@ -87,7 +87,7 @@ export default function UnifiedPuzzleCalendar({ onSelectDate, onRefresh }) {
   const [puzzleData, setPuzzleData] = useState({});
   const [loading, setLoading] = useState(true);
   const [showMonthPicker, setShowMonthPicker] = useState(false);
-  const [viewMode, setViewMode] = useState('month'); // 'month' or 'week'
+  const [viewMode, setViewMode] = useState('week'); // 'month' or 'week'
   const [currentWeekStart, setCurrentWeekStart] = useState(() => getWeekStart(new Date()));
   const weekContainerRef = useRef(null);
   const lastScrollTime = useRef(0);
@@ -461,10 +461,10 @@ export default function UnifiedPuzzleCalendar({ onSelectDate, onRefresh }) {
                       setCurrentMonth(new Date(currentMonth.getFullYear(), index, 1));
                       setShowMonthPicker(false);
                     }}
-                    className={`px-2 py-1.5 text-xs font-bold rounded-lg border-[2px] transition-all ${
+                    className={`px-2 py-1.5 text-xs font-bold rounded-lg border transition-all ${
                       index === currentMonth.getMonth()
                         ? 'bg-accent-yellow text-gray-900'
-                        : 'bg-bg-card border-gray-300 dark:border-gray-600 text-text-primary hover:dark:hover:border-white'
+                        : 'bg-bg-card border-border-main text-text-primary hover:dark:hover:border-white'
                     }`}
                   >
                     {name.slice(0, 3)}
@@ -502,7 +502,7 @@ export default function UnifiedPuzzleCalendar({ onSelectDate, onRefresh }) {
 
         <div className="flex items-center gap-2">
           {/* View mode toggle */}
-          <div className="flex rounded-lg border-[2px] border-gray-300 dark:border-gray-600 overflow-hidden">
+          <div className="flex rounded-lg border border-border-main overflow-hidden">
             <button
               onClick={() => setViewMode('month')}
               className={`px-2.5 py-1 text-xs font-bold transition-all ${
@@ -518,7 +518,7 @@ export default function UnifiedPuzzleCalendar({ onSelectDate, onRefresh }) {
                 setViewMode('week');
                 setShowMonthPicker(false);
               }}
-              className={`px-2.5 py-1 text-xs font-bold transition-all border-l-[2px] border-gray-300 dark:border-gray-600 ${
+              className={`px-2.5 py-1 text-xs font-bold transition-all border-l border-border-main ${
                 viewMode === 'week'
                   ? 'bg-accent-yellow text-gray-900'
                   : 'bg-bg-card text-text-secondary hover:bg-gray-100 dark:hover:bg-gray-700'

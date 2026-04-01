@@ -85,7 +85,7 @@ export default function ReelConnectionsAIGenerator({
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="sticky top-0 bg-ghost-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-4 flex items-center justify-between rounded-t-2xl">
+        <div className="sticky top-0 bg-ghost-white dark:bg-gray-800 border-b border-border-main px-6 py-4 flex items-center justify-between rounded-t-2xl">
           <div>
             <h2
               id="ai-generator-title"
@@ -203,7 +203,7 @@ export default function ReelConnectionsAIGenerator({
               placeholder="e.g., Best Picture nominees, Spielberg movies, superhero films..."
               maxLength={100}
               disabled={loading || suggestionsLoading}
-              className="w-full px-4 py-3 border-2 border-gray-200 dark:border-gray-700 rounded-lg bg-ghost-white dark:bg-gray-900 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-accent-red focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="w-full px-4 py-3 border border-border-main rounded-lg bg-bg-surface dark:bg-gray-900 text-text-primary placeholder:text-text-muted focus:ring-2 focus:ring-accent-red focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             />
             <p className="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
               Describe what connects the 4 movies, or click &quot;Suggest Ideas&quot; for
@@ -224,7 +224,7 @@ export default function ReelConnectionsAIGenerator({
                     type="button"
                     onClick={() => handleSelectSuggestion(suggestion)}
                     disabled={loading}
-                    className="w-full p-3 text-left rounded-lg border-2 border-gray-200 dark:border-gray-700 hover:border-accent-red hover:bg-accent-red/5 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full p-3 text-left rounded-lg border border-border-main hover:border-accent-red hover:bg-accent-red/5 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     <div className="font-medium text-gray-900 dark:text-white">
                       {suggestion.connection}
@@ -250,11 +250,11 @@ export default function ReelConnectionsAIGenerator({
                   onClick={() => setDifficulty(level.value)}
                   disabled={loading}
                   className={`
-                    w-full px-4 py-3 rounded-lg border-2 text-left transition-all
+                    w-full px-4 py-3 rounded-lg border text-left transition-all
                     ${
                       difficulty === level.value
                         ? 'border-accent-red bg-accent-red/10'
-                        : 'border-gray-200 dark:border-gray-700 hover:border-accent-red/50'
+                        : 'border-border-main hover:border-accent-red/50'
                     }
                     disabled:opacity-50 disabled:cursor-not-allowed
                   `}
@@ -321,11 +321,11 @@ export default function ReelConnectionsAIGenerator({
         </div>
 
         {/* Footer Actions */}
-        <div className="sticky bottom-0 bg-ghost-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 px-6 py-4 flex gap-3 rounded-b-2xl">
+        <div className="sticky bottom-0 bg-ghost-white dark:bg-gray-800 border-t border-border-main px-6 py-4 flex gap-3 rounded-b-2xl">
           <button
             onClick={onClose}
             disabled={loading}
-            className="flex-1 px-6 py-3 border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium"
+            className="flex-1 px-6 py-3 border border-border-main text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium"
           >
             Cancel
           </button>

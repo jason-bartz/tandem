@@ -374,7 +374,7 @@ export default function AdminDashboard() {
               setActiveEditor(null);
             }}
             className={`
-              py-3 px-2 sm:px-4 border-b-[3px] font-bold text-sm sm:text-base whitespace-nowrap transition-all flex items-center gap-1 sm:gap-2
+              py-3 px-2 sm:px-4 border-b-2 font-bold text-sm sm:text-base whitespace-nowrap transition-all flex items-center gap-1 sm:gap-2
               ${
                 activeTab === 'calendar'
                   ? 'border-accent-yellow text-text-primary bg-accent-yellow/20'
@@ -388,7 +388,7 @@ export default function AdminDashboard() {
           <button
             onClick={() => setActiveTab('elements')}
             className={`
-              py-3 px-2 sm:px-4 border-b-[3px] font-bold text-sm sm:text-base whitespace-nowrap transition-all flex items-center gap-1 sm:gap-2
+              py-3 px-2 sm:px-4 border-b-2 font-bold text-sm sm:text-base whitespace-nowrap transition-all flex items-center gap-1 sm:gap-2
               ${
                 activeTab === 'elements'
                   ? 'border-green-500 text-text-primary bg-green-500/20'
@@ -407,7 +407,7 @@ export default function AdminDashboard() {
           <button
             onClick={() => setActiveTab('feedback')}
             className={`
-              py-3 px-2 sm:px-4 border-b-[3px] font-bold text-sm sm:text-base whitespace-nowrap transition-all flex items-center gap-1 sm:gap-2 relative
+              py-3 px-2 sm:px-4 border-b-2 font-bold text-sm sm:text-base whitespace-nowrap transition-all flex items-center gap-1 sm:gap-2 relative
               ${
                 activeTab === 'feedback'
                   ? 'border-accent-blue text-text-primary bg-accent-blue/20'
@@ -418,7 +418,7 @@ export default function AdminDashboard() {
             <Image src="/ui/shared/feedback.png" alt="" width={20} height={20} />
             <span className="hidden sm:inline">Feedback</span>
             {feedbackCounts?.new > 0 && (
-              <span className="absolute -top-1 -right-1 flex items-center justify-center min-w-[20px] h-5 px-1.5 bg-accent-red text-white text-xs font-bold rounded-full border-[2px] border-white">
+              <span className="absolute -top-1 -right-1 flex items-center justify-center min-w-[20px] h-5 px-1.5 bg-accent-red text-white text-xs font-bold rounded-full">
                 {feedbackCounts.new}
               </span>
             )}
@@ -426,7 +426,7 @@ export default function AdminDashboard() {
           <button
             onClick={() => setActiveTab('avatars')}
             className={`
-              py-3 px-2 sm:px-4 border-b-[3px] font-bold text-sm sm:text-base whitespace-nowrap transition-all flex items-center gap-1 sm:gap-2
+              py-3 px-2 sm:px-4 border-b-2 font-bold text-sm sm:text-base whitespace-nowrap transition-all flex items-center gap-1 sm:gap-2
               ${
                 activeTab === 'avatars'
                   ? 'border-accent-pink text-text-primary bg-accent-pink/20'
@@ -440,7 +440,7 @@ export default function AdminDashboard() {
           <button
             onClick={() => setActiveTab('leaderboards')}
             className={`
-              py-3 px-2 sm:px-4 border-b-[3px] font-bold text-sm sm:text-base whitespace-nowrap transition-all flex items-center gap-1 sm:gap-2
+              py-3 px-2 sm:px-4 border-b-2 font-bold text-sm sm:text-base whitespace-nowrap transition-all flex items-center gap-1 sm:gap-2
               ${
                 activeTab === 'leaderboards'
                   ? 'border-accent-purple text-text-primary bg-accent-purple/20'
@@ -454,7 +454,7 @@ export default function AdminDashboard() {
           <button
             onClick={() => setActiveTab('users')}
             className={`
-              py-3 px-2 sm:px-4 border-b-[3px] font-bold text-sm sm:text-base whitespace-nowrap transition-all flex items-center gap-1 sm:gap-2
+              py-3 px-2 sm:px-4 border-b-2 font-bold text-sm sm:text-base whitespace-nowrap transition-all flex items-center gap-1 sm:gap-2
               ${
                 activeTab === 'users'
                   ? 'border-orange-500 text-text-primary bg-orange-500/20'
@@ -468,7 +468,7 @@ export default function AdminDashboard() {
           <button
             onClick={() => setActiveTab('announcements')}
             className={`
-              py-3 px-2 sm:px-4 border-b-[3px] font-bold text-sm sm:text-base whitespace-nowrap transition-all flex items-center gap-1 sm:gap-2
+              py-3 px-2 sm:px-4 border-b-2 font-bold text-sm sm:text-base whitespace-nowrap transition-all flex items-center gap-1 sm:gap-2
               ${
                 activeTab === 'announcements'
                   ? 'border-accent-blue text-text-primary bg-accent-blue/20'
@@ -499,7 +499,7 @@ export default function AdminDashboard() {
                     {calendarSubTab === 'themes' && (
                       <button
                         onClick={() => setCalendarSubTab('calendar')}
-                        className="px-2 sm:px-3 py-1 text-xs sm:text-sm border-[2px] rounded-lg font-bold transition-all flex items-center gap-1 bg-bg-card text-text-secondary hover:bg-accent-yellow/20"
+                        className="px-2 sm:px-3 py-1 text-xs sm:text-sm rounded-lg font-bold transition-all flex items-center gap-1 bg-bg-card text-text-secondary hover:bg-accent-yellow/20"
                       >
                         <Image src="/ui/shared/archive.png" alt="" width={16} height={16} />
                         <span className="hidden sm:inline">← Back to Calendar</span>
@@ -565,7 +565,7 @@ export default function AdminDashboard() {
       {showThemesModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="bg-bg-surface rounded-lg w-full max-w-6xl max-h-[90vh] flex flex-col">
-            <div className="px-4 sm:px-6 py-3 sm:py-4 border-b-[3px] flex items-center justify-between">
+            <div className="px-4 sm:px-6 py-3 sm:py-4 border-b-2 flex items-center justify-between">
               <h3 className="text-base sm:text-lg font-bold text-text-primary">Theme Tracker</h3>
               <button
                 onClick={() => setShowThemesModal(false)}
@@ -604,7 +604,7 @@ export default function AdminDashboard() {
       {showConnectionsModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="bg-bg-surface rounded-lg w-full max-w-6xl max-h-[90vh] flex flex-col">
-            <div className="px-4 sm:px-6 py-3 sm:py-4 border-b-[3px] flex items-center justify-between">
+            <div className="px-4 sm:px-6 py-3 sm:py-4 border-b-2 flex items-center justify-between">
               <h3 className="text-base sm:text-lg font-bold text-text-primary">
                 Connection Tracker
               </h3>

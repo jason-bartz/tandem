@@ -87,7 +87,7 @@ export default memo(function CandidateList({
           setShowAll(false);
         }}
         placeholder="Filter..."
-        className="w-full px-2 py-1 text-xs rounded border-[2px] border-gray-300 dark:border-gray-600 bg-ghost-white dark:bg-gray-800 text-text-primary mb-2"
+        className="w-full px-2 py-1 text-xs rounded border border-border-main bg-ghost-white dark:bg-gray-800 text-text-primary mb-2"
       />
 
       {/* Candidate table */}

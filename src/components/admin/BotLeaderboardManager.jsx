@@ -168,12 +168,12 @@ export default function BotLeaderboardManager() {
           {/* Message */}
           {message && (
             <div
-              className={`px-4 py-3 rounded-lg border-2 ${
+              className={`px-4 py-3 rounded-lg ${
                 message.type === 'success'
-                  ? 'bg-accent-green/20 border-accent-green text-accent-green'
+                  ? 'bg-accent-green/20 text-accent-green'
                   : message.type === 'error'
-                    ? 'bg-accent-red/20 border-accent-red text-accent-red'
-                    : 'bg-accent-blue/20 border-accent-blue text-accent-blue'
+                    ? 'bg-accent-red/20 text-accent-red'
+                    : 'bg-accent-blue/20 text-accent-blue'
               }`}
             >
               {message.text}
@@ -191,7 +191,7 @@ export default function BotLeaderboardManager() {
                 }`}
               >
                 <div
-                  className={`absolute top-0.5 w-5 h-5 bg-white rounded-full transition-transform ${
+                  className={`absolute top-0.5 w-5 h-5 bg-bg-card rounded-full transition-transform ${
                     formData.enabled ? 'left-[calc(100%-22px)]' : 'left-0.5'
                   }`}
                 />

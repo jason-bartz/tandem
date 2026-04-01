@@ -112,7 +112,7 @@ export default function ReelConnectionsPuzzleCalendar({
           <div
             key={dayNumber}
             className={`
-              relative aspect-square min-h-0 p-1.5 sm:p-2 rounded-lg border-[2px] overflow-hidden transition-all cursor-pointer
+              relative aspect-square min-h-0 p-1.5 sm:p-2 rounded-lg border overflow-hidden transition-all cursor-pointer
               ${today ? 'border-accent-yellow bg-accent-yellow/20' : ''}
               ${puzzleExists ? 'bg-accent-red/10' : ''}
               ${holiday && !puzzleExists ? 'bg-accent-orange/10' : ''}
@@ -219,7 +219,7 @@ export default function ReelConnectionsPuzzleCalendar({
                       setCurrentMonth(newDate);
                       setShowMonthPicker(false);
                     }}
-                    className={`px-3 py-2 rounded text-sm font-bold border-[2px] transition-transform ${
+                    className={`px-3 py-2 rounded text-sm font-bold border transition-transform ${
                       currentMonth.getMonth() === index
                         ? 'bg-accent-red text-white'
                         : 'bg-bg-card text-text-secondary hover:bg-accent-red/20'

@@ -193,7 +193,7 @@ export default function ImportAdminPage() {
         <div className="flex items-center gap-4">
           <Link
             href="/admin"
-            className="p-2 rounded-xl border-2 bg-bg-card hover:bg-gray-100 transition-colors"
+            className="p-2 rounded-lg bg-bg-card hover:bg-bg-surface transition-colors"
           >
             <ArrowLeft className="w-5 h-5" />
           </Link>
@@ -208,10 +208,10 @@ export default function ImportAdminPage() {
         {/* Stats */}
         {stats && (
           <div className="flex gap-4 text-sm">
-            <div className="px-4 py-2 bg-blue-100 rounded-xl border-2">
+            <div className="px-4 py-2 bg-blue-100 rounded-lg">
               <span className="font-bold">{stats.totalElements.toLocaleString()}</span> elements
             </div>
-            <div className="px-4 py-2 bg-green-100 rounded-xl border-2">
+            <div className="px-4 py-2 bg-green-100 rounded-lg">
               <span className="font-bold">{stats.totalCombinations.toLocaleString()}</span>{' '}
               combinations
             </div>
@@ -229,7 +229,7 @@ export default function ImportAdminPage() {
             placeholder="Search elements..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-10 py-3 rounded-xl border-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full pl-10 pr-10 py-3 rounded-lg border border-border-main bg-bg-card text-text-primary focus:outline-none focus:ring-2 focus:ring-primary"
           />
           {searchQuery && (
             <button
@@ -246,8 +246,8 @@ export default function ImportAdminPage() {
           <div className="flex flex-wrap gap-1">
             <button
               onClick={() => setSelectedLetter(null)}
-              className={`px-3 py-1.5 rounded-lg border-2 font-bold text-sm transition-colors ${
-                selectedLetter === null ? 'bg-black text-white' : 'bg-bg-card hover:bg-gray-100'
+              className={`px-3 py-1.5 rounded-lg font-bold text-sm transition-colors ${
+                selectedLetter === null ? 'bg-primary text-white' : 'bg-bg-card hover:bg-bg-surface'
               }`}
             >
               All
@@ -257,12 +257,12 @@ export default function ImportAdminPage() {
                 key={letter}
                 onClick={() => setSelectedLetter(letter)}
                 disabled={count === 0}
-                className={`px-3 py-1.5 rounded-lg border-2 font-bold text-sm transition-colors ${
+                className={`px-3 py-1.5 rounded-lg font-bold text-sm transition-colors ${
                   selectedLetter === letter
-                    ? 'bg-black text-white'
+                    ? 'bg-primary text-white'
                     : count === 0
                       ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                      : 'bg-bg-card hover:bg-gray-100'
+                      : 'bg-bg-card hover:bg-bg-surface'
                 }`}
                 title={`${count} elements`}
               >
@@ -295,7 +295,7 @@ export default function ImportAdminPage() {
               <button
                 onClick={() => fetchElements(pagination.page - 1)}
                 disabled={pagination.page === 1}
-                className="p-2 rounded-xl border-2 bg-bg-card hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="p-2 rounded-lg bg-bg-card hover:bg-bg-surface disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <ChevronLeft className="w-5 h-5" />
               </button>
@@ -305,7 +305,7 @@ export default function ImportAdminPage() {
               <button
                 onClick={() => fetchElements(pagination.page + 1)}
                 disabled={pagination.page === pagination.totalPages}
-                className="p-2 rounded-xl border-2 bg-bg-card hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="p-2 rounded-lg bg-bg-card hover:bg-bg-surface disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <ChevronRight className="w-5 h-5" />
               </button>

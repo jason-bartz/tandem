@@ -318,7 +318,7 @@ export default function PathGenerator({ onPathAccepted }) {
 
       {/* Empty State */}
       {!isGenerating && !paths && !error && (
-        <div className="p-8 text-center bg-gray-50 dark:bg-gray-900 rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-600">
+        <div className="p-8 text-center bg-gray-50 dark:bg-gray-900 rounded-lg border border-dashed border-border-main">
           <Sparkles className="w-12 h-12 text-gray-400 mx-auto mb-3" />
           <p className="text-lg font-bold text-text-secondary">
             Enter a target element to generate paths

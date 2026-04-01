@@ -248,16 +248,16 @@ export default function ElementDetailModal({
             <div className="space-y-4">
               {/* Stats */}
               <div className="flex gap-4 text-sm">
-                <div className="px-3 py-1 bg-blue-100 rounded-lg border-2">
+                <div className="px-3 py-1 bg-blue-100 rounded-lg">
                   <span className="font-bold">{details.stats.asInputCount}</span> as input
                 </div>
-                <div className="px-3 py-1 bg-green-100 rounded-lg border-2">
+                <div className="px-3 py-1 bg-green-100 rounded-lg">
                   <span className="font-bold">{details.stats.asResultCount}</span> as result
                 </div>
               </div>
 
               {/* Shortest Path Section */}
-              <div className="border-2 rounded-xl overflow-hidden">
+              <div className="rounded-lg overflow-hidden">
                 <button
                   onClick={() => {
                     if (!showPath && !pathData) {
@@ -325,7 +325,7 @@ export default function ElementDetailModal({
               </div>
 
               {/* Combinations as Input */}
-              <div className="border-2 rounded-xl overflow-hidden">
+              <div className="rounded-lg overflow-hidden">
                 <button
                   onClick={() => setExpandedSection(expandedSection === 'input' ? null : 'input')}
                   className="w-full flex items-center justify-between p-3 bg-blue-50 hover:bg-blue-100 transition-colors"
@@ -345,7 +345,7 @@ export default function ElementDetailModal({
                     {details.combinations.asInput.length === 0 ? (
                       <div className="p-4 text-center text-gray-500">No combinations found</div>
                     ) : (
-                      <div className="divide-y divide-gray-200">
+                      <div className="divide-y divide-border-main">
                         {details.combinations.asInput.map((combo) => (
                           <CombinationRow
                             key={combo.id}
@@ -362,7 +362,7 @@ export default function ElementDetailModal({
               </div>
 
               {/* Combinations as Result */}
-              <div className="border-2 rounded-xl overflow-hidden">
+              <div className="rounded-lg overflow-hidden">
                 <button
                   onClick={() => setExpandedSection(expandedSection === 'result' ? null : 'result')}
                   className="w-full flex items-center justify-between p-3 bg-green-50 hover:bg-green-100 transition-colors"
@@ -382,7 +382,7 @@ export default function ElementDetailModal({
                     {details.combinations.asResult.length === 0 ? (
                       <div className="p-4 text-center text-gray-500">No combinations found</div>
                     ) : (
-                      <div className="divide-y divide-gray-200">
+                      <div className="divide-y divide-border-main">
                         {details.combinations.asResult.map((combo) => (
                           <CombinationRow
                             key={combo.id}

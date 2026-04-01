@@ -52,7 +52,7 @@ function StatBlock({ label, value, sub }) {
 function GameStatsCard({ title, color, stats }) {
   if (!stats) {
     return (
-      <div className={`rounded-lg border-[2px] border-border-main p-3 bg-${color}/5`}>
+      <div className={`rounded-lg border border-border-main p-3 bg-${color}/5`}>
         <h5 className={`text-xs font-bold text-${color} mb-2`}>{title}</h5>
         <p className="text-xs text-text-muted">No data</p>
       </div>
@@ -61,7 +61,7 @@ function GameStatsCard({ title, color, stats }) {
 
   return (
     <div
-      className={`rounded-lg border-[2px] border-border-main p-3`}
+      className={`rounded-lg border border-border-main p-3`}
       style={{ backgroundColor: `var(--${color}-bg, transparent)` }}
     >
       <h5 className="text-xs font-bold mb-2" style={{ color: `var(--${color})` }}>
@@ -103,7 +103,7 @@ export default function UserDetailPanel({ user, onClose }) {
     <tr>
       <td colSpan="8" className="p-0">
         <div className="border-t border-border-light bg-bg-card">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-0 divide-y-[3px] lg:divide-y-0 lg:divide-x-[3px] divide-black dark:divide-white">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-0 divide-y lg:divide-y-0 lg:divide-x divide-border-main">
             {/* Profile Section */}
             <div className="p-4 sm:p-5">
               <h4 className="text-sm font-bold text-text-primary mb-3 flex items-center gap-2">
@@ -135,9 +135,9 @@ export default function UserDetailPanel({ user, onClose }) {
                 <div className="flex justify-between">
                   <span className="text-text-secondary font-medium">Account Type</span>
                   <span
-                    className={`text-xs font-bold px-2 py-0.5 rounded-full border-[2px] ${
+                    className={`text-xs font-bold px-2 py-0.5 rounded-full border ${
                       user.isAnonymous
-                        ? 'bg-gray-100 dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-text-secondary'
+                        ? 'bg-gray-100 dark:bg-gray-800 border-border-main text-text-secondary'
                         : 'bg-accent-green/20 border-accent-green text-accent-green'
                     }`}
                   >
@@ -226,7 +226,7 @@ export default function UserDetailPanel({ user, onClose }) {
               </div>
 
               {/* Achievements */}
-              <div className="mt-3 rounded-lg border-[2px] border-border-main p-3">
+              <div className="mt-3 rounded-lg border border-border-main p-3">
                 <div className="flex justify-between items-center">
                   <span className="text-xs font-bold text-text-secondary">Achievements</span>
                   <span className="text-lg font-bold text-accent-purple">
@@ -241,11 +241,11 @@ export default function UserDetailPanel({ user, onClose }) {
               <h4 className="text-sm font-bold text-text-primary mb-3">Subscription</h4>
 
               {sub ? (
-                <div className="rounded-lg border-[2px] border-border-main p-3 space-y-2 text-sm mb-4">
+                <div className="rounded-lg border border-border-main p-3 space-y-2 text-sm mb-4">
                   <div className="flex justify-between">
                     <span className="text-text-secondary font-medium">Status</span>
                     <span
-                      className={`text-xs font-bold px-2 py-0.5 rounded-full border-[2px] ${
+                      className={`text-xs font-bold px-2 py-0.5 rounded-full border ${
                         sub.status === 'active'
                           ? 'bg-accent-green/20 border-accent-green text-accent-green'
                           : 'bg-accent-red/20 border-accent-red text-accent-red'
@@ -275,7 +275,7 @@ export default function UserDetailPanel({ user, onClose }) {
                   )}
                 </div>
               ) : (
-                <div className="rounded-lg border-[2px] border-border-main p-3 mb-4">
+                <div className="rounded-lg border border-border-main p-3 mb-4">
                   <p className="text-xs text-text-muted">No active subscription</p>
                 </div>
               )}
@@ -295,7 +295,7 @@ export default function UserDetailPanel({ user, onClose }) {
 
                 {resetMessage && (
                   <div
-                    className={`text-xs font-bold p-2 rounded-lg border-[2px] ${
+                    className={`text-xs font-bold p-2 rounded-lg border ${
                       resetMessage.startsWith('Error')
                         ? 'bg-accent-red/20 border-accent-red text-accent-red'
                         : 'bg-accent-green/20 border-accent-green text-accent-green'
@@ -307,7 +307,7 @@ export default function UserDetailPanel({ user, onClose }) {
 
                 <button
                   onClick={onClose}
-                  className="w-full px-3 py-2 bg-bg-surface text-text-secondary border-[2px] border-border-main font-bold text-sm rounded-xl hover:bg-bg-card transition-colors"
+                  className="w-full px-3 py-2 bg-bg-surface text-text-secondary border border-border-main font-bold text-sm rounded-xl hover:bg-bg-card transition-colors"
                 >
                   Close
                 </button>

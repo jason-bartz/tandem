@@ -148,12 +148,12 @@ export default function AnnouncementManager() {
       {/* Status message */}
       {message && (
         <div
-          className={`p-3 rounded-xl text-sm font-medium border-[2px] ${
+          className={`p-3 rounded-xl text-sm font-medium ${
             message.type === 'error'
-              ? 'bg-accent-red/10 border-accent-red/30 text-accent-red'
+              ? 'bg-accent-red/10 text-accent-red'
               : message.type === 'success'
-                ? 'bg-accent-green/10 border-accent-green/30 text-accent-green'
-                : 'bg-accent-blue/10 border-accent-blue/30 text-accent-blue'
+                ? 'bg-accent-green/10 text-accent-green'
+                : 'bg-accent-blue/10 text-accent-blue'
           }`}
         >
           {message.text}
@@ -176,7 +176,7 @@ export default function AnnouncementManager() {
               placeholder="Write your announcement..."
               maxLength={500}
               rows={2}
-              className="flex-1 p-3 rounded-xl border-[2px] border-border-main bg-ghost-white dark:bg-gray-800 text-text-primary text-sm resize-none focus:outline-none focus:ring-2 focus:ring-accent-blue"
+              className="flex-1 p-3 rounded-lg border border-border-main bg-bg-surface dark:bg-gray-800 text-text-primary text-sm resize-none focus:outline-none focus:ring-2 focus:ring-accent-blue"
             />
             <button
               onClick={handleCreate}
@@ -216,10 +216,8 @@ export default function AnnouncementManager() {
               {announcements.map((a) => (
                 <div
                   key={a.id}
-                  className={`p-4 rounded-xl border-[2px] transition-colors ${
-                    a.active
-                      ? 'border-accent-green/50 bg-accent-green/5'
-                      : 'border-border-light bg-transparent opacity-60'
+                  className={`p-4 rounded-lg transition-colors ${
+                    a.active ? 'bg-accent-green/5' : 'bg-bg-surface opacity-60'
                   }`}
                 >
                   {editingId === a.id ? (
@@ -229,7 +227,7 @@ export default function AnnouncementManager() {
                         onChange={(e) => setEditText(e.target.value)}
                         maxLength={500}
                         rows={2}
-                        className="flex-1 p-2 rounded-lg border-[2px] border-border-main bg-ghost-white dark:bg-gray-800 text-text-primary text-sm resize-none focus:outline-none focus:ring-2 focus:ring-accent-blue"
+                        className="flex-1 p-2 rounded-lg border border-border-main bg-bg-surface dark:bg-gray-800 text-text-primary text-sm resize-none focus:outline-none focus:ring-2 focus:ring-accent-blue"
                       />
                       <div className="flex flex-col gap-1">
                         <button

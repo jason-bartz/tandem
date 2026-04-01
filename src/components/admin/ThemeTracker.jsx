@@ -270,21 +270,21 @@ export default function ThemeTracker({ onEditPuzzle }) {
             <div className="text-xl sm:text-2xl font-bold text-text-primary">{stats.total}</div>
             <div className="text-xs sm:text-sm text-text-secondary font-medium">Total Puzzles</div>
           </div>
-          <div className="p-3 bg-bg-card rounded-lg border-[2px] border-accent-green">
+          <div className="p-3 bg-bg-card rounded-lg border border-accent-green">
             <div className="text-xl sm:text-2xl font-bold text-text-primary">{stats.unique}</div>
             <div className="text-xs sm:text-sm text-text-secondary font-medium">Unique Themes</div>
           </div>
-          <div className="p-3 bg-bg-card rounded-lg border-[2px] border-accent-red">
+          <div className="p-3 bg-bg-card rounded-lg border border-accent-red">
             <div className="text-xl sm:text-2xl font-bold text-text-primary">
               {stats.duplicates}
             </div>
             <div className="text-xs sm:text-sm text-text-secondary font-medium">Duplicates</div>
           </div>
-          <div className="p-3 bg-bg-card rounded-lg border-[2px] border-accent-blue">
+          <div className="p-3 bg-bg-card rounded-lg border border-accent-blue">
             <div className="text-xl sm:text-2xl font-bold text-text-primary">{stats.past}</div>
             <div className="text-xs sm:text-sm text-text-secondary font-medium">Past Puzzles</div>
           </div>
-          <div className="p-3 bg-bg-card rounded-lg border-[2px] border-accent-pink">
+          <div className="p-3 bg-bg-card rounded-lg border border-accent-pink">
             <div className="text-xl sm:text-2xl font-bold text-text-primary">{stats.future}</div>
             <div className="text-xs sm:text-sm text-text-secondary font-medium">Scheduled</div>
           </div>
@@ -359,7 +359,7 @@ export default function ThemeTracker({ onEditPuzzle }) {
         </div>
 
         <div className="overflow-x-auto -mx-3 sm:mx-0">
-          <table className="min-w-full divide-y-2 divide-black">
+          <table className="min-w-full divide-y divide-border-main">
             <thead className="bg-bg-card">
               <tr>
                 <th className="px-3 sm:px-6 py-2 sm:py-3 text-left text-[10px] sm:text-xs font-bold text-text-primary uppercase tracking-wider">
@@ -382,7 +382,7 @@ export default function ThemeTracker({ onEditPuzzle }) {
                 </th>
               </tr>
             </thead>
-            <tbody className="bg-bg-surface divide-y-[2px] divide-black">
+            <tbody className="bg-bg-surface divide-y divide-border-main">
               {filteredAndSortedPuzzles.map((puzzle) => {
                 const similarThemes = findSimilarThemes[puzzle.date] || [];
 
@@ -403,7 +403,7 @@ export default function ThemeTracker({ onEditPuzzle }) {
                     </td>
                     <td className="px-3 sm:px-6 py-2 sm:py-4 whitespace-nowrap text-xs sm:text-sm">
                       <span
-                        className={`inline-flex px-1.5 sm:px-2 py-0.5 sm:py-1 text-[10px] sm:text-xs rounded font-bold border-[2px] ${
+                        className={`inline-flex px-1.5 sm:px-2 py-0.5 sm:py-1 text-[10px] sm:text-xs rounded font-bold border ${
                           puzzle.status === 'past'
                             ? 'bg-text-muted/20 text-text-primary'
                             : 'bg-accent-blue/20 border-accent-blue text-text-primary'

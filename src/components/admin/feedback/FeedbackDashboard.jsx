@@ -177,7 +177,7 @@ export default function FeedbackDashboard({ onCountsChange }) {
       </div>
 
       {/* Sort & Filter Row */}
-      <div className="flex items-center justify-between gap-3 py-2 border-b-[2px] dark:border-white/10">
+      <div className="flex items-center justify-between gap-3 py-2 border-b border-border-main">
         {/* Sort Toggle */}
         <button
           onClick={() => setSortOrder((prev) => (prev === 'newest' ? 'oldest' : 'newest'))}
@@ -198,9 +198,9 @@ export default function FeedbackDashboard({ onCountsChange }) {
         <div className="relative" ref={filterRef}>
           <button
             onClick={() => setShowFilterDropdown((prev) => !prev)}
-            className={`flex items-center gap-1.5 px-3 py-1.5 text-sm font-bold rounded-lg border-[2px] transition-all ${
+            className={`flex items-center gap-1.5 px-3 py-1.5 text-sm font-bold rounded-lg transition-all ${
               showFilterDropdown || activeFilterCount > 0
-                ? 'bg-black dark:bg-white text-white dark:text-black'
+                ? 'bg-primary text-white'
                 : 'bg-ghost-white dark:bg-gray-800 text-text-primary hover:bg-gray-100 dark:hover:bg-gray-700'
             }`}
           >
@@ -222,9 +222,9 @@ export default function FeedbackDashboard({ onCountsChange }) {
 
           {/* Filter Dropdown */}
           {showFilterDropdown && (
-            <div className="absolute right-0 top-full mt-2 w-72 sm:w-80 bg-white dark:bg-gray-800 rounded-xl dark: z-50 overflow-hidden">
+            <div className="absolute right-0 top-full mt-2 w-72 sm:w-80 bg-bg-card dark:bg-gray-800 rounded-xl z-50 overflow-hidden">
               {/* Status Section */}
-              <div className="p-3 border-b-[2px] dark:border-white/10">
+              <div className="p-3 border-b border-border-main">
                 <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">
                   Status
                 </span>
@@ -238,13 +238,13 @@ export default function FeedbackDashboard({ onCountsChange }) {
                         onClick={() => setStatusFilter(option.value)}
                         className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all ${
                           isActive
-                            ? 'bg-black dark:bg-white text-white dark:text-black'
+                            ? 'bg-primary text-white'
                             : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                         }`}
                       >
                         {option.label}
                         <span
-                          className={`ml-1 ${isActive ? 'text-white/60 dark:text-black/60' : 'text-gray-400 dark:text-gray-500'}`}
+                          className={`ml-1 ${isActive ? 'text-white/60' : 'text-gray-400 dark:text-gray-500'}`}
                         >
                           {count}
                         </span>
@@ -264,7 +264,7 @@ export default function FeedbackDashboard({ onCountsChange }) {
                     onClick={() => setCategoryFilter('all')}
                     className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all ${
                       categoryFilter === 'all'
-                        ? 'bg-black dark:bg-white text-white dark:text-black'
+                        ? 'bg-primary text-white'
                         : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                     }`}
                   >
@@ -276,7 +276,7 @@ export default function FeedbackDashboard({ onCountsChange }) {
                       onClick={() => setCategoryFilter(category.value)}
                       className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all ${
                         categoryFilter === category.value
-                          ? 'bg-black dark:bg-white text-white dark:text-black'
+                          ? 'bg-primary text-white'
                           : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                       }`}
                     >
@@ -293,7 +293,7 @@ export default function FeedbackDashboard({ onCountsChange }) {
       {loading && <FeedbackDashboardSkeleton />}
 
       {error && (
-        <div className="rounded-xl border-2 border-accent-red bg-accent-red/10 dark:bg-accent-red/20 p-4">
+        <div className="rounded-lg bg-accent-red/10 dark:bg-accent-red/20 p-4">
           <div className="flex items-start gap-3">
             <div className="flex-1">
               <p className="text-sm font-bold text-accent-red mb-1">Error Loading Feedback</p>
@@ -358,7 +358,7 @@ export default function FeedbackDashboard({ onCountsChange }) {
               </div>
 
               {/* Content Grid */}
-              <div className="grid grid-cols-1 lg:grid-cols-[1fr,1fr] divide-y-2 lg:divide-y-0 lg:divide-x-2 divide-black dark:divide-white">
+              <div className="grid grid-cols-1 lg:grid-cols-[1fr,1fr] divide-y lg:divide-y-0 lg:divide-x divide-border-main">
                 {/* User Section */}
                 <div className="p-4 sm:p-5 space-y-4">
                   <div>
@@ -395,10 +395,10 @@ export default function FeedbackDashboard({ onCountsChange }) {
                           Contact OK:
                         </span>
                         <span
-                          className={`px-2 py-0.5 rounded text-xs font-bold border-[2px] ${
+                          className={`px-2 py-0.5 rounded text-xs font-bold ${
                             entry.allowContact
-                              ? 'bg-accent-green/10 border-accent-green text-accent-green'
-                              : 'bg-gray-100 dark:bg-gray-800 border-gray-400 text-gray-600 dark:text-gray-400'
+                              ? 'bg-accent-green/10 text-accent-green'
+                              : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400'
                           }`}
                         >
                           {entry.allowContact ? 'YES' : 'NO'}
@@ -407,11 +407,11 @@ export default function FeedbackDashboard({ onCountsChange }) {
                     </div>
                   </div>
 
-                  <div className="pt-3 border-t-[2px] border-gray-200 dark:border-gray-700">
+                  <div className="pt-3 border-t border-border-main">
                     <h3 className="text-xs font-bold uppercase tracking-wider text-gray-500 mb-2">
                       Message
                     </h3>
-                    <div className="p-3 bg-gray-50 dark:bg-gray-800/50 border-[2px] border-gray-200 dark:border-gray-700 rounded-lg">
+                    <div className="p-3 bg-bg-surface dark:bg-gray-800/50 rounded-lg">
                       <p className="text-sm text-gray-800 dark:text-gray-200 whitespace-pre-wrap leading-relaxed">
                         {entry.message}
                       </p>
@@ -432,7 +432,7 @@ export default function FeedbackDashboard({ onCountsChange }) {
                         {entry.comments.map((comment) => (
                           <div
                             key={comment.id}
-                            className="p-3 bg-ghost-white dark:bg-gray-800 border-[2px] border-purple-400 dark:border-purple-600 rounded-lg"
+                            className="p-3 bg-accent-purple/10 dark:bg-gray-800 rounded-lg"
                           >
                             <div className="flex items-center justify-between mb-1.5">
                               <span className="text-xs font-bold text-gray-900 dark:text-gray-100">

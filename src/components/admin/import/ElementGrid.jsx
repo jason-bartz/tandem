@@ -10,7 +10,7 @@ export default function ElementGrid({ elements, onElementClick }) {
         <button
           key={element.id}
           onClick={() => onElementClick(element)}
-          className="flex flex-col items-center justify-center p-2 rounded-xl border-2 bg-white hover:bg-gray-50 hover: transition-all min-h-[80px]"
+          className="flex flex-col items-center justify-center p-2 rounded-lg bg-bg-card hover:bg-bg-surface transition-all min-h-[80px]"
         >
           <span className="text-2xl mb-1">{element.emoji}</span>
           <span className="text-xs font-medium text-center leading-tight line-clamp-2">

@@ -105,7 +105,7 @@ export default function MiniPuzzleCalendar({ puzzles = [], onSelectDate, selecte
           <div
             key={dayNumber}
             className={`
-              relative aspect-square min-h-0 p-1.5 sm:p-2 rounded-lg border-[2px] overflow-hidden transition-all cursor-pointer
+              relative aspect-square min-h-0 p-1.5 sm:p-2 rounded-lg border overflow-hidden transition-all cursor-pointer
               ${today ? 'border-accent-yellow bg-accent-yellow/20' : ''}
               ${puzzleExists ? 'bg-accent-green/10' : ''}
               ${selected ? 'ring-2 ring-yellow-600 dark:ring-yellow-400' : ''}

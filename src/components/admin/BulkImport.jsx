@@ -116,7 +116,7 @@ export default function BulkImport({ onClose, onSuccess }) {
                   type="date"
                   value={startDate}
                   onChange={(e) => setStartDate(e.target.value)}
-                  className="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border-2 border-border-main rounded-lg bg-bg-card text-text-primary font-medium focus:outline-none focus:ring-2 focus:ring-accent-blue"
+                  className="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border border-border-main rounded-lg bg-bg-card text-text-primary font-medium focus:outline-none focus:ring-2 focus:ring-accent-blue"
                 />
                 <p className="text-xs text-text-secondary font-medium mt-1">
                   Puzzles will be assigned to available dates starting from this date
@@ -162,7 +162,7 @@ export default function BulkImport({ onClose, onSuccess }) {
                 value={jsonInput}
                 onChange={(e) => setJsonInput(e.target.value)}
                 placeholder="Paste your JSON array of puzzles here..."
-                className="w-full h-48 sm:h-64 px-3 sm:px-4 py-2 text-xs sm:text-sm border-2 border-border-main rounded-lg bg-bg-card text-text-primary font-mono focus:outline-none focus:ring-2 focus:ring-accent-blue"
+                className="w-full h-48 sm:h-64 px-3 sm:px-4 py-2 text-xs sm:text-sm border border-border-main rounded-lg bg-bg-card text-text-primary font-mono focus:outline-none focus:ring-2 focus:ring-accent-blue"
                 spellCheck={false}
               />
               <p className="text-xs text-text-secondary font-medium mt-1">

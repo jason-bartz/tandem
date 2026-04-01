@@ -370,7 +370,7 @@ export default function PuzzleEditor({ initialPuzzle, onClose, onShowBulkImport,
             value={theme}
             onChange={(e) => setTheme(e.target.value)}
             placeholder="e.g., Things found in a kitchen"
-            className="w-full px-3 py-1.5 sm:py-2 text-sm border-[2px] sm:rounded-md sm:rounded-lg bg-bg-card text-text-primary font-medium focus:outline-none focus:ring-2 focus:ring-accent-blue"
+            className="w-full px-3 py-1.5 sm:py-2 text-sm border border-border-main sm:rounded-md sm:rounded-lg bg-bg-card text-text-primary font-medium focus:outline-none focus:ring-2 focus:ring-accent-blue"
             required
           />
           <div className="flex gap-1.5 sm:gap-2 mt-2">
@@ -409,7 +409,7 @@ export default function PuzzleEditor({ initialPuzzle, onClose, onShowBulkImport,
               type="button"
               onClick={handleSuggestThemes}
               disabled={suggestingThemes || generating || loading}
-              className="px-2.5 sm:px-3 py-1.5 text-xs sm:text-sm bg-accent-yellow text-[#2c2c2c] rounded-md sm:rounded-lg font-bold transition-transform disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-2.5 sm:px-3 py-1.5 text-xs sm:text-sm bg-accent-yellow text-text-primary rounded-md sm:rounded-lg font-bold transition-transform disabled:opacity-50 disabled:cursor-not-allowed"
               title="Get theme suggestions"
             >
               {suggestingThemes ? (
@@ -507,7 +507,7 @@ export default function PuzzleEditor({ initialPuzzle, onClose, onShowBulkImport,
               value={themeContext}
               onChange={(e) => setThemeContext(e.target.value)}
               placeholder="e.g., exclude stove and coffee maker as answers"
-              className="w-full px-3 py-1.5 sm:py-2 text-sm border-[2px] border-gray-300 dark:border-gray-600 rounded-md sm:rounded-lg bg-bg-card text-text-primary font-medium focus:outline-none focus:ring-2 focus:ring-accent-blue"
+              className="w-full px-3 py-1.5 sm:py-2 text-sm border border-border-main rounded-md sm:rounded-lg bg-bg-card text-text-primary font-medium focus:outline-none focus:ring-2 focus:ring-accent-blue"
             />
           </div>
         </div>
@@ -516,7 +516,7 @@ export default function PuzzleEditor({ initialPuzzle, onClose, onShowBulkImport,
           <label className="block text-xs sm:text-sm font-bold text-text-primary mb-2">
             Puzzle Pairs
           </label>
-          <div className="space-y-3 sm:space-y-4 p-2.5 sm:p-4 border-[2px] sm:rounded-md sm:rounded-lg">
+          <div className="space-y-3 sm:space-y-4 p-2.5 sm:p-4 bg-bg-surface rounded-md sm:rounded-lg">
             {puzzles.map((puzzle, index) => (
               <div key={index} className="p-2.5 sm:p-4 bg-bg-card rounded-md sm:rounded-lg">
                 <div className="flex items-center gap-2 mb-2">
@@ -530,7 +530,7 @@ export default function PuzzleEditor({ initialPuzzle, onClose, onShowBulkImport,
                         value={puzzle.emoji}
                         onChange={(e) => handlePuzzleChange(index, 'emoji', e.target.value)}
                         placeholder="Emoji Pair"
-                        className="w-28 sm:flex-1 px-2.5 py-1.5 text-sm border-[2px] border-gray-300 dark:border-gray-600 rounded-md bg-bg-surface text-text-primary font-medium focus:outline-none focus:ring-2 focus:ring-accent-green focus:border-accent-green"
+                        className="w-28 sm:flex-1 px-2.5 py-1.5 text-sm border border-border-main rounded-md bg-bg-surface text-text-primary font-medium focus:outline-none focus:ring-2 focus:ring-accent-green focus:border-accent-green"
                         required
                       />
                       <button
@@ -581,7 +581,7 @@ export default function PuzzleEditor({ initialPuzzle, onClose, onShowBulkImport,
                       onChange={(e) => handlePuzzleChange(index, 'answer', e.target.value)}
                       placeholder="ANSWER"
                       maxLength={30}
-                      className="flex-1 px-2.5 py-1.5 text-sm border-[2px] border-gray-300 dark:border-gray-600 rounded-md bg-bg-surface text-text-primary font-bold uppercase focus:outline-none focus:ring-2 focus:ring-accent-green focus:border-accent-green"
+                      className="flex-1 px-2.5 py-1.5 text-sm border border-border-main rounded-md bg-bg-surface text-text-primary font-bold uppercase focus:outline-none focus:ring-2 focus:ring-accent-green focus:border-accent-green"
                       required
                     />
                   </div>
@@ -592,7 +592,7 @@ export default function PuzzleEditor({ initialPuzzle, onClose, onShowBulkImport,
                       onChange={(e) => handlePuzzleChange(index, 'hint', e.target.value)}
                       placeholder="💡 Hint"
                       maxLength={60}
-                      className="w-full px-2.5 py-1.5 text-sm border-[2px] border-accent-yellow rounded-md bg-accent-yellow/10 text-text-primary font-medium focus:outline-none focus:ring-2 focus:ring-accent-yellow placeholder:text-text-muted"
+                      className="w-full px-2.5 py-1.5 text-sm border border-accent-yellow rounded-md bg-accent-yellow/10 text-text-primary font-medium focus:outline-none focus:ring-2 focus:ring-accent-yellow placeholder:text-text-muted"
                     />
                     <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[10px] text-text-muted font-bold">
                       {puzzle.hint?.length || 0}/60
@@ -608,14 +608,14 @@ export default function PuzzleEditor({ initialPuzzle, onClose, onShowBulkImport,
           <label className="block text-xs sm:text-sm font-bold text-text-primary mb-2">
             Difficulty Assessment
           </label>
-          <div className="bg-accent-pink/10 border-[2px] sm:border-2 border-accent-pink rounded-md sm:rounded-lg p-3 sm:p-4 space-y-2 sm:space-y-3">
+          <div className="bg-accent-pink/10 rounded-md sm:rounded-lg p-3 sm:p-4 space-y-2 sm:space-y-3">
             <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
               <div className="flex-1">
                 <label className="block text-xs font-bold text-text-primary mb-1.5">Rating</label>
                 <select
                   value={difficultyRating}
                   onChange={(e) => setDifficultyRating(e.target.value)}
-                  className="w-full px-2.5 py-1.5 text-sm border-[2px] sm:rounded-md sm:rounded-lg bg-bg-card text-text-primary font-bold focus:outline-none focus:ring-2 focus:ring-accent-pink"
+                  className="w-full px-2.5 py-1.5 text-sm border border-border-main sm:rounded-md sm:rounded-lg bg-bg-card text-text-primary font-bold focus:outline-none focus:ring-2 focus:ring-accent-pink"
                 >
                   <option value="">Not assessed</option>
                   <option value="Easy">Easy</option>

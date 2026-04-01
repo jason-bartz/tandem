@@ -1135,7 +1135,7 @@ export default function MiniPuzzleEditor({ puzzle, date, onSave, onCancel, loadi
 
       {/* Seed Words Preview */}
       {seedWords && seedWords.length > 0 && (
-        <div className="mb-4 p-2 bg-emerald-50 dark:bg-emerald-900/20 border-[2px] border-emerald-300 dark:border-emerald-700 rounded-lg">
+        <div className="mb-4 p-2 bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-300 dark:border-emerald-700 rounded-lg">
           <div className="flex items-center justify-between mb-1">
             <span className="text-[11px] font-bold text-emerald-700 dark:text-emerald-400">
               Theme Seeds
@@ -1209,10 +1209,10 @@ export default function MiniPuzzleEditor({ puzzle, date, onSave, onCancel, loadi
                 <button
                   type="button"
                   onClick={() => setCurrentDirection('across')}
-                  className={`px-2 py-0.5 text-xs font-bold rounded border-[2px] ${
+                  className={`px-2 py-0.5 text-xs font-bold rounded border ${
                     currentDirection === 'across'
                       ? 'bg-accent-yellow text-gray-900'
-                      : 'bg-ghost-white dark:bg-gray-700 text-text-primary border-gray-300'
+                      : 'bg-ghost-white dark:bg-gray-700 text-text-primary border-border-main'
                   }`}
                 >
                   Across
@@ -1220,10 +1220,10 @@ export default function MiniPuzzleEditor({ puzzle, date, onSave, onCancel, loadi
                 <button
                   type="button"
                   onClick={() => setCurrentDirection('down')}
-                  className={`px-2 py-0.5 text-xs font-bold rounded border-[2px] ${
+                  className={`px-2 py-0.5 text-xs font-bold rounded border ${
                     currentDirection === 'down'
                       ? 'bg-accent-yellow text-gray-900'
-                      : 'bg-ghost-white dark:bg-gray-700 text-text-primary border-gray-300'
+                      : 'bg-ghost-white dark:bg-gray-700 text-text-primary border-border-main'
                   }`}
                 >
                   Down

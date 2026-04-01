@@ -537,7 +537,7 @@ export default function AvatarManager() {
             {avatars.map((avatar) => (
               <div
                 key={avatar.id}
-                className={`bg-bg-card rounded-lg border-[2px] ${
+                className={`bg-bg-card rounded-lg border ${
                   avatar.is_active ? 'border-accent-green' : 'border-text-muted'
                 } p-4`}
               >
@@ -577,13 +577,13 @@ export default function AvatarManager() {
                 <div className="flex items-center gap-1.5 mt-3 pt-3 border-t border-text-muted/20">
                   <button
                     onClick={() => setEditingAvatar({ ...avatar })}
-                    className="px-2 py-1 text-xs font-bold rounded-md border-[2px] border-accent-blue text-accent-blue hover:bg-accent-blue/20"
+                    className="px-2 py-1 text-xs font-bold rounded-md border border-accent-blue text-accent-blue hover:bg-accent-blue/20"
                   >
                     Edit
                   </button>
                   <button
                     onClick={() => handleToggleActive(avatar)}
-                    className={`flex-1 min-w-0 px-2 py-1 text-xs font-bold rounded-md border-[2px] transition-all truncate ${
+                    className={`flex-1 min-w-0 px-2 py-1 text-xs font-bold rounded-md border transition-all truncate ${
                       avatar.is_active
                         ? 'bg-text-muted/20 border-text-muted text-text-secondary hover:bg-text-muted/30'
                         : 'bg-accent-green/20 border-accent-green text-accent-green hover:bg-accent-green/30'
@@ -593,7 +593,7 @@ export default function AvatarManager() {
                   </button>
                   <button
                     onClick={() => handleDelete(avatar)}
-                    className="px-2 py-1 text-xs font-bold rounded-md border-[2px] border-accent-red text-accent-red hover:bg-accent-red/20"
+                    className="px-2 py-1 text-xs font-bold rounded-md border border-accent-red text-accent-red hover:bg-accent-red/20"
                   >
                     Delete
                   </button>

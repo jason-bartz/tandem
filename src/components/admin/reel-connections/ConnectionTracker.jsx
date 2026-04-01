@@ -4,9 +4,9 @@ import authService from '@/services/auth.service';
 import logger from '@/lib/logger';
 
 const DIFFICULTY_COLORS = {
-  easiest: 'bg-yellow-300 text-[#2c2c2c]',
-  easy: 'bg-blue-400 text-[#2c2c2c]',
-  medium: 'bg-purple-400 text-[#2c2c2c]',
+  easiest: 'bg-yellow-300 text-text-primary',
+  easy: 'bg-blue-400 text-text-primary',
+  medium: 'bg-purple-400 text-text-primary',
   hardest: 'bg-red-500 text-white',
 };
 
@@ -328,13 +328,13 @@ export default function ConnectionTracker({ onEditPuzzle }) {
             <div className="text-xl sm:text-2xl font-bold text-text-primary">{stats.total}</div>
             <div className="text-xs sm:text-sm text-text-secondary font-medium">Total Puzzles</div>
           </div>
-          <div className="p-3 bg-bg-card rounded-lg border-[2px] border-accent-green">
+          <div className="p-3 bg-bg-card rounded-lg border border-accent-green">
             <div className="text-xl sm:text-2xl font-bold text-text-primary">{stats.unique}</div>
             <div className="text-xs sm:text-sm text-text-secondary font-medium">
               Unique Connections
             </div>
           </div>
-          <div className="p-3 bg-bg-card rounded-lg border-[2px] border-accent-red">
+          <div className="p-3 bg-bg-card rounded-lg border border-accent-red">
             <div className="text-xl sm:text-2xl font-bold text-text-primary">
               {stats.duplicates}
             </div>
@@ -342,11 +342,11 @@ export default function ConnectionTracker({ onEditPuzzle }) {
               Duplicate Connections
             </div>
           </div>
-          <div className="p-3 bg-bg-card rounded-lg border-[2px] border-accent-blue">
+          <div className="p-3 bg-bg-card rounded-lg border border-accent-blue">
             <div className="text-xl sm:text-2xl font-bold text-text-primary">{stats.past}</div>
             <div className="text-xs sm:text-sm text-text-secondary font-medium">Past Puzzles</div>
           </div>
-          <div className="p-3 bg-bg-card rounded-lg border-[2px] border-accent-pink">
+          <div className="p-3 bg-bg-card rounded-lg border border-accent-pink">
             <div className="text-xl sm:text-2xl font-bold text-text-primary">{stats.future}</div>
             <div className="text-xs sm:text-sm text-text-secondary font-medium">Scheduled</div>
           </div>
@@ -421,7 +421,7 @@ export default function ConnectionTracker({ onEditPuzzle }) {
         </div>
 
         <div className="overflow-x-auto -mx-3 sm:mx-0">
-          <table className="min-w-full divide-y-2 divide-black">
+          <table className="min-w-full divide-y divide-border-main">
             <thead className="bg-bg-card">
               <tr>
                 <th className="px-3 sm:px-6 py-2 sm:py-3 text-left text-[10px] sm:text-xs font-bold text-text-primary uppercase tracking-wider">
@@ -441,7 +441,7 @@ export default function ConnectionTracker({ onEditPuzzle }) {
                 </th>
               </tr>
             </thead>
-            <tbody className="bg-bg-surface divide-y-[2px] divide-black">
+            <tbody className="bg-bg-surface divide-y divide-border-main">
               {filteredAndSortedPuzzles.map((puzzle) => {
                 const similarDates = findSimilarConnections[puzzle.date] || [];
 

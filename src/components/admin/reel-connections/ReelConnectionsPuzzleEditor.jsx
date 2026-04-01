@@ -9,11 +9,17 @@ const DIFFICULTY_LEVELS = [
     id: 'easiest',
     label: 'Easiest',
     color: 'bg-yellow-300',
-    textColor: 'text-[#2c2c2c]',
+    textColor: 'text-text-primary',
     order: 1,
   },
-  { id: 'easy', label: 'Easy', color: 'bg-blue-400', textColor: 'text-[#2c2c2c]', order: 2 },
-  { id: 'medium', label: 'Medium', color: 'bg-purple-400', textColor: 'text-[#2c2c2c]', order: 3 },
+  { id: 'easy', label: 'Easy', color: 'bg-blue-400', textColor: 'text-text-primary', order: 2 },
+  {
+    id: 'medium',
+    label: 'Medium',
+    color: 'bg-purple-400',
+    textColor: 'text-text-primary',
+    order: 3,
+  },
   { id: 'hardest', label: 'Hardest', color: 'bg-red-500', textColor: 'text-white', order: 4 },
 ];
 
@@ -93,8 +99,8 @@ function MovieSearchInput({ value, onChange, groupColor, onShuffle, shuffleLoadi
               <img src={value.poster} alt={value.title} className="w-full h-full object-cover" />
             </div>
             <div className="flex-1 min-w-0">
-              <p className="font-bold text-sm text-[#2c2c2c] truncate">{value.title}</p>
-              <p className="text-xs text-[#2c2c2c]/70">{value.year}</p>
+              <p className="font-bold text-sm text-text-primary truncate">{value.title}</p>
+              <p className="text-xs text-text-primary/70">{value.year}</p>
             </div>
             <div className="flex flex-row sm:flex-col gap-1 flex-shrink-0">
               {canShuffle && (
@@ -137,7 +143,7 @@ function MovieSearchInput({ value, onChange, groupColor, onShuffle, shuffleLoadi
                 href={`https://www.imdb.com/title/${value.imdbId}/`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-8 h-8 sm:w-auto sm:h-auto sm:px-2 sm:py-1.5 bg-[#F5C518] text-black rounded-lg transition-transform font-bold flex items-center justify-center gap-1 text-xs"
+                className="w-8 h-8 sm:w-auto sm:h-auto sm:px-2 sm:py-1.5 bg-accent-yellow text-text-primary rounded-lg transition-transform font-bold flex items-center justify-center gap-1 text-xs"
                 title="View on IMDb"
               >
                 <span className="sm:hidden">i</span>
@@ -653,7 +659,7 @@ export default function ReelConnectionsPuzzleEditor({
           value={generateAllContext}
           onChange={(e) => setGenerateAllContext(e.target.value)}
           placeholder='e.g., "theme: 90s nostalgia" or "include a connection about Tarantino films and one about movies set in Paris"'
-          className="w-full px-3 py-1.5 text-sm border-[2px] border-gray-300 dark:border-gray-600 rounded-lg bg-bg-card text-text-primary font-medium focus:outline-none focus:ring-2 focus:ring-accent-blue"
+          className="w-full px-3 py-1.5 text-sm border border-border-main rounded-lg bg-bg-card text-text-primary font-medium focus:outline-none focus:ring-2 focus:ring-accent-blue"
           disabled={generatingAll}
         />
       </div>
@@ -676,7 +682,7 @@ export default function ReelConnectionsPuzzleEditor({
                     type="button"
                     onClick={() => handleSuggestIdeas(groupIndex)}
                     disabled={loading || isSuggestionsLoading || isGenerating}
-                    className="flex items-center gap-1 px-2 py-0.5 bg-ghost-white text-[#2c2c2c] rounded-lg transition-transform disabled:opacity-50 disabled:cursor-not-allowed text-xs font-bold"
+                    className="flex items-center gap-1 px-2 py-0.5 bg-ghost-white text-text-primary rounded-lg transition-transform disabled:opacity-50 disabled:cursor-not-allowed text-xs font-bold"
                   >
                     {isSuggestionsLoading ? (
                       <>
@@ -722,7 +728,7 @@ export default function ReelConnectionsPuzzleEditor({
                   value={group.connection}
                   onChange={(e) => handleConnectionChange(groupIndex, e.target.value)}
                   placeholder="e.g., Movies directed by Steven Spielberg"
-                  className="w-full px-3 py-1.5 text-sm rounded-lg bg-ghost-white text-[#2c2c2c] font-medium focus:outline-none focus:ring-2 focus:ring-accent-red"
+                  className="w-full px-3 py-1.5 text-sm rounded-lg bg-ghost-white text-text-primary font-medium focus:outline-none focus:ring-2 focus:ring-accent-red"
                 />
 
                 {/* Suggestions */}
@@ -733,7 +739,7 @@ export default function ReelConnectionsPuzzleEditor({
                         <button
                           type="button"
                           onClick={() => handleSelectSuggestion(groupIndex, suggestion)}
-                          className="px-3 pr-7 py-1.5 bg-ghost-white text-[#2c2c2c] rounded-lg hover:bg-accent-yellow/30 transition-colors text-xs font-medium"
+                          className="px-3 pr-7 py-1.5 bg-ghost-white text-text-primary rounded-lg hover:bg-accent-yellow/30 transition-colors text-xs font-medium"
                           title={suggestion.description}
                         >
                           {suggestion.connection}
@@ -744,7 +750,7 @@ export default function ReelConnectionsPuzzleEditor({
                             e.stopPropagation();
                             handleDismissSuggestion(groupIndex, suggestion);
                           }}
-                          className="absolute top-1 right-1 w-4 h-4 flex items-center justify-center rounded-full text-[#2c2c2c]/40 hover:text-red-600 hover:bg-red-100 transition-colors opacity-0 group-hover/chip:opacity-100"
+                          className="absolute top-1 right-1 w-4 h-4 flex items-center justify-center rounded-full text-text-primary/40 hover:text-red-600 hover:bg-red-100 transition-colors opacity-0 group-hover/chip:opacity-100"
                           title="Dismiss (never suggest again this session)"
                         >
                           <svg
@@ -778,7 +784,7 @@ export default function ReelConnectionsPuzzleEditor({
                       value={group.connectionContext || ''}
                       onChange={(e) => handleConnectionContextChange(groupIndex, e.target.value)}
                       placeholder="e.g., exclude Arnold Schwarzenegger movies"
-                      className="w-full px-3 py-1.5 text-sm rounded-lg bg-ghost-white text-[#2c2c2c] font-medium focus:outline-none focus:ring-2 focus:ring-accent-red"
+                      className="w-full px-3 py-1.5 text-sm rounded-lg bg-ghost-white text-text-primary font-medium focus:outline-none focus:ring-2 focus:ring-accent-red"
                     />
                   </div>
                   <div className="flex items-end">

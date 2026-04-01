@@ -175,7 +175,7 @@ export default function PuzzleCalendar({
                         setCurrentMonth(newDate);
                         setShowMonthPicker(false);
                       }}
-                      className={`px-3 py-2 rounded text-sm font-bold border-[2px] transition-transform ${
+                      className={`px-3 py-2 rounded text-sm font-bold border transition-transform ${
                         currentMonth.getMonth() === index
                           ? 'bg-accent-yellow text-text-primary'
                           : 'bg-bg-card text-text-secondary hover:bg-accent-yellow/20'
@@ -265,7 +265,7 @@ export default function PuzzleCalendar({
                 <div
                   key={index}
                   className={`
-                    relative aspect-square min-h-0 p-1.5 sm:p-2 rounded-lg border-[2px] overflow-hidden transition-all
+                    relative aspect-square min-h-0 p-1.5 sm:p-2 rounded-lg border overflow-hidden transition-all
                     ${day ? 'cursor-pointer hover:border-accent-yellow' : ''}
                     ${isToday(day) ? 'border-accent-yellow bg-accent-yellow/20' : ''}
                     ${puzzle ? 'bg-accent-green/10' : ''}
