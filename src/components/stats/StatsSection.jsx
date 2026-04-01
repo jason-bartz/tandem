@@ -5,7 +5,7 @@ import { useTheme } from '@/contexts/ThemeContext';
 
 /**
  * StatsSection - Wrapper for game-specific stats sections
- * Provides consistent styling and layout with solid color background
+ * Flat design: neutral card with a colored left accent border
  *
  * @param {string} title - Section title (e.g., "Daily Tandem", "Reel Connections")
  * @param {string} emoji - Emoji to display before title
@@ -16,54 +16,38 @@ import { useTheme } from '@/contexts/ThemeContext';
 export default function StatsSection({ title, emoji, icon, themeColor, children }) {
   const { highContrast } = useTheme();
 
-  // Define theme-specific colors for entire section (solid color)
-  const getBackgroundColors = () => {
-    if (highContrast) {
-      return 'bg-hc-surface border-hc-border';
-    }
-
-    if (themeColor === 'blue') {
-      return 'bg-sky-500 dark:bg-sky-600';
-    } else if (themeColor === 'purple') {
-      return 'bg-purple-600 dark:bg-purple-700';
-    } else if (themeColor === 'yellow') {
-      return 'bg-yellow-500 dark:bg-yellow-600';
-    } else if (themeColor === 'red') {
-      return 'bg-red-500 dark:bg-red-600';
-    } else if (themeColor === 'green') {
-      return 'bg-soup-primary dark:bg-soup-hover';
-    }
-
-    // Default fallback
-    return 'bg-gray-50 dark:bg-gray-800/50 border-gray-200 dark:border-gray-700';
+  // Left accent border color per game
+  const getAccentBorder = () => {
+    if (highContrast) return 'border-l-hc-border';
+    if (themeColor === 'blue') return 'border-l-sky-500';
+    if (themeColor === 'purple') return 'border-l-purple-600';
+    if (themeColor === 'yellow') return 'border-l-yellow-500';
+    if (themeColor === 'red') return 'border-l-red-500';
+    if (themeColor === 'green') return 'border-l-soup-primary';
+    return 'border-l-gray-300';
   };
 
-  const getTextColor = () => {
-    if (highContrast) {
-      return 'text-hc-text';
-    }
-
-    if (
-      themeColor === 'blue' ||
-      themeColor === 'purple' ||
-      themeColor === 'red' ||
-      themeColor === 'green'
-    ) {
-      return 'text-white';
-    } else if (themeColor === 'yellow') {
-      return 'text-gray-900 dark:text-gray-900';
-    }
-
-    // Default fallback
+  // Title text color per game
+  const getTitleColor = () => {
+    if (highContrast) return 'text-hc-text';
+    if (themeColor === 'blue') return 'text-sky-600 dark:text-sky-400';
+    if (themeColor === 'purple') return 'text-purple-600 dark:text-purple-400';
+    if (themeColor === 'yellow') return 'text-yellow-600 dark:text-yellow-400';
+    if (themeColor === 'red') return 'text-red-600 dark:text-red-400';
+    if (themeColor === 'green') return 'text-soup-primary dark:text-green-400';
     return 'text-gray-800 dark:text-gray-200';
   };
 
   return (
-    <div className={`rounded-lg overflow-hidden mb-4 ${getBackgroundColors()}`}>
+    <div
+      className={`rounded-lg overflow-hidden mb-4 border-l-4 ${getAccentBorder()} ${
+        highContrast ? 'bg-hc-surface' : 'bg-bg-surface dark:bg-gray-800'
+      }`}
+    >
       {/* Section Header - hidden when title is null (standalone) */}
       {title && (
-        <div className={`px-4 py-3`}>
-          <h3 className={`text-lg font-bold flex items-center ${getTextColor()}`}>
+        <div className="px-4 py-3">
+          <h3 className={`text-lg font-bold flex items-center ${getTitleColor()}`}>
             {icon ? (
               <Image src={icon} alt="" width={24} height={24} className="mr-2" />
             ) : emoji ? (

@@ -17,6 +17,7 @@ import { isStandaloneAlchemy } from '@/lib/standalone';
 import platformService from '@/services/platform';
 import { SunburstRays } from './SunburstRays';
 import { CoopPartnerBar } from './CoopPartnerBar';
+import { useAuth } from '@/contexts/AuthContext';
 
 const shareUrl = isStandaloneAlchemy ? 'dailyalchemy.fun' : 'tandemdaily.com/daily-alchemy';
 
@@ -28,6 +29,7 @@ const shareUrl = isStandaloneAlchemy ? 'dailyalchemy.fun' : 'tandemdaily.com/dai
 function ResultAnimation({ result, onComplete, onSelectElement, isAnonymous, onSignUpCTA }) {
   const { reduceMotion, highContrast } = useTheme();
   const { mediumTap, lightTap } = useHaptics();
+  const { userProfile } = useAuth();
   const [copied, setCopied] = useState(false);
   const [isSharing, setIsSharing] = useState(false);
   const [dismissing, setDismissing] = useState(false);
@@ -284,7 +286,7 @@ function ResultAnimation({ result, onComplete, onSelectElement, isAnonymous, onS
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
           >
-            <div className="text-yellow-500 font-bold text-sm">✨ FIRST DISCOVERY! ✨</div>
+            <div className="text-yellow-500 font-bold text-sm">FIRST DISCOVERY!</div>
             <div className="text-xs text-yellow-600 dark:text-yellow-400">
               You're the first player to discover:
             </div>
@@ -321,7 +323,7 @@ function ResultAnimation({ result, onComplete, onSelectElement, isAnonymous, onS
         </motion.span>
         {result.isNew && !result.isFirstDiscovery && (
           <motion.span
-            className="text-soup-primary font-semibold text-sm text-center"
+            className="text-text-primary font-semibold text-sm text-center"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.4 }}
@@ -445,63 +447,59 @@ function ResultAnimation({ result, onComplete, onSelectElement, isAnonymous, onS
         </motion.div>
       </motion.div>
 
-      {/* Hidden shareable card for first discoveries */}
+      {/* Hidden shareable card for first discoveries — flat design */}
       {result.isFirstDiscovery && (
         <div className="fixed -left-[9999px] top-0 pointer-events-none">
-          <div ref={shareCardRef} className="bg-white p-3 pb-[22px] pr-[22px]">
-            {/* Outer card with shadow */}
-            <div className="relative">
-              <div className="absolute top-[6px] left-[6px] right-[-6px] bottom-[-6px] bg-black rounded-xl" />
-              <div className="relative bg-amber-50 rounded-xl p-6 w-[340px]">
-                {/* Element display */}
-                <div className="text-center mb-6">
-                  <span className="text-6xl mb-3 block">{result.emoji}</span>
-                  <h3 className="text-2xl font-bold text-gray-900">{result.element}</h3>
-                  <div className="flex items-center justify-center gap-2 mt-2">
-                    <span className="text-amber-500">✨</span>
-                    <span className="text-sm font-medium text-amber-600">First Discovery</span>
+          <div ref={shareCardRef}>
+            <div className="bg-amber-50 rounded-lg p-6 w-[340px]">
+              {/* Element display */}
+              <div className="text-center mb-6">
+                <span className="text-6xl mb-3 block">{result.emoji}</span>
+                <h3 className="text-2xl font-bold text-gray-900">{result.element}</h3>
+                <span className="text-sm font-semibold text-amber-600 mt-2 block">
+                  First Discovery
+                </span>
+              </div>
+
+              {/* Combination box */}
+              <div className="bg-bg-surface rounded-lg p-4 mb-6">
+                <p className="text-xs text-gray-500 mb-3 tracking-wide font-bold text-center">
+                  Created By Combining
+                </p>
+                <div className="flex items-center justify-center gap-3">
+                  <div className="flex flex-col items-center">
+                    <span className="text-3xl mb-1">{result.fromEmojis?.[0] || '✨'}</span>
+                    <span className="font-bold text-gray-900 text-sm text-center">
+                      {result.from[0]}
+                    </span>
+                  </div>
+                  <span className="text-primary font-bold text-2xl">{result.operator || '+'}</span>
+                  <div className="flex flex-col items-center">
+                    <span className="text-3xl mb-1">{result.fromEmojis?.[1] || '✨'}</span>
+                    <span className="font-bold text-gray-900 text-sm text-center">
+                      {result.from[1]}
+                    </span>
                   </div>
                 </div>
+              </div>
 
-                {/* Combination box with shadow */}
-                <div className="relative mb-6">
-                  <div className="absolute top-[4px] left-[4px] right-[-4px] bottom-[-4px] bg-black rounded-xl" />
-                  <div className="relative bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl p-4">
-                    <p className="text-xs text-gray-500 mb-3 tracking-wide font-bold text-center">
-                      Created By Combining
-                    </p>
-                    <div className="flex items-center justify-center gap-3">
-                      <div className="flex flex-col items-center">
-                        <span className="text-3xl mb-1">{result.fromEmojis?.[0] || '✨'}</span>
-                        <span className="font-bold text-gray-900 text-sm text-center">
-                          {result.from[0]}
-                        </span>
-                      </div>
-                      <span className="text-blue-500 font-bold text-2xl">
-                        {result.operator || '+'}
-                      </span>
-                      <div className="flex flex-col items-center">
-                        <span className="text-3xl mb-1">{result.fromEmojis?.[1] || '✨'}</span>
-                        <span className="font-bold text-gray-900 text-sm text-center">
-                          {result.from[1]}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
+              {/* Discovered by */}
+              {userProfile?.username && (
+                <div className="flex items-center justify-between py-2 border-b border-gray-200">
+                  <span className="text-sm text-gray-500">Discovered by</span>
+                  <span className="font-medium text-gray-900">{userProfile.username}</span>
                 </div>
+              )}
 
-                {/* Date */}
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between py-2 border-b border-gray-200">
-                    <span className="text-sm text-gray-500">Date</span>
-                    <span className="font-medium text-gray-900">{formatDate()}</span>
-                  </div>
-                </div>
+              {/* Date */}
+              <div className="flex items-center justify-between py-2">
+                <span className="text-sm text-gray-500">Date</span>
+                <span className="font-medium text-gray-900">{formatDate()}</span>
+              </div>
 
-                {/* Branding */}
-                <div className="mt-4 pt-4 border-t border-gray-200 text-center">
-                  <span className="text-xs font-bold text-gray-400">{shareUrl}</span>
-                </div>
+              {/* Branding */}
+              <div className="mt-4 pt-4 border-t border-gray-200 text-center">
+                <span className="text-xs font-bold text-gray-400">{shareUrl}</span>
               </div>
             </div>
           </div>

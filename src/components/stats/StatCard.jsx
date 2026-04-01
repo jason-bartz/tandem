@@ -35,7 +35,7 @@ export default function StatCard({ value, label, emoji = '', animate = true }) {
       <div className={`${fontSizeClass} font-extrabold mb-1 whitespace-nowrap`}>
         <span
           className={`${
-            highContrast ? 'text-hc-primary' : 'text-white'
+            highContrast ? 'text-hc-primary' : 'text-text-primary'
           } ${animate && !reduceMotion ? 'animate-count-up' : ''}`}
         >
           {value}
@@ -44,7 +44,7 @@ export default function StatCard({ value, label, emoji = '', animate = true }) {
       </div>
       <div
         className={`text-xs tracking-wide font-medium ${
-          highContrast ? 'text-hc-text' : 'text-white/90'
+          highContrast ? 'text-hc-text' : 'text-text-secondary'
         }`}
       >
         {label}
