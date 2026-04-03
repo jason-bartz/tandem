@@ -162,7 +162,7 @@ export default function CharacterBlock({
     if (isWrong) {
       return highContrast ? 'text-hc-error' : 'text-red-900 dark:text-red-400';
     }
-    return highContrast ? 'text-hc-text' : 'text-dark-text dark:text-gray-200';
+    return highContrast ? 'text-hc-text' : 'text-text-primary dark:text-gray-200';
   };
 
   // Individual tile style — no divider borders, each tile is its own rounded block
@@ -221,7 +221,6 @@ export default function CharacterBlock({
           }}
         >
           {value.toUpperCase()}
-          {isLocked && <span className="absolute -top-1 -right-2.5 text-[8px] opacity-60">🔒</span>}
         </motion.span>
       ) : null}
     </motion.div>

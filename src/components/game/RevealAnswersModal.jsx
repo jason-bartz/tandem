@@ -58,7 +58,7 @@ export default function RevealAnswersModal({ isOpen, onClose, puzzle }) {
               {/* Answer text - centered in remaining space */}
               <span
                 className={`flex-1 text-center font-black text-xl ${
-                  highContrast ? 'text-hc-text' : 'text-dark-text dark:text-gray-100'
+                  highContrast ? 'text-hc-text' : 'text-text-primary dark:text-gray-100'
                 } uppercase tracking-wide`}
               >
                 {firstAnswer}

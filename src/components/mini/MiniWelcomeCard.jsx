@@ -232,7 +232,7 @@ export default function MiniWelcomeCard({ currentStreak = 0 }) {
           <div className="w-10 h-10 bg-ghost-white dark:bg-gray-700 rounded-xl flex items-center justify-center mr-3 flex-shrink-0 p-2">
             <Image src="/ui/games/mini.png" alt="" width={24} height={24} />
           </div>
-          <span className="text-dark-text dark:text-gray-200 text-sm pt-2.5">
+          <span className="text-text-primary dark:text-gray-200 text-sm pt-2.5">
             Classic 5×5 mini crossword
           </span>
         </div>
