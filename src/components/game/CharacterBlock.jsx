@@ -119,15 +119,8 @@ export default function CharacterBlock({
     },
     wrong: {
       x: reduceMotion ? 0 : [-2, 2, -2, 2, 0],
-      backgroundColor: reduceMotion
-        ? undefined
-        : [
-            'rgba(239,68,68,0.3)',
-            'rgba(239,68,68,0.3)',
-            'rgba(239,68,68,0)',
-            'rgba(239,68,68,0)',
-            'rgba(239,68,68,0)',
-          ],
+      scale: 1,
+      opacity: 1,
       transition: {
         duration: 0.4,
         ease: 'easeInOut',
@@ -145,7 +138,7 @@ export default function CharacterBlock({
       return 'bg-accent-blue';
     }
     if (isWrong) {
-      return highContrast ? 'bg-hc-surface' : 'bg-accent-red/20 dark:bg-red-900/20';
+      return highContrast ? 'bg-hc-surface' : 'bg-red-200 dark:bg-red-900/30';
     }
     return highContrast ? 'bg-hc-background' : 'bg-gray-200 dark:bg-gray-700';
   };

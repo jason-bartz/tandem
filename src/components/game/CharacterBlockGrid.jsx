@@ -1,8 +1,6 @@
 'use client';
 import { useState, useEffect, useCallback, useRef } from 'react';
 import CharacterBlock from './CharacterBlock';
-import { useTheme } from '@/contexts/ThemeContext';
-import { motion, AnimatePresence } from 'framer-motion';
 
 export default function CharacterBlockGrid({
   value = '',
@@ -20,9 +18,7 @@ export default function CharacterBlockGrid({
   isSmallPhone = false,
   isMobilePhone = false,
 }) {
-  const { highContrast } = useTheme();
   const [activeBlockIndex, setActiveBlockIndex] = useState(0);
-  const [showScrollIndicator, setShowScrollIndicator] = useState(true);
   const gridRef = useRef(null);
   const scrollContainerRef = useRef(null);
   const hiddenInputRef = useRef(null);
@@ -95,21 +91,6 @@ export default function CharacterBlockGrid({
       });
     }
   }, [activeBlockIndex, isFocused, isCorrect, answerLength]);
-
-  useEffect(() => {
-    const container = scrollContainerRef.current;
-    if (!container || answerLength <= 8) return;
-
-    const handleScroll = () => {
-      setShowScrollIndicator(false);
-    };
-
-    container.addEventListener('scroll', handleScroll, { once: true });
-
-    return () => {
-      container.removeEventListener('scroll', handleScroll);
-    };
-  }, [answerLength]);
 
   const findNextAvailableBlock = useCallback(
     (currentIndex, direction = 1) => {
@@ -386,28 +367,6 @@ export default function CharacterBlockGrid({
               {blocks}
             </div>
           </div>
-
-          {/* Scroll indicator - subtle gradient on right edge */}
-          <AnimatePresence>
-            {showScrollIndicator && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.3 }}
-                className={`absolute right-0 top-0 h-full w-12 pointer-events-none ${
-                  highContrast
-                    ? 'bg-gradient-to-l from-hc-surface via-hc-surface/50 to-transparent'
-                    : 'bg-gradient-to-l from-white/90 via-white/40 to-transparent dark:from-gray-800/90 dark:via-gray-800/40 dark:to-transparent'
-                }`}
-                style={{
-                  maskImage: 'linear-gradient(to left, black 0%, black 30%, transparent 100%)',
-                  WebkitMaskImage:
-                    'linear-gradient(to left, black 0%, black 30%, transparent 100%)',
-                }}
-              />
-            )}
-          </AnimatePresence>
         </div>
       ) : (
         // Normal non-scrollable grid for short words (8 characters or less)
