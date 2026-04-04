@@ -427,7 +427,7 @@ export default function UserManagement() {
                 <th className="text-center px-3 py-2.5 font-bold text-text-secondary text-xs uppercase tracking-wide hidden sm:table-cell w-10">
                   Auth
                 </th>
-                <th className="text-center px-3 py-2.5 font-bold text-text-secondary text-xs uppercase tracking-wide hidden md:table-cell">
+                <th className="text-left px-3 py-2.5 font-bold text-text-secondary text-xs uppercase tracking-wide hidden md:table-cell">
                   Games
                 </th>
                 <th className="text-center px-3 py-2.5 font-bold text-text-secondary text-xs uppercase tracking-wide hidden lg:table-cell">
@@ -484,8 +484,8 @@ export default function UserManagement() {
                           <AuthProviderIcon provider={user.provider} />
                         </div>
                       </td>
-                      <td className="px-3 py-3 text-center hidden md:table-cell">
-                        <div className="flex items-center justify-center gap-1">
+                      <td className="px-3 py-3 hidden md:table-cell">
+                        <div className="flex items-center gap-1">
                           {user.activeGames && user.activeGames.length > 0 ? (
                             user.activeGames.map((game) => {
                               const icon = GAME_ICONS[game];
