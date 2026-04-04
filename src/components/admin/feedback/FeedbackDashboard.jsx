@@ -161,10 +161,7 @@ export default function FeedbackDashboard({ onCountsChange }) {
       {/* Header */}
       <div className="flex items-end justify-between">
         <div>
-          <p className="text-xs font-bold tracking-[0.2em] text-gray-500 uppercase mb-1">
-            Feedback Management
-          </p>
-          <h2 className="text-2xl font-black text-text-primary">Player Feedback</h2>
+          <h2 className="text-lg font-bold text-text-primary">Feedback</h2>
         </div>
         {summary && (
           <div className="flex items-center gap-2">

@@ -40,6 +40,7 @@ export default function ElementManager() {
 
   return (
     <div className="space-y-4 sm:space-y-6">
+      <h2 className="text-lg font-bold text-text-primary">Elements</h2>
       {/* Main Tabs */}
       <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
         <button

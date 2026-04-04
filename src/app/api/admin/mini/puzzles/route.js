@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/auth';
 import { createServerClient } from '@/lib/supabase/server';
 import { getMiniPuzzleNumber } from '@/lib/miniUtils';
+import { logPuzzleAudit } from '@/lib/db';
 import logger from '@/lib/logger';
 
 /**
@@ -69,6 +70,7 @@ export async function POST(request) {
     if (authResult.error) {
       return authResult.error;
     }
+    const { admin } = authResult;
 
     const supabase = createServerClient();
 
@@ -128,6 +130,7 @@ export async function POST(request) {
       grid: normalizedGrid,
       solution: normalizedSolution,
       clues,
+      created_by: admin.username,
     };
 
     const { data: puzzle, error } = await supabase
@@ -140,6 +143,8 @@ export async function POST(request) {
       logger.error('Error creating mini puzzle:', error);
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
+
+    await logPuzzleAudit('mini', date, 'created', admin);
 
     return NextResponse.json({ puzzle }, { status: 201 });
   } catch (error) {
@@ -161,6 +166,7 @@ export async function PUT(request) {
     if (authResult.error) {
       return authResult.error;
     }
+    const { admin } = authResult;
 
     const supabase = createServerClient();
 
@@ -205,6 +211,8 @@ export async function PUT(request) {
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
+    await logPuzzleAudit('mini', puzzle.date, 'updated', admin);
+
     return NextResponse.json({ puzzle }, { status: 200 });
   } catch (error) {
     logger.error('Error in PUT /api/admin/mini/puzzles:', error);
@@ -224,6 +232,7 @@ export async function DELETE(request) {
     if (authResult.error) {
       return authResult.error;
     }
+    const { admin } = authResult;
 
     const supabase = createServerClient();
 
@@ -234,6 +243,13 @@ export async function DELETE(request) {
       return NextResponse.json({ error: 'Missing puzzle id' }, { status: 400 });
     }
 
+    // Get date before deleting for audit log
+    const { data: existing } = await supabase
+      .from('mini_puzzles')
+      .select('date')
+      .eq('id', id)
+      .single();
+
     // Delete puzzle
     const { error } = await supabase.from('mini_puzzles').delete().eq('id', id);
 
@@ -241,6 +257,8 @@ export async function DELETE(request) {
       logger.error('Error deleting mini puzzle:', error);
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
+
+    if (existing?.date) await logPuzzleAudit('mini', existing.date, 'deleted', admin);
 
     return NextResponse.json({ success: true }, { status: 200 });
   } catch (error) {

@@ -1,6 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { Megaphone, Plus, Trash2, ToggleLeft, ToggleRight, Pencil, Check, X } from 'lucide-react';
+import { Plus, Trash2, ToggleLeft, ToggleRight, Pencil, Check, X } from 'lucide-react';
 import authService from '@/services/auth.service';
 import logger from '@/lib/logger';
 
@@ -163,10 +163,7 @@ export default function AnnouncementManager() {
       {/* Create new announcement */}
       <div className="bg-bg-surface rounded-lg dark:">
         <div className="px-4 py-3 border-b border-border-light">
-          <div className="flex items-center gap-2">
-            <Megaphone size={20} className="text-accent-blue" />
-            <h3 className="text-base font-bold text-text-primary">New Announcement</h3>
-          </div>
+          <h2 className="text-lg font-bold text-text-primary">Announcements</h2>
         </div>
         <div className="p-4">
           <div className="flex gap-3">

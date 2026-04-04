@@ -432,19 +432,20 @@ function UnifiedPuzzleCalendar({ onSelectDate, onRefresh }, ref) {
   if (loading) {
     return (
       <div className="space-y-4">
-        <div className="flex justify-between items-center mb-4">
-          <div className="h-8 w-48 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
+        <h2 className="text-lg font-bold text-text-primary">Calendar</h2>
+        <div className="flex justify-between items-center">
+          <div className="h-8 w-48 bg-gray-200 dark:bg-gray-700 rounded skeleton-shimmer" />
           <div className="flex gap-2">
-            <div className="h-8 w-20 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
-            <div className="h-8 w-8 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
-            <div className="h-8 w-8 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
+            <div className="h-8 w-20 bg-gray-200 dark:bg-gray-700 rounded skeleton-shimmer" />
+            <div className="h-8 w-8 bg-gray-200 dark:bg-gray-700 rounded skeleton-shimmer" />
+            <div className="h-8 w-8 bg-gray-200 dark:bg-gray-700 rounded skeleton-shimmer" />
           </div>
         </div>
         <div className="grid grid-cols-7 gap-1">
           {Array.from({ length: 35 }).map((_, i) => (
             <div
               key={i}
-              className="aspect-square bg-gray-100 dark:bg-gray-800 rounded animate-pulse"
+              className="aspect-square bg-gray-100 dark:bg-gray-800 rounded skeleton-shimmer"
             />
           ))}
         </div>
@@ -454,6 +455,7 @@ function UnifiedPuzzleCalendar({ onSelectDate, onRefresh }, ref) {
 
   return (
     <div className="space-y-4">
+      <h2 className="text-lg font-bold text-text-primary">Calendar</h2>
       {/* Header with navigation */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
         <div className="relative">

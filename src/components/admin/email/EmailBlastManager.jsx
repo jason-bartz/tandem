@@ -336,10 +336,7 @@ export default function EmailBlastManager() {
 
         {/* Header */}
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Mail size={20} className="text-accent-blue" />
-            <h3 className="text-base font-bold text-text-primary">Email Blasts</h3>
-          </div>
+          <h2 className="text-lg font-bold text-text-primary">Email</h2>
           <button
             onClick={handleNewBlast}
             className="flex items-center gap-2 px-4 py-2 bg-accent-blue text-white rounded-lg font-bold text-sm hover:bg-accent-blue/90 transition-colors"

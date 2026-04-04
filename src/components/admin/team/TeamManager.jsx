@@ -101,10 +101,15 @@ export default function TeamManager() {
 
   if (loading) {
     return (
-      <div className="space-y-4">
-        {[...Array(3)].map((_, i) => (
-          <div key={i} className="h-20 bg-bg-surface rounded-lg" />
-        ))}
+      <div className="space-y-6">
+        <div>
+          <h2 className="text-lg font-bold text-text-primary">Team</h2>
+        </div>
+        <div className="space-y-4">
+          {[...Array(3)].map((_, i) => (
+            <div key={i} className="h-20 bg-bg-surface rounded-lg skeleton-shimmer" />
+          ))}
+        </div>
       </div>
     );
   }
@@ -114,7 +119,7 @@ export default function TeamManager() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-lg font-bold text-text-primary">Team Members</h2>
+          <h2 className="text-lg font-bold text-text-primary">Team</h2>
           <p className="text-sm text-text-secondary mt-0.5">
             {users.filter((u) => u.is_active).length} active member
             {users.filter((u) => u.is_active).length !== 1 ? 's' : ''}

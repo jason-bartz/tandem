@@ -1082,3 +1082,68 @@ export async function checkUserSubscription(userId) {
     tier: subscription?.tier || null,
   };
 }
+
+// =============================================================================
+// Puzzle Audit Log
+// =============================================================================
+
+/**
+ * Log a puzzle create/update/delete action.
+ * @param {string} puzzleType - 'tandem' | 'mini' | 'reel' | 'soup'
+ * @param {string} puzzleDate - YYYY-MM-DD
+ * @param {string} action - 'created' | 'updated' | 'deleted'
+ * @param {{ username: string, fullName?: string }} actor
+ */
+export async function logPuzzleAudit(puzzleType, puzzleDate, action, actor) {
+  try {
+    const supabase = createServerClient();
+    await supabase.from('puzzle_audit_log').insert({
+      puzzle_type: puzzleType,
+      puzzle_date: puzzleDate,
+      action,
+      actor_username: actor.username,
+      actor_full_name: actor.fullName || actor.username,
+    });
+  } catch (error) {
+    logger.error('[AuditLog] Failed to log puzzle audit', {
+      puzzleType,
+      puzzleDate,
+      action,
+      error,
+    });
+  }
+}
+
+/**
+ * Get audit history for puzzles on a given date.
+ * @param {string} date - YYYY-MM-DD
+ * @returns {Promise<Object>} - { tandem: [...], mini: [...], reel: [...], soup: [...] }
+ */
+export async function getPuzzleAuditLog(date) {
+  try {
+    const supabase = createServerClient();
+    const { data, error } = await supabase
+      .from('puzzle_audit_log')
+      .select('*')
+      .eq('puzzle_date', date)
+      .order('created_at', { ascending: true });
+
+    if (error) throw error;
+
+    const grouped = { tandem: [], mini: [], reel: [], soup: [] };
+    for (const entry of data || []) {
+      if (grouped[entry.puzzle_type]) {
+        grouped[entry.puzzle_type].push({
+          action: entry.action,
+          username: entry.actor_username,
+          fullName: entry.actor_full_name,
+          timestamp: entry.created_at,
+        });
+      }
+    }
+    return grouped;
+  } catch (error) {
+    logger.error('[AuditLog] Failed to get puzzle audit log', { date, error });
+    return { tandem: [], mini: [], reel: [], soup: [] };
+  }
+}

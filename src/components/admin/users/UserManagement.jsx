@@ -295,7 +295,7 @@ export default function UserManagement() {
     return (
       <div className="bg-bg-surface rounded-lg dark:">
         <div className="px-3 sm:px-6 py-3 sm:py-4 border-b border-border-light">
-          <h3 className="text-base sm:text-lg font-bold text-text-primary">User Management</h3>
+          <h2 className="text-lg font-bold text-text-primary">Users</h2>
         </div>
         <div className="p-3 sm:p-6">
           <LoadingSkeleton />
@@ -308,7 +308,7 @@ export default function UserManagement() {
     <div className="bg-bg-surface rounded-lg dark:">
       <div className="px-3 sm:px-6 py-3 sm:py-4 border-b border-border-light">
         <div className="flex items-center justify-between">
-          <h3 className="text-base sm:text-lg font-bold text-text-primary">User Management</h3>
+          <h2 className="text-lg font-bold text-text-primary">Users</h2>
           <button
             onClick={handleExport}
             disabled={exporting}

@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { requireAdmin } from '@/lib/auth';
+import { logPuzzleAudit } from '@/lib/db';
 import logger from '@/lib/logger';
 
 const supabase = createClient(
@@ -67,8 +68,9 @@ export async function GET(request) {
 export async function POST(request) {
   try {
     // Verify admin authentication with CSRF validation
-    const { error: authError } = await requireAdmin(request);
-    if (authError) return authError;
+    const authResult = await requireAdmin(request);
+    if (authResult.error) return authResult.error;
+    const { admin } = authResult;
 
     const body = await request.json();
     const { date, groups, creatorName, isUserSubmitted } = body;
@@ -78,7 +80,7 @@ export async function POST(request) {
     }
 
     // Create puzzle with optional creator attribution
-    const puzzleData = { date };
+    const puzzleData = { date, created_by: admin.username };
     if (isUserSubmitted) {
       puzzleData.creator_name = creatorName;
       puzzleData.is_user_submitted = true;
@@ -107,7 +109,6 @@ export async function POST(request) {
 
       if (groupError) throw groupError;
 
-      // Create movies for this group
       const movieInserts = group.movies.map((movie) => ({
         group_id: createdGroup.id,
         imdb_id: movie.imdbId,
@@ -124,6 +125,8 @@ export async function POST(request) {
       if (moviesError) throw moviesError;
     }
 
+    await logPuzzleAudit('reel', date, 'created', admin);
+
     return NextResponse.json({ success: true, puzzle });
   } catch (error) {
     logger.error('Error creating puzzle:', error);
@@ -137,8 +140,9 @@ export async function POST(request) {
 export async function PUT(request) {
   try {
     // Verify admin authentication with CSRF validation
-    const { error: authError } = await requireAdmin(request);
-    if (authError) return authError;
+    const authResult = await requireAdmin(request);
+    if (authResult.error) return authResult.error;
+    const { admin } = authResult;
 
     const body = await request.json();
     const { id, date, groups } = body;
@@ -189,6 +193,8 @@ export async function PUT(request) {
       if (moviesError) throw moviesError;
     }
 
+    await logPuzzleAudit('reel', date, 'updated', admin);
+
     return NextResponse.json({ success: true });
   } catch (error) {
     logger.error('Error updating puzzle:', error);
@@ -202,8 +208,9 @@ export async function PUT(request) {
 export async function DELETE(request) {
   try {
     // Verify admin authentication with CSRF validation
-    const { error: authError } = await requireAdmin(request);
-    if (authError) return authError;
+    const authResult = await requireAdmin(request);
+    if (authResult.error) return authResult.error;
+    const { admin } = authResult;
 
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');
@@ -212,9 +219,17 @@ export async function DELETE(request) {
       return NextResponse.json({ error: 'Puzzle ID required' }, { status: 400 });
     }
 
+    const { data: existing } = await supabase
+      .from('reel_connections_puzzles')
+      .select('date')
+      .eq('id', id)
+      .single();
+
     const { error } = await supabase.from('reel_connections_puzzles').delete().eq('id', id);
 
     if (error) throw error;
+
+    if (existing?.date) await logPuzzleAudit('reel', existing.date, 'deleted', admin);
 
     return NextResponse.json({ success: true });
   } catch (error) {

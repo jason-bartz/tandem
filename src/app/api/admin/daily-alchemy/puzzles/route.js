@@ -3,6 +3,7 @@
 import { NextResponse } from 'next/server';
 import { createServerClient } from '@/lib/supabase/server';
 import { requireAdmin } from '@/lib/auth';
+import { logPuzzleAudit } from '@/lib/db';
 import logger from '@/lib/logger';
 
 /**
@@ -85,8 +86,9 @@ export async function GET(request) {
 export async function POST(request) {
   try {
     // Verify admin authentication with CSRF validation
-    const { error: authError } = await requireAdmin(request);
-    if (authError) return authError;
+    const authResult = await requireAdmin(request);
+    if (authResult.error) return authResult.error;
+    const { admin } = authResult;
 
     const body = await request.json();
     const { date, targetElement, targetEmoji, parMoves, solutionPath, difficulty, published } =
@@ -130,7 +132,8 @@ export async function POST(request) {
         par_moves: parMoves,
         solution_path: solutionPath || [],
         difficulty: difficulty || 'medium',
-        published: published !== false, // Default to true
+        published: published !== false,
+        created_by_username: admin.username,
       })
       .select()
       .single();
@@ -139,6 +142,8 @@ export async function POST(request) {
       logger.error('[Admin] Error creating soup puzzle', { error });
       return NextResponse.json({ error: 'Failed to create puzzle' }, { status: 500 });
     }
+
+    await logPuzzleAudit('soup', date, 'created', admin);
 
     logger.info('[Admin] Element Soup puzzle created', {
       date,
@@ -162,8 +167,9 @@ export async function POST(request) {
 export async function PUT(request) {
   try {
     // Verify admin authentication with CSRF validation
-    const { error: authError } = await requireAdmin(request);
-    if (authError) return authError;
+    const authResult = await requireAdmin(request);
+    if (authResult.error) return authResult.error;
+    const { admin } = authResult;
 
     const body = await request.json();
     const { id, date, targetElement, targetEmoji, parMoves, solutionPath, difficulty, published } =
@@ -201,6 +207,8 @@ export async function PUT(request) {
       return NextResponse.json({ error: 'Failed to update puzzle' }, { status: 500 });
     }
 
+    await logPuzzleAudit('soup', data.date, 'updated', admin);
+
     logger.info('[Admin] Element Soup puzzle updated', { id, date: data.date });
 
     return NextResponse.json({ success: true, puzzle: data });
@@ -219,8 +227,9 @@ export async function PUT(request) {
 export async function DELETE(request) {
   try {
     // Verify admin authentication with CSRF validation
-    const { error: authError } = await requireAdmin(request);
-    if (authError) return authError;
+    const authResult = await requireAdmin(request);
+    if (authResult.error) return authResult.error;
+    const { admin } = authResult;
 
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');
@@ -231,12 +240,21 @@ export async function DELETE(request) {
 
     const supabase = createServerClient();
 
+    // Get date before deleting for audit
+    const { data: existing } = await supabase
+      .from('element_soup_puzzles')
+      .select('date')
+      .eq('id', id)
+      .single();
+
     const { error } = await supabase.from('element_soup_puzzles').delete().eq('id', id);
 
     if (error) {
       logger.error('[Admin] Error deleting soup puzzle', { error });
       return NextResponse.json({ error: 'Failed to delete puzzle' }, { status: 500 });
     }
+
+    if (existing?.date) await logPuzzleAudit('soup', existing.date, 'deleted', admin);
 
     logger.info('[Admin] Element Soup puzzle deleted', { id });
 

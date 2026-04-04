@@ -1,9 +1,10 @@
 'use client';
 
-import { useEffect, useCallback } from 'react';
+import { useEffect, useCallback, useState } from 'react';
 import Image from 'next/image';
 import { getHoliday } from '@/lib/holidays';
 import { ASSET_VERSION } from '@/lib/constants';
+import adminService from '@/services/admin.service';
 
 // Game configuration
 const GAMES = [
@@ -81,7 +82,18 @@ const getHolidayEmoji = (holidayName) => {
   return emojiMap[holidayName] || '🎉';
 };
 
+function formatAuditTimestamp(ts) {
+  try {
+    const d = new Date(ts);
+    return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  } catch {
+    return '';
+  }
+}
+
 export default function GameSelectorModal({ date, puzzles, onSelectGame, onClose }) {
+  const [audit, setAudit] = useState(null);
+
   // Format date for display
   const formatDateDisplay = (dateString) => {
     const date = new Date(dateString + 'T00:00:00');
@@ -92,6 +104,11 @@ export default function GameSelectorModal({ date, puzzles, onSelectGame, onClose
   // Get holiday for the date
   const holiday = getHoliday(date);
   const holidayEmoji = holiday ? getHolidayEmoji(holiday) : null;
+
+  // Fetch audit log for this date (admin-only)
+  useEffect(() => {
+    if (date) adminService.getPuzzleAudit(date).then(setAudit);
+  }, [date]);
 
   // Handle keyboard shortcuts: Escape to close, 1-4 to select game
   const handleKeyDown = useCallback(
@@ -184,57 +201,92 @@ export default function GameSelectorModal({ date, puzzles, onSelectGame, onClose
           {GAMES.map((game, index) => {
             const hasPuzzle = puzzles && puzzles[game.id];
             const actionLabel = hasPuzzle ? 'Edit' : 'Create';
+            const gameAudit = audit?.[game.id] || [];
+            const created = gameAudit.find((e) => e.action === 'created');
+            const edits = gameAudit.filter((e) => e.action === 'updated');
+            const hasHistory = hasPuzzle && (created || edits.length > 0);
 
             return (
-              <button
-                key={game.id}
-                onClick={() => onSelectGame(game.id, hasPuzzle ? puzzles[game.id] : null)}
-                className={`
-                  w-full p-4 rounded-xl
-                  flex items-center gap-4 transition-all
-                  active:translate-y-0
-                  ${hasPuzzle ? game.bgColor : 'bg-bg-card hover:bg-gray-50 dark:hover:bg-gray-800'}
-                `}
-              >
-                {/* Keyboard hint */}
-                <kbd className="flex-shrink-0 w-6 h-6 flex items-center justify-center text-xs font-bold bg-gray-100 text-gray-400 rounded border border-gray-200">
-                  {index + 1}
-                </kbd>
-
-                {/* Game icon */}
-                <div className="w-12 h-12 sm:w-14 sm:h-14 relative flex-shrink-0">
-                  <Image src={game.icon} alt={game.name} fill className="object-contain" />
-                </div>
-
-                {/* Game info */}
-                <div className="flex-1 text-left">
-                  <h3 className="text-base sm:text-lg font-bold text-text-primary">{game.name}</h3>
-                  <p className="text-xs sm:text-sm text-text-secondary">{game.description}</p>
-                  {hasPuzzle && (
-                    <p className="text-xs font-bold text-accent-green mt-1 flex items-center gap-1">
-                      <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
-                        <path
-                          fillRule="evenodd"
-                          d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                          clipRule="evenodd"
-                        />
-                      </svg>
-                      Has puzzle
-                    </p>
-                  )}
-                </div>
-
-                {/* Action indicator */}
-                <div
+              <div key={game.id}>
+                <button
+                  onClick={() => onSelectGame(game.id, hasPuzzle ? puzzles[game.id] : null)}
                   className={`
-                    px-3 py-1.5 rounded-lg text-xs sm:text-sm font-bold flex-shrink-0
-                   
-                    ${hasPuzzle ? 'bg-accent-green text-white' : 'bg-accent-yellow text-gray-900'}
+                    w-full p-4 rounded-xl
+                    flex items-center gap-4 transition-all
+                    active:translate-y-0
+                    ${hasPuzzle ? game.bgColor : 'bg-bg-card hover:bg-gray-50'}
+                    ${hasHistory ? 'rounded-b-none' : ''}
                   `}
                 >
-                  {actionLabel}
-                </div>
-              </button>
+                  {/* Keyboard hint */}
+                  <kbd className="flex-shrink-0 w-6 h-6 flex items-center justify-center text-xs font-bold bg-gray-100 text-gray-400 rounded border border-gray-200">
+                    {index + 1}
+                  </kbd>
+
+                  {/* Game icon */}
+                  <div className="w-12 h-12 sm:w-14 sm:h-14 relative flex-shrink-0">
+                    <Image src={game.icon} alt={game.name} fill className="object-contain" />
+                  </div>
+
+                  {/* Game info */}
+                  <div className="flex-1 text-left">
+                    <h3 className="text-base sm:text-lg font-bold text-text-primary">
+                      {game.name}
+                    </h3>
+                    <p className="text-xs sm:text-sm text-text-secondary">{game.description}</p>
+                    {hasPuzzle && (
+                      <p className="text-xs font-bold text-accent-green mt-1 flex items-center gap-1">
+                        <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+                          <path
+                            fillRule="evenodd"
+                            d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                            clipRule="evenodd"
+                          />
+                        </svg>
+                        Has puzzle
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Action indicator */}
+                  <div
+                    className={`
+                      px-3 py-1.5 rounded-lg text-xs sm:text-sm font-bold flex-shrink-0
+                      ${hasPuzzle ? 'bg-accent-green text-white' : 'bg-accent-yellow text-gray-900'}
+                    `}
+                  >
+                    {actionLabel}
+                  </div>
+                </button>
+
+                {/* Audit signature — admin-only, shows who created/edited */}
+                {hasHistory && (
+                  <div className={`${game.bgColor} rounded-b-xl px-4 pb-3 pt-0`}>
+                    <div className="border-t border-black/10 pt-2 space-y-0.5">
+                      {created && (
+                        <p className="text-[11px] text-gray-600">
+                          <span className="font-semibold">
+                            {created.fullName || created.username}
+                          </span>
+                          <span className="text-gray-400">
+                            {' '}
+                            created {formatAuditTimestamp(created.timestamp)}
+                          </span>
+                        </p>
+                      )}
+                      {edits.map((edit, i) => (
+                        <p key={i} className="text-[11px] text-gray-500">
+                          <span className="font-semibold">{edit.fullName || edit.username}</span>
+                          <span className="text-gray-400">
+                            {' '}
+                            edited {formatAuditTimestamp(edit.timestamp)}
+                          </span>
+                        </p>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
             );
           })}
         </div>

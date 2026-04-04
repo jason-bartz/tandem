@@ -1,5 +1,11 @@
 import { NextResponse } from 'next/server';
-import { getPuzzlesRange, setPuzzleForDate, deletePuzzleForDate } from '@/lib/db';
+import {
+  getPuzzlesRange,
+  setPuzzleForDate,
+  deletePuzzleForDate,
+  logPuzzleAudit,
+  getPuzzleForDate,
+} from '@/lib/db';
 import { requireAdmin } from '@/lib/auth';
 import {
   dateRangeSchema,
@@ -76,13 +82,16 @@ export async function POST(request) {
 
     const { date, puzzle } = await parseAndValidateJson(request, puzzleWithDateSchema);
 
-    // Note: Zod schema already validates structure, isValidPuzzle check removed as redundant
+    const existing = await getPuzzleForDate(date);
+    const action = existing ? 'updated' : 'created';
 
     await setPuzzleForDate(date, {
       ...puzzle,
       createdBy: escapeHtml(admin.username),
       createdAt: new Date().toISOString(),
     });
+
+    await logPuzzleAudit('tandem', date, action, admin);
 
     return NextResponse.json({
       success: true,
@@ -125,6 +134,7 @@ export async function DELETE(request) {
     if (authResult.error) {
       return authResult.error;
     }
+    const { admin } = authResult;
 
     const { searchParams } = new URL(request.url);
     const date = searchParams.get('date');
@@ -132,6 +142,7 @@ export async function DELETE(request) {
     const validatedDate = dateSchema.parse(date);
 
     await deletePuzzleForDate(validatedDate);
+    await logPuzzleAudit('tandem', validatedDate, 'deleted', admin);
 
     return NextResponse.json({
       success: true,

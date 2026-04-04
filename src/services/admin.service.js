@@ -270,6 +270,20 @@ class AdminService {
     }
   }
 
+  async getPuzzleAudit(date) {
+    try {
+      const response = await fetch(getApiUrl(`/api/admin/puzzle-audit?date=${date}`), {
+        headers: await this.getAuthHeaders(),
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || 'Failed');
+      return data.audit;
+    } catch (error) {
+      logger.error('AdminService.getPuzzleAudit error', error);
+      return { tandem: [], mini: [], reel: [], soup: [] };
+    }
+  }
+
   async updateFeedback(feedbackId, updates) {
     try {
       const response = await fetch(getApiUrl('/api/admin/feedback'), {

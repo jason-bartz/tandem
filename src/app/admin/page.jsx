@@ -12,8 +12,7 @@ import ConnectionTracker from '@/components/admin/reel-connections/ConnectionTra
 import DailyAlchemyPuzzleEditor from '@/components/admin/daily-alchemy/DailyAlchemyPuzzleEditor';
 import ElementManager from '@/components/admin/daily-alchemy/ElementManager';
 import FeedbackDashboard from '@/components/admin/feedback/FeedbackDashboard';
-import BotLeaderboardManager from '@/components/admin/BotLeaderboardManager';
-import AvatarManager from '@/components/admin/AvatarManager';
+import MilestoneTracker from '@/components/admin/MilestoneTracker';
 import UserManagement from '@/components/admin/users/UserManagement';
 import AnnouncementManager from '@/components/admin/AnnouncementManager';
 import EmailBlastManager from '@/components/admin/email/EmailBlastManager';
@@ -27,18 +26,30 @@ import useAdminFeedbackCounts from '@/hooks/useAdminFeedbackCounts';
 import useAdminKeyboardShortcuts from '@/hooks/useAdminKeyboardShortcuts';
 import KeyboardShortcutHelp from '@/components/admin/KeyboardShortcutHelp';
 
+import {
+  CalendarDays,
+  FlaskConical,
+  MessageSquareText,
+  Users,
+  Megaphone,
+  Mail,
+  Flag,
+  BarChart3,
+  ShieldCheck,
+  Keyboard,
+} from 'lucide-react';
+
 // Tab definitions with minimum role required
 const ALL_TABS = [
-  { id: 'calendar', label: 'Calendar', minRole: 'editor' },
-  { id: 'elements', label: 'Elements', minRole: 'editor' },
-  { id: 'feedback', label: 'Feedback', hasBadge: true, minRole: 'admin' },
-  { id: 'avatars', label: 'Avatars', minRole: 'admin' },
-  { id: 'users', label: 'Users', minRole: 'admin' },
-  { id: 'announcements', label: 'Announce', minRole: 'admin' },
-  { id: 'email', label: 'Email', minRole: 'admin' },
-  { id: 'leaderboards', label: 'Leaderboards', minRole: 'admin' },
-  { id: 'analytics', label: 'Analytics', minRole: 'editor' },
-  { id: 'team', label: 'Team', minRole: 'admin' },
+  { id: 'calendar', label: 'Calendar', icon: CalendarDays, minRole: 'editor' },
+  { id: 'elements', label: 'Elements', icon: FlaskConical, minRole: 'editor' },
+  { id: 'feedback', label: 'Feedback', icon: MessageSquareText, hasBadge: true, minRole: 'admin' },
+  { id: 'users', label: 'Users', icon: Users, minRole: 'admin' },
+  { id: 'announcements', label: 'Announce', icon: Megaphone, minRole: 'admin' },
+  { id: 'email', label: 'Email', icon: Mail, minRole: 'admin' },
+  { id: 'milestones', label: 'Milestones', icon: Flag, minRole: 'admin' },
+  { id: 'analytics', label: 'Analytics', icon: BarChart3, minRole: 'editor' },
+  { id: 'team', label: 'Team', icon: ShieldCheck, minRole: 'admin' },
 ];
 
 const ROLE_LEVELS = { owner: 3, admin: 2, editor: 1 };
@@ -440,39 +451,60 @@ export default function AdminDashboard() {
   });
 
   return (
-    <div className="px-2 py-3 sm:px-4 sm:py-4 md:px-6 md:py-5">
-      {/* Tabs */}
-      <div className="border-b border-border-light overflow-x-auto hide-scrollbar">
-        <nav className="-mb-px flex gap-1">
-          {TABS.map((tab, idx) => (
-            <button
-              key={tab.id}
-              onClick={() => handleTabClick(tab.id)}
-              className={`
-                relative py-2.5 px-3 sm:px-4 text-xs sm:text-sm font-semibold whitespace-nowrap transition-colors flex-shrink-0 group
-                ${
-                  activeTab === tab.id
-                    ? 'border-b-2 border-text-primary text-text-primary'
-                    : 'text-text-muted hover:text-text-secondary'
-                }
-              `}
-            >
-              <span className="hidden sm:inline-block w-4 mr-1 text-[10px] font-bold text-text-muted opacity-0 group-hover:opacity-100 transition-opacity">
-                {idx < 9 ? idx + 1 : idx === 9 ? 0 : ''}
-              </span>
-              {tab.label}
-              {tab.hasBadge && feedbackCounts?.new > 0 && (
-                <span className="absolute -top-0.5 -right-0.5 flex items-center justify-center min-w-[18px] h-[18px] px-1 bg-accent-red text-white text-[10px] font-bold rounded-full">
-                  {feedbackCounts.new}
+    <div className="flex min-h-[calc(100vh-64px)]">
+      {/* Sidebar — icon rail on mobile, expands on hover on desktop */}
+      <aside className="admin-sidebar flex-shrink-0 w-11 sm:w-44 bg-ghost-white border-r border-border-light flex flex-col py-2 overflow-hidden overflow-y-auto z-30">
+        <nav className="flex flex-col gap-0.5 px-1.5">
+          {TABS.map((tab, idx) => {
+            const Icon = tab.icon;
+            const isActive = activeTab === tab.id;
+            return (
+              <button
+                key={tab.id}
+                onClick={() => handleTabClick(tab.id)}
+                title={tab.label}
+                className={`
+                  relative flex items-center gap-2.5 h-9 px-2 rounded-lg text-sm font-medium whitespace-nowrap transition-colors
+                  ${isActive ? 'bg-text-primary text-ghost-white' : 'text-text-secondary hover:bg-gray-200 hover:text-text-primary'}
+                `}
+              >
+                <Icon size={16} className="flex-shrink-0" />
+                <span className="hidden sm:inline opacity-100 text-xs font-semibold">
+                  {tab.label}
                 </span>
-              )}
-            </button>
-          ))}
+                {/* Keyboard hint */}
+                <span className="ml-auto hidden sm:inline opacity-100 text-[10px] text-text-muted font-mono">
+                  {idx < 9 ? idx + 1 : idx === 9 ? '0' : ''}
+                </span>
+                {/* Badge */}
+                {tab.hasBadge && feedbackCounts?.new > 0 && (
+                  <span className="absolute -top-0.5 right-0 sm:right-8 flex items-center justify-center min-w-[16px] h-[16px] px-0.5 bg-accent-red text-white text-[9px] font-bold rounded-full">
+                    {feedbackCounts.new}
+                  </span>
+                )}
+              </button>
+            );
+          })}
         </nav>
-      </div>
+
+        {/* Shortcut help at bottom */}
+        <div className="mt-auto px-1.5 pb-1">
+          <button
+            onClick={toggleShortcutHelp}
+            title="Keyboard shortcuts (?)"
+            className="flex items-center gap-2.5 h-9 px-2 rounded-lg text-sm font-medium whitespace-nowrap text-text-muted hover:bg-gray-200 hover:text-text-primary transition-colors w-full"
+          >
+            <Keyboard size={16} className="flex-shrink-0" />
+            <span className="hidden sm:inline opacity-100 text-xs font-semibold">Shortcuts</span>
+            <kbd className="ml-auto hidden sm:inline opacity-100 text-[10px] font-bold bg-gray-100 text-gray-400 rounded border border-gray-200 px-1 py-0.5">
+              ?
+            </kbd>
+          </button>
+        </div>
+      </aside>
 
       {/* Content */}
-      <div className="mt-5 min-h-[500px]">
+      <div className="flex-1 min-w-0 px-2 py-3 sm:px-4 sm:py-4 md:px-6 md:py-5 min-h-[500px]">
         {activeTab === 'calendar' && (
           <>
             {activeEditor ? (
@@ -509,11 +541,10 @@ export default function AdminDashboard() {
         )}
         {activeTab === 'elements' && <ElementManager />}
         {activeTab === 'feedback' && <FeedbackDashboard onCountsChange={setFeedbackCounts} />}
-        {activeTab === 'leaderboards' && <BotLeaderboardManager />}
-        {activeTab === 'avatars' && <AvatarManager />}
         {activeTab === 'users' && <UserManagement />}
         {activeTab === 'announcements' && <AnnouncementManager />}
         {activeTab === 'email' && <EmailBlastManager />}
+        {activeTab === 'milestones' && <MilestoneTracker />}
         {activeTab === 'analytics' && <AnalyticsDashboard />}
         {activeTab === 'team' && <TeamManager />}
       </div>
@@ -625,15 +656,6 @@ export default function AdminDashboard() {
 
       {/* Keyboard shortcut help overlay */}
       {showShortcutHelp && <KeyboardShortcutHelp onClose={toggleShortcutHelp} />}
-
-      {/* Keyboard shortcut hint button */}
-      <button
-        onClick={toggleShortcutHelp}
-        className="fixed bottom-4 right-4 w-8 h-8 flex items-center justify-center rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-400 hover:text-gray-600 text-sm font-bold border border-gray-200 transition-colors z-40"
-        title="Keyboard shortcuts (?)"
-      >
-        ?
-      </button>
     </div>
   );
 }

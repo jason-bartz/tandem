@@ -389,7 +389,7 @@ export default function AnalyticsDashboard() {
     return (
       <div className="bg-bg-surface rounded-lg">
         <div className="px-4 sm:px-6 py-4 border-b border-border-light">
-          <h3 className="text-base sm:text-lg font-bold text-text-primary">Analytics</h3>
+          <h2 className="text-lg font-bold text-text-primary">Analytics</h2>
         </div>
         <div className="p-4 sm:p-6">
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
@@ -410,7 +410,7 @@ export default function AnalyticsDashboard() {
     <div className="bg-bg-surface rounded-lg">
       <div className="px-4 sm:px-6 py-4 border-b border-border-light">
         <div className="flex items-center justify-between flex-wrap gap-3">
-          <h3 className="text-base sm:text-lg font-bold text-text-primary">Analytics</h3>
+          <h2 className="text-lg font-bold text-text-primary">Analytics</h2>
           <div className="flex items-center gap-2">
             <select
               value={period}
