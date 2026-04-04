@@ -145,16 +145,24 @@ export async function GET(request) {
         const activeGames = activeGamesMap.get(user.id) || [];
         try {
           const { data: authData } = await supabase.auth.admin.getUserById(user.id);
+          const authUser = authData?.user;
+          const identities = authUser?.identities || [];
+          const provider = authUser?.is_anonymous
+            ? 'anonymous'
+            : identities.length > 0
+              ? identities[0].provider
+              : authUser?.app_metadata?.provider || 'email';
           return {
             id: user.id,
-            email: user.email || authData?.user?.email || null,
+            email: user.email || authUser?.email || null,
             username: user.username || null,
             avatarId: user.selected_avatar_id || null,
             countryCode: user.country_code || null,
             countryFlag: user.country_flag || null,
-            isAnonymous: authData?.user?.is_anonymous || false,
-            createdAt: authData?.user?.created_at || user.created_at,
-            lastSignInAt: authData?.user?.last_sign_in_at || null,
+            isAnonymous: authUser?.is_anonymous || false,
+            provider,
+            createdAt: authUser?.created_at || user.created_at,
+            lastSignInAt: authUser?.last_sign_in_at || null,
             activeGames,
           };
         } catch {
@@ -167,6 +175,7 @@ export async function GET(request) {
             countryCode: user.country_code || null,
             countryFlag: user.country_flag || null,
             isAnonymous: false,
+            provider: 'email',
             createdAt: user.created_at,
             lastSignInAt: null,
             activeGames,

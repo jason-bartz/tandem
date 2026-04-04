@@ -7,6 +7,83 @@ import UserDetailPanel from './UserDetailPanel';
 import logger from '@/lib/logger';
 import { ASSET_VERSION } from '@/lib/constants';
 
+function AuthProviderIcon({ provider }) {
+  const size = 14;
+  switch (provider) {
+    case 'google':
+      return (
+        <svg width={size} height={size} viewBox="0 0 24 24" title="Google">
+          <path
+            d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 01-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"
+            fill="#4285F4"
+          />
+          <path
+            d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+            fill="#34A853"
+          />
+          <path
+            d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
+            fill="#FBBC05"
+          />
+          <path
+            d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+            fill="#EA4335"
+          />
+        </svg>
+      );
+    case 'apple':
+      return (
+        <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" title="Apple">
+          <path d="M17.05 20.28c-.98.95-2.05.88-3.08.4-1.09-.5-2.08-.48-3.24 0-1.44.62-2.2.44-3.06-.4C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z" />
+        </svg>
+      );
+    case 'discord':
+      return (
+        <svg width={size} height={size} viewBox="0 0 24 24" fill="#5865F2" title="Discord">
+          <path d="M20.32 4.37a19.8 19.8 0 00-4.93-1.51.07.07 0 00-.08.04c-.21.38-.45.87-.61 1.25a18.27 18.27 0 00-5.4 0 12.6 12.6 0 00-.62-1.25.08.08 0 00-.08-.04 19.74 19.74 0 00-4.93 1.51.07.07 0 00-.03.03C1.11 8.39.34 12.27.82 16.09a.08.08 0 00.03.06 19.9 19.9 0 005.99 3.03.08.08 0 00.08-.03c.46-.63.87-1.3 1.22-2a.08.08 0 00-.04-.11 13.1 13.1 0 01-1.87-.9.08.08 0 01-.01-.13c.13-.09.25-.19.37-.29a.08.08 0 01.08-.01c3.93 1.79 8.18 1.79 12.07 0a.08.08 0 01.08.01c.12.1.25.2.37.29a.08.08 0 01-.01.13c-.6.35-1.22.65-1.87.9a.08.08 0 00-.04.11c.36.7.77 1.37 1.22 2a.08.08 0 00.08.03 19.83 19.83 0 006-3.03.08.08 0 00.03-.05c.56-4.42-.82-8.26-3.56-11.66a.06.06 0 00-.03-.03zM8.02 13.83c-1.01 0-1.84-.93-1.84-2.07s.81-2.07 1.84-2.07c1.04 0 1.86.94 1.84 2.07 0 1.14-.81 2.07-1.84 2.07zm6.97 0c-1.01 0-1.84-.93-1.84-2.07s.81-2.07 1.84-2.07c1.04 0 1.86.94 1.84 2.07 0 1.14-.8 2.07-1.84 2.07z" />
+        </svg>
+      );
+    case 'anonymous':
+      return (
+        <svg
+          width={size}
+          height={size}
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          className="text-text-muted"
+          title="Anonymous"
+        >
+          <circle cx="12" cy="12" r="10" />
+          <path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3" />
+          <line x1="12" y1="17" x2="12.01" y2="17" />
+        </svg>
+      );
+    default:
+      // Email/password
+      return (
+        <svg
+          width={size}
+          height={size}
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          className="text-text-secondary"
+          title="Email"
+        >
+          <rect x="2" y="4" width="20" height="16" rx="2" />
+          <path d="M22 7l-10 7L2 7" />
+        </svg>
+      );
+  }
+}
+
 const GAME_ICONS = {
   tandem: { src: '/ui/games/tandem.png', alt: 'Tandem' },
   mini: { src: '/ui/games/mini.png', alt: 'Mini' },
@@ -347,6 +424,9 @@ export default function UserManagement() {
                 <th className="text-left px-3 py-2.5 font-bold text-text-secondary text-xs uppercase tracking-wide hidden sm:table-cell">
                   Email
                 </th>
+                <th className="text-center px-3 py-2.5 font-bold text-text-secondary text-xs uppercase tracking-wide hidden sm:table-cell w-10">
+                  Auth
+                </th>
                 <th className="text-center px-3 py-2.5 font-bold text-text-secondary text-xs uppercase tracking-wide hidden md:table-cell">
                   Games
                 </th>
@@ -367,7 +447,7 @@ export default function UserManagement() {
             <tbody className="divide-y divide-border-main">
               {users.length === 0 && !loading ? (
                 <tr>
-                  <td colSpan="7" className="text-center py-12 text-text-muted font-medium">
+                  <td colSpan="8" className="text-center py-12 text-text-muted font-medium">
                     {debouncedSearch
                       ? `No users found matching "${debouncedSearch}"`
                       : 'No users found'}
@@ -398,6 +478,11 @@ export default function UserManagement() {
                         <span className="text-text-primary font-mono text-xs">
                           {user.email || '--'}
                         </span>
+                      </td>
+                      <td className="px-3 py-3 text-center hidden sm:table-cell">
+                        <div className="flex items-center justify-center">
+                          <AuthProviderIcon provider={user.provider} />
+                        </div>
                       </td>
                       <td className="px-3 py-3 text-center hidden md:table-cell">
                         <div className="flex items-center justify-center gap-1">
@@ -456,7 +541,7 @@ export default function UserManagement() {
                     {expandedUserId === user.id &&
                       (detailLoading ? (
                         <tr key={`${user.id}-detail`}>
-                          <td colSpan="7" className="p-0">
+                          <td colSpan="8" className="p-0">
                             <div className="border-t border-border-light bg-bg-card p-8 text-center">
                               <div className="inline-block w-6 h-6 border-2 border-orange-500 border-t-transparent rounded-full animate-spin" />
                               <p className="text-sm text-text-secondary mt-2 font-medium">
@@ -476,7 +561,7 @@ export default function UserManagement() {
                         />
                       ) : (
                         <tr key={`${user.id}-detail`}>
-                          <td colSpan="7" className="p-0">
+                          <td colSpan="8" className="p-0">
                             <div className="border-t border-border-light bg-bg-card p-6 text-center">
                               <p className="text-sm text-accent-red font-bold">
                                 Failed to load user details
