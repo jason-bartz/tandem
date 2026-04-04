@@ -4,6 +4,8 @@ This document defines the **flat design system** for Tandem Daily. All component
 
 **Design philosophy:** Flat design — zero artificial depth, bold color blocking, geometric purity, typography-driven hierarchy. No shadows, no blur, no gradients on interactive elements. Visual interest comes from scale, color contrast, and strategic use of geometric shapes.
 
+**No decorative emojis in UI.** Never use emojis as icons, decorations, or visual flair in components. Emojis are only acceptable when they are game data (e.g., element emojis in Daily Alchemy, puzzle content). Use Lucide icons or custom assets instead.
+
 **Enforced by:** Claude Code hook on component edits + Tailwind config
 **Source of truth for values:** `tailwind.config.js` and `src/app/globals.css`
 

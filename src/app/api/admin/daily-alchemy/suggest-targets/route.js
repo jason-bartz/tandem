@@ -46,7 +46,8 @@ export async function POST(request) {
       );
     }
 
-    const { difficulty = 'medium' } = await request.json();
+    // difficulty param no longer used for filtering — suggestions span all tiers
+    await request.json();
 
     const supabase = createServerClient();
 
@@ -87,25 +88,23 @@ export async function POST(request) {
       pastTargetsExcluded: pastTargetSet.size,
     });
 
-    // Generate suggestions using AI
+    // Generate suggestions using AI (spans all difficulty tiers)
     const result = await aiService.suggestAlchemyTargets({
       availableElements,
       recentTargets: [...pastTargets],
-      difficulty,
     });
 
-    // Enrich suggestions with solution paths
+    // Enrich suggestions with solution paths (keep original pathLength for tier display)
     const suggestionsWithPaths = (result.suggestions || []).map((suggestion) => {
       const elLower = suggestion.name.toLowerCase();
       if (!elementInfo.has(elLower)) {
-        return { ...suggestion, path: [], pathLength: suggestion.pathLength };
+        return { ...suggestion, path: [] };
       }
 
       const path = reconstructPath(elLower, elementInfo);
       return {
         ...suggestion,
         path,
-        pathLength: path.length,
       };
     });
 

@@ -2629,6 +2629,7 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
     targetElement: puzzle?.targetElement,
     targetEmoji: puzzle?.targetEmoji,
     parMoves: puzzle?.parMoves,
+    description: puzzle?.description,
   };
 }
 

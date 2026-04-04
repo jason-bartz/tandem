@@ -2281,7 +2281,10 @@ function ElementDetailModal({ element, onClose, onElementUpdated, onElementDelet
   const isStarter = details?.element?.isStarter;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+      onClick={onClose}
+    >
       <div
         className="bg-bg-card dark:bg-gray-800 rounded-lg border-2 w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col"
         onClick={(e) => e.stopPropagation()}
@@ -2468,7 +2471,7 @@ function ElementDetailModal({ element, onClose, onElementUpdated, onElementDelet
                   }
                 }}
                 disabled={pathLoading}
-                className="w-full flex items-center justify-between p-3 bg-orange-50 dark:bg-orange-900/20 hover:bg-orange-100 dark:hover:bg-orange-900/30 rounded-xl transition-colors disabled:opacity-50 border-2 border-orange-200 dark:border-orange-800"
+                className="w-full flex items-center justify-between p-3 hover:bg-gray-50 dark:hover:bg-gray-700/50 rounded-lg transition-colors disabled:opacity-50 border border-border-light dark:border-gray-600"
               >
                 <span className="font-bold text-orange-700 dark:text-orange-300 flex items-center gap-2">
                   <Route className="w-5 h-5" />
@@ -2485,7 +2488,7 @@ function ElementDetailModal({ element, onClose, onElementUpdated, onElementDelet
               </button>
 
               {showPath && pathData && (
-                <div className="mt-3 p-4 bg-orange-50/50 dark:bg-orange-900/10 rounded-xl border border-orange-200 dark:border-orange-800">
+                <div className="mt-3 p-4 rounded-lg border border-border-light dark:border-gray-600">
                   {pathData.isStarter ? (
                     <div className="text-center text-orange-700 dark:text-orange-300 font-medium">
                       {element.emoji} {element.name} is a starter element!
@@ -2498,7 +2501,7 @@ function ElementDetailModal({ element, onClose, onElementUpdated, onElementDelet
                       {pathData.path.map((step, index) => (
                         <div
                           key={index}
-                          className="flex items-center gap-2 text-sm p-2 bg-bg-card dark:bg-gray-800 rounded-lg border border-orange-200 dark:border-orange-800"
+                          className="flex items-center gap-2 text-sm p-2 bg-bg-card dark:bg-gray-800 rounded-lg"
                         >
                           <span className="text-orange-500 font-mono text-xs w-6">
                             {index + 1}.

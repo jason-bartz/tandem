@@ -99,6 +99,9 @@ CREATE TABLE element_soup_puzzles (
   -- Format: [{ step: 1, elementA: "Water", elementB: "Fire", result: "Steam" }, ...]
   solution_path JSONB NOT NULL DEFAULT '[]',
 
+  -- Short write-up describing the puzzle target (shown on welcome screen)
+  description TEXT,
+
   -- Difficulty hint (optional, for future use)
   difficulty VARCHAR(20) DEFAULT 'normal',
 

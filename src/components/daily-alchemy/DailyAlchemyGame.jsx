@@ -212,6 +212,7 @@ export function DailyAlchemyGame({ initialDate = null }) {
     targetElement,
     targetEmoji,
     parMoves,
+    description,
   } = useDailyAlchemyGame(initialDate);
 
   // Co-op lobby state — declared before useAlchemyCoop so onPartnerJoined can reference it
@@ -615,6 +616,7 @@ export function DailyAlchemyGame({ initialDate = null }) {
                     targetElement={targetElement}
                     targetEmoji={targetEmoji}
                     parMoves={parMoves}
+                    description={description}
                     onStart={startGame}
                     onStartFreePlay={startFreePlay}
                     onStartCoop={handleEnterCoopLobby}

@@ -16,6 +16,7 @@ export default function DailyAlchemyPuzzleEditor({ puzzle, date, onSave, onCance
     targetElement: '',
     targetEmoji: '✨',
     parMoves: '',
+    description: '',
     difficulty: 'medium',
     solutionPath: [],
     published: true,
@@ -43,6 +44,9 @@ export default function DailyAlchemyPuzzleEditor({ puzzle, date, onSave, onCance
   const [isSuggestingTargets, setIsSuggestingTargets] = useState(false);
   const [suggestError, setSuggestError] = useState(null);
 
+  // Description generation state
+  const [isGeneratingDescription, setIsGeneratingDescription] = useState(false);
+
   // UI state
   const [errors, setErrors] = useState({});
 
@@ -57,6 +61,7 @@ export default function DailyAlchemyPuzzleEditor({ puzzle, date, onSave, onCance
         targetElement: targetEl,
         targetEmoji: targetEm,
         parMoves: parMoves,
+        description: puzzle.description || '',
         difficulty: puzzle.difficulty || 'medium',
         solutionPath: puzzle.solution_path || puzzle.solutionPath || [],
         published: puzzle.published !== false,
@@ -253,8 +258,9 @@ export default function DailyAlchemyPuzzleEditor({ puzzle, date, onSave, onCance
         ...prev,
         targetElement: suggestion.name,
         targetEmoji: suggestion.emoji,
+        description: suggestion.description || '',
         solutionPath,
-        parMoves: solutionPath.length,
+        parMoves: Math.ceil(solutionPath.length * 1.5),
       }));
       setTargetSearch(`${suggestion.emoji} ${suggestion.name}`);
       setShowDropdown(false);
@@ -267,6 +273,32 @@ export default function DailyAlchemyPuzzleEditor({ puzzle, date, onSave, onCance
 
     setTargetSuggestions([]);
     setSuggestError(null);
+  };
+
+  // Generate description with AI
+  const handleGenerateDescription = async () => {
+    if (!formData.targetElement) return;
+    setIsGeneratingDescription(true);
+    try {
+      const response = await fetch('/api/admin/daily-alchemy/generate-description', {
+        method: 'POST',
+        headers: await authService.getAuthHeaders(true),
+        body: JSON.stringify({
+          elementName: formData.targetElement,
+          elementEmoji: formData.targetEmoji,
+        }),
+      });
+      const data = await response.json();
+      if (response.ok && data.success) {
+        handleChange('description', data.description);
+      } else {
+        logger.error('[SoupEditor] Description generation failed:', data.error);
+      }
+    } catch (error) {
+      logger.error('[SoupEditor] Description generation error:', error);
+    } finally {
+      setIsGeneratingDescription(false);
+    }
   };
 
   // Open add element modal
@@ -353,7 +385,7 @@ export default function DailyAlchemyPuzzleEditor({ puzzle, date, onSave, onCance
       setFormData((prev) => ({
         ...prev,
         solutionPath,
-        parMoves: data.steps, // Auto-set par to path length
+        parMoves: Math.ceil(data.steps * 1.5),
       }));
     } catch (error) {
       logger.error('[SoupEditor] Path generation error:', error);
@@ -385,6 +417,7 @@ export default function DailyAlchemyPuzzleEditor({ puzzle, date, onSave, onCance
         targetElement: formData.targetElement,
         targetEmoji: formData.targetEmoji,
         parMoves: formData.parMoves,
+        description: formData.description || null,
         solutionPath: formData.solutionPath,
         difficulty: formData.difficulty,
         published: formData.published,
@@ -442,7 +475,7 @@ export default function DailyAlchemyPuzzleEditor({ puzzle, date, onSave, onCance
               type="button"
               onClick={handleSuggestTargets}
               disabled={isSuggestingTargets || loading}
-              className="px-2.5 py-1 text-xs bg-accent-yellow text-[#2c2c2c] rounded-md font-bold transition-transform disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-2.5 py-1 text-xs bg-accent-yellow text-gray-900 rounded-md font-bold transition-transform disabled:opacity-50 disabled:cursor-not-allowed"
               title="Get AI-suggested targets"
             >
               {isSuggestingTargets ? (
@@ -490,9 +523,9 @@ export default function DailyAlchemyPuzzleEditor({ puzzle, date, onSave, onCance
                 }
               }}
               placeholder="Search for an element..."
-              className={`w-full px-3 py-1.5 pl-8 text-sm rounded-lg border-2 ${
+              className={`w-full px-3 py-1.5 pl-8 text-sm rounded-lg ${
                 formData.targetElement
-                  ? 'border-green-500 bg-green-50 dark:bg-green-900/20'
+                  ? 'border border-green-500 bg-green-50 dark:bg-green-900/20'
                   : 'bg-ghost-white dark:bg-gray-700'
               } text-text-primary`}
               disabled={loading}
@@ -533,31 +566,57 @@ export default function DailyAlchemyPuzzleEditor({ puzzle, date, onSave, onCance
 
           {/* Target Suggestions */}
           {targetSuggestions.length > 0 && !formData.targetElement && (
-            <div className="mt-3 space-y-2">
+            <div className="mt-3 space-y-3">
               <label className="block text-xs font-bold text-text-secondary">
                 Click to use a suggestion:
               </label>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                {targetSuggestions.map((suggestion, index) => (
-                  <button
-                    key={index}
-                    type="button"
-                    onClick={() => handleSelectTargetSuggestion(suggestion)}
-                    disabled={loading}
-                    className="p-2 sm:p-3 text-left rounded-lg/20 dark:border-white/20 bg-bg-card hover:border-green-500 hover:bg-green-50 dark:hover:bg-green-900/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    <div className="font-bold text-xs sm:text-sm text-text-primary">
-                      {suggestion.emoji} {suggestion.name}
+              {[
+                { key: 'easy', label: 'Easy', sublabel: '15 steps or fewer', color: 'green' },
+                { key: 'medium', label: 'Medium', sublabel: '16–30 steps', color: 'yellow' },
+                { key: 'hard', label: 'Hard', sublabel: '31–50 steps', color: 'red' },
+              ].map((tier) => {
+                const tierSuggestions = targetSuggestions.filter((s) => s.difficulty === tier.key);
+                if (tierSuggestions.length === 0) return null;
+                return (
+                  <div key={tier.key}>
+                    <div className="flex items-center gap-2 mb-1.5">
+                      <span
+                        className={`text-xs font-bold ${
+                          tier.color === 'green'
+                            ? 'text-green-600 dark:text-green-400'
+                            : tier.color === 'yellow'
+                              ? 'text-yellow-600 dark:text-yellow-400'
+                              : 'text-red-600 dark:text-red-400'
+                        }`}
+                      >
+                        {tier.label}
+                      </span>
+                      <span className="text-[10px] text-text-tertiary">{tier.sublabel}</span>
                     </div>
-                    <div className="text-[10px] sm:text-xs text-text-secondary mt-0.5 line-clamp-2">
-                      {suggestion.description}
+                    <div className="grid grid-cols-2 gap-2">
+                      {tierSuggestions.map((suggestion, index) => (
+                        <button
+                          key={index}
+                          type="button"
+                          onClick={() => handleSelectTargetSuggestion(suggestion)}
+                          disabled={loading}
+                          className="p-2 sm:p-3 text-left rounded-lg border border-black/20 dark:border-white/20 bg-bg-card hover:border-green-500 hover:bg-green-50 dark:hover:bg-green-900/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                          <div className="font-bold text-xs sm:text-sm text-text-primary">
+                            {suggestion.emoji} {suggestion.name}
+                          </div>
+                          <div className="text-[10px] sm:text-xs text-text-secondary mt-0.5 line-clamp-1">
+                            {suggestion.description}
+                          </div>
+                          <div className="text-[10px] text-green-600 dark:text-green-400 mt-1 font-medium">
+                            {suggestion.path?.length || suggestion.pathLength} steps
+                          </div>
+                        </button>
+                      ))}
                     </div>
-                    <div className="text-[10px] text-green-600 dark:text-green-400 mt-1 font-medium">
-                      {suggestion.pathLength} steps
-                    </div>
-                  </button>
-                ))}
-              </div>
+                  </div>
+                );
+              })}
             </div>
           )}
 
@@ -646,8 +705,38 @@ export default function DailyAlchemyPuzzleEditor({ puzzle, date, onSave, onCance
           )}
         </div>
 
+        {/* Description */}
+        {formData.targetElement && (
+          <div>
+            <div className="flex items-center justify-between mb-1">
+              <label className="block text-xs font-bold text-text-primary">Description</label>
+              <button
+                type="button"
+                onClick={handleGenerateDescription}
+                disabled={isGeneratingDescription || loading}
+                className="px-2.5 py-1 text-xs bg-indigo-500 text-white rounded-md font-bold transition-transform disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1.5"
+              >
+                {isGeneratingDescription && <Loader2 className="w-3 h-3 animate-spin" />}
+                <span>{formData.description ? 'Regenerate' : 'Generate'}</span>
+              </button>
+            </div>
+            <input
+              type="text"
+              value={formData.description}
+              onChange={(e) => handleChange('description', e.target.value)}
+              placeholder="Short write-up shown on the welcome screen"
+              maxLength={120}
+              className="w-full px-2 py-1.5 text-sm rounded-lg bg-ghost-white dark:bg-gray-700 text-text-primary"
+              disabled={loading}
+            />
+            <p className="text-[10px] text-text-tertiary mt-0.5">
+              {formData.description.length}/120 — shown to players before they start
+            </p>
+          </div>
+        )}
+
         {/* Generate Path Button */}
-        <div className="p-3 sm:p-4 bg-gradient-to-br from-orange-50 to-amber-50 dark:from-orange-900/20 dark:to-amber-900/20 rounded-lg border-2 border-orange-500">
+        <div className="p-3 sm:p-4 rounded-lg border border-border-light dark:border-gray-600">
           <div className="flex items-center justify-between gap-2">
             <h3 className="text-base sm:text-lg font-bold text-text-primary flex items-center gap-2">
               <Route className="w-4 h-4 sm:w-5 sm:h-5 text-orange-500" />
@@ -688,7 +777,7 @@ export default function DailyAlchemyPuzzleEditor({ puzzle, date, onSave, onCance
                   Path Generated ({formData.solutionPath.length} steps)
                 </span>
               </div>
-              <div className="bg-bg-card dark:bg-gray-800 border-2 border-orange-300 dark:border-orange-700 rounded-lg p-3 max-h-[200px] overflow-y-auto">
+              <div className="bg-bg-card dark:bg-gray-800 border border-border-light dark:border-gray-600 rounded-lg p-3 max-h-[200px] overflow-y-auto">
                 <div className="space-y-2">
                   {formData.solutionPath.map((step, i) => (
                     <div
@@ -758,6 +847,7 @@ export default function DailyAlchemyPuzzleEditor({ puzzle, date, onSave, onCance
                 targetElement: '',
                 targetEmoji: '✨',
                 parMoves: '',
+                description: '',
                 difficulty: 'medium',
                 solutionPath: [],
                 published: true,

@@ -91,8 +91,16 @@ export async function POST(request) {
     const { admin } = authResult;
 
     const body = await request.json();
-    const { date, targetElement, targetEmoji, parMoves, solutionPath, difficulty, published } =
-      body;
+    const {
+      date,
+      targetElement,
+      targetEmoji,
+      parMoves,
+      solutionPath,
+      difficulty,
+      published,
+      description,
+    } = body;
 
     // Validate required fields
     if (!date || !targetElement || !parMoves) {
@@ -131,6 +139,7 @@ export async function POST(request) {
         target_emoji: targetEmoji || '✨',
         par_moves: parMoves,
         solution_path: solutionPath || [],
+        description: description || null,
         difficulty: difficulty || 'medium',
         published: published !== false,
         created_by_username: admin.username,
@@ -172,8 +181,17 @@ export async function PUT(request) {
     const { admin } = authResult;
 
     const body = await request.json();
-    const { id, date, targetElement, targetEmoji, parMoves, solutionPath, difficulty, published } =
-      body;
+    const {
+      id,
+      date,
+      targetElement,
+      targetEmoji,
+      parMoves,
+      solutionPath,
+      difficulty,
+      published,
+      description,
+    } = body;
 
     // Validate required fields
     if (!id) {
@@ -193,6 +211,7 @@ export async function PUT(request) {
     if (parMoves !== undefined) updates.par_moves = parMoves;
     if (solutionPath !== undefined) updates.solution_path = solutionPath;
     if (difficulty !== undefined) updates.difficulty = difficulty;
+    if (description !== undefined) updates.description = description;
     if (published !== undefined) updates.published = published;
 
     const { data, error } = await supabase

@@ -5108,7 +5108,7 @@ Your response:`;
    * @param {string} options.difficulty - Puzzle difficulty (easy/medium/hard)
    * @returns {Promise<{suggestions: Array<{name: string, emoji: string, description: string, pathLength: number}>}>}
    */
-  async suggestAlchemyTargets({ availableElements, recentTargets = [], difficulty = 'medium' }) {
+  async suggestAlchemyTargets({ availableElements, recentTargets = [] }) {
     const client = this.getClient();
     if (!client) {
       throw new Error('AI generation is not enabled. Please configure ANTHROPIC_API_KEY.');
@@ -5122,12 +5122,10 @@ Your response:`;
         const prompt = this.buildAlchemyTargetSuggestionPrompt({
           availableElements,
           recentTargets,
-          difficulty,
         });
         const genInfo = {
           availableElementCount: availableElements.length,
           recentTargetCount: recentTargets.length,
-          difficulty,
           model: this.model,
           attempt: attempt + 1,
           maxAttempts: this.maxRetries + 1,
@@ -5211,24 +5209,7 @@ Your response:`;
   /**
    * Build prompt for Alchemy target suggestion generation
    */
-  buildAlchemyTargetSuggestionPrompt({ availableElements, recentTargets, difficulty }) {
-    const difficultyRanges = {
-      easy: { min: 2, max: 4, label: 'Easy (2-4 combination steps)' },
-      medium: { min: 4, max: 6, label: 'Medium (4-6 combination steps)' },
-      hard: { min: 6, max: 999, label: 'Hard (6+ combination steps)' },
-    };
-    const range = difficultyRanges[difficulty] || difficultyRanges.medium;
-
-    // Filter elements to the relevant difficulty range (with some buffer)
-    const filtered = availableElements.filter(
-      (el) => el.pathLength >= range.min && el.pathLength <= range.max + 2
-    );
-
-    // Prioritize elements with fewer steps (ideal range: 8-12)
-    // Split into ideal range and rest, shuffle each group, then concatenate
-    const ideal = filtered.filter((el) => el.pathLength >= 8 && el.pathLength <= 12);
-    const rest = filtered.filter((el) => el.pathLength < 8 || el.pathLength > 12);
-
+  buildAlchemyTargetSuggestionPrompt({ availableElements, recentTargets }) {
     const shuffle = (arr) => {
       const copy = [...arr];
       for (let i = copy.length - 1; i > 0; i--) {
@@ -5238,22 +5219,24 @@ Your response:`;
       return copy;
     };
 
-    // Ideal-range elements first, then rest sorted by pathLength ascending
-    rest.sort((a, b) => a.pathLength - b.pathLength);
-    const prioritized = [...shuffle(ideal), ...shuffle(rest)];
+    // Split elements into difficulty tiers
+    const easy = availableElements.filter((el) => el.pathLength >= 2 && el.pathLength <= 15);
+    const medium = availableElements.filter((el) => el.pathLength >= 16 && el.pathLength <= 30);
+    const hard = availableElements.filter((el) => el.pathLength >= 31 && el.pathLength <= 50);
 
-    // Take a subset (up to 50), heavily weighted toward fewer-step elements
-    const subset = prioritized.slice(0, 50);
-    const candidateElements = subset
-      .map((el) => `- ${el.emoji} ${el.name} (${el.pathLength} steps)`)
-      .join('\n');
+    // Shuffle and take up to 20 candidates per tier
+    const easyCandidates = shuffle(easy).slice(0, 20);
+    const mediumCandidates = shuffle(medium).slice(0, 20);
+    const hardCandidates = shuffle(hard).slice(0, 20);
+
+    const formatList = (els) =>
+      els.map((el) => `- ${el.emoji} ${el.name} (${el.pathLength} steps)`).join('\n');
 
     const recentList =
       recentTargets.length > 0
         ? `\n\nRECENT TARGETS TO AVOID (used in the last 60 days):\n${recentTargets.map((t) => `- ${t}`).join('\n')}`
         : '';
 
-    // Add a random seed to further encourage variety
     const randomSeed = Math.floor(Math.random() * 10000);
 
     return `You are suggesting target elements for a Daily Alchemy puzzle game.
@@ -5262,29 +5245,33 @@ In this game:
 - Players start with 4 basic elements: Earth, Water, Fire, Wind
 - They combine elements to create new ones (e.g., Earth + Water = Mud)
 - The puzzle goal is to reach a TARGET element in as few combinations as possible
-- The difficulty is "${range.label}"
 
-Here is a RANDOM SAMPLE of available elements for this difficulty level (seed: ${randomSeed}):
-${candidateElements}
+You must pick exactly 2 elements from EACH of the 3 difficulty tiers below (6 total).
+
+EASY CANDIDATES (15 steps or fewer) (seed: ${randomSeed}):
+${formatList(easyCandidates)}
+
+MEDIUM CANDIDATES (16-30 steps):
+${formatList(mediumCandidates)}
+
+HARD CANDIDATES (31-50 steps):
+${formatList(hardCandidates)}
 ${recentList}
 
 REQUIREMENTS:
-1. Choose 8 elements from the list above
-2. PRIORITIZE elements with FEWER steps - shorter paths make better puzzles
-3. The IDEAL range is 8-12 steps. Strongly prefer elements in this range when available
-4. If no 8-12 step elements are available, prefer the shortest path lengths available
-5. Pick elements that would be FUN and INTERESTING puzzle targets
-6. Prefer elements with evocative names and emojis - they should feel rewarding to discover
-7. DO NOT suggest any element from the RECENT TARGETS list
-8. Provide variety - mix different themes (nature, technology, mythology, food, etc.)
-9. Surprise me! Pick DIFFERENT elements than you normally would - be creative and unexpected
-10. For each suggestion, write a brief fun description explaining why it's a good target
+1. Pick exactly 2 from EASY, 2 from MEDIUM, 2 from HARD
+2. Pick elements that would be FUN and INTERESTING puzzle targets
+3. Prefer elements with evocative names and emojis - they should feel rewarding to discover
+4. DO NOT suggest any element from the RECENT TARGETS list
+5. Provide variety - mix different themes (nature, technology, mythology, food, etc.)
+6. Surprise me! Pick DIFFERENT elements than you normally would - be creative and unexpected
+7. For each suggestion, write ONE sentence (under 80 characters) that either defines what the thing is or states a fun fact about it — no opinions, no wordplay, no game references
 
 RESPONSE FORMAT (JSON only):
 {
   "suggestions": [
-    { "name": "ElementName", "emoji": "🔥", "description": "Brief reason this is fun", "pathLength": 5 },
-    { "name": "AnotherElement", "emoji": "⚡", "description": "Brief reason this is fun", "pathLength": 4 }
+    { "name": "ElementName", "emoji": "🔥", "description": "One short sentence.", "pathLength": 5, "difficulty": "easy" },
+    { "name": "AnotherElement", "emoji": "⚡", "description": "One short sentence.", "pathLength": 22, "difficulty": "medium" }
   ]
 }
 
@@ -5315,11 +5302,18 @@ Return ONLY the JSON. Element names and emojis MUST exactly match the available 
         .filter((s) => elementLookup.has(s.name.toLowerCase()))
         .map((s) => {
           const real = elementLookup.get(s.name.toLowerCase());
+          // Assign difficulty tier based on actual pathLength
+          let difficulty = s.difficulty || 'medium';
+          if (real.pathLength <= 15) difficulty = 'easy';
+          else if (real.pathLength <= 30) difficulty = 'medium';
+          else difficulty = 'hard';
+
           return {
             name: real.name,
             emoji: real.emoji,
             description: s.description.trim(),
             pathLength: real.pathLength,
+            difficulty,
           };
         });
 
@@ -5327,16 +5321,47 @@ Return ONLY the JSON. Element names and emojis MUST exactly match the available 
         throw new Error('No valid suggestions after cross-referencing with available elements');
       }
 
-      // Sort by pathLength ascending - fewer steps = better puzzle
-      validated.sort((a, b) => a.pathLength - b.pathLength);
+      // Sort by pathLength ascending within each difficulty tier
+      const difficultyOrder = { easy: 0, medium: 1, hard: 2 };
+      validated.sort(
+        (a, b) =>
+          (difficultyOrder[a.difficulty] ?? 1) - (difficultyOrder[b.difficulty] ?? 1) ||
+          a.pathLength - b.pathLength
+      );
 
       return {
-        suggestions: validated.slice(0, 8),
+        suggestions: validated.slice(0, 6),
       };
     } catch (error) {
       logger.error('Failed to parse Alchemy target suggestions', { error, responseText });
       throw new Error('Failed to parse AI suggestions. Please try again.');
     }
+  }
+  /**
+   * Generate a short description for an Alchemy puzzle target element
+   */
+  async generateAlchemyDescription(elementName, elementEmoji) {
+    if (!this.isEnabled()) {
+      throw new Error('AI service is not enabled');
+    }
+
+    const client = this.getClient();
+
+    const response = await client.messages.create({
+      model: this.model,
+      max_tokens: 100,
+      messages: [
+        {
+          role: 'user',
+          content: `"${elementEmoji} ${elementName}" — write ONE sentence (under 80 characters) that either defines what this thing is or states a fun fact about it. No opinions, no wordplay, no game references. Return ONLY the sentence, no quotes.`,
+        },
+      ],
+    });
+
+    const text = response.content[0]?.text?.trim();
+    if (!text) throw new Error('Empty response from AI');
+    // Trim to 120 chars max
+    return text.slice(0, 120);
   }
 }
 

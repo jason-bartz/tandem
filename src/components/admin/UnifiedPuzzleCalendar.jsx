@@ -89,6 +89,7 @@ function UnifiedPuzzleCalendar({ onSelectDate, onRefresh, onOpenSuggestions }, r
   const [showMonthPicker, setShowMonthPicker] = useState(false);
   const [viewMode, setViewMode] = useState('week'); // 'month' or 'week'
   const [currentWeekStart, setCurrentWeekStart] = useState(() => getWeekStart(new Date()));
+  const [focusedDate, setFocusedDate] = useState(null); // YYYY-MM-DD string for keyboard nav
   const weekContainerRef = useRef(null);
   const lastScrollTime = useRef(0);
 
@@ -195,13 +196,13 @@ function UnifiedPuzzleCalendar({ onSelectDate, onRefresh, onOpenSuggestions }, r
   }, [onRefresh, loadPuzzleData]);
 
   // Navigation handlers
-  const goToPreviousMonth = () => {
-    setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1, 1));
-  };
+  const goToPreviousMonth = useCallback(() => {
+    setCurrentMonth((prev) => new Date(prev.getFullYear(), prev.getMonth() - 1, 1));
+  }, []);
 
-  const goToNextMonth = () => {
-    setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 1));
-  };
+  const goToNextMonth = useCallback(() => {
+    setCurrentMonth((prev) => new Date(prev.getFullYear(), prev.getMonth() + 1, 1));
+  }, []);
 
   const goToToday = () => {
     setCurrentMonth(new Date());
@@ -243,25 +244,110 @@ function UnifiedPuzzleCalendar({ onSelectDate, onRefresh, onOpenSuggestions }, r
     });
   }, []);
 
-  // Arrow key navigation for week and month views
+  // Helper to shift a YYYY-MM-DD date string by N days
+  const shiftDate = useCallback((dateStr, days) => {
+    const d = new Date(dateStr + 'T00:00:00');
+    d.setDate(d.getDate() + days);
+    return formatDateKey(d.getFullYear(), d.getMonth(), d.getDate());
+  }, []);
+
+  // Ensure the focused date is visible in the current view, adjusting week/month if needed
+  const ensureDateVisible = useCallback(
+    (dateStr) => {
+      const d = new Date(dateStr + 'T00:00:00');
+      if (viewMode === 'week') {
+        const weekStart = getWeekStart(d);
+        if (weekStart.getTime() !== currentWeekStart.getTime()) {
+          setCurrentWeekStart(weekStart);
+        }
+      } else {
+        if (
+          d.getMonth() !== currentMonth.getMonth() ||
+          d.getFullYear() !== currentMonth.getFullYear()
+        ) {
+          setCurrentMonth(new Date(d.getFullYear(), d.getMonth(), 1));
+        }
+      }
+    },
+    [viewMode, currentWeekStart, currentMonth]
+  );
+
+  // Get default focused date (today) for initializing keyboard nav
+  const getDefaultFocusDate = useCallback(() => {
+    const d = new Date();
+    return formatDateKey(d.getFullYear(), d.getMonth(), d.getDate());
+  }, []);
+
+  // Keyboard navigation: J/K for week/month jumping, arrows for day movement, Enter to select
   useEffect(() => {
     const handleKeyDown = (e) => {
       // Don't intercept when typing in form fields
       const tag = e.target.tagName;
       if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
 
-      if (e.key === 'ArrowLeft') {
+      // J = back (week in week view, month in month view)
+      if (e.key === 'j' || e.key === 'J') {
         e.preventDefault();
-        viewMode === 'week' ? goToPreviousWeek() : goToPreviousMonth();
-      } else if (e.key === 'ArrowRight') {
+        if (viewMode === 'week') {
+          goToPreviousWeek();
+          setFocusedDate((prev) => (prev ? shiftDate(prev, -7) : null));
+        } else {
+          goToPreviousMonth();
+          setFocusedDate((prev) => (prev ? shiftDate(prev, -30) : null));
+        }
+        return;
+      }
+
+      // K = forward (week in week view, month in month view)
+      if (e.key === 'k' || e.key === 'K') {
         e.preventDefault();
-        viewMode === 'week' ? goToNextWeek() : goToNextMonth();
+        if (viewMode === 'week') {
+          goToNextWeek();
+          setFocusedDate((prev) => (prev ? shiftDate(prev, 7) : null));
+        } else {
+          goToNextMonth();
+          setFocusedDate((prev) => (prev ? shiftDate(prev, 30) : null));
+        }
+        return;
+      }
+
+      // Arrow keys move focused date by individual days
+      let arrowDelta = 0;
+      if (e.key === 'ArrowLeft') arrowDelta = -1;
+      else if (e.key === 'ArrowRight') arrowDelta = 1;
+      else if (e.key === 'ArrowUp') arrowDelta = -7;
+      else if (e.key === 'ArrowDown') arrowDelta = 7;
+
+      if (arrowDelta !== 0) {
+        e.preventDefault();
+        const current = focusedDate || getDefaultFocusDate();
+        const next = shiftDate(current, arrowDelta);
+        setFocusedDate(next);
+        ensureDateVisible(next);
+      }
+
+      // Enter opens game selector for focused date
+      if (e.key === 'Enter' && focusedDate) {
+        e.preventDefault();
+        onSelectDate(focusedDate, puzzleData[focusedDate] || {});
       }
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [viewMode, goToPreviousWeek, goToNextWeek]);
+  }, [
+    viewMode,
+    goToPreviousWeek,
+    goToNextWeek,
+    goToPreviousMonth,
+    goToNextMonth,
+    shiftDate,
+    ensureDateVisible,
+    getDefaultFocusDate,
+    focusedDate,
+    onSelectDate,
+    puzzleData,
+  ]);
 
   // Trackpad horizontal scroll for week view
   const handleWeekWheel = useCallback(
@@ -707,6 +793,7 @@ function UnifiedPuzzleCalendar({ onSelectDate, onRefresh, onOpenSuggestions }, r
                     ${dayInfo.isToday ? 'bg-accent-yellow/20 ring-2 ring-inset ring-accent-yellow' : 'bg-bg-surface'}
                     ${hasPuzzles ? 'bg-accent-green/5' : ''}
                     ${dayInfo.holiday && !hasPuzzles ? 'bg-accent-orange/10' : ''}
+                    ${focusedDate === dayInfo.dateKey ? 'ring-2 ring-inset ring-accent-blue' : ''}
                   `}
                 >
                   {/* Day number with mobile holiday emoji */}
@@ -815,6 +902,7 @@ function UnifiedPuzzleCalendar({ onSelectDate, onRefresh, onOpenSuggestions }, r
                     ${dayInfo.isToday ? 'bg-accent-yellow/20 ring-2 ring-inset ring-accent-yellow' : 'bg-bg-surface'}
                     ${hasPuzzles && !dayInfo.isToday ? 'bg-accent-green/5' : ''}
                     ${dayInfo.holiday && !hasPuzzles && !dayInfo.isToday ? 'bg-accent-orange/10' : ''}
+                    ${focusedDate === dayInfo.dateKey ? 'ring-2 ring-inset ring-accent-blue' : ''}
                   `}
                 >
                   <span className="text-xs font-bold text-text-secondary uppercase">{dayName}</span>
@@ -878,7 +966,8 @@ function UnifiedPuzzleCalendar({ onSelectDate, onRefresh, onOpenSuggestions }, r
             })}
           </div>
           <p className="text-center text-xs text-text-muted mt-3">
-            Use ← → arrow keys or trackpad swipe to navigate weeks
+            Arrow keys to move days &middot; J/K to jump weeks &middot; Enter to open &middot; Swipe
+            to navigate
           </p>
         </div>
       )}

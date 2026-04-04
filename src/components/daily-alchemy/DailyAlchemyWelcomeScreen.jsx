@@ -10,6 +10,7 @@ import { useTheme } from '@/contexts/ThemeContext';
 import { useAuth } from '@/contexts/AuthContext';
 import AuthModal from '@/components/auth/AuthModal';
 import { isStandaloneAlchemy } from '@/lib/standalone';
+import DiscoveryMarquee from './DiscoveryMarquee';
 
 /**
  * DailyAlchemyWelcomeScreen - Initial screen before game starts
@@ -20,6 +21,7 @@ export function DailyAlchemyWelcomeScreen({
   targetElement,
   targetEmoji,
   parMoves,
+  description,
   onStart,
   onStartFreePlay,
   onStartCoop,
@@ -92,13 +94,19 @@ export function DailyAlchemyWelcomeScreen({
         </div>
 
         {/* Par Display */}
-        <div className="flex items-center gap-4 text-sm text-gray-600 dark:text-gray-400">
-          <div className="flex items-center gap-1.5">
-            <Image src="/ui/stats/par.png" alt="" width={16} height={16} />
-            <span>Par: {parMoves} moves</span>
-          </div>
+        <div className="flex items-center gap-1.5 text-sm text-gray-600 dark:text-gray-400">
+          <Image src="/ui/stats/par.png" alt="" width={16} height={16} />
+          <span>Par: {parMoves} moves</span>
         </div>
+
+        {/* Description */}
+        {description && (
+          <p className="text-sm text-gray-600 dark:text-gray-400 mt-3 italic">{description}</p>
+        )}
       </motion.div>
+
+      {/* First Discoveries Marquee */}
+      <DiscoveryMarquee />
 
       {/* How to Play Section - Clickable */}
       <motion.button
@@ -119,12 +127,9 @@ export function DailyAlchemyWelcomeScreen({
           className={cn(
             'p-4',
             'bg-gray-50 dark:bg-gray-800',
-            'border-2 border-gray-300 dark:border-gray-600',
             'rounded-lg',
-            ' dark:',
             'text-sm text-gray-600 dark:text-gray-300',
             'hover:bg-gray-100 dark:hover:bg-gray-700',
-            'hover:border-gray-400 dark:hover:border-gray-500',
             'transition-colors cursor-pointer'
           )}
         >
@@ -256,11 +261,8 @@ export function DailyAlchemyWelcomeScreen({
           'w-full max-w-sm mt-6 p-4',
           'flex items-center gap-3',
           'bg-gray-50 dark:bg-gray-800',
-          'border-2 border-gray-300 dark:border-gray-600',
           'rounded-lg',
-          ' dark:',
           'hover:bg-gray-100 dark:hover:bg-gray-700',
-          'hover:border-gray-400 dark:hover:border-gray-500',
           'transition-colors cursor-pointer'
         )}
         initial={!reduceMotion ? { opacity: 0, y: 10 } : false}

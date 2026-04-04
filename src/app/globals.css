@@ -1293,6 +1293,20 @@ body {
    Following Apple HIG for shimmer effects
    ============================================ */
 
+/* Discovery marquee — seamless infinite scroll */
+@keyframes marquee {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-marquee {
+  animation: marquee linear infinite;
+}
+
 /* Shimmer effect for skeleton screens */
 @keyframes shimmer {
   0% {

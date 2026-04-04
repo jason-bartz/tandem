@@ -100,7 +100,6 @@ export default function UnifiedStatsModal({ isOpen, onClose }) {
               if (!hasAnyStats) {
                 return (
                   <div className="text-center py-8">
-                    <div className="text-4xl mb-3">🎮</div>
                     <p
                       className={`text-lg font-bold mb-2 ${
                         highContrast ? 'text-hc-text' : 'text-text-primary'
