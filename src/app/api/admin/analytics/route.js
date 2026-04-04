@@ -91,7 +91,7 @@ export async function GET(request) {
         supabase
           .from('leaderboard_entries')
           .select('game_type, puzzle_date, user_id, score')
-          .in('game_type', ['tandem', 'reel'])
+          .in('game_type', ['tandem', 'reel', 'mini'])
           .eq('leaderboard_type', 'daily_speed')
           .eq('is_bot', false)
           .gte('puzzle_date', startDate)
@@ -157,7 +157,7 @@ export async function GET(request) {
       day.alchemyUsers.add(row.user_id);
     }
 
-    // Process leaderboard entries (tandem & reel)
+    // Process leaderboard entries (tandem, reel, & mini fallback)
     for (const row of leaderboardRows) {
       const day = ensureDay(row.puzzle_date);
       if (row.game_type === 'tandem') {
@@ -166,6 +166,12 @@ export async function GET(request) {
       } else if (row.game_type === 'reel') {
         day.reel++;
         day.reelUsers.add(row.user_id);
+      } else if (row.game_type === 'mini') {
+        // Use leaderboard as mini completion source when mini_stats has no record
+        if (!day.miniUsers.has(row.user_id)) {
+          day.mini++;
+          day.miniUsers.add(row.user_id);
+        }
       }
     }
 
