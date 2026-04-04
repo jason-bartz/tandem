@@ -101,7 +101,7 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
   const {
     user,
     loading: authLoading,
-    ensureAlchemySession,
+    ensureAnonymousSession,
     isAnonymous,
     markServiceUnavailable,
   } = useAuth();
@@ -279,7 +279,7 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
     // Detect user change (including logout -> login with different account)
     if (previousUserId !== currentUserId) {
       // Skip reset when transitioning from no session to anonymous session
-      // (anonymous session created during gameplay via ensureAlchemySession)
+      // (anonymous session created during gameplay via ensureAnonymousSession)
       const isAnonymousSignIn = !previousUserId && user?.is_anonymous === true;
       if (isAnonymousSignIn) {
         previousUserIdRef.current = currentUserId;
@@ -1816,11 +1816,11 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
       // Ensure we have a userId for first discovery credit.
       // Creates an anonymous Supabase session if the user is not logged in.
       let currentUserId = user?.id || null;
-      if (!currentUserId && ensureAlchemySession) {
-        const anonUser = await ensureAlchemySession();
+      if (!currentUserId && ensureAnonymousSession) {
+        const anonUser = await ensureAnonymousSession();
         currentUserId = anonUser?.id || null;
         if (!currentUserId) {
-          logger.error('[DailyAlchemy] ensureAlchemySession returned no userId');
+          logger.error('[DailyAlchemy] ensureAnonymousSession returned no userId');
         }
       }
       const currentMode = isSubtractMode ? 'subtract' : 'combine';
@@ -1992,7 +1992,7 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
     isSubtractMode,
     user,
     authLoading,
-    ensureAlchemySession,
+    ensureAnonymousSession,
     clearSelections,
     soupCombine,
     soupNewElement,

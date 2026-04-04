@@ -33,7 +33,7 @@ const AuthContext = createContext({
   signInWithDiscord: async () => {},
   signInWithApple: async () => {},
   resetPassword: async () => {},
-  ensureAlchemySession: async () => {},
+  ensureAnonymousSession: async () => {},
   upgradeAnonymousWithEmail: async () => {},
   upgradeAnonymousWithOAuth: async () => {},
 });
@@ -889,13 +889,13 @@ export function AuthProvider({ children }) {
   const isAnonymous = user?.is_anonymous === true;
 
   /**
-   * Ensure an anonymous Supabase session exists for Daily Alchemy gameplay.
-   * Only creates a session if no user exists. Called from the Alchemy game hook
-   * before the first combine API call, NOT on app load.
+   * Ensure an anonymous Supabase session exists for gameplay.
+   * Only creates a session if no user exists. Called from game hooks
+   * before stats/leaderboard submission, NOT on app load.
    *
    * @returns {Promise<Object|null>} The anonymous user object, or null on failure
    */
-  const ensureAlchemySession = useCallback(async () => {
+  const ensureAnonymousSession = useCallback(async () => {
     if (user) return user;
 
     try {
@@ -1065,7 +1065,7 @@ export function AuthProvider({ children }) {
       signInWithDiscord,
       signInWithApple,
       resetPassword,
-      ensureAlchemySession,
+      ensureAnonymousSession,
       upgradeAnonymousWithEmail,
       upgradeAnonymousWithOAuth,
     }),
@@ -1088,7 +1088,7 @@ export function AuthProvider({ children }) {
       signInWithDiscord,
       signInWithApple,
       resetPassword,
-      ensureAlchemySession,
+      ensureAnonymousSession,
       upgradeAnonymousWithEmail,
       upgradeAnonymousWithOAuth,
     ]

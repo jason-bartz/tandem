@@ -155,7 +155,7 @@ export function useReelConnectionsGame() {
 
   // External hooks
   const { recordGame } = useReelConnectionsStats();
-  const { user, markServiceUnavailable } = useAuth();
+  const { user, markServiceUnavailable, ensureAnonymousSession } = useAuth();
   const { lightTap, mediumTap, heavyTap, correctAnswer, incorrectAnswer, celebration } =
     useHaptics();
 
@@ -216,11 +216,16 @@ export function useReelConnectionsGame() {
 
   // Submit to leaderboard when game ends
   useEffect(() => {
-    if (!gameWon || !endTime || !startTime || leaderboardSubmitted || !user) return;
+    if (!gameWon || !endTime || !startTime || leaderboardSubmitted) return;
     if (archiveDate) return; // Don't submit archive games
 
     const submitToLeaderboard = async () => {
       try {
+        // Ensure anonymous session exists for leaderboard attribution
+        if (!user && ensureAnonymousSession) {
+          await ensureAnonymousSession();
+        }
+
         const timeSeconds = Math.floor((endTime - startTime) / 1000);
         const puzzleDate = getLocalDateString();
 
@@ -256,7 +261,16 @@ export function useReelConnectionsGame() {
     };
 
     submitToLeaderboard();
-  }, [gameWon, endTime, startTime, leaderboardSubmitted, user, archiveDate, mistakes]);
+  }, [
+    gameWon,
+    endTime,
+    startTime,
+    leaderboardSubmitted,
+    user,
+    archiveDate,
+    mistakes,
+    ensureAnonymousSession,
+  ]);
 
   // Confetti effect when game is won
   useEffect(() => {

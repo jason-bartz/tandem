@@ -36,7 +36,7 @@ import { useAuth } from '@/contexts/AuthContext';
  * Custom hook for managing The Daily Mini crossword game state
  */
 export function useMiniGame(providedDate = null) {
-  const { markServiceUnavailable } = useAuth();
+  const { markServiceUnavailable, ensureAnonymousSession } = useAuth();
   // Game state
   const [gameState, setGameState] = useState(MINI_GAME_STATES.WELCOME);
   const [puzzle, setPuzzle] = useState(null);
@@ -760,6 +760,11 @@ export function useMiniGame(providedDate = null) {
 
     // Now transition to complete screen - stats are saved
     setGameState(MINI_GAME_STATES.COMPLETE);
+
+    // Ensure anonymous session exists for stats/leaderboard attribution
+    if (ensureAnonymousSession) {
+      await ensureAnonymousSession();
+    }
 
     // Save per-puzzle stats to database for analytics
     if (currentPuzzleDate) {

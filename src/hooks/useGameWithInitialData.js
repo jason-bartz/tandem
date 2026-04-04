@@ -16,7 +16,7 @@ import logger from '@/lib/logger';
 import { useAuth } from '@/contexts/AuthContext';
 
 export function useGameWithInitialData(initialPuzzleData) {
-  const { markServiceUnavailable } = useAuth();
+  const { markServiceUnavailable, ensureAnonymousSession } = useAuth();
   const [gameState, setGameState] = useState(GAME_STATES.WELCOME);
   // Make sure the puzzle includes the date from initialPuzzleData
   const [puzzle, setPuzzle] = useState(
@@ -258,6 +258,11 @@ export function useGameWithInitialData(initialPuzzleData) {
       setTimeout(() => {
         setGameState(GAME_STATES.COMPLETE);
       }, 150);
+
+      // Ensure anonymous session exists for stats/leaderboard attribution
+      if (ensureAnonymousSession) {
+        await ensureAnonymousSession();
+      }
 
       // Save stats in background (non-blocking for UI)
       const isFirstAttempt = currentPuzzleDate && !(await hasPlayedPuzzle(currentPuzzleDate));
