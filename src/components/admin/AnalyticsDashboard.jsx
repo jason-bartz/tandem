@@ -43,7 +43,7 @@ const RANGE_OPTIONS = [
 
 // Use CSS variable-aware colors that work in both light and dark mode
 const GAME_COLORS = {
-  mini: { border: 'rgb(56, 189, 248)', bg: 'rgba(56, 189, 248, 0.15)' },
+  mini: { border: 'rgb(255, 206, 0)', bg: 'rgba(255, 206, 0, 0.15)' },
   alchemy: { border: 'rgb(126, 217, 87)', bg: 'rgba(126, 217, 87, 0.15)' },
   tandem: { border: 'rgb(56, 182, 255)', bg: 'rgba(56, 182, 255, 0.15)' },
   reel: { border: 'rgb(255, 87, 87)', bg: 'rgba(255, 87, 87, 0.15)' },
