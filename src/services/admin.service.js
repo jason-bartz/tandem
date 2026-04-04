@@ -251,6 +251,25 @@ class AdminService {
     }
   }
 
+  async getFeedbackCounts() {
+    try {
+      const response = await fetch(getApiUrl('/api/admin/feedback?counts_only=true'), {
+        headers: await this.getAuthHeaders(),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || `Server error: ${response.status}`);
+      }
+
+      return data.counts;
+    } catch (error) {
+      logger.error('AdminService.getFeedbackCounts error', error);
+      throw error;
+    }
+  }
+
   async updateFeedback(feedbackId, updates) {
     try {
       const response = await fetch(getApiUrl('/api/admin/feedback'), {

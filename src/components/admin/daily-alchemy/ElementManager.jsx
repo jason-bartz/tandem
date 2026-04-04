@@ -19,7 +19,6 @@ import {
   Pencil,
   X,
   Save,
-  Grid3X3,
   Loader2,
   Wand2,
   Route,
@@ -45,13 +44,12 @@ export default function ElementManager() {
       <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
         <button
           onClick={() => setActiveTab('library')}
-          className={`px-2.5 sm:px-3.5 py-1.5 sm:py-2 text-xs sm:text-sm font-bold rounded-md sm:rounded-lg transition-all flex items-center gap-1 sm:gap-1.5 ${
+          className={`px-2.5 sm:px-3.5 py-1.5 sm:py-2 text-xs sm:text-sm font-bold rounded-md sm:rounded-lg transition-all ${
             activeTab === 'library'
               ? 'bg-blue-500 text-white'
               : 'bg-bg-card text-text-secondary hover:bg-blue-100 dark:hover:bg-blue-900/20'
           }`}
         >
-          <Grid3X3 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
           Library
         </button>
         <button
@@ -67,13 +65,12 @@ export default function ElementManager() {
         </button>
         <button
           onClick={() => setActiveTab('discoveries')}
-          className={`px-2.5 sm:px-3.5 py-1.5 sm:py-2 text-xs sm:text-sm font-bold rounded-md sm:rounded-lg transition-all flex items-center gap-1 sm:gap-1.5 ${
+          className={`px-2.5 sm:px-3.5 py-1.5 sm:py-2 text-xs sm:text-sm font-bold rounded-md sm:rounded-lg transition-all ${
             activeTab === 'discoveries'
               ? 'bg-amber-500 text-white'
               : 'bg-bg-card text-text-secondary hover:bg-amber-100 dark:hover:bg-amber-900/20'
           }`}
         >
-          <Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
           <span className="hidden sm:inline">First </span>Discoveries
         </button>
       </div>
@@ -1597,8 +1594,7 @@ function ElementBrowser({ onSelectElement, externalSearch = '', onSearchChange }
     <div className="bg-bg-card dark:bg-gray-800 rounded-xl p-6">
       {/* Header with Search */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
-        <h3 className="text-lg font-bold text-text-primary flex items-center gap-2">
-          <Grid3X3 className="w-5 h-5" />
+        <h3 className="text-lg font-bold text-text-primary">
           Element Library ({pagination.total})
         </h3>
         <div className="relative w-full sm:w-72">
@@ -1712,21 +1708,75 @@ function ElementBrowser({ onSelectElement, externalSearch = '', onSearchChange }
           <p className="text-sm text-text-secondary">
             Page {pagination.page} of {pagination.totalPages} ({pagination.total} elements)
           </p>
-          <div className="flex gap-2">
+          <div className="flex items-center gap-1">
+            <button
+              onClick={() => handlePageChange(1)}
+              disabled={pagination.page <= 1}
+              className="px-2 py-1 text-sm font-bold rounded-lg bg-bg-card dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <ChevronLeft className="w-4 h-4" />
+            </button>
             <button
               onClick={() => handlePageChange(pagination.page - 1)}
               disabled={pagination.page <= 1}
-              className="px-3 py-1.5 text-sm font-bold rounded-lg bg-bg-card dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1"
+              className="px-2 py-1 text-sm font-bold rounded-lg bg-bg-card dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <ChevronLeft className="w-4 h-4" />
               Prev
             </button>
+            {(() => {
+              const pages = [];
+              const current = pagination.page;
+              const total = pagination.totalPages;
+
+              // Always show first page
+              pages.push(1);
+
+              // Show ellipsis if needed before current range
+              if (current > 3) pages.push('...');
+
+              // Pages around current
+              for (let i = Math.max(2, current - 1); i <= Math.min(total - 1, current + 1); i++) {
+                if (!pages.includes(i)) pages.push(i);
+              }
+
+              // Show ellipsis if needed after current range
+              if (current < total - 2) pages.push('...');
+
+              // Always show last page
+              if (total > 1 && !pages.includes(total)) pages.push(total);
+
+              return pages.map((p, idx) =>
+                p === '...' ? (
+                  <span key={`ellipsis-${idx}`} className="px-1 text-sm text-text-muted">
+                    ...
+                  </span>
+                ) : (
+                  <button
+                    key={p}
+                    onClick={() => handlePageChange(p)}
+                    className={`min-w-8 px-2 py-1 text-sm font-bold rounded-lg transition-colors ${
+                      p === current
+                        ? 'bg-blue-500 text-white'
+                        : 'bg-bg-card dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 text-text-primary'
+                    }`}
+                  >
+                    {p}
+                  </button>
+                )
+              );
+            })()}
             <button
               onClick={() => handlePageChange(pagination.page + 1)}
               disabled={pagination.page >= pagination.totalPages}
-              className="px-3 py-1.5 text-sm font-bold rounded-lg bg-bg-card dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1"
+              className="px-2 py-1 text-sm font-bold rounded-lg bg-bg-card dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Next
+            </button>
+            <button
+              onClick={() => handlePageChange(pagination.totalPages)}
+              disabled={pagination.page >= pagination.totalPages}
+              className="px-2 py-1 text-sm font-bold rounded-lg bg-bg-card dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
               <ChevronRight className="w-4 h-4" />
             </button>
           </div>

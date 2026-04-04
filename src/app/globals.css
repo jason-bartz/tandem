@@ -99,15 +99,15 @@
 
   --modal-bg: rgba(0, 0, 0, 0.7);
 
-  /* Admin dark palette (flat) */
-  --admin-bg-primary: #111827;
-  --admin-bg-surface: #1f2937;
-  --admin-bg-card: #1f2937;
-  --admin-text-primary: #f9fafb;
-  --admin-text-secondary: #d1d5db;
+  /* Admin palette stays light even in dark mode */
+  --admin-bg-primary: #ffffff;
+  --admin-bg-surface: #f3f4f6;
+  --admin-bg-card: #ffffff;
+  --admin-text-primary: #111827;
+  --admin-text-secondary: #6b7280;
   --admin-text-muted: #9ca3af;
-  --admin-border-main: #374151;
-  --admin-border-light: #374151;
+  --admin-border-main: #e5e7eb;
+  --admin-border-light: #e5e7eb;
   --admin-shadow-card: none;
   --admin-shadow-button: none;
   --admin-shadow-small: none;
@@ -1524,8 +1524,9 @@ body:has(.admin-theme) {
   background-color: var(--bg-primary);
 }
 
-/* Admin-specific styling */
+/* Admin-specific styling - always light mode */
 .admin-theme {
+  color-scheme: light;
   --bg-primary: var(--admin-bg-primary);
   --bg-surface: var(--admin-bg-surface);
   --bg-card: var(--admin-bg-card);
@@ -1534,6 +1535,24 @@ body:has(.admin-theme) {
   --text-muted: var(--admin-text-muted);
   --border-main: var(--admin-border-main);
   --border-light: var(--admin-border-light);
+}
+
+/* Admin skeleton loading - subtle opacity fade instead of aggressive shimmer */
+.admin-theme .skeleton-shimmer,
+.admin-theme .animate-pulse {
+  animation: adminSkeletonFade 3s ease-in-out infinite !important;
+  background: none !important;
+  background-color: #e5e7eb !important;
+}
+
+@keyframes adminSkeletonFade {
+  0%,
+  100% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 0.3;
+  }
 }
 
 /* Admin input focus states */

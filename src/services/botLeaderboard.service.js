@@ -179,39 +179,150 @@ function generateHintsUsed(gameType) {
 }
 
 /**
- * Generate a random timestamp for bot submission
- * Spreads bot submissions throughout the day up to the current time
- * to create a natural-looking distribution on the leaderboard.
+ * Get the current hour in Eastern Time (ET).
+ * Handles EST/EDT automatically via Intl.
+ *
+ * @returns {number} Fractional hour (e.g. 14.5 = 2:30 PM ET)
+ */
+function getCurrentETHour() {
+  const now = new Date();
+  const etParts = new Intl.DateTimeFormat('en-US', {
+    timeZone: 'America/New_York',
+    hour: 'numeric',
+    minute: 'numeric',
+    hour12: false,
+  }).formatToParts(now);
+
+  const hour = parseInt(etParts.find((p) => p.type === 'hour').value, 10);
+  const minute = parseInt(etParts.find((p) => p.type === 'minute').value, 10);
+  return hour + minute / 60;
+}
+
+/**
+ * Get today's date string in ET timezone (YYYY-MM-DD).
+ * Ensures puzzle date aligns with user-facing midnight ET.
+ *
+ * @returns {string} Date string in YYYY-MM-DD format
+ */
+function getTodayDateStringET() {
+  const now = new Date();
+  const etDate = new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'America/New_York',
+  }).format(now);
+  return etDate; // Returns YYYY-MM-DD
+}
+
+/**
+ * Calculate the wave schedule for bot releases.
+ * Evenly spaces N releases starting from firstReleaseHour.
+ *
+ * @param {number} releasesPerDay - Number of release waves (1-12)
+ * @param {number} firstReleaseHour - Hour in ET to start first release (0-23)
+ * @returns {number[]} Array of release hours in ET
+ */
+function getWaveSchedule(releasesPerDay, firstReleaseHour) {
+  const releases = Math.max(1, Math.min(12, releasesPerDay));
+  const hoursUntilMidnight = 24 - firstReleaseHour;
+  const interval = hoursUntilMidnight / releases;
+  const schedule = [];
+  for (let i = 0; i < releases; i++) {
+    schedule.push(firstReleaseHour + i * interval);
+  }
+  return schedule;
+}
+
+/**
+ * Determine how many bots should exist by the current time
+ * based on the wave release schedule.
+ *
+ * @param {number} targetCount - Total bots for the day
+ * @param {number} releasesPerDay - Number of release waves
+ * @param {number} firstReleaseHour - Hour in ET for first release
+ * @returns {number} Expected bot count by now
+ */
+function getExpectedCountByNow(targetCount, releasesPerDay, firstReleaseHour) {
+  const currentHourET = getCurrentETHour();
+  const schedule = getWaveSchedule(releasesPerDay, firstReleaseHour);
+
+  // Count how many waves have passed
+  let wavesPassed = 0;
+  for (const waveHour of schedule) {
+    if (currentHourET >= waveHour) {
+      wavesPassed++;
+    }
+  }
+
+  if (wavesPassed === 0) return 0;
+
+  // Distribute bots evenly across waves, with remainder going to earlier waves
+  const botsPerWave = Math.floor(targetCount / schedule.length);
+  const remainder = targetCount % schedule.length;
+
+  let expected = 0;
+  for (let i = 0; i < wavesPassed; i++) {
+    expected += botsPerWave + (i < remainder ? 1 : 0);
+  }
+
+  return expected;
+}
+
+/**
+ * Generate a random timestamp for bot submission.
+ * Spreads timestamps between the previous wave time and now
+ * to create natural-looking leaderboard entries.
  *
  * @param {Date} date - Target date for the puzzle
- * @param {boolean} spreadThroughoutDay - If true, spread across elapsed day; if false, cluster near now
+ * @param {number} releasesPerDay - Number of release waves
+ * @param {number} firstReleaseHour - Hour in ET for first release
  * @returns {Date} Submission timestamp
  */
-function generateSubmissionTime(date, spreadThroughoutDay = true) {
+function generateSubmissionTime(date, releasesPerDay = 6, firstReleaseHour = 6) {
   const now = new Date();
-  const dateStr = date.toISOString().split('T')[0];
-  const nowDateStr = now.toISOString().split('T')[0];
+  const currentHourET = getCurrentETHour();
+  const schedule = getWaveSchedule(releasesPerDay, firstReleaseHour);
 
-  // Start of the puzzle day (midnight UTC)
-  const dayStart = new Date(dateStr + 'T00:00:00.000Z');
-
-  if (spreadThroughoutDay && dateStr === nowDateStr) {
-    // Spread submissions from start of day up to now
-    // This creates a natural distribution on the leaderboard
-    const elapsedMs = now.getTime() - dayStart.getTime();
-
-    if (elapsedMs > 0) {
-      // Generate a random time between start of day and now
-      // Use a slight bias toward more recent times (beta distribution effect)
-      const randomFactor = Math.pow(Math.random(), 0.7); // Bias toward 1 (recent)
-      const randomMs = randomFactor * elapsedMs;
-      return new Date(dayStart.getTime() + randomMs);
+  // Find the most recent wave that has passed
+  let prevWaveHour = 0;
+  for (const waveHour of schedule) {
+    if (currentHourET >= waveHour) {
+      prevWaveHour = waveHour;
     }
+  }
+
+  // Build a timestamp for the start of prevWaveHour today in ET
+  // We use UTC offset calculation to get an accurate Date object
+  const dateStr = date.toISOString().split('T')[0];
+  const dayStartUTC = new Date(dateStr + 'T00:00:00.000Z');
+
+  // Get the UTC offset for ET today (handles DST)
+  const etOffsetMs = getETOffsetMs(now);
+  const waveStartUTC = new Date(dayStartUTC.getTime() + prevWaveHour * 3600000 + etOffsetMs);
+
+  // Spread the submission time between wave start and now
+  const rangeMs = Math.max(0, now.getTime() - waveStartUTC.getTime());
+  if (rangeMs > 0) {
+    const randomFactor = Math.pow(Math.random(), 0.7); // Bias toward recent
+    return new Date(waveStartUTC.getTime() + randomFactor * rangeMs);
   }
 
   // Fallback: cluster around now with small variance
   const varianceMs = (Math.random() * 20 - 10) * 60 * 1000; // ±10 minutes
   return new Date(now.getTime() + varianceMs);
+}
+
+/**
+ * Get the UTC offset in milliseconds for Eastern Time.
+ * Positive value means ET is behind UTC (add to ET hour to get UTC).
+ *
+ * @param {Date} date - Date to check offset for
+ * @returns {number} Offset in milliseconds (e.g. 5*3600000 for EST, 4*3600000 for EDT)
+ */
+function getETOffsetMs(date) {
+  // Create a date string in ET, parse it back as UTC, and compare
+  const etStr = date.toLocaleString('en-US', { timeZone: 'America/New_York' });
+  const etDate = new Date(etStr);
+  // Offset = UTC time - ET time (positive means ET is behind UTC)
+  return date.getTime() - etDate.getTime();
 }
 
 /**
@@ -295,7 +406,11 @@ export async function generateBotEntries({ gameType, date, count, config, carryo
   for (let i = 0; i < count; i++) {
     const score = generateRealisticScore(gameType, config);
     const { username, avatarId, currentStreak, isCarryover } = botEntryData[i];
-    const submittedAt = generateSubmissionTime(date, config.spread_throughout_day);
+    const submittedAt = generateSubmissionTime(
+      date,
+      config.releases_per_day || 6,
+      config.first_release_hour ?? 6
+    );
     const hintsUsed = generateHintsUsed(gameType);
     // Carryover bots increment their streak, new bots start at 1
     const newStreak = currentStreak + 1;
@@ -441,12 +556,12 @@ export async function generateDailyBotEntries() {
     }
 
     const today = new Date();
-    const dateStr = today.toISOString().split('T')[0];
+    const dateStr = getTodayDateStringET();
 
-    // Get yesterday's date for carryover
-    const yesterday = new Date(today);
-    yesterday.setDate(yesterday.getDate() - 1);
-    const yesterdayStr = yesterday.toISOString().split('T')[0];
+    // Get yesterday's date for carryover (in ET)
+    const yesterdayDate = new Date(dateStr + 'T12:00:00Z'); // noon UTC to avoid DST edge cases
+    yesterdayDate.setDate(yesterdayDate.getDate() - 1);
+    const yesterdayStr = yesterdayDate.toISOString().split('T')[0];
 
     const games = ['tandem', 'mini', 'reel', 'soup'];
     const results = {};
@@ -509,43 +624,15 @@ export async function generateDailyBotEntries() {
           );
         }
       }
-      // Get per-game target count
+      // Get per-game target count and wave settings
       const targetCount = configs[`${game}_entries_per_day`] || 20;
+      const releasesPerDay = configs.releases_per_day || 6;
+      const firstReleaseHour = configs.first_release_hour ?? 6;
 
-      // Calculate how many entries should exist by this point in the day
-      // This spreads generation throughout the day instead of all at once
-      const now = new Date();
-
-      // Use date + game as seed for daily randomization
-      // This creates a consistent but different offset each day per game
-      const seedString = `${dateStr}-${game}`;
-      const dailySeed = simpleHash(seedString);
-
-      // Random daily offset: shifts the "day start" by 0-3 hours
-      // This makes generation windows different each day
-      const dailyOffsetHours = (dailySeed % 180) / 60; // 0 to 3 hours
-
-      // Also randomize the "pace" - some days bots join faster, some slower
-      // Pace factor between 0.7 and 1.3
-      const paceFactor = 0.7 + (dailySeed % 60) / 100;
-
-      const hourOfDay = now.getUTCHours() + now.getUTCMinutes() / 60;
-      // Apply the daily offset (wrap around at 24)
-      const adjustedHour = (hourOfDay + 24 - dailyOffsetHours) % 24;
-      const dayProgress = Math.min(1, (adjustedHour / 24) * paceFactor); // Cap at 1
-
-      // Spread ALL bots (both carryover and new) throughout the day
-      // Carryover bots are prioritized in generateBotEntries but their
-      // submission timestamps are spread naturally across elapsed time
-      const carryoverCount = carryoverBots.length;
-
-      // Target for this point in time (with additional per-run randomness)
-      // Add a small random factor (±10%) to make each run slightly unpredictable
-      const runRandomFactor = 0.9 + Math.random() * 0.2;
-
-      // Spread the TOTAL target count throughout the day, not just new bots
-      // This ensures carryover bots also appear gradually on the leaderboard
-      const expectedByNow = Math.floor(targetCount * dayProgress * runRandomFactor);
+      // Calculate how many entries should exist based on wave schedule
+      const expectedByNow = getExpectedCountByNow(targetCount, releasesPerDay, firstReleaseHour);
+      const currentHourET = getCurrentETHour();
+      const schedule = getWaveSchedule(releasesPerDay, firstReleaseHour);
 
       // Check if we already have bot entries for today
       const { data: existing, error: checkError } = await supabase
@@ -563,7 +650,7 @@ export async function generateDailyBotEntries() {
       const existingCount = existing?.length || 0;
 
       logger.info(
-        `[Bot Leaderboard] ${game} - existing: ${existingCount}, expected by now: ${expectedByNow}, daily target: ${targetCount} (${carryoverCount} carryover available), day progress: ${(dayProgress * 100).toFixed(1)}% (offset: ${dailyOffsetHours.toFixed(1)}h, pace: ${paceFactor.toFixed(2)}x)`
+        `[Bot Leaderboard] ${game} - existing: ${existingCount}, expected by now: ${expectedByNow}, daily target: ${targetCount}, current ET hour: ${currentHourET.toFixed(1)}, waves: ${schedule.map((h) => h.toFixed(1)).join(',')}`
       );
 
       if (existingCount >= expectedByNow) {

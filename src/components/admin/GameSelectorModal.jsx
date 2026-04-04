@@ -93,26 +93,38 @@ export default function GameSelectorModal({ date, puzzles, onSelectGame, onClose
   const holiday = getHoliday(date);
   const holidayEmoji = holiday ? getHolidayEmoji(holiday) : null;
 
-  // Handle escape key to close modal
-  const handleEscape = useCallback(
+  // Handle keyboard shortcuts: Escape to close, 1-4 to select game
+  const handleKeyDown = useCallback(
     (e) => {
       if (e.key === 'Escape') {
         onClose();
+        return;
+      }
+
+      // 1-4 selects a game instantly
+      if (/^[1-4]$/.test(e.key)) {
+        const idx = parseInt(e.key, 10) - 1;
+        const game = GAMES[idx];
+        if (game) {
+          e.preventDefault();
+          const hasPuzzle = puzzles && puzzles[game.id];
+          onSelectGame(game.id, hasPuzzle ? puzzles[game.id] : null);
+        }
       }
     },
-    [onClose]
+    [onClose, onSelectGame, puzzles]
   );
 
   useEffect(() => {
-    document.addEventListener('keydown', handleEscape);
+    document.addEventListener('keydown', handleKeyDown);
     // Prevent body scroll when modal is open
     document.body.style.overflow = 'hidden';
 
     return () => {
-      document.removeEventListener('keydown', handleEscape);
+      document.removeEventListener('keydown', handleKeyDown);
       document.body.style.overflow = '';
     };
-  }, [handleEscape]);
+  }, [handleKeyDown]);
 
   // Handle backdrop click
   const handleBackdropClick = (e) => {
@@ -169,7 +181,7 @@ export default function GameSelectorModal({ date, puzzles, onSelectGame, onClose
             Select a game to edit or create:
           </p>
 
-          {GAMES.map((game) => {
+          {GAMES.map((game, index) => {
             const hasPuzzle = puzzles && puzzles[game.id];
             const actionLabel = hasPuzzle ? 'Edit' : 'Create';
 
@@ -184,6 +196,11 @@ export default function GameSelectorModal({ date, puzzles, onSelectGame, onClose
                   ${hasPuzzle ? game.bgColor : 'bg-bg-card hover:bg-gray-50 dark:hover:bg-gray-800'}
                 `}
               >
+                {/* Keyboard hint */}
+                <kbd className="flex-shrink-0 w-6 h-6 flex items-center justify-center text-xs font-bold bg-gray-100 text-gray-400 rounded border border-gray-200">
+                  {index + 1}
+                </kbd>
+
                 {/* Game icon */}
                 <div className="w-12 h-12 sm:w-14 sm:h-14 relative flex-shrink-0">
                   <Image src={game.icon} alt={game.name} fill className="object-contain" />

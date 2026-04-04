@@ -70,7 +70,8 @@ export async function GET(request) {
  *   reel_max_score?: number,
  *   soup_min_score?: number,
  *   soup_max_score?: number,
- *   spread_throughout_day?: boolean
+ *   releases_per_day?: number,
+ *   first_release_hour?: number
  * }
  */
 export async function PUT(request) {
@@ -97,7 +98,8 @@ export async function PUT(request) {
       'reel_max_score',
       'soup_min_score',
       'soup_max_score',
-      'spread_throughout_day',
+      'releases_per_day',
+      'first_release_hour',
     ];
 
     const updates = {};

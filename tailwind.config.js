@@ -5,7 +5,7 @@ module.exports = {
     './src/components/**/*.{js,ts,jsx,tsx,mdx}',
     './src/app/**/*.{js,ts,jsx,tsx,mdx}',
   ],
-  darkMode: 'class',
+  darkMode: ['variant', '&:is(.dark *):not(.admin-theme):not(.admin-theme *)'],
   theme: {
     extend: {
       fontFamily: {

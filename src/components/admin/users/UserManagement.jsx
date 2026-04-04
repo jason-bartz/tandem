@@ -1,9 +1,18 @@
 'use client';
 
 import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import Image from 'next/image';
 import adminService from '@/services/admin.service';
 import UserDetailPanel from './UserDetailPanel';
 import logger from '@/lib/logger';
+import { ASSET_VERSION } from '@/lib/constants';
+
+const GAME_ICONS = {
+  tandem: { src: '/ui/games/tandem.png', alt: 'Tandem' },
+  mini: { src: '/ui/games/mini.png', alt: 'Mini' },
+  reel: { src: '/ui/games/movie.png', alt: 'Reel' },
+  soup: { src: `/ui/games/daily-alchemy.png?v=${ASSET_VERSION}`, alt: 'Alchemy' },
+};
 
 function formatTimestamp(value) {
   try {
@@ -262,8 +271,8 @@ export default function UserManagement() {
               color="text-accent-blue"
             />
             <MetricCard
-              label="In Users Table"
-              value={pagination.total}
+              label="Countries"
+              value={metrics.uniqueCountries}
               color="text-accent-yellow"
             />
           </div>
@@ -339,7 +348,7 @@ export default function UserManagement() {
                   Email
                 </th>
                 <th className="text-center px-3 py-2.5 font-bold text-text-secondary text-xs uppercase tracking-wide hidden md:table-cell">
-                  Type
+                  Games
                 </th>
                 <th className="text-center px-3 py-2.5 font-bold text-text-secondary text-xs uppercase tracking-wide hidden lg:table-cell">
                   Country
@@ -391,15 +400,25 @@ export default function UserManagement() {
                         </span>
                       </td>
                       <td className="px-3 py-3 text-center hidden md:table-cell">
-                        <span
-                          className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${
-                            user.isAnonymous
-                              ? 'bg-gray-100 dark:bg-gray-800 border-border-main text-text-secondary'
-                              : 'bg-accent-green/20 border-accent-green text-accent-green'
-                          }`}
-                        >
-                          {user.isAnonymous ? 'Anon' : 'Reg'}
-                        </span>
+                        <div className="flex items-center justify-center gap-1">
+                          {user.activeGames && user.activeGames.length > 0 ? (
+                            user.activeGames.map((game) => {
+                              const icon = GAME_ICONS[game];
+                              return icon ? (
+                                <Image
+                                  key={game}
+                                  src={icon.src}
+                                  alt={icon.alt}
+                                  width={16}
+                                  height={16}
+                                  title={icon.alt}
+                                />
+                              ) : null;
+                            })
+                          ) : (
+                            <span className="text-text-muted text-xs">--</span>
+                          )}
+                        </div>
                       </td>
                       <td className="px-3 py-3 text-center hidden lg:table-cell">
                         {user.countryFlag ? (

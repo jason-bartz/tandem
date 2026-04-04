@@ -38,6 +38,13 @@ export async function GET(request) {
     }
 
     const { searchParams } = new URL(request.url);
+
+    // Lightweight counts-only endpoint for polling
+    if (searchParams.get('counts_only') === 'true') {
+      const counts = await getFeedbackStatusCounts();
+      return NextResponse.json({ success: true, counts });
+    }
+
     const rawStatus = searchParams.get('status');
     const statusParam = rawStatus ? normalizeStatus(rawStatus) : null;
     if (rawStatus && !statusParam) {

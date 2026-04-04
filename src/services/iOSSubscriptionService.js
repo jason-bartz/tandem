@@ -113,7 +113,8 @@ class SubscriptionService {
         if (
           product.id === PRODUCTS.BUDDY_MONTHLY ||
           product.id === PRODUCTS.BEST_FRIENDS_YEARLY ||
-          product.id === PRODUCTS.SOULMATES_LIFETIME
+          product.id === PRODUCTS.SOULMATES_LIFETIME ||
+          product.id === PRODUCTS.TIP
         ) {
           this.products[product.id] = product;
         }
@@ -283,6 +284,12 @@ class SubscriptionService {
   }
 
   async handlePurchaseSuccess(product, transaction) {
+    // Consumable tips don't affect subscription state
+    if (product.id === PRODUCTS.TIP) {
+      logger.info('[SubscriptionService] Tip purchase completed successfully');
+      return;
+    }
+
     const purchaseDate = new Date().toISOString();
 
     // Use Capacitor Preferences for iOS, fallback to localStorage for web
@@ -630,8 +637,9 @@ class SubscriptionService {
       throw new Error('Product not found');
     }
 
-    // For owned products, trigger restore flow instead
-    if (product.owned) {
+    // For owned non-consumable/subscription products, trigger restore flow instead
+    // Consumables (like tips) can always be repurchased
+    if (product.owned && productId !== PRODUCTS.TIP) {
       try {
         await this.restorePurchases();
         // If successful, the purchase is already active

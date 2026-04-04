@@ -23,6 +23,9 @@ import ProfileModal from '@/components/admin/team/ProfileModal';
 import authService from '@/services/auth.service';
 import logger from '@/lib/logger';
 import { ASSET_VERSION } from '@/lib/constants';
+import useAdminFeedbackCounts from '@/hooks/useAdminFeedbackCounts';
+import useAdminKeyboardShortcuts from '@/hooks/useAdminKeyboardShortcuts';
+import KeyboardShortcutHelp from '@/components/admin/KeyboardShortcutHelp';
 
 // Tab definitions with minimum role required
 const ALL_TABS = [
@@ -30,10 +33,10 @@ const ALL_TABS = [
   { id: 'elements', label: 'Elements', minRole: 'editor' },
   { id: 'feedback', label: 'Feedback', hasBadge: true, minRole: 'admin' },
   { id: 'avatars', label: 'Avatars', minRole: 'admin' },
-  { id: 'leaderboards', label: 'Leaderboards', minRole: 'admin' },
   { id: 'users', label: 'Users', minRole: 'admin' },
   { id: 'announcements', label: 'Announce', minRole: 'admin' },
   { id: 'email', label: 'Email', minRole: 'admin' },
+  { id: 'leaderboards', label: 'Leaderboards', minRole: 'admin' },
   { id: 'analytics', label: 'Analytics', minRole: 'editor' },
   { id: 'team', label: 'Team', minRole: 'admin' },
 ];
@@ -44,7 +47,7 @@ export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState('calendar');
   const [calendarSubTab, setCalendarSubTab] = useState('calendar'); // 'calendar', 'themes'
   const [showBulkImport, setShowBulkImport] = useState(false);
-  const [feedbackCounts, setFeedbackCounts] = useState(null);
+  const { counts: feedbackCounts, updateCounts: setFeedbackCounts } = useAdminFeedbackCounts();
   const [showProfileModal, setShowProfileModal] = useState(false);
 
   const currentUser = authService.getCurrentUser();
@@ -80,6 +83,10 @@ export default function AdminDashboard() {
 
   // Calendar refresh function reference
   const refreshCalendarRef = useRef(null);
+  const calendarRef = useRef(null);
+
+  // Keyboard shortcut state
+  const [showShortcutHelp, setShowShortcutHelp] = useState(false);
 
   // Handle date selection from unified calendar
   const handleDateSelect = (date, puzzles) => {
@@ -291,19 +298,25 @@ export default function AdminDashboard() {
       case 'mini':
         return (
           <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <Image src="/ui/games/mini.png" alt="" width={24} height={24} />
-                <h3 className="text-base sm:text-lg font-bold text-text-primary">
+            <div className="flex items-center justify-between gap-2">
+              <div className="flex items-center gap-3 min-w-0">
+                <Image
+                  src="/ui/games/mini.png"
+                  alt=""
+                  width={24}
+                  height={24}
+                  className="flex-shrink-0"
+                />
+                <h3 className="text-base sm:text-lg font-bold text-text-primary truncate">
                   {editingPuzzle ? 'Edit' : 'Create'} Daily Mini Puzzle
                 </h3>
               </div>
               {editingPuzzle && (
                 <button
                   onClick={() => handleDeleteMiniPuzzle(editingPuzzle.id)}
-                  className="px-4 py-2 bg-accent-red text-white font-bold rounded-xl active:translate-y-0 transition-transform dark:"
+                  className="px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm bg-accent-red text-white font-bold rounded-xl active:translate-y-0 transition-transform whitespace-nowrap flex-shrink-0"
                 >
-                  Delete Puzzle
+                  Delete
                 </button>
               )}
             </div>
@@ -320,19 +333,25 @@ export default function AdminDashboard() {
       case 'reel':
         return (
           <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <Image src="/ui/games/movie.png" alt="" width={24} height={24} />
-                <h3 className="text-base sm:text-lg font-bold text-text-primary">
+            <div className="flex items-center justify-between gap-2">
+              <div className="flex items-center gap-3 min-w-0">
+                <Image
+                  src="/ui/games/movie.png"
+                  alt=""
+                  width={24}
+                  height={24}
+                  className="flex-shrink-0"
+                />
+                <h3 className="text-base sm:text-lg font-bold text-text-primary truncate">
                   {editingPuzzle ? 'Edit' : 'Create'} Reel Connections Puzzle
                 </h3>
               </div>
               {editingPuzzle && (
                 <button
                   onClick={() => handleDeleteReelPuzzle(editingPuzzle.id)}
-                  className="px-4 py-2 bg-accent-red text-white font-bold rounded-xl active:translate-y-0 transition-transform dark:"
+                  className="px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm bg-accent-red text-white font-bold rounded-xl active:translate-y-0 transition-transform whitespace-nowrap flex-shrink-0"
                 >
-                  Delete Puzzle
+                  Delete
                 </button>
               )}
             </div>
@@ -350,24 +369,25 @@ export default function AdminDashboard() {
       case 'soup':
         return (
           <div className="space-y-4 overflow-visible">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
+            <div className="flex items-center justify-between gap-2">
+              <div className="flex items-center gap-3 min-w-0">
                 <Image
                   src={`/ui/games/daily-alchemy.png?v=${ASSET_VERSION}`}
                   alt=""
                   width={24}
                   height={24}
+                  className="flex-shrink-0"
                 />
-                <h3 className="text-base sm:text-lg font-bold text-text-primary">
+                <h3 className="text-base sm:text-lg font-bold text-text-primary truncate">
                   {editingPuzzle ? 'Edit' : 'Create'} Daily Alchemy Puzzle
                 </h3>
               </div>
               {editingPuzzle?.id && (
                 <button
                   onClick={() => handleDeleteSoupPuzzle(editingPuzzle.id)}
-                  className="px-4 py-2 bg-accent-red text-white font-bold rounded-xl active:translate-y-0 transition-transform dark:"
+                  className="px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm bg-accent-red text-white font-bold rounded-xl active:translate-y-0 transition-transform whitespace-nowrap flex-shrink-0"
                 >
-                  Delete Puzzle
+                  Delete
                 </button>
               )}
             </div>
@@ -386,24 +406,50 @@ export default function AdminDashboard() {
     }
   };
 
-  const handleTabClick = (tabId) => {
+  const handleTabClick = useCallback((tabId) => {
     setActiveTab(tabId);
     if (tabId === 'calendar') {
       setActiveEditor(null);
     }
-  };
+  }, []);
+
+  // Create puzzle for today via keyboard shortcut
+  const handleCreateToday = useCallback(() => {
+    if (activeTab !== 'calendar') return;
+    const ref = calendarRef.current;
+    if (!ref) return;
+    const todayKey = ref.getTodayDateKey();
+    const puzzles = ref.getPuzzleData();
+    setSelectedDate(todayKey);
+    setSelectedDatePuzzles(puzzles[todayKey] || {});
+    setShowGameSelector(true);
+  }, [activeTab]);
+
+  const toggleShortcutHelp = useCallback(() => setShowShortcutHelp((prev) => !prev), []);
+
+  useAdminKeyboardShortcuts({
+    tabs: TABS,
+    activeTab,
+    onTabChange: handleTabClick,
+    calendarRef,
+    activeEditor,
+    onCreateToday: handleCreateToday,
+    onCloseEditor: handleCloseEditor,
+    showHelp: showShortcutHelp,
+    onToggleHelp: toggleShortcutHelp,
+  });
 
   return (
     <div className="px-2 py-3 sm:px-4 sm:py-4 md:px-6 md:py-5">
       {/* Tabs */}
-      <div className="border-b border-border-light">
+      <div className="border-b border-border-light overflow-x-auto hide-scrollbar">
         <nav className="-mb-px flex gap-1">
-          {TABS.map((tab) => (
+          {TABS.map((tab, idx) => (
             <button
               key={tab.id}
               onClick={() => handleTabClick(tab.id)}
               className={`
-                relative py-2.5 px-4 text-sm font-semibold whitespace-nowrap transition-colors
+                relative py-2.5 px-3 sm:px-4 text-xs sm:text-sm font-semibold whitespace-nowrap transition-colors flex-shrink-0 group
                 ${
                   activeTab === tab.id
                     ? 'border-b-2 border-text-primary text-text-primary'
@@ -411,6 +457,9 @@ export default function AdminDashboard() {
                 }
               `}
             >
+              <span className="hidden sm:inline-block w-4 mr-1 text-[10px] font-bold text-text-muted opacity-0 group-hover:opacity-100 transition-opacity">
+                {idx < 9 ? idx + 1 : idx === 9 ? 0 : ''}
+              </span>
               {tab.label}
               {tab.hasBadge && feedbackCounts?.new > 0 && (
                 <span className="absolute -top-0.5 -right-0.5 flex items-center justify-center min-w-[18px] h-[18px] px-1 bg-accent-red text-white text-[10px] font-bold rounded-full">
@@ -449,6 +498,7 @@ export default function AdminDashboard() {
               </div>
             ) : (
               <UnifiedPuzzleCalendar
+                ref={calendarRef}
                 onSelectDate={handleDateSelect}
                 onRefresh={(fn) => {
                   refreshCalendarRef.current = fn;
@@ -572,6 +622,18 @@ export default function AdminDashboard() {
 
       {/* Profile modal */}
       {showProfileModal && <ProfileModal onClose={() => setShowProfileModal(false)} />}
+
+      {/* Keyboard shortcut help overlay */}
+      {showShortcutHelp && <KeyboardShortcutHelp onClose={toggleShortcutHelp} />}
+
+      {/* Keyboard shortcut hint button */}
+      <button
+        onClick={toggleShortcutHelp}
+        className="fixed bottom-4 right-4 w-8 h-8 flex items-center justify-center rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-400 hover:text-gray-600 text-sm font-bold border border-gray-200 transition-colors z-40"
+        title="Keyboard shortcuts (?)"
+      >
+        ?
+      </button>
     </div>
   );
 }

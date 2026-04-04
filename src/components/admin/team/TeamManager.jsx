@@ -123,10 +123,10 @@ export default function TeamManager() {
         {isAdmin && (
           <button
             onClick={() => setShowInvite(true)}
-            className="flex items-center gap-2 px-4 py-2 bg-accent-blue text-white font-bold rounded-xl text-sm transition-transform active:translate-y-0"
+            className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-accent-blue text-white font-bold rounded-xl text-xs sm:text-sm transition-transform active:translate-y-0 whitespace-nowrap flex-shrink-0"
           >
             <UserPlus className="w-4 h-4" />
-            Invite Member
+            Invite
           </button>
         )}
       </div>
@@ -160,7 +160,7 @@ export default function TeamManager() {
             >
               <Icon className="w-3.5 h-3.5 text-text-muted" />
               <span className="text-xs font-semibold text-text-secondary">{cfg.label}</span>
-              <span className="text-[10px] text-text-muted">
+              <span className="text-[10px] text-text-muted hidden sm:inline">
                 {key === 'owner' && '- Full access'}
                 {key === 'admin' && '- Manage content & editors'}
                 {key === 'editor' && '- Create & edit puzzles'}
@@ -183,7 +183,7 @@ export default function TeamManager() {
           return (
             <div
               key={user.id}
-              className={`flex items-center gap-4 p-4 bg-bg-surface rounded-xl border border-border-light ${
+              className={`flex items-center gap-3 sm:gap-4 p-3 sm:p-4 bg-bg-surface rounded-xl border border-border-light ${
                 !user.is_active ? 'opacity-50' : ''
               }`}
             >
@@ -211,7 +211,7 @@ export default function TeamManager() {
 
               {/* Info */}
               <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 flex-wrap">
                   <p className="text-sm font-bold text-text-primary truncate">
                     {user.full_name}
                     {isSelf && (
@@ -221,35 +221,32 @@ export default function TeamManager() {
                     )}
                   </p>
                   <span
-                    className={`inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-bold rounded-full uppercase tracking-wider ${roleConfig.color}`}
+                    className={`inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-bold rounded-full uppercase tracking-wider flex-shrink-0 ${roleConfig.color}`}
                   >
                     <RoleIcon className="w-2.5 h-2.5" />
                     {roleConfig.label}
                   </span>
                   {!user.is_active && (
-                    <span className="px-2 py-0.5 text-[10px] font-bold rounded-full bg-bg-card text-text-muted uppercase">
+                    <span className="px-2 py-0.5 text-[10px] font-bold rounded-full bg-bg-card text-text-muted uppercase flex-shrink-0">
                       Inactive
                     </span>
                   )}
                 </div>
-                <div className="flex items-center gap-3 mt-0.5">
-                  <p className="text-xs text-text-muted truncate">{user.email}</p>
-                  <span className="text-[10px] text-text-muted">@{user.username}</span>
-                </div>
-                <p className="text-[10px] text-text-muted mt-0.5">
+                <p className="text-xs text-text-muted truncate mt-0.5">{user.email}</p>
+                <p className="text-[10px] text-text-muted mt-0.5 hidden sm:block">
                   Last login: {formatDate(user.last_login_at)}
                 </p>
               </div>
 
               {/* Actions */}
               {canEdit && !isSelf && (
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
                   {/* Role change dropdown for owners */}
                   {isOwner && user.role !== 'owner' && (
                     <select
                       value={user.role}
                       onChange={(e) => handleRoleChange(user, e.target.value)}
-                      className="px-2 py-1 text-xs bg-bg-card border border-border-main rounded-lg font-semibold text-text-primary"
+                      className="px-1.5 sm:px-2 py-1 text-xs bg-bg-card border border-border-main rounded-lg font-semibold text-text-primary"
                     >
                       <option value="editor">Editor</option>
                       <option value="admin">Admin</option>
@@ -257,7 +254,7 @@ export default function TeamManager() {
                   )}
                   <button
                     onClick={() => handleToggleActive(user)}
-                    className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-colors ${
+                    className={`px-2 sm:px-3 py-1.5 text-xs font-bold rounded-lg transition-colors whitespace-nowrap ${
                       user.is_active
                         ? 'bg-accent-red/10 text-accent-red hover:bg-accent-red/20'
                         : 'bg-accent-green/10 text-accent-green hover:bg-accent-green/20'
@@ -327,7 +324,7 @@ function InviteModal({ onClose, onSuccess, canInviteAdmin }) {
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
       <div className="bg-bg-card rounded-2xl w-full max-w-md">
-        <div className="px-6 py-4 border-b border-border-light flex items-center justify-between">
+        <div className="px-4 sm:px-6 py-3 sm:py-4 border-b border-border-light flex items-center justify-between">
           <h3 className="text-base font-bold text-text-primary">Invite Team Member</h3>
           <button
             onClick={onClose}
@@ -338,12 +335,12 @@ function InviteModal({ onClose, onSuccess, canInviteAdmin }) {
         </div>
 
         {error && (
-          <div className="mx-6 mt-4 p-3 bg-accent-red/10 rounded-lg">
+          <div className="mx-4 sm:mx-6 mt-4 p-3 bg-accent-red/10 rounded-lg">
             <p className="text-accent-red text-sm font-semibold">{error}</p>
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="p-6 space-y-4">
+        <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-4">
           <div>
             <label className="block text-xs font-bold text-text-primary mb-1.5">Full Name</label>
             <input
@@ -425,7 +422,7 @@ function InviteModal({ onClose, onSuccess, canInviteAdmin }) {
               disabled={loading}
               className="flex-1 px-4 py-2.5 text-sm font-bold bg-accent-blue text-white rounded-xl disabled:opacity-50 transition-transform active:translate-y-0"
             >
-              {loading ? 'Creating...' : 'Create & Invite'}
+              {loading ? 'Creating...' : 'Create'}
             </button>
           </div>
         </form>

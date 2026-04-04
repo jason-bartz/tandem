@@ -29,7 +29,8 @@ export default function BotLeaderboardManager() {
     reel_max_score: 300,
     soup_min_score: 65,
     soup_max_score: 400,
-    spread_throughout_day: true,
+    releases_per_day: 6,
+    first_release_hour: 6,
   });
 
   useEffect(() => {
@@ -63,7 +64,8 @@ export default function BotLeaderboardManager() {
           reel_max_score: data.config.reel_max_score,
           soup_min_score: data.config.soup_min_score || 65,
           soup_max_score: data.config.soup_max_score || 400,
-          spread_throughout_day: data.config.spread_throughout_day,
+          releases_per_day: data.config.releases_per_day ?? 6,
+          first_release_hour: data.config.first_release_hour ?? 6,
         });
       } else if (response.status === 401) {
         showMessage('Authentication expired - please log in again at /admin/login', 'error');
@@ -157,14 +159,14 @@ export default function BotLeaderboardManager() {
     <div className="space-y-6">
       {/* Header */}
       <div className="bg-bg-surface rounded-lg dark:">
-        <div className="px-6 py-4 border-b border-border-light">
+        <div className="px-4 sm:px-6 py-3 sm:py-4 border-b border-border-light">
           <div className="flex items-center gap-3">
             <Image src="/ui/shared/leaderboard-admin.png" alt="" width={24} height={24} />
             <h3 className="text-lg font-bold text-text-primary">Leaderboards Manager</h3>
           </div>
         </div>
 
-        <div className="p-6 space-y-6">
+        <div className="p-4 sm:p-6 space-y-6">
           {/* Message */}
           {message && (
             <div
@@ -217,17 +219,78 @@ export default function BotLeaderboardManager() {
               />
             </div>
 
-            <div className="flex items-center gap-2">
-              <input
-                type="checkbox"
-                id="spread"
-                checked={formData.spread_throughout_day}
-                onChange={(e) => handleInputChange('spread_throughout_day', e.target.checked)}
-                className="w-5 h-5 rounded"
-              />
-              <label htmlFor="spread" className="text-sm font-medium text-text-primary">
-                Spread scores throughout the day (vs. clustered at puzzle release)
+            <div>
+              <label className="block text-sm font-medium text-text-primary mb-2">
+                Releases Per Day
               </label>
+              <input
+                type="number"
+                value={formData.releases_per_day}
+                onChange={(e) =>
+                  handleInputChange(
+                    'releases_per_day',
+                    Math.max(1, Math.min(12, parseInt(e.target.value) || 1))
+                  )
+                }
+                className="w-full px-3 py-2 rounded-lg bg-bg-surface text-text-primary font-medium focus:outline-none focus:ring-2 focus:ring-accent-blue"
+                min="1"
+                max="12"
+              />
+              <p className="text-xs text-text-secondary mt-1">
+                Number of waves bots are released in (1-12)
+              </p>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-text-primary mb-2">
+                First Release Hour (ET)
+              </label>
+              <input
+                type="number"
+                value={formData.first_release_hour}
+                onChange={(e) =>
+                  handleInputChange(
+                    'first_release_hour',
+                    Math.max(0, Math.min(23, parseInt(e.target.value) || 0))
+                  )
+                }
+                className="w-full px-3 py-2 rounded-lg bg-bg-surface text-text-primary font-medium focus:outline-none focus:ring-2 focus:ring-accent-blue"
+                min="0"
+                max="23"
+              />
+              <p className="text-xs text-text-secondary mt-1">
+                Hour in Eastern Time when first wave releases (0-23)
+              </p>
+            </div>
+
+            {/* Wave schedule preview */}
+            <div className="bg-bg-surface rounded-lg p-3">
+              <p className="text-xs font-bold text-text-secondary mb-2 uppercase tracking-wide">
+                Release Schedule Preview (ET)
+              </p>
+              <div className="flex flex-wrap gap-2">
+                {(() => {
+                  const releases = Math.max(1, Math.min(12, formData.releases_per_day || 6));
+                  const first = Math.max(0, Math.min(23, formData.first_release_hour ?? 6));
+                  const hoursLeft = 24 - first;
+                  const interval = hoursLeft / releases;
+                  return Array.from({ length: releases }, (_, i) => {
+                    const hour = first + i * interval;
+                    const h = Math.floor(hour);
+                    const m = Math.round((hour - h) * 60);
+                    const period = h >= 12 ? 'PM' : 'AM';
+                    const h12 = h === 0 ? 12 : h > 12 ? h - 12 : h;
+                    return (
+                      <span
+                        key={i}
+                        className="px-2 py-1 bg-accent-blue/10 text-accent-blue text-xs font-bold rounded-md"
+                      >
+                        {h12}:{m.toString().padStart(2, '0')} {period}
+                      </span>
+                    );
+                  });
+                })()}
+              </div>
             </div>
           </div>
 
@@ -309,7 +372,7 @@ export default function BotLeaderboardManager() {
             <button
               onClick={handleSave}
               disabled={saving}
-              className="px-6 py-3 bg-accent-blue text-white font-bold rounded-xl active:translate-y-0 transition-transform dark: disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-4 sm:px-6 py-2.5 sm:py-3 text-sm sm:text-base bg-accent-blue text-white font-bold rounded-xl active:translate-y-0 transition-transform disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
             >
               {saving ? 'Saving...' : 'Save'}
             </button>
@@ -317,7 +380,7 @@ export default function BotLeaderboardManager() {
             <button
               onClick={handleGenerate}
               disabled={generating || !formData.enabled}
-              className="px-6 py-3 bg-accent-green text-white font-bold rounded-xl active:translate-y-0 transition-transform dark: disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-4 sm:px-6 py-2.5 sm:py-3 text-sm sm:text-base bg-accent-green text-white font-bold rounded-xl active:translate-y-0 transition-transform disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
             >
               {generating ? 'Running...' : 'Run Now'}
             </button>

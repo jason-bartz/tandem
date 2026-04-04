@@ -192,7 +192,7 @@ export default function ProfileModal({ onClose }) {
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
       <div className="bg-bg-card rounded-2xl w-full max-w-lg max-h-[90vh] flex flex-col">
-        <div className="px-6 py-4 border-b border-border-light flex items-center justify-between">
+        <div className="px-4 sm:px-6 py-3 sm:py-4 border-b border-border-light flex items-center justify-between">
           <h3 className="text-base font-bold text-text-primary">Profile & Settings</h3>
           <button
             onClick={onClose}
@@ -204,12 +204,12 @@ export default function ProfileModal({ onClose }) {
 
         <div className="flex-1 overflow-y-auto">
           {loading ? (
-            <div className="p-6 space-y-4">
+            <div className="p-4 sm:p-6 space-y-4">
               <div className="h-16 bg-bg-surface rounded-lg" />
               <div className="h-32 bg-bg-surface rounded-lg" />
             </div>
           ) : (
-            <div className="p-6 space-y-6">
+            <div className="p-4 sm:p-6 space-y-6">
               {/* User card */}
               <div className="flex items-center gap-4 p-4 bg-bg-surface rounded-xl">
                 <div className="w-12 h-12 rounded-full overflow-hidden bg-accent-blue/10 flex items-center justify-center flex-shrink-0">

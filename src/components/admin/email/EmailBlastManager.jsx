@@ -397,7 +397,7 @@ export default function EmailBlastManager() {
                 <div key={blast.id} className="p-4 hover:bg-bg-card/50 transition-colors">
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-1">
+                      <div className="flex items-center gap-2 mb-1 flex-wrap">
                         <span
                           className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase ${STATUS_STYLES[blast.status]}`}
                         >
@@ -426,7 +426,7 @@ export default function EmailBlastManager() {
                       <p className="text-xs text-text-secondary mt-0.5 line-clamp-1">
                         {blast.body}
                       </p>
-                      <div className="flex items-center gap-3 mt-2 text-xs text-text-muted">
+                      <div className="flex items-center gap-3 mt-2 text-xs text-text-muted flex-wrap">
                         <span>
                           {blast.recipient_type === 'all'
                             ? 'All users'
@@ -534,37 +534,37 @@ export default function EmailBlastManager() {
       )}
 
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
         <button
           onClick={handleBackToList}
-          className="flex items-center gap-2 text-sm font-semibold text-text-secondary hover:text-text-primary transition-colors"
+          className="flex items-center gap-2 text-sm font-semibold text-text-secondary hover:text-text-primary transition-colors whitespace-nowrap"
         >
           <ArrowLeft size={16} />
-          Back to History
+          Back
         </button>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 w-full sm:w-auto">
           <button
             onClick={() => handleSubmit('draft')}
             disabled={saving || !subject.trim() || !body.trim()}
-            className="px-4 py-2 rounded-lg text-sm font-bold bg-bg-surface text-text-primary border border-border-main hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+            className="flex-1 sm:flex-none px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-bold bg-bg-surface text-text-primary border border-border-main hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors whitespace-nowrap"
           >
-            Save Draft
+            Draft
           </button>
           <button
             onClick={() => handleSubmit('schedule')}
             disabled={saving || !subject.trim() || !body.trim() || !scheduledAt}
-            className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-bold bg-accent-blue text-white hover:bg-accent-blue/90 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+            className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-bold bg-accent-blue text-white hover:bg-accent-blue/90 disabled:opacity-40 disabled:cursor-not-allowed transition-colors whitespace-nowrap"
           >
-            <Clock size={14} />
+            <Clock size={14} className="hidden sm:block" />
             Schedule
           </button>
           <button
             onClick={() => handleSubmit('send')}
             disabled={saving || !subject.trim() || !body.trim()}
-            className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-bold bg-accent-green text-white hover:bg-accent-green/90 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+            className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-bold bg-accent-green text-white hover:bg-accent-green/90 disabled:opacity-40 disabled:cursor-not-allowed transition-colors whitespace-nowrap"
           >
-            <Send size={14} />
-            Send Now
+            <Send size={14} className="hidden sm:block" />
+            Send
           </button>
         </div>
       </div>
@@ -612,7 +612,7 @@ Use blank lines for paragraph breaks."
             <label className="block text-xs font-bold text-text-secondary uppercase tracking-wider">
               Button (Optional)
             </label>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <input
                 type="text"
                 value={buttonText}

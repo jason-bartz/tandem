@@ -27,7 +27,7 @@ async function getOverviewMetrics(supabase) {
   const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString();
   const weekStart = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 7).toISOString();
 
-  const [totalResult, newTodayResult, newWeekResult] = await Promise.all([
+  const [totalResult, newTodayResult, newWeekResult, countriesResult] = await Promise.all([
     supabase.from('users').select('id', { count: 'exact', head: true }),
     supabase
       .from('users')
@@ -37,13 +37,55 @@ async function getOverviewMetrics(supabase) {
       .from('users')
       .select('id', { count: 'exact', head: true })
       .gte('created_at', weekStart),
+    supabase.from('users').select('country_code').not('country_code', 'is', null),
   ]);
+
+  // Count unique countries
+  const uniqueCountries = new Set(
+    (countriesResult.data || []).map((u) => u.country_code).filter(Boolean)
+  ).size;
 
   return {
     totalUsers: totalResult.count || 0,
     newToday: newTodayResult.count || 0,
     newThisWeek: newWeekResult.count || 0,
+    uniqueCountries,
   };
+}
+
+/**
+ * Get active games for a batch of user IDs.
+ * Returns a map of userId -> array of game keys they've played.
+ */
+async function getActiveGamesForUsers(supabase, userIds) {
+  if (!userIds.length) return new Map();
+
+  const [tandemStats, miniStats, reelStats, alchemyStats] = await Promise.all([
+    supabase.from('user_stats').select('user_id').in('user_id', userIds),
+    supabase.from('mini_user_stats').select('user_id').in('user_id', userIds),
+    supabase.from('reel_user_stats').select('user_id').in('user_id', userIds),
+    supabase.from('element_soup_user_stats').select('user_id').in('user_id', userIds),
+  ]);
+
+  const gameMap = new Map();
+  for (const id of userIds) {
+    gameMap.set(id, []);
+  }
+
+  for (const row of tandemStats.data || []) {
+    gameMap.get(row.user_id)?.push('tandem');
+  }
+  for (const row of miniStats.data || []) {
+    gameMap.get(row.user_id)?.push('mini');
+  }
+  for (const row of reelStats.data || []) {
+    gameMap.get(row.user_id)?.push('reel');
+  }
+  for (const row of alchemyStats.data || []) {
+    gameMap.get(row.user_id)?.push('soup');
+  }
+
+  return gameMap;
 }
 
 export async function GET(request) {
@@ -93,9 +135,14 @@ export async function GET(request) {
       throw new Error('Failed to fetch users');
     }
 
+    // Fetch active games for all users on this page in one batch
+    const userIds = (users || []).map((u) => u.id);
+    const activeGamesMap = await getActiveGamesForUsers(supabase, userIds);
+
     // Enrich with auth data for this page
     const enrichedUsers = await Promise.all(
       (users || []).map(async (user) => {
+        const activeGames = activeGamesMap.get(user.id) || [];
         try {
           const { data: authData } = await supabase.auth.admin.getUserById(user.id);
           return {
@@ -108,6 +155,7 @@ export async function GET(request) {
             isAnonymous: authData?.user?.is_anonymous || false,
             createdAt: authData?.user?.created_at || user.created_at,
             lastSignInAt: authData?.user?.last_sign_in_at || null,
+            activeGames,
           };
         } catch {
           // If auth lookup fails, return what we have
@@ -121,6 +169,7 @@ export async function GET(request) {
             isAnonymous: false,
             createdAt: user.created_at,
             lastSignInAt: null,
+            activeGames,
           };
         }
       })

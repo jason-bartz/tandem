@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef, forwardRef, useImperativeHandle } from 'react';
 import Image from 'next/image';
 import authService from '@/services/auth.service';
 import { getHolidaysForMonth } from '@/lib/holidays';
@@ -82,7 +82,7 @@ const getWeekStart = (date) => {
   return d;
 };
 
-export default function UnifiedPuzzleCalendar({ onSelectDate, onRefresh }) {
+function UnifiedPuzzleCalendar({ onSelectDate, onRefresh }, ref) {
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [puzzleData, setPuzzleData] = useState({});
   const [loading, setLoading] = useState(true);
@@ -208,6 +208,24 @@ export default function UnifiedPuzzleCalendar({ onSelectDate, onRefresh }) {
     setCurrentWeekStart(getWeekStart(new Date()));
   };
 
+  // Expose imperative methods for keyboard shortcuts
+  useImperativeHandle(
+    ref,
+    () => ({
+      goToToday,
+      setViewMode: (mode) => {
+        setViewMode(mode);
+        if (mode === 'week') setShowMonthPicker(false);
+      },
+      getTodayDateKey: () => {
+        const d = new Date();
+        return formatDateKey(d.getFullYear(), d.getMonth(), d.getDate());
+      },
+      getPuzzleData: () => puzzleData,
+    }),
+    [puzzleData]
+  );
+
   // Week navigation
   const goToPreviousWeek = useCallback(() => {
     setCurrentWeekStart((prev) => {
@@ -225,17 +243,19 @@ export default function UnifiedPuzzleCalendar({ onSelectDate, onRefresh }) {
     });
   }, []);
 
-  // Arrow key navigation for week view
+  // Arrow key navigation for week and month views
   useEffect(() => {
-    if (viewMode !== 'week') return;
-
     const handleKeyDown = (e) => {
+      // Don't intercept when typing in form fields
+      const tag = e.target.tagName;
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+
       if (e.key === 'ArrowLeft') {
         e.preventDefault();
-        goToPreviousWeek();
+        viewMode === 'week' ? goToPreviousWeek() : goToPreviousMonth();
       } else if (e.key === 'ArrowRight') {
         e.preventDefault();
-        goToNextWeek();
+        viewMode === 'week' ? goToNextWeek() : goToNextMonth();
       }
     };
 
@@ -790,15 +810,17 @@ export default function UnifiedPuzzleCalendar({ onSelectDate, onRefresh }) {
                     {monthNames[dayInfo.month].slice(0, 3)}
                   </span>
 
-                  {/* Holiday indicator */}
-                  {dayInfo.holiday && (
-                    <div className="flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-accent-orange/10 max-w-full">
-                      <span className="text-xs">{dayInfo.holidayEmoji}</span>
-                      <span className="hidden sm:inline text-[10px] font-medium text-accent-orange truncate">
-                        {dayInfo.holiday}
-                      </span>
-                    </div>
-                  )}
+                  {/* Holiday indicator - fixed height slot for consistent alignment */}
+                  <div className="h-5 flex items-center justify-center max-w-full">
+                    {dayInfo.holiday && (
+                      <div className="flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-accent-orange/10 max-w-full">
+                        <span className="text-xs">{dayInfo.holidayEmoji}</span>
+                        <span className="hidden sm:inline text-[10px] font-medium text-accent-orange truncate">
+                          {dayInfo.holiday}
+                        </span>
+                      </div>
+                    )}
+                  </div>
 
                   {/* Game indicators */}
                   <div className="flex flex-col gap-1.5 mt-1">
@@ -844,3 +866,5 @@ export default function UnifiedPuzzleCalendar({ onSelectDate, onRefresh }) {
     </div>
   );
 }
+
+export default forwardRef(UnifiedPuzzleCalendar);
