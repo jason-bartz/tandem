@@ -132,6 +132,7 @@ export async function GET(request) {
           alchemyUsers: new Set(),
           tandemUsers: new Set(),
           reelUsers: new Set(),
+          signupUsers: new Set(),
           newUsers: 0,
           firstDiscoveries: 0,
         };
@@ -175,11 +176,12 @@ export async function GET(request) {
       }
     }
 
-    // Process new users
+    // Process new users (include in active players on signup day)
     for (const row of userRows) {
       const date = row.created_at.split('T')[0];
       const day = ensureDay(date);
       day.newUsers++;
+      day.signupUsers.add(row.id);
     }
 
     // Process first discoveries
@@ -205,6 +207,7 @@ export async function GET(request) {
           ...day.alchemyUsers,
           ...day.tandemUsers,
           ...day.reelUsers,
+          ...day.signupUsers,
         ]).size,
         newUsers: day.newUsers,
         firstDiscoveries: day.firstDiscoveries,
