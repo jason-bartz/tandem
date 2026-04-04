@@ -18,6 +18,7 @@ import AnnouncementManager from '@/components/admin/AnnouncementManager';
 import EmailBlastManager from '@/components/admin/email/EmailBlastManager';
 import AnalyticsDashboard from '@/components/admin/AnalyticsDashboard';
 import TeamManager from '@/components/admin/team/TeamManager';
+import PuzzleAlertSettings from '@/components/admin/PuzzleAlertSettings';
 import ProfileModal from '@/components/admin/team/ProfileModal';
 import authService from '@/services/auth.service';
 import logger from '@/lib/logger';
@@ -25,6 +26,7 @@ import { ASSET_VERSION } from '@/lib/constants';
 import useAdminFeedbackCounts from '@/hooks/useAdminFeedbackCounts';
 import useAdminKeyboardShortcuts from '@/hooks/useAdminKeyboardShortcuts';
 import KeyboardShortcutHelp from '@/components/admin/KeyboardShortcutHelp';
+import SuggestionReviewQueue from '@/components/admin/SuggestionReviewQueue';
 
 import {
   CalendarDays,
@@ -37,6 +39,7 @@ import {
   BarChart3,
   ShieldCheck,
   Keyboard,
+  BellRing,
 } from 'lucide-react';
 
 // Tab definitions with minimum role required
@@ -49,6 +52,7 @@ const ALL_TABS = [
   { id: 'email', label: 'Email', icon: Mail, minRole: 'admin' },
   { id: 'milestones', label: 'Milestones', icon: Flag, minRole: 'admin' },
   { id: 'analytics', label: 'Analytics', icon: BarChart3, minRole: 'editor' },
+  { id: 'alerts', label: 'Alerts', icon: BellRing, minRole: 'admin' },
   { id: 'team', label: 'Team', icon: ShieldCheck, minRole: 'admin' },
 ];
 
@@ -86,6 +90,13 @@ export default function AdminDashboard() {
 
   // Connections modal state (for viewing connections while in reel editor)
   const [showConnectionsModal, setShowConnectionsModal] = useState(false);
+
+  // Suggestion review state
+  const [suggestionDate, setSuggestionDate] = useState(() => {
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    return tomorrow.toISOString().split('T')[0];
+  });
 
   // Loading states for save operations
   const [miniLoading, setMiniLoading] = useState(false);
@@ -275,6 +286,70 @@ export default function AdminDashboard() {
     }
   };
 
+  // Handle selecting a suggestion — opens the appropriate editor pre-populated
+  const handleSelectSuggestion = useCallback((gameId, suggestion) => {
+    const data = suggestion.puzzle_data;
+    const date = suggestion.target_date;
+    setSelectedDate(date);
+    setCalendarSubTab('calendar');
+
+    switch (gameId) {
+      case 'tandem':
+        setEditingPuzzle({
+          date,
+          theme: data.theme,
+          puzzles: data.puzzles,
+          difficultyRating: data.difficultyRating,
+          difficultyFactors: data.difficultyFactors,
+        });
+        setActiveEditor('tandem');
+        break;
+
+      case 'mini':
+        setEditingPuzzle({
+          date,
+          grid: data.grid,
+          solution: data.solution,
+          words: data.words,
+          clues: data.clues,
+          // Mark as suggestion so editor knows not to look for an existing ID
+          _fromSuggestion: true,
+        });
+        setActiveEditor('mini');
+        break;
+
+      case 'soup':
+        setEditingPuzzle({
+          date,
+          target_element: data.targetElement,
+          target_emoji: data.targetEmoji,
+          par_moves: data.parMoves,
+          difficulty: data.difficulty,
+          solution_path: data.solutionPath,
+          _fromSuggestion: true,
+        });
+        setActiveEditor('soup');
+        break;
+
+      case 'reel':
+        setEditingPuzzle({
+          date,
+          groups: data.groups?.map((g, i) => ({
+            connection: g.connection,
+            difficulty: g.difficulty,
+            order: i + 1,
+            movies: (g.movies || []).map((m, j) => ({
+              ...m,
+              order: j + 1,
+            })),
+          })),
+          _fromSuggestion: true,
+        });
+        setActiveEditor('reel');
+        break;
+    }
+  }, []);
+
   // Render the appropriate editor based on activeEditor
   const renderEditor = () => {
     if (!activeEditor) return null;
@@ -282,7 +357,7 @@ export default function AdminDashboard() {
     switch (activeEditor) {
       case 'tandem':
         return (
-          <div className="bg-bg-surface rounded-lg dark:">
+          <div className="bg-bg-surface rounded-lg">
             <div className="px-3 sm:px-6 py-3 sm:py-4 border-b border-border-light">
               <div className="flex items-center gap-3">
                 <Image src="/ui/games/tandem.png" alt="" width={24} height={24} />
@@ -528,12 +603,32 @@ export default function AdminDashboard() {
                   }}
                 />
               </div>
+            ) : calendarSubTab === 'suggestions' ? (
+              <div>
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-lg font-bold text-text-primary">Puzzle Suggestions</h3>
+                  <button
+                    onClick={() => setCalendarSubTab('calendar')}
+                    className="px-3 py-1.5 text-sm rounded-md font-semibold text-text-secondary bg-bg-surface hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+                  >
+                    Back to Calendar
+                  </button>
+                </div>
+                <SuggestionReviewQueue
+                  date={suggestionDate}
+                  onSelectSuggestion={handleSelectSuggestion}
+                />
+              </div>
             ) : (
               <UnifiedPuzzleCalendar
                 ref={calendarRef}
                 onSelectDate={handleDateSelect}
                 onRefresh={(fn) => {
                   refreshCalendarRef.current = fn;
+                }}
+                onOpenSuggestions={(date) => {
+                  setSuggestionDate(date);
+                  setCalendarSubTab('suggestions');
                 }}
               />
             )}
@@ -546,6 +641,7 @@ export default function AdminDashboard() {
         {activeTab === 'email' && <EmailBlastManager />}
         {activeTab === 'milestones' && <MilestoneTracker />}
         {activeTab === 'analytics' && <AnalyticsDashboard />}
+        {activeTab === 'alerts' && <PuzzleAlertSettings />}
         {activeTab === 'team' && <TeamManager />}
       </div>
 
@@ -580,6 +676,7 @@ export default function AdminDashboard() {
               <button
                 onClick={() => setShowThemesModal(false)}
                 className="p-2 hover:bg-bg-card rounded-lg transition-colors"
+                aria-label="Close theme tracker"
               >
                 <svg
                   className="w-5 h-5 text-text-primary"
@@ -621,6 +718,7 @@ export default function AdminDashboard() {
               <button
                 onClick={() => setShowConnectionsModal(false)}
                 className="p-2 hover:bg-bg-card rounded-lg transition-colors"
+                aria-label="Close connection tracker"
               >
                 <svg
                   className="w-5 h-5 text-text-primary"

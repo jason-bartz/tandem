@@ -8,6 +8,14 @@
     {
       "path": "/api/cron/send-scheduled-emails",
       "schedule": "*/10 * * * *"
+    },
+    {
+      "path": "/api/cron/puzzle-alerts",
+      "schedule": "0 * * * *"
+    },
+    {
+      "path": "/api/cron/generate-suggestions",
+      "schedule": "0 10 * * *"
     }
   ],
   "headers": [

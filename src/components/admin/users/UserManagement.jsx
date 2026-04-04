@@ -293,7 +293,7 @@ export default function UserManagement() {
 
   if (loading && users.length === 0) {
     return (
-      <div className="bg-bg-surface rounded-lg dark:">
+      <div className="bg-bg-surface rounded-lg">
         <div className="px-3 sm:px-6 py-3 sm:py-4 border-b border-border-light">
           <h2 className="text-lg font-bold text-text-primary">Users</h2>
         </div>
@@ -305,14 +305,14 @@ export default function UserManagement() {
   }
 
   return (
-    <div className="bg-bg-surface rounded-lg dark:">
+    <div className="bg-bg-surface rounded-lg">
       <div className="px-3 sm:px-6 py-3 sm:py-4 border-b border-border-light">
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-bold text-text-primary">Users</h2>
           <button
             onClick={handleExport}
             disabled={exporting}
-            className="px-3 py-1.5 bg-bg-card border border-border-main rounded-lg font-bold text-xs text-text-secondary hover:bg-bg-surface hover:dark:hover:border-white transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1.5"
+            className="px-3 py-1.5 bg-bg-card border border-border-main rounded-lg font-bold text-xs text-text-secondary hover:bg-bg-surface hover:border-gray-400 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1.5"
           >
             {exporting ? (
               <>

@@ -167,7 +167,7 @@ export default function AdminLayout({ children }) {
 
   return (
     <div className="admin-theme min-h-screen bg-ghost-white">
-      <nav className="bg-bg-surface border-b-[1.5px] dark:">
+      <nav className="bg-bg-surface border-b-[1.5px]">
         <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             {/* Left: Greeting */}
@@ -190,7 +190,7 @@ export default function AdminLayout({ children }) {
                 href="/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="hidden sm:inline-block px-3 py-1 text-sm bg-accent-blue text-white rounded-lg font-bold active:translate-y-0 transition-transform dark:"
+                className="hidden sm:inline-block px-3 py-1 text-sm bg-accent-blue text-white rounded-lg font-bold active:translate-y-0 transition-transform"
               >
                 View Game
               </a>

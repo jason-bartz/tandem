@@ -292,7 +292,7 @@ export default function UserDetailPanel({ user, onClose }) {
                   <button
                     onClick={handlePasswordReset}
                     disabled={resetting}
-                    className="w-full px-3 py-2 bg-accent-blue text-white font-bold text-sm rounded-xl active:translate-y-0 transition-transform dark: disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0"
+                    className="w-full px-3 py-2 bg-accent-blue text-white font-bold text-sm rounded-xl active:translate-y-0 transition-transform disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0"
                   >
                     {resetting ? 'Sending...' : 'Send Password Reset'}
                   </button>

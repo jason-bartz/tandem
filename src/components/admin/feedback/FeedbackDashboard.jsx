@@ -301,7 +301,7 @@ export default function FeedbackDashboard({ onCountsChange }) {
       )}
 
       {!loading && !hasFeedback && (
-        <div className="rounded-xl bg-ghost-white dark:bg-bg-surface dark: p-12 text-center">
+        <div className="rounded-xl bg-ghost-white dark:bg-bg-surface p-12 text-center">
           <div className="max-w-md mx-auto">
             <p className="text-sm font-bold text-gray-900 dark:text-gray-100 mb-2">
               No Feedback Found
@@ -321,7 +321,7 @@ export default function FeedbackDashboard({ onCountsChange }) {
           return (
             <div
               key={entry.id}
-              className={`rounded-xl bg-ghost-white dark:bg-bg-surface dark: overflow-hidden`}
+              className={`rounded-xl bg-ghost-white dark:bg-bg-surface overflow-hidden`}
             >
               {/* Compact Header */}
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 px-4 sm:px-5 py-3 bg-gray-100 dark:bg-gray-800 border-b border-border-light">

@@ -158,7 +158,7 @@ export default function BotLeaderboardManager() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="bg-bg-surface rounded-lg dark:">
+      <div className="bg-bg-surface rounded-lg">
         <div className="px-4 sm:px-6 py-3 sm:py-4 border-b border-border-light">
           <div className="flex items-center gap-3">
             <Image src="/ui/shared/leaderboard-admin.png" alt="" width={24} height={24} />

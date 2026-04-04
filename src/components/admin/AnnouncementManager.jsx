@@ -161,7 +161,7 @@ export default function AnnouncementManager() {
       )}
 
       {/* Create new announcement */}
-      <div className="bg-bg-surface rounded-lg dark:">
+      <div className="bg-bg-surface rounded-lg">
         <div className="px-4 py-3 border-b border-border-light">
           <h2 className="text-lg font-bold text-text-primary">Announcements</h2>
         </div>
@@ -180,7 +180,6 @@ export default function AnnouncementManager() {
               disabled={saving || !newText.trim()}
               className={`
                 self-end px-4 py-3 rounded-md font-bold text-sm
-                dark:
                 transition-all
                 ${
                   saving || !newText.trim()
@@ -197,7 +196,7 @@ export default function AnnouncementManager() {
       </div>
 
       {/* Existing announcements */}
-      <div className="bg-bg-surface rounded-lg dark:">
+      <div className="bg-bg-surface rounded-lg">
         <div className="px-4 py-3 border-b border-border-light">
           <h3 className="text-base font-bold text-text-primary">All Announcements</h3>
         </div>

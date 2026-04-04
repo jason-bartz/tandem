@@ -552,7 +552,7 @@ export default function ReelConnectionsPuzzleEditor({
   };
 
   return (
-    <div className="bg-bg-surface rounded-lg p-3 sm:p-4 dark:">
+    <div className="bg-bg-surface rounded-lg p-3 sm:p-4">
       <div className="flex justify-between items-start mb-4">
         <div className="flex-1">
           <div className="flex items-center gap-3 mb-1">

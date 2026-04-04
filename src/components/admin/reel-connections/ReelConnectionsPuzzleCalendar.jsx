@@ -175,7 +175,7 @@ export default function ReelConnectionsPuzzleCalendar({
   };
 
   return (
-    <div className="bg-bg-surface rounded-lg p-3 sm:p-6 dark:">
+    <div className="bg-bg-surface rounded-lg p-3 sm:p-6">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="relative">
@@ -195,7 +195,7 @@ export default function ReelConnectionsPuzzleCalendar({
           </button>
 
           {showMonthPicker && (
-            <div className="absolute top-full left-0 mt-2 bg-bg-surface rounded-lg p-4 z-50 w-72 sm:w-80 dark:">
+            <div className="absolute top-full left-0 mt-2 bg-bg-surface rounded-lg p-4 z-50 w-72 sm:w-80">
               <div className="grid grid-cols-3 gap-2 mb-4">
                 {[
                   'Jan',
@@ -240,11 +240,11 @@ export default function ReelConnectionsPuzzleCalendar({
                   }}
                   min="2024"
                   max="2030"
-                  className="flex-1 px-3 py-2 rounded text-center bg-bg-card text-text-primary font-bold dark:"
+                  className="flex-1 px-3 py-2 rounded text-center bg-bg-card text-text-primary font-bold"
                 />
                 <button
                   onClick={() => setShowMonthPicker(false)}
-                  className="px-4 py-2 bg-accent-green rounded text-white font-bold transition-transform dark:"
+                  className="px-4 py-2 bg-accent-green rounded text-white font-bold transition-transform"
                 >
                   Done
                 </button>
@@ -256,7 +256,7 @@ export default function ReelConnectionsPuzzleCalendar({
         <div className="flex items-center space-x-1 sm:space-x-2">
           <button
             onClick={goToToday}
-            className="px-2 sm:px-3 py-1 text-xs sm:text-sm bg-accent-red text-white rounded-lg font-bold transition-transform dark:"
+            className="px-2 sm:px-3 py-1 text-xs sm:text-sm bg-accent-red text-white rounded-lg font-bold transition-transform"
           >
             Today
           </button>

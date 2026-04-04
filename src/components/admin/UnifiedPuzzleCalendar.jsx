@@ -82,7 +82,7 @@ const getWeekStart = (date) => {
   return d;
 };
 
-function UnifiedPuzzleCalendar({ onSelectDate, onRefresh }, ref) {
+function UnifiedPuzzleCalendar({ onSelectDate, onRefresh, onOpenSuggestions }, ref) {
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [puzzleData, setPuzzleData] = useState({});
   const [loading, setLoading] = useState(true);
@@ -499,7 +499,7 @@ function UnifiedPuzzleCalendar({ onSelectDate, onRefresh }, ref) {
                     className={`px-2 py-1.5 text-xs font-bold rounded-lg border transition-all ${
                       index === currentMonth.getMonth()
                         ? 'bg-accent-yellow text-gray-900'
-                        : 'bg-bg-card border-border-main text-text-primary hover:dark:hover:border-white'
+                        : 'bg-bg-card border-border-main text-text-primary hover:border-gray-400'
                     }`}
                   >
                     {name.slice(0, 3)}
@@ -607,6 +607,23 @@ function UnifiedPuzzleCalendar({ onSelectDate, onRefresh }, ref) {
               Month
             </button>
           </div>
+
+          {/* Suggestions button */}
+          {onOpenSuggestions && (
+            <>
+              <div className="w-px h-5 bg-border-main mx-1" />
+              <button
+                onClick={() => {
+                  const tomorrow = new Date();
+                  tomorrow.setDate(tomorrow.getDate() + 1);
+                  onOpenSuggestions(tomorrow.toISOString().split('T')[0]);
+                }}
+                className="h-8 px-3 text-xs font-semibold rounded-md bg-flat-accent text-white hover:bg-flat-accent-hover transition-colors"
+              >
+                Suggestions
+              </button>
+            </>
+          )}
         </div>
       </div>
 

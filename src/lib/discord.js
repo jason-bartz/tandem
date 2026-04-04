@@ -264,6 +264,57 @@ export async function notifyMatchmakingMatched({ player1Username, player2Usernam
 }
 
 /**
+ * Send a missing puzzles alert notification
+ */
+export async function notifyMissingPuzzles({ missingByGame, webhookUrl }) {
+  if (!webhookUrl) {
+    logger.warn('Puzzle alert webhook URL not configured, skipping notification');
+    return;
+  }
+
+  const gameLabels = {
+    tandem: 'Daily Tandem',
+    mini: 'Daily Mini',
+    reel: 'Reel Connections',
+    soup: 'Daily Alchemy',
+  };
+
+  const gameEmojis = {
+    tandem: '\u{1F3B2}',
+    mini: '\u{1F4DD}',
+    reel: '\u{1F3AC}',
+    soup: '\u{1F9EA}',
+  };
+
+  const missingGames = Object.keys(missingByGame);
+  if (missingGames.length === 0) return;
+
+  // Get tomorrow's formatted date from the first entry
+  const tomorrowDate = Object.values(missingByGame)[0]?.[0];
+  const dateLabel = tomorrowDate
+    ? new Date(tomorrowDate + 'T00:00:00').toLocaleDateString('en-US', {
+        weekday: 'long',
+        month: 'short',
+        day: 'numeric',
+      })
+    : 'tomorrow';
+
+  const fields = missingGames.map((game) => ({
+    name: `${gameEmojis[game] || ''} ${gameLabels[game] || game}`,
+    value: 'Not created',
+    inline: true,
+  }));
+
+  await sendDiscordNotification({
+    title: `\u{26A0}\u{FE0F} ${missingGames.length} Missing Puzzle${missingGames.length === 1 ? '' : 's'} for ${dateLabel}`,
+    description: `The following puzzles still need to be created for tomorrow:`,
+    type: 'warning',
+    fields,
+    webhookUrl,
+  });
+}
+
+/**
  * Send a user feedback/bug report notification
  */
 export async function notifyUserFeedback({

@@ -151,7 +151,7 @@ export default function PuzzleCalendar({
             </button>
 
             {showMonthPicker && (
-              <div className="absolute top-full left-0 mt-2 bg-bg-surface rounded-lg p-4 z-50 w-72 sm:w-80 dark:">
+              <div className="absolute top-full left-0 mt-2 bg-bg-surface rounded-lg p-4 z-50 w-72 sm:w-80">
                 <div className="grid grid-cols-3 gap-2 mb-4">
                   {[
                     'Jan',
@@ -196,11 +196,11 @@ export default function PuzzleCalendar({
                     }}
                     min="2024"
                     max="2030"
-                    className="flex-1 px-3 py-2 rounded text-center bg-bg-card text-text-primary font-bold dark:"
+                    className="flex-1 px-3 py-2 rounded text-center bg-bg-card text-text-primary font-bold"
                   />
                   <button
                     onClick={() => setShowMonthPicker(false)}
-                    className="px-4 py-2 bg-accent-green rounded text-white font-bold transition-transform dark:"
+                    className="px-4 py-2 bg-accent-green rounded text-white font-bold transition-transform"
                   >
                     Done
                   </button>
@@ -212,7 +212,7 @@ export default function PuzzleCalendar({
           <div className="flex items-center space-x-1 sm:space-x-2">
             <button
               onClick={() => setCurrentMonth(new Date())}
-              className="px-2 sm:px-3 py-1 text-xs sm:text-sm bg-accent-blue text-white rounded-lg font-bold transition-transform dark:"
+              className="px-2 sm:px-3 py-1 text-xs sm:text-sm bg-accent-blue text-white rounded-lg font-bold transition-transform"
             >
               Today
             </button>
@@ -360,7 +360,7 @@ export default function PuzzleCalendar({
 
       {selectedPuzzle && (
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center p-3 sm:p-4 z-50">
-          <div className="bg-bg-surface rounded-lg p-4 sm:p-6 max-w-md w-full max-h-[90vh] overflow-y-auto dark:">
+          <div className="bg-bg-surface rounded-lg p-4 sm:p-6 max-w-md w-full max-h-[90vh] overflow-y-auto">
             <h3 className="text-base sm:text-lg font-bold text-text-primary mb-3 sm:mb-4">
               {selectedPuzzle.theme ? 'Puzzle Details' : 'No Puzzle'} -{' '}
               {formatDate(selectedPuzzle.date, 'short')}
@@ -379,7 +379,7 @@ export default function PuzzleCalendar({
                   {selectedPuzzle.puzzles.map((p, i) => (
                     <div
                       key={i}
-                      className="flex items-center space-x-3 sm:space-x-4 p-2 bg-bg-card rounded-lg dark:"
+                      className="flex items-center space-x-3 sm:space-x-4 p-2 bg-bg-card rounded-lg"
                     >
                       <span className="text-xl sm:text-2xl">{p.emoji}</span>
                       <span className="text-sm sm:text-base text-text-primary font-bold">
@@ -395,19 +395,19 @@ export default function PuzzleCalendar({
                       onEditPuzzle({ ...selectedPuzzle, date: selectedPuzzle.date });
                       setSelectedPuzzle(null);
                     }}
-                    className="w-full sm:w-auto px-4 py-2 text-sm sm:text-base bg-accent-blue text-white rounded-lg font-bold transition-transform dark:"
+                    className="w-full sm:w-auto px-4 py-2 text-sm sm:text-base bg-accent-blue text-white rounded-lg font-bold transition-transform"
                   >
                     Edit
                   </button>
                   <button
                     onClick={() => handleDeletePuzzle(selectedPuzzle.date)}
-                    className="w-full sm:w-auto px-4 py-2 text-sm sm:text-base bg-accent-red text-white rounded-lg font-bold transition-transform dark:"
+                    className="w-full sm:w-auto px-4 py-2 text-sm sm:text-base bg-accent-red text-white rounded-lg font-bold transition-transform"
                   >
                     Delete
                   </button>
                   <button
                     onClick={() => setSelectedPuzzle(null)}
-                    className="w-full sm:w-auto px-4 py-2 text-sm sm:text-base bg-bg-card text-text-primary rounded-lg font-bold hover:bg-text-muted/20 transition-colors dark:"
+                    className="w-full sm:w-auto px-4 py-2 text-sm sm:text-base bg-bg-card text-text-primary rounded-lg font-bold hover:bg-text-muted/20 transition-colors"
                   >
                     Close
                   </button>
@@ -424,13 +424,13 @@ export default function PuzzleCalendar({
                       onEditPuzzle({ date: selectedPuzzle.date });
                       setSelectedPuzzle(null);
                     }}
-                    className="flex-1 px-4 py-2 text-sm sm:text-base bg-accent-green text-white rounded-lg font-bold transition-transform dark:"
+                    className="flex-1 px-4 py-2 text-sm sm:text-base bg-accent-green text-white rounded-lg font-bold transition-transform"
                   >
                     Create Puzzle
                   </button>
                   <button
                     onClick={() => setSelectedPuzzle(null)}
-                    className="flex-1 px-4 py-2 text-sm sm:text-base bg-bg-card text-text-primary rounded-lg font-bold hover:bg-text-muted/20 transition-colors dark:"
+                    className="flex-1 px-4 py-2 text-sm sm:text-base bg-bg-card text-text-primary rounded-lg font-bold hover:bg-text-muted/20 transition-colors"
                   >
                     Close
                   </button>

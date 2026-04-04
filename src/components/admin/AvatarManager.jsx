@@ -256,7 +256,7 @@ export default function AvatarManager() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="bg-bg-surface rounded-lg dark:">
+      <div className="bg-bg-surface rounded-lg">
         <div className="px-6 py-4 border-b border-border-light">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -265,7 +265,7 @@ export default function AvatarManager() {
             </div>
             <button
               onClick={() => setShowUploadForm(true)}
-              className="px-2.5 py-1 text-xs bg-accent-green text-white font-bold rounded-md active:translate-y-0 transition-transform dark: whitespace-nowrap"
+              className="px-2.5 py-1 text-xs bg-accent-green text-white font-bold rounded-md active:translate-y-0 transition-transform whitespace-nowrap"
             >
               Add
             </button>
@@ -427,7 +427,7 @@ export default function AvatarManager() {
                     <button
                       onClick={handleUpload}
                       disabled={saving}
-                      className="flex-1 px-4 py-2 bg-accent-green text-white font-bold rounded-xl active:translate-y-0 transition-transform dark: disabled:opacity-50"
+                      className="flex-1 px-4 py-2 bg-accent-green text-white font-bold rounded-xl active:translate-y-0 transition-transform disabled:opacity-50"
                     >
                       {saving ? 'Creating...' : 'Create Avatar'}
                     </button>
@@ -516,7 +516,7 @@ export default function AvatarManager() {
                     <button
                       onClick={handleSaveEdit}
                       disabled={saving}
-                      className="flex-1 px-4 py-2 bg-accent-blue text-white font-bold rounded-xl active:translate-y-0 transition-transform dark: disabled:opacity-50"
+                      className="flex-1 px-4 py-2 bg-accent-blue text-white font-bold rounded-xl active:translate-y-0 transition-transform disabled:opacity-50"
                     >
                       {saving ? 'Saving...' : 'Save Changes'}
                     </button>
