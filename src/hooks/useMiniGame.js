@@ -761,6 +761,30 @@ export function useMiniGame(providedDate = null) {
     // Now transition to complete screen - stats are saved
     setGameState(MINI_GAME_STATES.COMPLETE);
 
+    // Save per-puzzle stats to database for analytics
+    if (currentPuzzleDate) {
+      try {
+        await capacitorFetch(getApiUrl('/api/mini/stats'), {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            puzzle_date: currentPuzzleDate,
+            completed: true,
+            time_taken: finalTime,
+            checks_used: checksUsed,
+            reveals_used: revealsUsed,
+            mistakes,
+            perfect_solve: perfectSolve,
+            is_daily: !isArchive,
+          }),
+        });
+      } catch (error) {
+        logger.error('[useMiniGame] Failed to save per-puzzle stats', {
+          error: error.message,
+        });
+      }
+    }
+
     // Submit to leaderboard if not archive and time is valid
     if (!isArchive && finalTime > 0 && currentPuzzleDate) {
       const payload = {
