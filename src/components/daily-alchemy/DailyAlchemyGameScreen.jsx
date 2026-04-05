@@ -12,12 +12,14 @@ import { StatsAndTargetRow } from './TargetDisplay';
 import { CombinationArea } from './CombinationArea';
 import { ElementBank } from './ElementBank';
 import { EmbeddedFavorites } from './EmbeddedFavorites';
+import { KeyboardShortcutsModal } from './KeyboardShortcutsModal';
 import { STARTER_ELEMENTS } from '@/lib/daily-alchemy.constants';
 import { isStandaloneAlchemy } from '@/lib/standalone';
 import platformService from '@/services/platform';
 import { SunburstRays } from './SunburstRays';
 import { CoopPartnerBar } from './CoopPartnerBar';
 import { useAuth } from '@/contexts/AuthContext';
+import { useAlchemyKeyboard } from '@/hooks/useAlchemyKeyboard';
 
 const shareUrl = isStandaloneAlchemy ? 'dailyalchemy.fun' : 'tandemdaily.com/daily-alchemy';
 
@@ -424,8 +426,14 @@ function ResultAnimation({ result, onComplete, onSelectElement, isAnonymous, onS
             }}
             className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors"
           >
-            <ChevronUp className="w-4 h-4" />
-            <span>swipe to use</span>
+            <ChevronUp className="w-4 h-4 lg:hidden" />
+            <span className="lg:hidden">swipe to use</span>
+            <span className="hidden lg:inline">
+              <kbd className="px-1 py-0.5 bg-gray-100 dark:bg-gray-700 rounded text-[10px] font-mono border border-gray-300 dark:border-gray-600">
+                Enter
+              </kbd>{' '}
+              to use
+            </span>
           </button>
           <button
             onClick={(e) => {
@@ -441,8 +449,14 @@ function ResultAnimation({ result, onComplete, onSelectElement, isAnonymous, onS
             }}
             className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors"
           >
-            <ChevronDown className="w-4 h-4" />
-            <span>swipe to close</span>
+            <ChevronDown className="w-4 h-4 lg:hidden" />
+            <span className="lg:hidden">swipe to close</span>
+            <span className="hidden lg:inline">
+              <kbd className="px-1 py-0.5 bg-gray-100 dark:bg-gray-700 rounded text-[10px] font-mono border border-gray-300 dark:border-gray-600">
+                Esc
+              </kbd>{' '}
+              to close
+            </span>
           </button>
         </motion.div>
       </motion.div>
@@ -613,6 +627,41 @@ export function DailyAlchemyGameScreen({
   const isTargetFound = freePlayMode
     ? false
     : sortedElementBank.some((el) => el.name.toLowerCase() === targetElement?.toLowerCase());
+
+  // Ref for search input (passed to ElementBank for / shortcut)
+  const searchInputRef = useRef(null);
+
+  // Keyboard controls
+  const { focusIndex, showHelp, setShowHelp, keyboardActive } = useAlchemyKeyboard({
+    sortedElementBank,
+    selectElement,
+    selectedA,
+    selectedB,
+    activeSlot,
+    setActiveSlot,
+    combineElements,
+    clearSelections,
+    isCombining,
+    isAnimating,
+    lastResult,
+    clearLastResult,
+    selectResultElement,
+    toggleOperatorMode,
+    isSubtractMode,
+    onUseHint,
+    hintCooldown,
+    toggleFavorite: onToggleFavorite,
+    onToggleFavoritesPanel,
+    showFavoritesPanel,
+    setSortOrder,
+    sortOrder,
+    isComplete,
+    freePlayMode,
+    disabled: isCombining || (isComplete && !freePlayMode),
+    searchInputRef,
+    setSearchQuery,
+    searchQuery,
+  });
 
   // Handle drag and drop to combination slots
   const handleDropElement = useCallback(
@@ -838,9 +887,36 @@ export function DailyAlchemyGameScreen({
             allElements={elementBank}
             isDesktopSidePanel={true}
             hideDesktopFavorites={true}
+            searchInputRef={searchInputRef}
+            keyboardFocusIndex={keyboardActive ? focusIndex : -1}
           />
         </div>
       </div>
+
+      {/* Keyboard shortcut hint — desktop only, hidden once keyboard is active */}
+      <div className="hidden lg:block">
+        <button
+          onClick={() => setShowHelp(true)}
+          className={cn(
+            'fixed bottom-4 right-4 z-30',
+            'flex items-center gap-1.5 px-2.5 py-1.5',
+            'bg-bg-card/90 dark:bg-gray-800/90 backdrop-blur-sm',
+            'rounded-lg',
+            'text-xs text-gray-400 dark:text-gray-500',
+            'hover:text-gray-600 dark:hover:text-gray-300',
+            'transition-colors duration-150'
+          )}
+          aria-label="Show keyboard shortcuts"
+        >
+          <kbd className="px-1 py-0.5 bg-gray-100 dark:bg-gray-700 rounded text-[10px] font-mono font-medium border border-gray-300 dark:border-gray-600">
+            ?
+          </kbd>
+          <span>Shortcuts</span>
+        </button>
+      </div>
+
+      {/* Keyboard Shortcuts Modal */}
+      <KeyboardShortcutsModal isOpen={showHelp} onClose={() => setShowHelp(false)} />
 
       {/* Result Animation Overlay */}
       {/* Removed mode="wait" to prevent exit animation from blocking */}

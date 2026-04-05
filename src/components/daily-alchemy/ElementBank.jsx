@@ -47,6 +47,8 @@ export function ElementBank({
   allElements = [], // All elements for favorites panel (unfiltered)
   isDesktopSidePanel = false, // When true, enables desktop-optimized layout
   hideDesktopFavorites = false, // When true, hides favorites button on desktop (used when embedded favorites is shown)
+  searchInputRef = null, // Ref forwarded from parent for keyboard shortcut (/ key)
+  keyboardFocusIndex = -1, // Index of keyboard-focused element (-1 = none)
 }) {
   const { highContrast } = useTheme();
   const { mediumTap } = useHaptics();
@@ -441,6 +443,7 @@ export function ElementBank({
       <div className="relative flex items-center gap-2">
         <div className="relative flex-1">
           <input
+            ref={searchInputRef}
             type="text"
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
@@ -557,7 +560,7 @@ export function ElementBank({
             {searchQuery ? 'No elements match your search' : 'No elements yet'}
           </div>
         ) : (
-          visibleElements.map((element) => {
+          visibleElements.map((element, index) => {
             const isSelected =
               (selectedA && selectedA.id === element.id) ||
               (selectedB && selectedB.id === element.id);
@@ -590,6 +593,9 @@ export function ElementBank({
                 onTouchDragMove={handleTouchDragMove}
                 onTouchDragEnd={handleTouchDragEnd}
                 touchDragThreshold={TOUCH_DRAG_THRESHOLD}
+                // Keyboard navigation
+                kbIndex={index}
+                isKeyboardFocused={keyboardFocusIndex === index}
               />
             );
           })

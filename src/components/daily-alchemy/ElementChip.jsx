@@ -45,6 +45,9 @@ function ElementChipInner({
   touchDragThreshold: _touchDragThreshold = 10, // eslint-disable-line no-unused-vars
   // Disable all framer-motion animations
   disableAnimations = false,
+  // Keyboard navigation
+  kbIndex = -1, // Index in element bank for keyboard nav
+  isKeyboardFocused = false, // Whether this chip has keyboard focus
 }) {
   const { highContrast, reduceMotion } = useTheme();
 
@@ -210,6 +213,8 @@ function ElementChipInner({
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
+      // Keyboard navigation index for scroll-into-view
+      data-kb-index={kbIndex >= 0 ? kbIndex : undefined}
       className={cn(
         'relative inline-flex items-center justify-center flex-nowrap whitespace-nowrap',
         sizeClasses[size],
@@ -228,7 +233,9 @@ function ElementChipInner({
         isDragging && 'opacity-50',
         highContrast && 'border-2',
         // Prevent text selection during touch drag
-        draggable && 'select-none'
+        draggable && 'select-none',
+        // Keyboard focus ring
+        isKeyboardFocused && 'ring-2 ring-soup-primary ring-offset-1'
       )}
       style={{
         // manipulation allows tap and scroll but disables double-tap zoom
@@ -370,7 +377,8 @@ function arePropsEqual(prevProps, nextProps) {
     prevProps.isDragging === nextProps.isDragging &&
     prevProps.touchDragThreshold === nextProps.touchDragThreshold &&
     prevProps.disableAnimations === nextProps.disableAnimations &&
-    prevProps.fromPartner === nextProps.fromPartner
+    prevProps.fromPartner === nextProps.fromPartner &&
+    prevProps.isKeyboardFocused === nextProps.isKeyboardFocused
   );
 }
 
