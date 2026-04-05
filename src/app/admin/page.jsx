@@ -1,5 +1,5 @@
 'use client';
-import { useState, useCallback, useRef, useEffect } from 'react';
+import { useState, useCallback, useRef, useEffect, useMemo } from 'react';
 import Image from 'next/image';
 import UnifiedPuzzleCalendar from '@/components/admin/UnifiedPuzzleCalendar';
 import GameSelectorModal from '@/components/admin/GameSelectorModal';
@@ -350,6 +350,12 @@ export default function AdminDashboard() {
     }
   }, []);
 
+  // Stabilize initialPuzzle to prevent useEffect resets on parent re-renders
+  const tandemInitialPuzzle = useMemo(
+    () => (editingPuzzle ? { ...editingPuzzle, date: selectedDate } : { date: selectedDate }),
+    [editingPuzzle, selectedDate]
+  );
+
   // Render the appropriate editor based on activeEditor
   const renderEditor = () => {
     if (!activeEditor) return null;
@@ -368,9 +374,7 @@ export default function AdminDashboard() {
             </div>
             <div className="p-3 sm:p-6">
               <PuzzleEditor
-                initialPuzzle={
-                  editingPuzzle ? { ...editingPuzzle, date: selectedDate } : { date: selectedDate }
-                }
+                initialPuzzle={tandemInitialPuzzle}
                 onClose={handleCloseEditor}
                 onShowBulkImport={() => setShowBulkImport(true)}
                 onShowThemes={() => {

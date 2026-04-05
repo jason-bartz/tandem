@@ -97,6 +97,43 @@ export default function PuzzleEditor({ initialPuzzle, onClose, onShowBulkImport,
     }
   };
 
+  // Auto-assess difficulty using provided theme/puzzles (avoids stale state issues)
+  const autoAssessDifficulty = async (assessTheme, assessPuzzles) => {
+    setAssessingDifficulty(true);
+
+    try {
+      const result = await adminService.assessDifficulty({
+        theme: assessTheme.trim(),
+        puzzles: assessPuzzles.map((p) => ({
+          emoji: p.emoji.trim(),
+          answer: p.answer.trim().toUpperCase(),
+          hint: p.hint?.trim() || '',
+        })),
+      });
+
+      if (result.success) {
+        setDifficultyRating(result.assessment.rating);
+        setDifficultyFactors(result.assessment.factors);
+        const timeMsg = result.context?.generationTime
+          ? ` (${(result.context.generationTime / 1000).toFixed(1)}s)`
+          : '';
+        setMessage(
+          `✨ Difficulty assessed: ${result.assessment.rating}${timeMsg}. ${result.assessment.reasoning || ''} You can edit any field before saving.`
+        );
+        logger.info('Difficulty assessed successfully', result);
+      } else {
+        const errorMsg = result.error || 'Failed to assess difficulty.';
+        setMessage(`✨ Puzzle generated! ❌ Difficulty assessment failed: ${errorMsg}`);
+        logger.error('Auto difficulty assessment failed', result);
+      }
+    } catch (error) {
+      setMessage('✨ Puzzle generated! ❌ Error assessing difficulty.');
+      logger.error('Auto assess difficulty error', error);
+    } finally {
+      setAssessingDifficulty(false);
+    }
+  };
+
   const handleAssessDifficulty = async () => {
     if (!validateForm()) {
       setMessage('⚠️ Please complete the theme and all puzzle pairs before assessing difficulty.');
@@ -218,9 +255,14 @@ export default function PuzzleEditor({ initialPuzzle, onClose, onShowBulkImport,
               ? ` (${(result.context.generationTime / 1000).toFixed(1)}s)`
               : '';
           setMessage(
-            `✨ Success! Generated "${result.puzzle.theme}" by analyzing ${result.context.pastPuzzlesAnalyzed} recent puzzles${timeMsg}. You can edit any field before saving.`
+            `✨ Generated "${result.puzzle.theme}" by analyzing ${result.context.pastPuzzlesAnalyzed} recent puzzles${timeMsg}. Assessing difficulty...`
           );
           logger.info('AI puzzle generated successfully', result);
+
+          // Auto-assess difficulty after generation
+          setGenerating(false);
+          await autoAssessDifficulty(result.puzzle.theme, result.puzzle.puzzles);
+          return; // Skip the finally block's setGenerating since we already did it
         } else {
           const errorMsg = result.error || 'Failed to generate puzzle. Please try again.';
           setMessage(
@@ -269,10 +311,50 @@ export default function PuzzleEditor({ initialPuzzle, onClose, onShowBulkImport,
     }
   };
 
-  const handleSelectThemeSuggestion = (suggestion) => {
+  const handleSelectThemeSuggestion = async (suggestion) => {
     setTheme(suggestion.theme);
     setThemeSuggestions([]); // Clear suggestions after selection
-    setMessage(`Selected theme: "${suggestion.theme}" - Click AI Generate to generate the puzzle.`);
+    setMessage(`Selected theme: "${suggestion.theme}" - Generating puzzle...`);
+
+    // Auto-generate puzzle with the selected theme
+    setGenerating(true);
+    setMessage('🤖 Generating puzzle with AI... This may take a few seconds.');
+
+    try {
+      const options = {
+        themeHint: suggestion.theme,
+        ...(themeContext.trim() && { themeContext: themeContext.trim() }),
+      };
+      const result = await adminService.generatePuzzle(selectedDate, options);
+
+      if (result.success) {
+        setTheme(result.puzzle.theme);
+        setPuzzles(result.puzzle.puzzles);
+
+        const timeMsg =
+          result.context.generationTime > 1000
+            ? ` (${(result.context.generationTime / 1000).toFixed(1)}s)`
+            : '';
+        setMessage(`✨ Generated "${result.puzzle.theme}"${timeMsg}. Assessing difficulty...`);
+        logger.info('AI puzzle generated successfully', result);
+
+        // Auto-assess difficulty
+        await autoAssessDifficulty(result.puzzle.theme, result.puzzle.puzzles);
+      } else {
+        const errorMsg = result.error || 'Failed to generate puzzle. Please try again.';
+        setMessage(
+          `❌ ${errorMsg}${errorMsg.includes('rate limit') ? ' Wait a bit and try again.' : ''}`
+        );
+        logger.error('AI puzzle generation failed', result);
+      }
+    } catch (error) {
+      setMessage(
+        '❌ Error generating puzzle. Check your connection and try again, or create manually.'
+      );
+      logger.error('Generate puzzle error', error);
+    } finally {
+      setGenerating(false);
+    }
   };
 
   const handleDismissThemeSuggestion = (suggestion) => {
