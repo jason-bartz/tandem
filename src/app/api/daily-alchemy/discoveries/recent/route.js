@@ -3,6 +3,8 @@ import { createServerClient } from '@/lib/supabase/server';
 import { kv } from '@vercel/kv';
 import logger from '@/lib/logger';
 
+export const dynamic = 'force-dynamic';
+
 const CACHE_KEY = 'soup:recent-discoveries:v2';
 const CACHE_TTL = 60; // 60 seconds
 const DISCOVERY_LIMIT = 50;
