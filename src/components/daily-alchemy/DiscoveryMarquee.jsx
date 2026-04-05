@@ -70,11 +70,18 @@ export default function DiscoveryMarquee() {
       }}
     >
       <div
-        className={cn('inline-flex', !reduceMotion && 'animate-marquee')}
-        style={{
-          animationDuration: `${duration}s`,
-          animationPlayState: reduceMotion ? 'paused' : 'running',
-        }}
+        className="inline-flex"
+        style={
+          !reduceMotion
+            ? {
+                animation: `marquee ${duration}s linear infinite`,
+                WebkitAnimation: `marquee ${duration}s linear infinite`,
+                willChange: 'transform',
+                WebkitTransform: 'translateZ(0)',
+                transform: 'translateZ(0)',
+              }
+            : undefined
+        }
       >
         <div className="inline-flex">{items}</div>
         <div className="inline-flex" aria-hidden="true">
