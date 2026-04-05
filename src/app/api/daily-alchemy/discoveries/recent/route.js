@@ -32,9 +32,7 @@ export async function GET() {
         if (cached) {
           const parsed = typeof cached === 'string' ? JSON.parse(cached) : cached;
           if (parsed?.discoveries?.length) {
-            return NextResponse.json(parsed, {
-              headers: { 'Cache-Control': 'public, s-maxage=30, stale-while-revalidate=60' },
-            });
+            return NextResponse.json(parsed);
           }
         }
       } catch (cacheErr) {
@@ -91,9 +89,7 @@ export async function GET() {
       }
     }
 
-    return NextResponse.json(payload, {
-      headers: { 'Cache-Control': 'public, s-maxage=30, stale-while-revalidate=60' },
-    });
+    return NextResponse.json(payload);
   } catch (err) {
     logger.error('[RecentDiscoveries] Unexpected error', { error: err.message });
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
