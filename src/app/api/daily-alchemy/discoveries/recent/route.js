@@ -3,7 +3,7 @@ import { createServerClient } from '@/lib/supabase/server';
 import { kv } from '@vercel/kv';
 import logger from '@/lib/logger';
 
-const CACHE_KEY = 'soup:recent-discoveries';
+const CACHE_KEY = 'soup:recent-discoveries:v2';
 const CACHE_TTL = 60; // 60 seconds
 const DISCOVERY_LIMIT = 50;
 
@@ -17,7 +17,8 @@ const isKvAvailable = !!(
 /**
  * GET /api/daily-alchemy/discoveries/recent
  * Public endpoint — no auth required.
- * Returns the most recent first discoveries for the welcome-screen marquee.
+ * Returns the most recent element discoveries for the welcome-screen marquee.
+ * Pulls from element_combinations (master table) for maximum coverage.
  * Cached in Redis for 60s to protect the DB from traffic spikes.
  */
 export async function GET() {
@@ -27,9 +28,12 @@ export async function GET() {
       try {
         const cached = await kv.get(CACHE_KEY);
         if (cached) {
-          return NextResponse.json(cached, {
-            headers: { 'Cache-Control': 'public, s-maxage=30, stale-while-revalidate=60' },
-          });
+          const parsed = typeof cached === 'string' ? JSON.parse(cached) : cached;
+          if (parsed?.discoveries?.length) {
+            return NextResponse.json(parsed, {
+              headers: { 'Cache-Control': 'public, s-maxage=30, stale-while-revalidate=60' },
+            });
+          }
         }
       } catch (cacheErr) {
         logger.warn('[RecentDiscoveries] Cache read failed', { error: cacheErr.message });
@@ -38,9 +42,11 @@ export async function GET() {
 
     const supabase = createServerClient();
 
+    // Query the master element_combinations table for recent discoveries
     const { data, error } = await supabase
-      .from('element_soup_first_discoveries')
-      .select('result_element, result_emoji, username')
+      .from('element_combinations')
+      .select('result_element, result_emoji, discovered_by, discovered_at')
+      .not('discovered_by', 'is', null)
       .order('discovered_at', { ascending: false })
       .limit(DISCOVERY_LIMIT);
 
@@ -49,10 +55,27 @@ export async function GET() {
       return NextResponse.json({ error: 'Database error' }, { status: 500 });
     }
 
+    // Collect unique user IDs to batch-fetch usernames
+    const userIds = [...new Set((data || []).map((d) => d.discovered_by).filter(Boolean))];
+
+    let usernameMap = {};
+    if (userIds.length > 0) {
+      const { data: users, error: usersError } = await supabase
+        .from('users')
+        .select('id, username')
+        .in('id', userIds);
+
+      if (usersError) {
+        logger.warn('[RecentDiscoveries] Failed to fetch usernames', { error: usersError.message });
+      } else if (users) {
+        usernameMap = Object.fromEntries(users.map((u) => [u.id, u.username]));
+      }
+    }
+
     const discoveries = (data || []).map((d) => ({
       element: d.result_element,
       emoji: d.result_emoji || '✨',
-      username: d.username || 'Anonymous',
+      username: usernameMap[d.discovered_by] || 'Anonymous',
     }));
 
     const payload = { discoveries };
@@ -60,7 +83,7 @@ export async function GET() {
     // Write to cache
     if (isKvAvailable) {
       try {
-        await kv.setex(CACHE_KEY, CACHE_TTL, JSON.stringify(payload));
+        await kv.setex(CACHE_KEY, CACHE_TTL, payload);
       } catch (cacheErr) {
         logger.warn('[RecentDiscoveries] Cache write failed', { error: cacheErr.message });
       }

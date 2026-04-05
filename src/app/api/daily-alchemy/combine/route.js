@@ -355,25 +355,13 @@ export async function POST(request) {
         isFirstDiscovery = true;
 
         // Get user's username for the discovery log
-        // Try profiles table first, then fall back to users table
         let username = null;
-        const { data: profileData } = await supabase
-          .from('profiles')
+        const { data: userData } = await supabase
+          .from('users')
           .select('username')
           .eq('id', userId)
           .single();
-
-        username = profileData?.username;
-
-        // If no username in profiles, try users table
-        if (!username) {
-          const { data: userData } = await supabase
-            .from('users')
-            .select('username')
-            .eq('id', userId)
-            .single();
-          username = userData?.username;
-        }
+        username = userData?.username;
 
         // Log the first discovery
         await supabase.from('element_soup_first_discoveries').insert({

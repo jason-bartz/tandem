@@ -70,14 +70,14 @@ export async function POST(request) {
       return NextResponse.json({ error: 'Must upgrade account first' }, { status: 400 });
     }
 
-    // Get the user's current username from profiles
-    const { data: profile } = await supabase
-      .from('profiles')
+    // Get the user's current username
+    const { data: userData } = await supabase
+      .from('users')
       .select('username')
       .eq('id', user.id)
       .single();
 
-    const username = profile?.username;
+    const username = userData?.username;
     if (!username) {
       // No username set yet — nothing to backfill
       return NextResponse.json({ updated: 0, message: 'No username set yet' });

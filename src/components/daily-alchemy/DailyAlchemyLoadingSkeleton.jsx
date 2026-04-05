@@ -51,9 +51,7 @@ export function DailyAlchemyLoadingSkeleton() {
                   className={cn(
                     'w-full max-w-sm p-5 mb-6',
                     'bg-soup-light/50 dark:bg-soup-primary/10',
-                    'dark:border-gray-600',
-                    'rounded-lg',
-                    ''
+                    'rounded-lg'
                   )}
                 >
                   {/* Today's Target Label */}
@@ -73,14 +71,31 @@ export function DailyAlchemyLoadingSkeleton() {
                   </div>
 
                   {/* Par Display */}
-                  <div className="flex items-center gap-4">
+                  <div
+                    className={`h-4 w-28 bg-gray-200 dark:bg-gray-700 rounded ${shimmerClass}`}
+                    style={{ animationDelay: '100ms' }}
+                  />
+
+                  {/* Description */}
+                  <div
+                    className={`h-4 w-4/5 mt-3 bg-gray-200 dark:bg-gray-700 rounded ${shimmerClass}`}
+                    style={{ animationDelay: '150ms' }}
+                  />
+                </div>
+
+                {/* Discovery Marquee Skeleton */}
+                <div className="w-full max-w-sm my-4 overflow-hidden">
+                  <div className="flex items-center gap-3">
                     <div
-                      className={`h-4 w-24 bg-gray-200 dark:bg-gray-700 rounded ${shimmerClass}`}
-                      style={{ animationDelay: '100ms' }}
+                      className={`h-3 w-20 bg-gray-200 dark:bg-gray-700 rounded ${shimmerClass}`}
                     />
                     <div
-                      className={`h-4 w-20 bg-gray-200 dark:bg-gray-700 rounded ${shimmerClass}`}
-                      style={{ animationDelay: '150ms' }}
+                      className={`h-3 w-28 bg-gray-200 dark:bg-gray-700 rounded ${shimmerClass}`}
+                      style={{ animationDelay: '50ms' }}
+                    />
+                    <div
+                      className={`h-3 w-24 bg-gray-200 dark:bg-gray-700 rounded ${shimmerClass}`}
+                      style={{ animationDelay: '100ms' }}
                     />
                   </div>
                 </div>
@@ -97,7 +112,7 @@ export function DailyAlchemyLoadingSkeleton() {
                     />
                   </div>
 
-                  <div className={cn('p-4', 'bg-gray-50 dark:bg-gray-800', 'rounded-xl', '')}>
+                  <div className={cn('p-4', 'bg-gray-50 dark:bg-gray-800', 'rounded-lg')}>
                     <div
                       className={`h-3 w-full mb-2 bg-gray-200 dark:bg-gray-700 rounded ${shimmerClass}`}
                     />
@@ -108,17 +123,33 @@ export function DailyAlchemyLoadingSkeleton() {
                   </div>
                 </div>
 
-                {/* Start Button Skeleton */}
+                {/* Play Today's Puzzle Button Skeleton */}
                 <div
                   className={cn(
                     'w-full max-w-sm h-14',
                     'bg-soup-primary/50 dark:bg-soup-primary/30',
-                    'dark:border-gray-600',
                     'rounded-xl',
-                    '',
                     shimmerClass
                   )}
                 />
+
+                {/* Creative Mode Button Skeleton */}
+                <div
+                  className={cn(
+                    'w-full max-w-sm h-14 mt-3',
+                    'bg-white/50 dark:bg-gray-800/50',
+                    'rounded-xl',
+                    shimmerClass
+                  )}
+                />
+
+                {/* Creative Mode Description Skeleton */}
+                <div className="w-full max-w-sm mt-3 px-4 flex flex-col items-center">
+                  <div
+                    className={`h-3 w-4/5 bg-gray-200 dark:bg-gray-700 rounded ${shimmerClass}`}
+                    style={{ animationDelay: '50ms' }}
+                  />
+                </div>
 
                 {/* "or" Divider Skeleton */}
                 <div className="w-full max-w-sm flex items-center gap-3 my-5">
@@ -132,9 +163,7 @@ export function DailyAlchemyLoadingSkeleton() {
                   className={cn(
                     'w-full max-w-sm h-14 mb-3',
                     'bg-indigo-500/50 dark:bg-indigo-500/30',
-                    'dark:border-gray-600',
                     'rounded-xl',
-                    '',
                     shimmerClass
                   )}
                 />
@@ -147,34 +176,13 @@ export function DailyAlchemyLoadingSkeleton() {
                   />
                 </div>
 
-                {/* Creative Mode Button Skeleton */}
-                <div
-                  className={cn(
-                    'w-full max-w-sm h-14',
-                    'bg-white/50 dark:bg-gray-800/50',
-                    'dark:border-gray-600',
-                    'rounded-xl',
-                    'dark:',
-                    shimmerClass
-                  )}
-                />
-
-                {/* Creative Mode Description Skeleton */}
-                <div className="w-full max-w-sm mt-3 px-4 flex flex-col items-center">
-                  <div
-                    className={`h-3 w-4/5 bg-gray-200 dark:bg-gray-700 rounded ${shimmerClass}`}
-                    style={{ animationDelay: '50ms' }}
-                  />
-                </div>
-
                 {/* Discord Link Skeleton */}
                 <div
                   className={cn(
                     'w-full max-w-sm mt-6 p-4',
                     'flex items-center gap-3',
                     'bg-gray-50 dark:bg-gray-800',
-                    'rounded-xl',
-                    ''
+                    'rounded-lg'
                   )}
                 >
                   {/* Discord Logo placeholder */}
