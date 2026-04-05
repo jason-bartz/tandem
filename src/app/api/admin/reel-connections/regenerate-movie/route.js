@@ -48,8 +48,8 @@ export async function POST(request) {
       logger.warn('[ReelRegenerate] Failed to fetch past movies:', err.message);
     }
 
-    // Try up to 3 times to get a verified movie
-    const maxAttempts = 3;
+    // Try up to 5 times to get a verified, non-duplicate movie
+    const maxAttempts = 5;
     let lastError = null;
 
     for (let attempt = 0; attempt < maxAttempts; attempt++) {
@@ -88,6 +88,14 @@ export async function POST(request) {
 
         // Get the first result (best match)
         const movie = searchData.Search[0];
+
+        // Check if this movie is already in the existing list (case-insensitive)
+        const existingLower = existingMovies.map((m) => m.toLowerCase());
+        if (existingLower.includes(movie.Title.toLowerCase())) {
+          logger.warn(`Movie "${movie.Title}" is a duplicate of existing movie, trying again...`);
+          lastError = new Error(`Movie "${movie.Title}" is a duplicate`);
+          continue;
+        }
 
         // Verify poster exists
         if (!movie.Poster || movie.Poster === 'N/A') {

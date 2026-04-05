@@ -47,7 +47,7 @@ function MovieSearchInput({ value, onChange, groupColor, onShuffle, shuffleLoadi
   }, []);
 
   useEffect(() => {
-    if (query.trim().length < 2) {
+    if (query.trim().length < 1) {
       setResults([]);
       return;
     }
@@ -393,10 +393,8 @@ export default function ReelConnectionsPuzzleEditor({
     setShuffleLoading((prev) => ({ ...prev, [key]: true }));
 
     try {
-      // Get existing movie titles to avoid duplicates
-      const existingMovies = group.movies
-        .filter((m, idx) => m !== null && idx !== movieIndex)
-        .map((m) => m.title);
+      // Get ALL movie titles in this group (including the one being replaced) to avoid duplicates
+      const existingMovies = group.movies.filter((m) => m !== null).map((m) => m.title);
 
       const response = await fetch('/api/admin/reel-connections/regenerate-movie', {
         method: 'POST',

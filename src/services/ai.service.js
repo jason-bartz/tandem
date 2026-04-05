@@ -2201,7 +2201,7 @@ Generate 4 UNIQUE movies for the connection "${connection}". Return ONLY the JSO
 
     const existingSection =
       existingMovies.length > 0
-        ? `\nMOVIES ALREADY SELECTED (DO NOT SUGGEST THESE): ${existingMovies.join(', ')}\n`
+        ? `\nMOVIES ALREADY SELECTED (DO NOT SUGGEST ANY OF THESE - this is a hard requirement): ${existingMovies.join(', ')}\n`
         : '';
 
     const overusedSection =
