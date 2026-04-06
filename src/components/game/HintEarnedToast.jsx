@@ -1,20 +1,15 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Lightbulb, Sparkles } from 'lucide-react';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useHaptics } from '@/hooks/useHaptics';
 
 /**
  * HintEarnedToast Component
  *
- * Displays a toast notification when a player earns a hint
- * Following Apple HIG with:
- * - System yellow color for hints
- * - Standard iOS timing (300ms animations)
- * - Backdrop blur for modern iOS glass effect
- * - Proper accessibility support
- * - High contrast mode support
- * - Reduce motion support
+ * Displays a toast notification when a player earns a hint.
+ * Flat design: solid accent color, no gradients, Lucide icons.
  */
 export default function HintEarnedToast({ isSmallPhone = false, isMobilePhone = false }) {
   const [visible, setVisible] = useState(false);
@@ -22,11 +17,8 @@ export default function HintEarnedToast({ isSmallPhone = false, isMobilePhone = 
   const { lightTap } = useHaptics();
 
   useEffect(() => {
-    // Listen for hint earned events
     const handleHintEarned = () => {
-      // Haptic feedback
       lightTap();
-
       setVisible(true);
 
       setTimeout(() => {
@@ -35,31 +27,21 @@ export default function HintEarnedToast({ isSmallPhone = false, isMobilePhone = 
     };
 
     window.addEventListener('hintEarned', handleHintEarned);
-
-    return () => {
-      window.removeEventListener('hintEarned', handleHintEarned);
-    };
+    return () => window.removeEventListener('hintEarned', handleHintEarned);
   }, [lightTap]);
 
-  // Animation variants
   const variants = {
     hidden: {
       opacity: 0,
       y: -20,
-      scale: 0.95,
-      transition: {
-        duration: reduceMotion ? 0 : 0.3,
-        ease: [0.4, 0.0, 0.2, 1], // iOS ease-out curve
-      },
+      scale: reduceMotion ? 1 : 0.95,
+      transition: { duration: reduceMotion ? 0 : 0.3, ease: [0.4, 0.0, 0.2, 1] },
     },
     visible: {
       opacity: 1,
       y: 0,
       scale: 1,
-      transition: {
-        duration: reduceMotion ? 0 : 0.3,
-        ease: [0.4, 0.0, 0.2, 1],
-      },
+      transition: { duration: reduceMotion ? 0 : 0.3, ease: [0.4, 0.0, 0.2, 1] },
     },
   };
 
@@ -82,67 +64,35 @@ export default function HintEarnedToast({ isSmallPhone = false, isMobilePhone = 
           <div
             className={`
               ${isSmallPhone ? 'px-4 py-2.5' : isMobilePhone ? 'px-5 py-3' : 'px-6 py-3'}
-              rounded-lg               flex items-center gap-3
+              rounded-2xl flex items-center gap-3
               ${isSmallPhone ? 'max-w-[280px]' : isMobilePhone ? 'max-w-xs' : 'max-w-sm'}
               ${
                 highContrast
                   ? 'bg-hc-warning text-hc-warning-text border-2 border-hc-border'
-                  : 'bg-gradient-to-r from-yellow-400 to-amber-500 dark:from-yellow-500 dark:to-amber-600 text-gray-900 dark:text-gray-900'
+                  : 'bg-flat-accent text-gray-900 border-2 border-flat-accent'
               }
             `}
           >
-            {/* Lightbulb icon with subtle pulse */}
-            <motion.span
-              className={isSmallPhone ? 'text-xl' : isMobilePhone ? 'text-2xl' : 'text-2xl'}
-              animate={reduceMotion ? {} : { scale: [1, 1.1, 1] }}
-              transition={{
-                duration: 0.5,
-                times: [0, 0.5, 1],
-                ease: 'easeInOut',
-              }}
-            >
-              💡
-            </motion.span>
+            <Lightbulb
+              className={isSmallPhone ? 'w-5 h-5 flex-shrink-0' : 'w-6 h-6 flex-shrink-0'}
+            />
 
-            {/* Text content */}
             <div className="flex-1">
               <div
-                className={`
-                  font-bold
-                  ${isSmallPhone ? 'text-xs' : isMobilePhone ? 'text-sm' : 'text-sm'}
-                `}
+                className={`font-bold ${isSmallPhone ? 'text-xs' : 'text-sm'}`}
               >
                 Hint Earned!
               </div>
               <div
-                className={`
-                  opacity-90
-                  ${isSmallPhone ? 'text-[10px]' : isMobilePhone ? 'text-xs' : 'text-xs'}
-                `}
+                className={`opacity-90 ${isSmallPhone ? 'text-[10px]' : 'text-xs'}`}
               >
                 You unlocked an extra hint
               </div>
             </div>
 
-            {/* Sparkle icon */}
-            <motion.span
-              className={isSmallPhone ? 'text-lg' : isMobilePhone ? 'text-xl' : 'text-2xl'}
-              animate={
-                reduceMotion
-                  ? {}
-                  : {
-                      rotate: [0, 10, -10, 0],
-                      scale: [1, 1.15, 1],
-                    }
-              }
-              transition={{
-                duration: 0.5,
-                times: [0, 0.33, 0.66, 1],
-                ease: 'easeInOut',
-              }}
-            >
-              ✨
-            </motion.span>
+            <Sparkles
+              className={isSmallPhone ? 'w-4 h-4 flex-shrink-0' : 'w-5 h-5 flex-shrink-0'}
+            />
           </div>
         </motion.div>
       )}

@@ -1,5 +1,6 @@
 'use client';
 import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useTheme } from '@/contexts/ThemeContext';
 
 /**
@@ -13,14 +14,15 @@ import { useTheme } from '@/contexts/ThemeContext';
 function getToastColors(achievement, highContrast) {
   if (highContrast) return 'bg-hc-surface text-hc-text border-2 border-hc-border';
   const id = achievement?.id || '';
-  if (id.includes('mini')) return 'bg-accent-yellow text-black';
-  if (id.includes('reel')) return 'bg-accent-red text-white';
-  if (id.includes('soup') || id.includes('alchemy')) return 'bg-accent-green text-black';
-  return 'bg-accent-blue text-white'; // Tandem default
+  if (id.includes('mini')) return 'bg-accent-yellow text-gray-900 border-2 border-accent-yellow';
+  if (id.includes('reel')) return 'bg-accent-red text-white border-2 border-accent-red';
+  if (id.includes('soup') || id.includes('alchemy'))
+    return 'bg-accent-green text-gray-900 border-2 border-accent-green';
+  return 'bg-accent-blue text-white border-2 border-accent-blue'; // Tandem default
 }
 
 export default function AchievementToast() {
-  const { highContrast } = useTheme();
+  const { highContrast, reduceMotion } = useTheme();
   const [achievement, setAchievement] = useState(null);
   const [visible, setVisible] = useState(false);
 
@@ -46,27 +48,46 @@ export default function AchievementToast() {
 
   const colorClasses = getToastColors(achievement, highContrast);
 
+  const variants = {
+    hidden: {
+      opacity: 0,
+      y: -20,
+      scale: reduceMotion ? 1 : 0.95,
+      transition: { duration: reduceMotion ? 0 : 0.3, ease: [0.4, 0.0, 0.2, 1] },
+    },
+    visible: {
+      opacity: 1,
+      y: 0,
+      scale: 1,
+      transition: { duration: reduceMotion ? 0 : 0.3, ease: [0.4, 0.0, 0.2, 1] },
+    },
+  };
+
   return (
-    <div
-      className={`
-        fixed top-20 left-1/2 transform -translate-x-1/2 z-[9999]
-        transition-all duration-300 ease-out
-        ${visible ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 -translate-y-4 scale-95'}
-      `}
-      role="alert"
-      aria-live="polite"
-    >
-      <div
-        className={`${colorClasses} px-5 py-3.5 rounded-2xl flex items-center gap-3 max-w-sm ${highContrast ? '' : 'border-2 border-border-main'}`}
-      >
-        <span className="text-4xl">{achievement.emoji}</span>
-        <div className="flex-1">
-          <div className="font-black text-[10px] uppercase tracking-widest opacity-80">
-            Achievement Unlocked
+    <AnimatePresence>
+      {visible && (
+        <motion.div
+          className="fixed top-20 left-1/2 -translate-x-1/2 z-[9999]"
+          variants={variants}
+          initial="hidden"
+          animate="visible"
+          exit="hidden"
+          role="alert"
+          aria-live="polite"
+        >
+          <div
+            className={`${colorClasses} px-5 py-3.5 rounded-2xl flex items-center gap-3 max-w-sm`}
+          >
+            <span className="text-4xl">{achievement.emoji}</span>
+            <div className="flex-1">
+              <div className="font-black text-[10px] uppercase tracking-widest opacity-80">
+                Achievement Unlocked
+              </div>
+              <div className="font-bold text-sm mt-0.5">{achievement.name}</div>
+            </div>
           </div>
-          <div className="font-bold text-sm mt-0.5">{achievement.name}</div>
-        </div>
-      </div>
-    </div>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 }

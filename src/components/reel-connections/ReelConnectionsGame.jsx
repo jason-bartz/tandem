@@ -1557,7 +1557,7 @@ const ReelConnectionsGame = ({ titleFont = '' }) => {
           {/* One Away Toast */}
           {showOneAway && (
             <div
-              className={`fixed top-1/3 left-1/2 -translate-x-1/2 z-50 bg-black/85 text-white px-6 py-3 rounded-full font-bold text-lg ${reduceMotion ? '' : 'animate-one-away'}`}
+              className={`fixed top-1/3 left-1/2 -translate-x-1/2 z-50 px-6 py-3 rounded-2xl font-bold text-lg ${reduceMotion ? '' : 'animate-one-away'} ${highContrast ? 'bg-hc-surface text-hc-text border-2 border-hc-border' : 'bg-gray-900/90 text-white'}`}
               role="status"
               aria-live="polite"
             >
@@ -1568,7 +1568,7 @@ const ReelConnectionsGame = ({ titleFont = '' }) => {
           {/* Duplicate Guess Warning Toast */}
           {showDuplicateWarning && (
             <div
-              className={`fixed top-1/3 left-1/2 -translate-x-1/2 z-50 bg-black/85 text-white px-6 py-3 rounded-full font-bold text-lg text-center whitespace-nowrap ${reduceMotion ? '' : 'animate-one-away'}`}
+              className={`fixed top-1/3 left-1/2 -translate-x-1/2 z-50 px-6 py-3 rounded-2xl font-bold text-lg text-center whitespace-nowrap ${reduceMotion ? '' : 'animate-one-away'} ${highContrast ? 'bg-hc-surface text-hc-text border-2 border-hc-border' : 'bg-gray-900/90 text-white'}`}
               role="status"
               aria-live="polite"
             >

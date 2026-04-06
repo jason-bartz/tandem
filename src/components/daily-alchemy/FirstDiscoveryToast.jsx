@@ -8,7 +8,8 @@ import { useTheme } from '@/contexts/ThemeContext';
 
 /**
  * FirstDiscoveryToast - Celebration notification for first discoveries
- * Auto-dismisses after timeout or on tap/click
+ * Flat design: solid accent color, no gradients, Lucide icons.
+ * Auto-dismisses after timeout or on tap/click.
  */
 export function FirstDiscoveryToast({ element, emoji, onDismiss, duration = 5000 }) {
   const { reduceMotion, highContrast } = useTheme();
@@ -27,30 +28,26 @@ export function FirstDiscoveryToast({ element, emoji, onDismiss, duration = 5000
       initial={!reduceMotion ? { y: -100, x: '-50%', opacity: 0 } : { x: '-50%' }}
       animate={{ y: 0, x: '-50%', opacity: 1 }}
       exit={!reduceMotion ? { y: -100, x: '-50%', opacity: 0 } : { x: '-50%', opacity: 0 }}
-      transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+      transition={
+        reduceMotion
+          ? { duration: 0 }
+          : { type: 'spring', stiffness: 300, damping: 20 }
+      }
       onClick={onDismiss}
     >
       <div
         className={cn(
           'flex items-center gap-3 px-6 py-3',
-          'bg-gradient-to-r from-yellow-400 to-orange-400',
-          'text-white',
-          '',
-          'rounded-lg',
-          '',
-          highContrast && 'border-2'
+          'rounded-2xl',
+          highContrast
+            ? 'bg-hc-warning text-hc-warning-text border-2 border-hc-border'
+            : 'bg-flat-accent text-gray-900 border-2 border-flat-accent'
         )}
       >
-        <motion.span
-          className="text-2xl"
-          animate={!reduceMotion ? { rotate: [0, -10, 10, -10, 0] } : undefined}
-          transition={{ repeat: Infinity, duration: 0.5, repeatDelay: 0.5 }}
-        >
-          <Sparkles className="w-6 h-6" />
-        </motion.span>
+        <Sparkles className="w-6 h-6 flex-shrink-0" />
         <div>
-          <div className="font-bold">First Discovery!</div>
-          <div className="text-sm opacity-90">
+          <div className="font-bold text-sm">First Discovery!</div>
+          <div className="text-xs opacity-90">
             You discovered {emoji} <span className="font-jua">{element}</span>
           </div>
         </div>
