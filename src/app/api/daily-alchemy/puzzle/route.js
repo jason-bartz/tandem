@@ -2,6 +2,11 @@ import { NextResponse } from 'next/server';
 import { createServerClient } from '@/lib/supabase/server';
 import logger from '@/lib/logger';
 import { STARTER_ELEMENTS, normalizeKey } from '@/lib/daily-alchemy.constants';
+import {
+  loadCombinations,
+  findAllReachable,
+  reconstructPath,
+} from '@/lib/server/alchemyPathfinder';
 
 /**
  * Get today's date in YYYY-MM-DD format based on ET timezone
@@ -71,6 +76,30 @@ async function validateSolutionPath(solutionPath, supabase) {
   }
 
   return validatedPath;
+}
+
+/**
+ * Check if a solution path is complete — every non-starter input must be
+ * produced by an earlier step in the path.
+ */
+function isPathComplete(solutionPath) {
+  if (!solutionPath || solutionPath.length === 0) return false;
+
+  const starterNames = new Set(STARTER_ELEMENTS.map((s) => s.name.toLowerCase()));
+  const available = new Set(starterNames);
+
+  for (const step of solutionPath) {
+    const aLower = step.elementA.toLowerCase();
+    const bLower = step.elementB.toLowerCase();
+
+    if (!available.has(aLower) || !available.has(bLower)) {
+      return false;
+    }
+
+    available.add(step.result.toLowerCase());
+  }
+
+  return true;
 }
 
 /**
@@ -168,7 +197,43 @@ export async function GET(request) {
     });
 
     // Validate solution path against actual DB combinations to fix stale/incorrect hints
-    const solutionPath = await validateSolutionPath(data.solution_path || [], supabase);
+    let solutionPath = await validateSolutionPath(data.solution_path || [], supabase);
+
+    // If the path has gaps (missing intermediate steps), recompute from scratch
+    if (!isPathComplete(solutionPath)) {
+      logger.warn('[API] Solution path incomplete, recomputing via pathfinder', {
+        date: data.date,
+        target: data.target_element,
+        storedSteps: solutionPath.length,
+      });
+
+      try {
+        const { combosByInput } = await loadCombinations(supabase);
+        const elementInfo = findAllReachable(combosByInput);
+        const targetLower = data.target_element.toLowerCase();
+
+        if (elementInfo.has(targetLower)) {
+          const rawPath = reconstructPath(targetLower, elementInfo);
+          solutionPath = rawPath.map((step, index) => ({
+            step: index + 1,
+            elementA: step.element_a,
+            elementB: step.element_b,
+            result: step.result_element,
+            emoji: step.result_emoji,
+          }));
+
+          logger.info('[API] Recomputed solution path', {
+            date: data.date,
+            target: data.target_element,
+            newSteps: solutionPath.length,
+          });
+        }
+      } catch (pathError) {
+        logger.error('[API] Failed to recompute solution path', {
+          error: pathError.message,
+        });
+      }
+    }
 
     return NextResponse.json({
       success: true,

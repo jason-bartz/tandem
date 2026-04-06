@@ -23,6 +23,7 @@ export const KEYBOARD_SHORTCUTS = [
       { keys: ['Tab'], description: 'Switch slot' },
       { keys: ['Esc'], description: 'Deselect / Dismiss' },
       { keys: ['+', '-'], description: 'Combine / Subtract mode' },
+      { keys: ['H'], description: 'Use a hint' },
     ],
   },
 ];
@@ -59,6 +60,8 @@ export function useAlchemyKeyboard({
   isComplete,
   freePlayMode,
   disabled,
+  onUseHint,
+  hintCooldown,
   searchInputRef,
   setSearchQuery,
   searchQuery,
@@ -292,6 +295,15 @@ export function useAlchemyKeyboard({
         }
         return;
       }
+
+      // ─── H: use a hint ───
+      if (key === 'h' || key === 'H') {
+        e.preventDefault();
+        if (!hintCooldown && onUseHint) {
+          onUseHint();
+        }
+        return;
+      }
     },
     [
       showHelp,
@@ -326,6 +338,8 @@ export function useAlchemyKeyboard({
       clampIndex,
       getColumnsEstimate,
       getNavDirection,
+      onUseHint,
+      hintCooldown,
     ]
   );
 

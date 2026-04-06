@@ -7,7 +7,7 @@ import html2canvas from 'html2canvas';
 import { cn } from '@/lib/utils';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useHaptics } from '@/hooks/useHaptics';
-import { playPlunkSound } from '@/lib/sounds';
+import { playPlunkSound, startAmbientTexture, stopAmbientTexture } from '@/lib/sounds';
 import { StatsAndTargetRow } from './TargetDisplay';
 import { CombinationArea } from './CombinationArea';
 import { ElementBank } from './ElementBank';
@@ -58,7 +58,6 @@ function ResultAnimation({ result, onComplete, onSelectElement, isAnonymous, onS
   // Format today's date
   const formatDate = () => {
     return new Date().toLocaleDateString('en-US', {
-      weekday: 'long',
       year: 'numeric',
       month: 'long',
       day: 'numeric',
@@ -660,7 +659,15 @@ export function DailyAlchemyGameScreen({
     searchInputRef,
     setSearchQuery,
     searchQuery,
+    onUseHint,
+    hintCooldown,
   });
+
+  // Start ambient texture when playing, stop on unmount
+  useEffect(() => {
+    startAmbientTexture('alchemy');
+    return () => stopAmbientTexture();
+  }, []);
 
   // Handle drag and drop to combination slots
   const handleDropElement = useCallback(
