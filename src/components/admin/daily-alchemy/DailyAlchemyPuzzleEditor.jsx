@@ -252,6 +252,7 @@ export default function DailyAlchemyPuzzleEditor({ puzzle, date, onSave, onCance
         elementB: step.element_b,
         result: step.result_element,
         emoji: step.result_emoji,
+        operator: step.operator || '+',
       }));
 
       setFormData((prev) => ({
@@ -380,6 +381,7 @@ export default function DailyAlchemyPuzzleEditor({ puzzle, date, onSave, onCance
         elementB: step.element_b,
         result: step.result_element,
         emoji: step.result_emoji,
+        operator: step.operator || '+',
       }));
 
       setFormData((prev) => ({
@@ -786,7 +788,13 @@ export default function DailyAlchemyPuzzleEditor({ puzzle, date, onSave, onCance
                     >
                       <span className="text-orange-500 font-mono text-xs w-6">{step.step}.</span>
                       <span className="text-text-primary">{step.elementA}</span>
-                      <span className="text-gray-400">+</span>
+                      <span
+                        className={
+                          step.operator === '-' ? 'text-red-400 font-bold' : 'text-gray-400'
+                        }
+                      >
+                        {step.operator || '+'}
+                      </span>
                       <span className="text-text-primary">{step.elementB}</span>
                       <span className="text-gray-400">=</span>
                       <span className="font-medium text-text-primary">{step.result}</span>

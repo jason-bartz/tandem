@@ -79,6 +79,7 @@ export async function POST(request) {
         elementB: step.element_b,
         result: step.result_element,
         emoji: step.result_emoji,
+        operator: step.operator || '+',
       }));
 
       // Compare with existing path

@@ -23,8 +23,13 @@ function getCurrentPuzzleDate() {
 async function validateSolutionPath(solutionPath, supabase) {
   if (!solutionPath || solutionPath.length === 0) return solutionPath;
 
-  // Collect all combination keys from the path
-  const keys = solutionPath.map((step) => normalizeKey(step.elementA, step.elementB));
+  // Collect all combination keys from the path (using correct key format per operator)
+  const keys = solutionPath.map((step) => {
+    if (step.operator === '-') {
+      return `${step.elementA.toLowerCase().trim()}-minus-${step.elementB.toLowerCase().trim()}`;
+    }
+    return normalizeKey(step.elementA, step.elementB);
+  });
 
   // Batch query the DB for all combinations in the path
   const { data: dbCombos, error } = await supabase
@@ -48,7 +53,10 @@ async function validateSolutionPath(solutionPath, supabase) {
   // Correct any mismatched steps
   let corrected = 0;
   const validatedPath = solutionPath.map((step) => {
-    const key = normalizeKey(step.elementA, step.elementB);
+    const key =
+      step.operator === '-'
+        ? `${step.elementA.toLowerCase().trim()}-minus-${step.elementB.toLowerCase().trim()}`
+        : normalizeKey(step.elementA, step.elementB);
     const dbCombo = comboMap.get(key);
 
     if (dbCombo && dbCombo.result_element.toLowerCase() !== step.result.toLowerCase()) {
@@ -125,7 +133,7 @@ async function completeSolutionPath(solutionPath, supabase) {
   // Look up how to make each missing element from the DB
   const { data: combos, error } = await supabase
     .from('element_combinations')
-    .select('element_a, element_b, result_element, result_emoji')
+    .select('element_a, element_b, result_element, result_emoji, combination_key')
     .in('result_element', Array.from(missingOriginalCase));
 
   if (error || !combos || combos.length === 0) {
@@ -169,11 +177,13 @@ async function completeSolutionPath(solutionPath, supabase) {
       const bLower = combo.element_b.toLowerCase();
 
       if (resolve(aLower) && resolve(bLower)) {
+        const isSubtract = combo.combination_key && combo.combination_key.includes('-minus-');
         resolved.set(elementLower, {
           elementA: combo.element_a,
           elementB: combo.element_b,
           result: combo.result_element,
           emoji: combo.result_emoji,
+          operator: isSubtract ? '-' : '+',
         });
         resolving.delete(elementLower);
         return true;

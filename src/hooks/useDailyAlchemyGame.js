@@ -86,7 +86,10 @@ function getFormattedDate(dateString) {
  * @param {string} elementB - Second ingredient
  * @returns {string} Formatted hint message
  */
-function formatHintMessage(elementName, elementA, elementB) {
+function formatHintMessage(elementName, elementA, elementB, operator = '+') {
+  if (operator === '-') {
+    return `Subtract ${elementB} from ${elementA} to create ${elementName}`;
+  }
   return `Combine ${elementA} + ${elementB} to create ${elementName}`;
 }
 
@@ -2420,7 +2423,7 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
     // Set the hint message showing the actual recipe and track the hinted element
     if (hintStep) {
       setCurrentHintMessage(
-        formatHintMessage(hintStep.result, hintStep.elementA, hintStep.elementB)
+        formatHintMessage(hintStep.result, hintStep.elementA, hintStep.elementB, hintStep.operator)
       );
       setCurrentHintElement(hintStep.result);
     }
