@@ -413,6 +413,7 @@ export function useGameWithInitialData(initialPuzzleData) {
 
           if (newSolved >= 2 && unlockedHints === 1) {
             setUnlockedHints(2);
+            window.dispatchEvent(new CustomEvent('hintEarned'));
           }
 
           if (currentPuzzleDate) {

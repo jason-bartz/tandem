@@ -5,7 +5,6 @@ export { ElementBank } from './ElementBank';
 export { FavoritesPanel } from './FavoritesPanel';
 export { CombinationArea } from './CombinationArea';
 export { TargetDisplay, StatsDisplay, StatsAndTargetRow } from './TargetDisplay';
-export { FirstDiscoveryToast } from './FirstDiscoveryToast';
 export { DailyAlchemyWelcomeScreen } from './DailyAlchemyWelcomeScreen';
 export { DailyAlchemyGameScreen } from './DailyAlchemyGameScreen';
 export { DailyAlchemyCompleteScreen } from './DailyAlchemyCompleteScreen';
