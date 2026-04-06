@@ -397,66 +397,68 @@ export function CombinationArea({
         )}
       </AnimatePresence>
 
-      {/* Hint Message Banner - styled to match Daily Tandem */}
-      <AnimatePresence>
-        {hintMessage && (
-          <motion.div
-            initial={{ opacity: 0, y: -10, height: 0 }}
-            animate={{ opacity: 1, y: 0, height: 'auto' }}
-            exit={{ opacity: 0, y: -10, height: 0 }}
-            className="mb-3"
-          >
-            <div
-              className={cn(
-                'px-3 py-2 sm:px-4 sm:py-3',
-                'rounded-lg',
-                highContrast
-                  ? 'bg-hc-warning border-hc-warning'
-                  : 'bg-accent-yellow dark:bg-yellow-600 border-accent-yellow dark:border-yellow-700',
-                'flex items-start gap-2'
-              )}
+      {/* Hint Message Banner - mobile only (desktop renders full-width above game area) */}
+      <div className="lg:hidden">
+        <AnimatePresence>
+          {hintMessage && (
+            <motion.div
+              initial={{ opacity: 0, y: -10, height: 0 }}
+              animate={{ opacity: 1, y: 0, height: 'auto' }}
+              exit={{ opacity: 0, y: -10, height: 0 }}
+              className="mb-3"
             >
-              <Image
-                src="/ui/shared/hint.png"
-                alt=""
-                width={20}
-                height={20}
-                className="w-5 h-5 flex-shrink-0 mt-0.5"
-              />
-              <p
+              <div
                 className={cn(
-                  'text-sm sm:text-base flex-1 leading-relaxed',
+                  'px-3 py-2 sm:px-4 sm:py-3',
+                  'rounded-lg',
                   highContrast
-                    ? 'text-hc-text font-bold'
-                    : 'text-gray-900 dark:text-gray-100 font-semibold'
+                    ? 'bg-hc-warning border-hc-warning'
+                    : 'bg-accent-yellow dark:bg-yellow-600 border-accent-yellow dark:border-yellow-700',
+                  'flex items-start gap-2'
                 )}
               >
-                {hintMessage}
-              </p>
-              {onDismissHint && (
-                <button
-                  onClick={onDismissHint}
+                <Image
+                  src="/ui/shared/hint.png"
+                  alt=""
+                  width={20}
+                  height={20}
+                  className="w-5 h-5 flex-shrink-0 mt-0.5"
+                />
+                <p
                   className={cn(
-                    'p-1 sm:p-1.5 rounded-lg transition-colors flex-shrink-0',
+                    'text-sm sm:text-base flex-1 leading-relaxed',
                     highContrast
-                      ? 'hover:bg-hc-surface focus:bg-hc-surface'
-                      : 'hover:bg-yellow-500 dark:hover:bg-yellow-700 focus:bg-yellow-500 dark:focus:bg-yellow-700',
-                    'focus:outline-none focus:ring-2 focus:ring-yellow-800'
+                      ? 'text-hc-text font-bold'
+                      : 'text-gray-900 dark:text-gray-100 font-semibold'
                   )}
-                  aria-label="Dismiss hint"
                 >
-                  <X
+                  {hintMessage}
+                </p>
+                {onDismissHint && (
+                  <button
+                    onClick={onDismissHint}
                     className={cn(
-                      'w-4 h-4',
-                      highContrast ? 'text-hc-text' : 'text-gray-900 dark:text-gray-100'
+                      'p-1 sm:p-1.5 rounded-lg transition-colors flex-shrink-0',
+                      highContrast
+                        ? 'hover:bg-hc-surface focus:bg-hc-surface'
+                        : 'hover:bg-yellow-500 dark:hover:bg-yellow-700 focus:bg-yellow-500 dark:focus:bg-yellow-700',
+                      'focus:outline-none focus:ring-2 focus:ring-yellow-800'
                     )}
-                  />
-                </button>
-              )}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+                    aria-label="Dismiss hint"
+                  >
+                    <X
+                      className={cn(
+                        'w-4 h-4',
+                        highContrast ? 'text-hc-text' : 'text-gray-900 dark:text-gray-100'
+                      )}
+                    />
+                  </button>
+                )}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
 
       {/* Selection Slots */}
       <div className="flex items-center justify-center gap-3 sm:gap-4 mb-4">

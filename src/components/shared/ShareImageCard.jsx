@@ -126,21 +126,45 @@ export default function ShareImageCard({
                 <div
                   key={i}
                   style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    textAlign: 'center',
-                    padding: '12px 8px',
                     background: '#F3F4F6',
                     borderRadius: 12,
+                    padding: 0,
+                    position: 'relative',
                   }}
                 >
-                  <div style={{ fontSize: 24, fontWeight: 800, color: '#111827' }}>
-                    {stat.value}
-                  </div>
-                  <div style={{ fontSize: 11, fontWeight: 600, color: '#6B7280', marginTop: 2 }}>
-                    {stat.label}
+                  {/* Invisible square sizer */}
+                  <div style={{ paddingBottom: '100%' }} />
+                  {/* Centered content overlay */}
+                  <div
+                    style={{
+                      position: 'absolute',
+                      top: 0,
+                      left: 0,
+                      right: 0,
+                      bottom: 0,
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      textAlign: 'center',
+                    }}
+                  >
+                    <div
+                      style={{ fontSize: 24, fontWeight: 800, color: '#111827', lineHeight: 1.1 }}
+                    >
+                      {stat.value}
+                    </div>
+                    <div
+                      style={{
+                        fontSize: 11,
+                        fontWeight: 600,
+                        color: '#6B7280',
+                        marginTop: 4,
+                        lineHeight: 1,
+                      }}
+                    >
+                      {stat.label}
+                    </div>
                   </div>
                 </div>
               ))}
@@ -165,7 +189,7 @@ export default function ShareImageCard({
       <button
         onClick={handleShareImage}
         disabled={isGenerating}
-        className={`w-full py-3 px-4 rounded-md font-semibold transition-all flex items-center justify-center gap-2 border-2 disabled:opacity-50 ${buttonClassName}`}
+        className={`w-full py-3 px-4 rounded-xl font-bold transition-all flex items-center justify-center gap-2 disabled:opacity-50 ${buttonClassName}`}
       >
         {isGenerating ? (
           <>

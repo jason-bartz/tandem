@@ -49,7 +49,11 @@ export default function GameTutorialModal({
   const handleClose = useCallback(() => {
     lightTap();
     setIsOpen(false);
-    localStorage.setItem(storageKey, 'true');
+    try {
+      localStorage.setItem(storageKey, 'true');
+    } catch {
+      // Storage quota exceeded — dismiss still works for this session
+    }
     if (gameType) {
       window.dispatchEvent(new CustomEvent('learnToPlayDismissed', { detail: { gameType } }));
     }

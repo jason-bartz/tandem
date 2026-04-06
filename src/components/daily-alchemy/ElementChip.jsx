@@ -329,11 +329,14 @@ function ElementChipInner({
         <span
           className={cn(
             'absolute -top-1 -right-1',
-            'w-4 h-4 rounded-full',
+            'w-3 h-3 rounded-full',
             'bg-accent-green',
-            'flex items-center justify-center'
+            'flex items-center justify-center',
+            'text-[7px] leading-none text-white'
           )}
-        />
+        >
+          ★
+        </span>
       )}
       {/* NEW badge for recently discovered elements (only if not a favorite) */}
       {isNew && !isFavorite && (

@@ -242,11 +242,11 @@ export function CoopLobbyScreen({
             onClick={onFallbackToCreate}
             className={cn(
               'w-full flex items-center justify-center gap-2 py-3 mb-3',
-              'bg-bg-card dark:bg-gray-800 text-gray-800 dark:text-gray-200',
+              'bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200',
               'dark:border-gray-600',
               'rounded-xl font-bold',
               '',
-              'hover:bg-gray-50 dark:hover:bg-gray-700',
+              'hover:bg-gray-300 dark:hover:bg-gray-600',
               '',
               'active:translate-y-0',
               'transition-all duration-150'
@@ -315,11 +315,11 @@ export function CoopLobbyScreen({
               onClick={() => onSelectMatchmakingMode('creative')}
               className={cn(
                 'w-full flex flex-col items-center py-4 mb-3',
-                'bg-bg-card dark:bg-gray-800 text-gray-800 dark:text-gray-200',
+                'bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200',
                 'dark:border-gray-600',
                 'rounded-xl font-bold',
                 '',
-                'hover:bg-gray-50 dark:hover:bg-gray-700',
+                'hover:bg-gray-300 dark:hover:bg-gray-600',
                 '',
                 'active:translate-y-0',
                 'transition-all duration-150'
@@ -485,7 +485,7 @@ export function CoopLobbyScreen({
               <Users className="w-5 h-5 text-indigo-500" />
               <h2 className="text-lg font-bold text-gray-800 dark:text-gray-200">Co-op Mode</h2>
             </div>
-            <p className="text-sm text-gray-500 dark:text-gray-400 text-center mb-6">
+            <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">
               Solve today&apos;s puzzle or explore creative mode together with a friend in real
               time.
             </p>
@@ -514,11 +514,11 @@ export function CoopLobbyScreen({
               onClick={() => setMode('join')}
               className={cn(
                 'w-full flex items-center justify-center gap-3 py-4 mb-3',
-                'bg-bg-card dark:bg-gray-800 text-gray-800 dark:text-gray-200',
+                'bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200',
                 'dark:border-gray-600',
                 'rounded-xl font-bold text-lg',
                 'dark:',
-                'hover:bg-gray-50 dark:hover:bg-gray-700',
+                'hover:bg-gray-300 dark:hover:bg-gray-600',
                 ' hover:',
                 'active:translate-y-0',
                 'transition-all duration-150',
@@ -633,11 +633,11 @@ export function CoopLobbyScreen({
                   disabled={isCreating}
                   className={cn(
                     'w-full flex flex-col items-center py-4 mb-3',
-                    'bg-bg-card dark:bg-gray-800 text-gray-800 dark:text-gray-200',
+                    'bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200',
                     'dark:border-gray-600',
                     'rounded-xl font-bold',
                     '',
-                    'hover:bg-gray-50 dark:hover:bg-gray-700',
+                    'hover:bg-gray-300 dark:hover:bg-gray-600',
                     '',
                     'active:translate-y-0',
                     'transition-all duration-150'
@@ -678,11 +678,11 @@ export function CoopLobbyScreen({
                   disabled={isCreating}
                   className={cn(
                     'w-full flex items-center justify-center gap-3 py-4 mb-3',
-                    'bg-bg-card dark:bg-gray-800 text-gray-800 dark:text-gray-200',
+                    'bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200',
                     'dark:border-gray-600',
                     'rounded-xl font-bold',
                     '',
-                    'hover:bg-gray-50 dark:hover:bg-gray-700',
+                    'hover:bg-gray-300 dark:hover:bg-gray-600',
                     '',
                     'active:translate-y-0',
                     'transition-all duration-150'

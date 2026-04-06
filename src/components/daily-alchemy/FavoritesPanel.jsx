@@ -1,8 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { X, Trash2 } from 'lucide-react';
-import Image from 'next/image';
+import { X, Trash2, BrushCleaning } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useTheme } from '@/contexts/ThemeContext';
 import ElementChip from './ElementChip';
@@ -117,13 +116,7 @@ export function FavoritesPanel({
                 aria-label="Clear all favorites"
                 title="Clear all favorites"
               >
-                <Image
-                  src="/ui/shared/broom.png"
-                  alt="Clear all"
-                  width={20}
-                  height={20}
-                  className="w-5 h-5"
-                />
+                <BrushCleaning className="w-4 h-4 text-gray-400 dark:text-gray-500" />
               </button>
             )}
             <button

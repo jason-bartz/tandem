@@ -556,14 +556,20 @@ export function DailyAlchemyGame({ initialDate = null }) {
                 <button
                   onClick={() => {
                     lightTap();
-                    if (isStandaloneAlchemy) {
-                      window.location.href = '/daily-alchemy';
-                    } else {
+                    if (gameState === SOUP_GAME_STATES.WELCOME) {
+                      // On welcome screen, go back to Tandem home (standalone hides this button)
                       router.push('/');
+                    } else {
+                      // In a game or other state, return to the welcome screen
+                      window.location.href = '/daily-alchemy';
                     }
                   }}
                   className="w-8 h-8 flex items-center justify-center hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors flex-shrink-0"
-                  title="Back to Home"
+                  title={
+                    gameState === SOUP_GAME_STATES.WELCOME
+                      ? 'Back to Home'
+                      : 'Back to Daily Alchemy'
+                  }
                 >
                   <svg
                     className="w-5 h-5 text-gray-600 dark:text-gray-300"

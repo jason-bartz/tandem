@@ -19,6 +19,8 @@ import platformService from '@/services/platform';
 import LeaderboardModal from '@/components/leaderboard/LeaderboardModal';
 import LoginReminderPopup from '@/components/shared/LoginReminderPopup';
 import AuthModal from '@/components/auth/AuthModal';
+import ShareImageCard from '@/components/shared/ShareImageCard';
+import { formatDateFull } from '@/lib/utils';
 
 /**
  * StatCard - Individual stat display with custom icon image (square layout)
@@ -367,6 +369,22 @@ export function DailyAlchemyCompleteScreen({
             <span>Share Results</span>
           )}
         </button>
+        <div className="mt-2">
+          <ShareImageCard
+            gameName="Daily Alchemy"
+            date={formatDateFull(new Date().toISOString().split('T')[0])}
+            emoji="🧪"
+            message={`${targetEmoji} ${targetElement}${isUnderPar ? ' · Under Par!' : ''}`}
+            stats={[
+              { label: 'Time', value: formatTime(elapsedTime) },
+              { label: 'Par', value: parText },
+              { label: 'Hints', value: String(hintsUsed) },
+            ]}
+            accentColor="bg-soup-primary"
+            buttonLabel="Share as Image"
+            buttonClassName="bg-bg-surface dark:bg-gray-700 text-text-primary border-border-main hover:bg-gray-200 dark:hover:bg-gray-600"
+          />
+        </div>
       </motion.div>
 
       {/* Co-op: Continue Creative Mode Together section */}
@@ -416,12 +434,12 @@ export function DailyAlchemyCompleteScreen({
                   onClick={handleCoopNo}
                   className={cn(
                     'flex-1 py-3',
-                    'bg-white dark:bg-gray-800',
+                    'bg-gray-200 dark:bg-gray-700',
                     'text-gray-800 dark:text-gray-200',
                     'dark:border-gray-600',
                     'rounded-xl font-bold',
                     '',
-                    'hover:bg-gray-50 dark:hover:bg-gray-700',
+                    'hover:bg-gray-300 dark:hover:bg-gray-600',
                     '',
                     'active:translate-y-0',
                     'transition-all duration-150'
@@ -546,12 +564,12 @@ export function DailyAlchemyCompleteScreen({
             onClick={handleFreePlayClick}
             className={cn(
               'w-full max-w-sm flex items-center justify-center gap-2 py-3',
-              'bg-white dark:bg-gray-800',
+              'bg-gray-200 dark:bg-gray-700',
               'text-gray-800 dark:text-gray-200',
               'dark:border-gray-600',
               'rounded-xl font-bold',
               'dark:',
-              'hover:bg-gray-50 dark:hover:bg-gray-700',
+              'hover:bg-gray-300 dark:hover:bg-gray-600',
               ' hover:',
               '',
               'transition-all duration-150',

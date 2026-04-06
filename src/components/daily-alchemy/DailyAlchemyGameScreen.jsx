@@ -2,7 +2,8 @@
 
 import { useEffect, useState, useRef, useCallback } from 'react';
 import { AnimatePresence, motion, useMotionValue, useAnimation, animate } from 'framer-motion';
-import { Check, Loader2, ChevronUp, ChevronDown, FolderOpen, Save } from 'lucide-react';
+import { Check, Loader2, ChevronUp, ChevronDown, FolderOpen, Save, X } from 'lucide-react';
+import Image from 'next/image';
 import html2canvas from 'html2canvas';
 import { cn } from '@/lib/utils';
 import { useTheme } from '@/contexts/ThemeContext';
@@ -621,6 +622,8 @@ export function DailyAlchemyGameScreen({
   isAnonymous = false,
   onSignUpCTA,
 }) {
+  const { highContrast } = useTheme();
+
   // Calculate discovered elements (excluding starters) - use unfiltered elementBank for accurate count
   const discoveredCount = elementBank.length - STARTER_ELEMENTS.length;
   // Check if target is found (not applicable in free play mode)
@@ -821,10 +824,69 @@ export function DailyAlchemyGameScreen({
         </div>
       )}
 
+      {/* Desktop-only full-width hint banner */}
+      <AnimatePresence>
+        {currentHintMessage && (
+          <motion.div
+            initial={{ opacity: 0, y: -10, height: 0 }}
+            animate={{ opacity: 1, y: 0, height: 'auto' }}
+            exit={{ opacity: 0, y: -10, height: 0 }}
+            className="hidden lg:block"
+          >
+            <div
+              className={cn(
+                'px-4 py-2.5 rounded-lg flex items-center gap-2',
+                highContrast
+                  ? 'bg-hc-warning border-hc-warning'
+                  : 'bg-accent-yellow dark:bg-yellow-600 border-accent-yellow dark:border-yellow-700'
+              )}
+            >
+              <Image
+                src="/ui/shared/hint.png"
+                alt=""
+                width={20}
+                height={20}
+                className="w-5 h-5 flex-shrink-0"
+              />
+              <p
+                className={cn(
+                  'text-sm flex-1',
+                  highContrast
+                    ? 'text-hc-text font-bold'
+                    : 'text-gray-900 dark:text-gray-100 font-semibold'
+                )}
+              >
+                {currentHintMessage}
+              </p>
+              {onClearHintMessage && (
+                <button
+                  onClick={onClearHintMessage}
+                  className={cn(
+                    'p-1 rounded-lg transition-colors flex-shrink-0',
+                    highContrast
+                      ? 'hover:bg-hc-surface focus:bg-hc-surface'
+                      : 'hover:bg-yellow-500 dark:hover:bg-yellow-700 focus:bg-yellow-500 dark:focus:bg-yellow-700',
+                    'focus:outline-none focus:ring-2 focus:ring-yellow-800'
+                  )}
+                  aria-label="Dismiss hint"
+                >
+                  <X
+                    className={cn(
+                      'w-4 h-4',
+                      highContrast ? 'text-hc-text' : 'text-gray-900 dark:text-gray-100'
+                    )}
+                  />
+                </button>
+              )}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Main game area - side-by-side on desktop, stacked on mobile */}
       <div className="flex-1 min-h-0 flex flex-col lg:flex-row gap-3 lg:gap-4">
         {/* Left column: Combination Area + Favorites on desktop */}
-        <div className="flex-shrink-0 lg:w-[340px] lg:flex lg:flex-col lg:gap-3">
+        <div className="flex-shrink-0 lg:w-[400px] lg:flex lg:flex-col lg:gap-3">
           <CombinationArea
             selectedA={selectedA}
             selectedB={selectedB}
@@ -843,8 +905,8 @@ export function DailyAlchemyGameScreen({
             activeSlot={activeSlot}
           />
 
-          {/* Embedded Favorites - desktop only */}
-          <div className="hidden lg:block lg:flex-1 lg:min-h-0">
+          {/* Embedded Favorites - desktop only, capped height */}
+          <div className="hidden lg:block lg:max-h-[280px]">
             <EmbeddedFavorites
               elements={elementBank}
               favoriteElements={favoriteElements}

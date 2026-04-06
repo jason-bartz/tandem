@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { X } from 'lucide-react';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useHaptics } from '@/hooks/useHaptics';
@@ -43,28 +43,43 @@ export default function AnnouncementBanner() {
     lightTap();
     setDismissed(true);
     if (announcement) {
-      localStorage.setItem(DISMISSED_KEY, String(announcement.id));
+      try {
+        localStorage.setItem(DISMISSED_KEY, String(announcement.id));
+      } catch {
+        // Storage quota exceeded
+      }
     }
   };
 
   const showBanner = loaded && announcement && !dismissed;
-  const showNothing = loaded && (!announcement || dismissed);
 
+  // Use a wrapper that transitions from 0 height to auto, avoiding layout shift.
+  // Before loaded: render nothing (skeleton handles the space).
+  // After loaded with no announcement: collapse smoothly to 0.
+  // After loaded with announcement: expand smoothly to auto.
   return (
-    <AnimatePresence initial={false}>
+    <motion.div
+      initial={false}
+      animate={
+        reduceMotion
+          ? { opacity: showBanner ? 1 : 0 }
+          : {
+              height: showBanner ? 'auto' : 0,
+              marginBottom: showBanner ? 16 : 0,
+              opacity: showBanner ? 1 : 0,
+            }
+      }
+      transition={{ duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
+      className="overflow-hidden"
+      style={!showBanner && reduceMotion ? { height: 0, marginBottom: 0 } : undefined}
+    >
       {showBanner && (
-        <motion.div
-          key="announcement"
-          initial={reduceMotion ? { opacity: 0 } : { opacity: 0, height: 0, marginBottom: 0 }}
-          animate={reduceMotion ? { opacity: 1 } : { opacity: 1, height: 'auto', marginBottom: 16 }}
-          exit={reduceMotion ? { opacity: 0 } : { opacity: 0, height: 0, marginBottom: 0 }}
-          transition={{ duration: 0.35, ease: [0.25, 0.1, 0.25, 1] }}
-          className={`relative rounded-lg px-4 pt-3 pb-3 overflow-hidden ${
+        <div
+          className={`relative rounded-lg px-4 pt-3 pb-3 ${
             highContrast
               ? 'bg-hc-surface text-hc-text'
               : 'bg-bg-surface dark:bg-bg-card text-text-secondary'
           }`}
-          style={reduceMotion ? { marginBottom: 16 } : undefined}
           role="status"
           aria-live="polite"
         >
@@ -86,9 +101,8 @@ export default function AnnouncementBanner() {
           >
             {announcement.text}
           </p>
-        </motion.div>
+        </div>
       )}
-      {showNothing && null}
-    </AnimatePresence>
+    </motion.div>
   );
 }

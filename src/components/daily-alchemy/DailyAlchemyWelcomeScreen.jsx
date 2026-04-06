@@ -178,11 +178,11 @@ export function DailyAlchemyWelcomeScreen({
         onClick={handleFreePlayClick}
         className={cn(
           'w-full max-w-sm flex items-center justify-center gap-3 py-4 mt-3',
-          'bg-ghost-white dark:bg-gray-800 text-gray-800 dark:text-gray-200',
+          'bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200',
           'dark:border-gray-600',
           'rounded-xl font-bold text-lg',
           'dark:',
-          'hover:bg-gray-50 dark:hover:bg-gray-700',
+          'hover:bg-gray-300 dark:hover:bg-gray-600',
           ' hover:',
           'active:translate-y-0',
           'transition-all duration-150',
@@ -198,7 +198,7 @@ export function DailyAlchemyWelcomeScreen({
 
       {/* Creative Mode Description */}
       <motion.p
-        className="w-full max-w-sm text-center text-sm text-gray-500 dark:text-gray-400 mt-3 px-4"
+        className="w-full max-w-sm text-sm text-gray-500 dark:text-gray-400 mt-3"
         initial={!reduceMotion ? { opacity: 0 } : false}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.53 }}
@@ -244,7 +244,7 @@ export function DailyAlchemyWelcomeScreen({
 
       {/* Co-op Mode Description */}
       <motion.p
-        className="w-full max-w-sm text-center text-sm text-gray-500 dark:text-gray-400 mb-3 px-4"
+        className="w-full max-w-sm text-sm text-gray-500 dark:text-gray-400 mb-3"
         initial={!reduceMotion ? { opacity: 0 } : false}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.6 }}

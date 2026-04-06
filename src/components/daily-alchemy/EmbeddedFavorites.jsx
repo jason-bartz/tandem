@@ -1,8 +1,7 @@
 'use client';
 
 import { useState, useCallback } from 'react';
-import { Trash2 } from 'lucide-react';
-import Image from 'next/image';
+import { Trash2, BrushCleaning } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useTheme } from '@/contexts/ThemeContext';
 import ElementChip from './ElementChip';
@@ -116,7 +115,7 @@ export function EmbeddedFavorites({
   return (
     <div
       className={cn(
-        'flex flex-col h-full',
+        'flex flex-col h-full lg:h-auto lg:max-h-full',
         'bg-bg-card dark:bg-gray-800',
         'dark:border-gray-600',
         'rounded-xl',
@@ -142,13 +141,7 @@ export function EmbeddedFavorites({
             aria-label="Clear all favorites"
             title="Clear all favorites"
           >
-            <Image
-              src="/ui/shared/broom.png"
-              alt="Clear all"
-              width={18}
-              height={18}
-              className="w-[18px] h-[18px]"
-            />
+            <BrushCleaning className="w-4 h-4 text-gray-400 dark:text-gray-500" />
           </button>
         )}
       </div>

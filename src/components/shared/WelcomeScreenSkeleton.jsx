@@ -196,6 +196,13 @@ export default function WelcomeScreenSkeleton() {
             />
           </div>
 
+          {/* Announcement Skeleton - reserves space to prevent layout shift */}
+          <div
+            className={`h-11 mb-4 rounded-lg bg-gray-200 dark:bg-gray-700 ${
+              !reduceMotion ? 'skeleton-shimmer' : ''
+            }`}
+          />
+
           {/* Game Cards Skeleton */}
           <div className="space-y-4">
             <GameCardSkeleton
