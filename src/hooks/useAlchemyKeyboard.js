@@ -10,7 +10,7 @@ export const KEYBOARD_SHORTCUTS = [
     category: 'Navigate',
     shortcuts: [
       { keys: ['W', 'A', 'S', 'D'], description: 'Move through elements' },
-      { keys: ['Enter'], description: 'Select element / Combine' },
+      { keys: ['Enter'], description: 'Select focused element' },
       { keys: ['F'], description: 'Favorite focused element' },
       { keys: ['/'], description: 'Search' },
       { keys: ['R'], description: 'Cycle sort order' },
@@ -19,6 +19,7 @@ export const KEYBOARD_SHORTCUTS = [
   {
     category: 'Combine',
     shortcuts: [
+      { keys: ['Enter'], description: 'Combine elements' },
       { keys: ['Tab'], description: 'Switch slot' },
       { keys: ['Esc'], description: 'Deselect / Dismiss' },
       { keys: ['+', '-'], description: 'Combine / Subtract mode' },
