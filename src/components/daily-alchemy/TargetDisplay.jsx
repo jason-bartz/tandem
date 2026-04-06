@@ -73,24 +73,14 @@ export function StatsAndTargetRow({
   hintDisabled = false,
   hintCooldownRemaining = 0,
   isCountdown = false,
-  centered = false, // When true, centers the target with stats on right
+  centered: _centered = false, // When true, centers the target with stats on right
 }) {
   // Determine timer warning state for countdown mode
   const isLowTime = isCountdown && time <= 60; // Last minute
   const isCriticalTime = isCountdown && time <= 30; // Last 30 seconds
 
   return (
-    <div
-      className={cn(
-        'flex items-center mb-3',
-        // On mobile: always justify-between (left-aligned target, right-aligned stats)
-        // On desktop with centered: center the target
-        centered ? 'justify-between lg:justify-center' : 'justify-between'
-      )}
-    >
-      {/* Spacer for centering - only visible on desktop when centered */}
-      {centered && <div className="hidden lg:block lg:flex-1" />}
-
+    <div className="flex items-center mb-3 justify-between">
       {/* Center - Target */}
       <TargetDisplay
         targetElement={targetElement}
@@ -99,7 +89,7 @@ export function StatsAndTargetRow({
       />
 
       {/* Right side - Stats and Hints */}
-      <div className={cn('flex items-center gap-3', centered && 'lg:flex-1 lg:justify-end')}>
+      <div className="flex items-center gap-3">
         {/* Hint Button - unlimited hints */}
         {onUseHint && (
           <button
