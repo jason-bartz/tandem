@@ -1709,7 +1709,7 @@ const ReelConnectionsGame = ({ titleFont = '' }) => {
                     </p>
                     <button
                       onClick={onStartGame}
-                      className={`mx-auto flex items-center gap-2 px-6 sm:px-8 py-2.5 sm:py-3 rounded-lg hover:scale-105 transition-all font-bold text-base sm:text-lg tracking-wide ${highContrast ? 'bg-hc-primary text-hc-primary-text' : 'bg-accent-yellow text-gray-900'}`}
+                      className={`mx-auto flex items-center gap-2 px-6 sm:px-8 py-2.5 sm:py-3 rounded-lg hover:scale-105 transition-all font-bold text-base sm:text-lg tracking-wide ${highContrast ? 'bg-hc-primary text-hc-primary-text' : 'bg-yellow-400 text-gray-900 hover:bg-yellow-300'}`}
                     >
                       Action!
                       <Image
@@ -1724,6 +1724,9 @@ const ReelConnectionsGame = ({ titleFont = '' }) => {
                         className="w-5 h-5 sm:w-6 sm:h-6"
                       />
                     </button>
+                    <p className={`hidden sm:block text-xs mt-2 text-center ${highContrast ? 'text-hc-text/50' : 'text-white/40'}`}>
+                      Press Enter to begin
+                    </p>
                   </div>
                 </div>
               )}

@@ -361,10 +361,10 @@ export default function SidebarMenu({
 
                     <button
                       onClick={() => handleNavigation('/account')}
-                      className={`w-full p-3 text-white rounded-xl text-sm font-bold transition-all ${
+                      className={`w-full p-3 rounded-xl text-sm font-bold transition-all ${
                         highContrast
                           ? 'bg-hc-primary text-hc-primary-text border-2 border-hc-border hover:bg-hc-focus'
-                          : 'bg-accent-blue hover:bg-blue-600'
+                          : 'bg-accent-blue text-gray-900 hover:bg-blue-600 hover:text-white'
                       }`}
                     >
                       Sign In / Create Account

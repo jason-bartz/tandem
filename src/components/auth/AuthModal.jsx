@@ -308,10 +308,10 @@ export default function AuthModal({
       {/* Success message */}
       {successMessage && (
         <div
-          className={`mb-4 p-3 border-2 rounded-lg relative ${
+          className={`mb-4 p-3 rounded-lg relative ${
             highContrast
-              ? 'bg-hc-surface border-hc-success text-hc-success-text'
-              : 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800'
+              ? 'bg-hc-surface border-2 border-hc-success text-hc-success-text'
+              : 'bg-green-50 dark:bg-green-900/20'
           }`}
         >
           <button
@@ -341,10 +341,10 @@ export default function AuthModal({
       {/* Error message */}
       {error && (
         <div
-          className={`mb-4 p-3 border-2 rounded-lg ${
+          className={`mb-4 p-3 rounded-lg ${
             highContrast
-              ? 'bg-hc-surface border-hc-error'
-              : 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800'
+              ? 'bg-hc-surface border-2 border-hc-error'
+              : 'bg-red-50 dark:bg-red-900/20'
           }`}
         >
           <p className={`text-sm ${highContrast ? 'text-hc-error' : 'text-accent-red'}`}>
@@ -361,12 +361,12 @@ export default function AuthModal({
         disabled={loading}
         type="button"
         aria-label={mode === 'signup' ? 'Sign up with Google' : 'Sign in with Google'}
-        className={`w-full p-4 rounded-lg border-2 transition-all flex items-center justify-center gap-3 mb-4 ${
-          loading ? 'opacity-50 cursor-not-allowed' : 'hover:opacity-90'
+        className={`w-full p-4 rounded-md transition-all flex items-center justify-center gap-3 mb-4 ${
+          loading ? 'opacity-50 cursor-not-allowed' : 'hover:scale-105'
         } ${
           highContrast
-            ? 'bg-hc-surface text-hc-text border-hc-border'
-            : 'bg-bg-surface dark:bg-bg-card text-text-primary border-border-main'
+            ? 'bg-hc-surface text-hc-text border-2 border-hc-border'
+            : 'bg-bg-surface dark:bg-gray-700 text-text-primary'
         }`}
       >
         {loading ? (
@@ -405,8 +405,8 @@ export default function AuthModal({
           disabled={loading}
           type="button"
           aria-label="Sign in with Apple"
-          className={`w-full p-4 rounded-lg border-2 dark:transition-all flex items-center justify-center gap-3 mb-4 ${
-            loading ? 'opacity-50 cursor-not-allowed' : ' hover:dark:hover:'
+          className={`w-full p-4 rounded-md transition-all flex items-center justify-center gap-3 mb-4 ${
+            loading ? 'opacity-50 cursor-not-allowed' : 'hover:scale-105'
           } bg-black text-white`}
         >
           {loading ? (
@@ -434,8 +434,8 @@ export default function AuthModal({
         disabled={loading}
         type="button"
         aria-label={mode === 'signup' ? 'Sign up with Discord' : 'Sign in with Discord'}
-        className={`w-full p-4 rounded-lg border-2 dark:transition-all flex items-center justify-center gap-3 mb-4 ${
-          loading ? 'opacity-50 cursor-not-allowed' : ' hover:dark:hover:'
+        className={`w-full p-4 rounded-md transition-all flex items-center justify-center gap-3 mb-4 ${
+          loading ? 'opacity-50 cursor-not-allowed' : 'hover:scale-105'
         } bg-[#5865F2] text-white`}
       >
         {loading ? (
@@ -470,10 +470,10 @@ export default function AuthModal({
             id="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none ${
+            className={`w-full px-4 py-3 rounded-md focus:outline-none transition-all ${
               highContrast
-                ? 'bg-hc-surface border-hc-border text-hc-text focus:border-hc-focus ring-hc-focus'
-                : 'border-border-main bg-bg-surface dark:bg-bg-card text-text-primary focus:border-primary'
+                ? 'bg-hc-surface border-2 border-hc-border text-hc-text focus:border-hc-focus'
+                : 'bg-bg-surface dark:bg-gray-700 text-text-primary border-2 border-transparent focus:border-primary'
             }`}
             placeholder="you@example.com"
             required
@@ -530,10 +530,10 @@ export default function AuthModal({
         <button
           type="submit"
           disabled={loading}
-          className={`w-full p-4 rounded-md text-base font-bold cursor-pointer transition-all tracking-wider disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none ${
+          className={`w-full p-4 rounded-md text-base font-bold cursor-pointer transition-all tracking-wider disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none hover:scale-105 ${
             highContrast
               ? 'bg-hc-primary text-hc-primary-text border-2 border-hc-border'
-              : 'text-white bg-accent-pink dark: hover:dark:hover:'
+              : 'text-white bg-accent-pink hover:opacity-90'
           }`}
         >
           {loading
