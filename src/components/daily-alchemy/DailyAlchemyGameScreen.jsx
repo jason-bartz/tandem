@@ -641,7 +641,6 @@ export function DailyAlchemyGameScreen({
     activeSlot,
     setActiveSlot,
     combineElements,
-    clearSelections,
     deselectLastSelected,
     isCombining,
     isAnimating,
@@ -650,13 +649,9 @@ export function DailyAlchemyGameScreen({
     selectResultElement,
     toggleOperatorMode,
     isSubtractMode,
-    onUseHint,
-    hintCooldown,
     toggleFavorite: onToggleFavorite,
     onToggleFavoritesPanel,
     showFavoritesPanel,
-    setSortOrder,
-    sortOrder,
     isComplete,
     freePlayMode,
     disabled: isCombining || (isComplete && !freePlayMode),
@@ -895,7 +890,7 @@ export function DailyAlchemyGameScreen({
         </div>
       </div>
 
-      {/* Keyboard shortcut hint — desktop only, hidden once keyboard is active */}
+      {/* Keyboard shortcut hint — desktop only */}
       <div className="hidden lg:block">
         <button
           onClick={() => setShowHelp(true)}
@@ -910,10 +905,13 @@ export function DailyAlchemyGameScreen({
           )}
           aria-label="Show keyboard shortcuts"
         >
-          <kbd className="px-1 py-0.5 bg-gray-100 dark:bg-gray-700 rounded text-[10px] font-mono font-medium border border-gray-300 dark:border-gray-600">
-            ?
-          </kbd>
-          <span>Shortcuts</span>
+          <span>
+            Press{' '}
+            <kbd className="px-1 py-0.5 bg-gray-100 dark:bg-gray-700 rounded text-[10px] font-mono font-medium border border-gray-300 dark:border-gray-600">
+              ?
+            </kbd>{' '}
+            for keyboard shortcuts
+          </span>
         </button>
       </div>
 

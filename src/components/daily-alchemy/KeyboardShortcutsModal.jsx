@@ -47,7 +47,7 @@ export function KeyboardShortcutsModal({ isOpen, onClose }) {
           <motion.div
             ref={modalRef}
             className={cn(
-              'relative z-10 w-full max-w-2xl',
+              'relative z-10 w-full max-w-sm',
               'bg-bg-card dark:bg-gray-800',
               'rounded-2xl',
               highContrast && 'border-2 border-hc-border'
@@ -83,7 +83,7 @@ export function KeyboardShortcutsModal({ isOpen, onClose }) {
             </div>
 
             {/* Two-column grid of shortcut categories */}
-            <div className="px-5 pb-4 grid grid-cols-2 gap-x-6 gap-y-3">
+            <div className="px-5 pb-4 space-y-3">
               {KEYBOARD_SHORTCUTS.map((category) => (
                 <div key={category.category}>
                   <h3
@@ -149,7 +149,7 @@ export function KeyboardShortcutsModal({ isOpen, onClose }) {
                 <kbd className="px-1 py-0.5 bg-gray-100 dark:bg-gray-700 rounded-md text-[10px] font-mono border border-gray-300 dark:border-gray-600">
                   ?
                 </kbd>{' '}
-                to toggle
+                to close
               </span>
             </div>
           </motion.div>
