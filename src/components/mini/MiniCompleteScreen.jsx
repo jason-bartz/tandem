@@ -7,10 +7,11 @@ import confetti from 'canvas-confetti';
 import { useHaptics } from '@/hooks/useHaptics';
 import { useTheme } from '@/contexts/ThemeContext';
 
-import { playSuccessSound } from '@/lib/sounds';
+import { playMiniCompletionSound, stopAmbientTexture } from '@/lib/sounds';
 import { useAuth } from '@/contexts/AuthContext';
 import { formatMiniTime, getMiniPuzzleInfoForDate } from '@/lib/miniUtils';
 import { generateMiniShareText } from '@/lib/miniShareText';
+import { formatDateFull } from '@/lib/utils';
 import { loadMiniStats } from '@/lib/miniStorage';
 import ShareButton from '../game/ShareButton';
 import ShareImageCard from '@/components/shared/ShareImageCard';
@@ -81,7 +82,8 @@ export default function MiniCompleteScreen({
   useEffect(() => {
     // Haptic and sound feedback
     celebration();
-    playSuccessSound();
+    stopAmbientTexture();
+    playMiniCompletionSound();
 
     // Confetti animation (yellow theme)
     if (!reduceMotion) {
@@ -279,7 +281,7 @@ export default function MiniCompleteScreen({
             <ShareButton shareText={shareText} />
             <ShareImageCard
               gameName="Daily Mini"
-              date={currentPuzzleDate || ''}
+              date={currentPuzzleDate ? formatDateFull(currentPuzzleDate) : ''}
               emoji="✏️"
               message={
                 checksUsed === 0 && revealsUsed === 0 && mistakes === 0 ? 'Perfect Solve!' : ''

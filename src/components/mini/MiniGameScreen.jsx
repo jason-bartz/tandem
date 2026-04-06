@@ -18,7 +18,7 @@ import { useTheme } from '@/contexts/ThemeContext';
 import { useHaptics } from '@/hooks/useHaptics';
 import { formatMiniTime, isEditableCell, GRID_SIZE } from '@/lib/miniUtils';
 import { formatDateShort } from '@/lib/utils';
-import { playButtonTone } from '@/lib/sounds';
+import { playMiniStartSound, startAmbientTexture } from '@/lib/sounds';
 import logger from '@/lib/logger';
 
 /**
@@ -77,7 +77,8 @@ export default function MiniGameScreen({
   // Handle start button click
   const handleStartClick = () => {
     try {
-      playButtonTone();
+      playMiniStartSound();
+      startAmbientTexture('mini');
       mediumTap();
     } catch (e) {
       // Sound might fail

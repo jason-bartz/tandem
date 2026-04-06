@@ -13,9 +13,10 @@ import {
   DIFFICULTY_COLORS_HC,
   DIFFICULTY_ORDER,
 } from '@/lib/reel-connections.constants';
-import { playClapperSound } from '@/lib/sounds';
+import { playClapperSoundSynthesized, startAmbientTexture, stopAmbientTexture } from '@/lib/sounds';
 import { useHaptics } from '@/hooks/useHaptics';
 import { useTheme } from '@/contexts/ThemeContext';
+import { formatDateFull } from '@/lib/utils';
 import ReelConnectionsLoadingSkeleton from './ReelConnectionsLoadingSkeleton';
 import SidebarMenu from '@/components/navigation/SidebarMenu';
 import UnifiedStatsModal from '@/components/stats/UnifiedStatsModal';
@@ -418,10 +419,8 @@ const ReelConnectionsGame = ({ titleFont = '' }) => {
       setShowingCompletedPuzzle(true);
       setShowCompleteScreen(false);
 
-      // Play clapping sound
-      const clappingAudio = new Audio('/sounds/human_clapping_8_people.mp3');
-      clappingAudio.volume = 0.26;
-      clappingAudio.play().catch(() => {});
+      // Stop ambient (applause + completion sound play from the hook after reveal)
+      stopAmbientTexture();
 
       // After 2 seconds, transition to celebration screen
       const timer = setTimeout(() => {
@@ -456,7 +455,8 @@ const ReelConnectionsGame = ({ titleFont = '' }) => {
   const onStartGame = useCallback(() => {
     // Close the clapper and play sound
     setClapperClosed(true);
-    playClapperSound();
+    playClapperSoundSynthesized();
+    startAmbientTexture('reel');
 
     // Delay before starting the game to let the animation play
     setTimeout(() => {
@@ -1017,7 +1017,7 @@ const ReelConnectionsGame = ({ titleFont = '' }) => {
                   </button>
                   <ShareImageCard
                     gameName="Reel Connections"
-                    date={puzzle?.date || ''}
+                    date={puzzle?.date ? formatDateFull(puzzle.date) : ''}
                     emoji="🎬"
                     message={mistakes === 0 ? 'Flawless!' : ''}
                     stats={[
@@ -1025,9 +1025,9 @@ const ReelConnectionsGame = ({ titleFont = '' }) => {
                       { label: 'Mistakes', value: String(mistakes) },
                       { label: 'Groups', value: `${solvedGroups.length}/4` },
                     ]}
-                    accentColor="bg-accent-yellow"
+                    accentColor="bg-accent-red"
                     buttonLabel="Share as Image"
-                    buttonClassName="bg-gray-800 text-white border-gray-600 hover:bg-gray-700"
+                    buttonClassName="bg-bg-surface dark:bg-gray-700 text-text-primary border-border-main hover:bg-gray-200 dark:hover:bg-gray-600"
                   />
                 </>
               )}
@@ -1103,8 +1103,8 @@ const ReelConnectionsGame = ({ titleFont = '' }) => {
               rel="noopener noreferrer"
               className={`w-full mt-6 p-4 flex items-center gap-3 rounded-xl transition-colors cursor-pointer text-left ${
                 highContrast
-                  ? 'bg-hc-background border-hc-border hover:bg-hc-surface'
-                  : 'bg-white/90 border-white/30 hover:bg-white hover:border-white/50'
+                  ? 'bg-hc-surface border-2 border-hc-border hover:bg-hc-focus'
+                  : 'bg-gray-50 dark:bg-gray-800 border-2 border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 hover:border-gray-400 dark:hover:border-gray-500'
               }`}
             >
               {/* Discord Logo */}
@@ -1126,7 +1126,9 @@ const ReelConnectionsGame = ({ titleFont = '' }) => {
                     New
                   </span>
                 </div>
-                <p className={`text-xs ${highContrast ? 'text-hc-text/70' : 'text-gray-600'}`}>
+                <p
+                  className={`text-xs ${highContrast ? 'text-hc-text/70' : 'text-gray-500 dark:text-gray-400'}`}
+                >
                   Share your favorite movies, discuss film recommendations, and report bugs
                 </p>
               </div>

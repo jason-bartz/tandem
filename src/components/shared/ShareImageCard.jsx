@@ -126,6 +126,10 @@ export default function ShareImageCard({
                 <div
                   key={i}
                   style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
                     textAlign: 'center',
                     padding: '12px 8px',
                     background: '#F3F4F6',

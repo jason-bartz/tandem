@@ -36,6 +36,9 @@ export function generateMiniShareText(puzzle, stats) {
   // Time line with clock emoji
   lines.push(`⏰ ${timeStr}`);
 
+  lines.push('');
+  lines.push('tandemdaily.com');
+
   return lines.join('\n');
 }
 
@@ -92,7 +95,7 @@ export function generateMiniShareTextWithGrid(puzzle, stats, solveOrder = null) 
   }
 
   lines.push('');
-  lines.push('Play at tandemgame.com');
+  lines.push('Play at tandemdaily.com');
 
   return lines.join('\n');
 }
@@ -180,7 +183,7 @@ export function generateMiniStatsSummary(stats) {
   }
 
   lines.push('');
-  lines.push('Play at tandemgame.com');
+  lines.push('Play at tandemdaily.com');
 
   return lines.join('\n');
 }
@@ -216,7 +219,7 @@ export function generateStreakAnnouncement(streak) {
 
   lines.push('');
   lines.push('Daily Mini');
-  lines.push('tandemgame.com');
+  lines.push('tandemdaily.com');
 
   return lines.join('\n');
 }

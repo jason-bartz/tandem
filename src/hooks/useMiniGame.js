@@ -28,7 +28,7 @@ import {
   DIRECTION,
 } from '@/lib/miniUtils';
 import logger from '@/lib/logger';
-import { playCorrectSound } from '@/lib/sounds';
+import { playMiniCorrectSound } from '@/lib/sounds';
 import { getApiUrl, capacitorFetch } from '@/lib/api-config';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -645,7 +645,7 @@ export function useMiniGame(providedDate = null) {
     setUserGrid(newGrid);
     setRevealsUsed((prev) => prev + 1);
     setCorrectCells((prev) => new Set(prev).add(`${row},${col}`));
-    playCorrectSound();
+    playMiniCorrectSound();
   }, [selectedCell, userGrid, solutionGrid]);
 
   /**
@@ -664,7 +664,7 @@ export function useMiniGame(providedDate = null) {
 
     setUserGrid(newGrid);
     setRevealsUsed((prev) => prev + 1);
-    playCorrectSound();
+    playMiniCorrectSound();
   }, [userGrid, solutionGrid, currentClue]);
 
   /**

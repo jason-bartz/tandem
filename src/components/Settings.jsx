@@ -30,6 +30,8 @@ import avatarService from '@/services/avatar.service';
 import { useUnifiedSync } from '@/hooks/useUnifiedSync';
 import LeftSidePanel from '@/components/shared/LeftSidePanel';
 import logger from '@/lib/logger';
+import { getSoundSettings, updateSoundSettings } from '@/lib/soundSettings';
+import { playTandemCorrectSound } from '@/lib/sounds';
 
 export default function Settings({ isOpen, onClose, openPaywall = false }) {
   const [notificationSettings, setNotificationSettings] = useState(null);
@@ -39,6 +41,7 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
   const [hardModeEnabled, setHardModeEnabled] = useState(false);
   const [userAvatar, setUserAvatar] = useState(null);
   const [showAvatarModal, setShowAvatarModal] = useState(false);
+  const [soundSettings, setSoundSettings] = useState(getSoundSettings);
   const { correctAnswer: successHaptic, lightTap } = useHaptics();
   const { theme, toggleTheme, highContrast, toggleHighContrast, reduceMotion, toggleReduceMotion } =
     useTheme();
@@ -370,7 +373,7 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
                         className={`${
                           hardModeEnabled ? 'translate-x-[2.125rem]' : 'translate-x-0.5'
                         } inline-flex h-7 w-7 items-center justify-center transform rounded-full transition-transform duration-200 ${
-                          highContrast ? 'bg-hc-background' : 'bg-white dark:bg-gray-200'
+                          highContrast ? 'bg-hc-background' : 'bg-ghost-white dark:bg-gray-200'
                         }`}
                       >
                         <img
@@ -639,6 +642,213 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
             </div>
           )}
 
+          {/* Sound Section */}
+          <div className="mb-8">
+            <div
+              className={`rounded-lg border-2 overflow-hidden dark: ${
+                highContrast ? 'border-hc-border bg-hc-surface' : 'bg-bg-card dark:bg-gray-800'
+              }`}
+            >
+              <div
+                className={`px-5 py-3 border-b-2 ${
+                  highContrast ? 'border-hc-border' : 'border-gray-300 dark:border-gray-600'
+                }`}
+              >
+                <h3 className="text-base font-bold text-gray-800 dark:text-gray-200">Sound</h3>
+              </div>
+
+              <div className="p-5 space-y-4">
+                {/* Sound Effects Toggle */}
+                <div className="flex items-center justify-between">
+                  <div className="flex-1">
+                    <p
+                      className={`text-sm font-medium ${
+                        highContrast ? 'text-hc-text' : 'text-gray-700 dark:text-gray-200'
+                      }`}
+                    >
+                      Sound Effects
+                    </p>
+                    <p
+                      className={`text-xs ${
+                        highContrast ? 'text-hc-text' : 'text-gray-500 dark:text-gray-400'
+                      }`}
+                    >
+                      Game sounds and feedback
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => {
+                      const next = updateSoundSettings({
+                        masterEnabled: !soundSettings.masterEnabled,
+                      });
+                      setSoundSettings({ ...next });
+                      if (next.masterEnabled) playTandemCorrectSound();
+                      lightTap();
+                    }}
+                    className={`relative inline-flex h-9 w-[4.5rem] items-center rounded-full transition-colors duration-200 ${
+                      highContrast
+                        ? soundSettings.masterEnabled
+                          ? 'bg-hc-primary'
+                          : 'bg-hc-surface border-2 border-hc-border'
+                        : soundSettings.masterEnabled
+                          ? 'bg-green-500'
+                          : 'bg-gray-300 dark:bg-gray-600'
+                    }`}
+                    role="switch"
+                    aria-checked={soundSettings.masterEnabled}
+                  >
+                    <span
+                      className={`${
+                        soundSettings.masterEnabled ? 'translate-x-[2.125rem]' : 'translate-x-0.5'
+                      } inline-flex h-7 w-7 items-center justify-center transform rounded-full transition-transform duration-200 ${
+                        highContrast ? 'bg-hc-background' : 'bg-ghost-white dark:bg-gray-200'
+                      }`}
+                    >
+                      <img
+                        src={
+                          soundSettings.masterEnabled
+                            ? '/ui/shared/volume-on.png'
+                            : '/ui/shared/volume-mute.png'
+                        }
+                        alt={soundSettings.masterEnabled ? 'Sound on' : 'Sound off'}
+                        className="w-4 h-4"
+                      />
+                    </span>
+                  </button>
+                </div>
+
+                {/* Sub-toggles (only shown when master is on) */}
+                {soundSettings.masterEnabled && (
+                  <div className="space-y-3 pt-3 border-t border-gray-200 dark:border-gray-700">
+                    {/* Keypress Sounds */}
+                    <div className="flex items-center justify-between">
+                      <p
+                        className={`text-sm ${
+                          highContrast ? 'text-hc-text' : 'text-gray-600 dark:text-gray-300'
+                        }`}
+                      >
+                        Keypress Sounds
+                      </p>
+                      <button
+                        onClick={() => {
+                          const next = updateSoundSettings({
+                            keypressEnabled: !soundSettings.keypressEnabled,
+                          });
+                          setSoundSettings({ ...next });
+                          lightTap();
+                        }}
+                        className={`relative inline-flex h-7 w-14 items-center rounded-full transition-colors duration-200 ${
+                          highContrast
+                            ? soundSettings.keypressEnabled
+                              ? 'bg-hc-primary'
+                              : 'bg-hc-surface border-2 border-hc-border'
+                            : soundSettings.keypressEnabled
+                              ? 'bg-green-500'
+                              : 'bg-gray-300 dark:bg-gray-600'
+                        }`}
+                        role="switch"
+                        aria-checked={soundSettings.keypressEnabled}
+                      >
+                        <span
+                          className={`${
+                            soundSettings.keypressEnabled
+                              ? 'translate-x-[1.875rem]'
+                              : 'translate-x-0.5'
+                          } inline-block h-5 w-5 transform rounded-full transition-transform duration-200 ${
+                            highContrast ? 'bg-hc-background' : 'bg-ghost-white dark:bg-gray-200'
+                          }`}
+                        />
+                      </button>
+                    </div>
+
+                    {/* Ambient Sounds */}
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p
+                          className={`text-sm ${
+                            highContrast ? 'text-hc-text' : 'text-gray-600 dark:text-gray-300'
+                          }`}
+                        >
+                          Ambient Sounds
+                        </p>
+                        <p
+                          className={`text-xs ${
+                            highContrast ? 'text-hc-text' : 'text-gray-400 dark:text-gray-500'
+                          }`}
+                        >
+                          Subtle background atmosphere
+                        </p>
+                      </div>
+                      <button
+                        onClick={() => {
+                          const next = updateSoundSettings({
+                            ambientEnabled: !soundSettings.ambientEnabled,
+                          });
+                          setSoundSettings({ ...next });
+                          lightTap();
+                        }}
+                        className={`relative inline-flex h-7 w-14 items-center rounded-full transition-colors duration-200 ${
+                          highContrast
+                            ? soundSettings.ambientEnabled
+                              ? 'bg-hc-primary'
+                              : 'bg-hc-surface border-2 border-hc-border'
+                            : soundSettings.ambientEnabled
+                              ? 'bg-green-500'
+                              : 'bg-gray-300 dark:bg-gray-600'
+                        }`}
+                        role="switch"
+                        aria-checked={soundSettings.ambientEnabled}
+                      >
+                        <span
+                          className={`${
+                            soundSettings.ambientEnabled
+                              ? 'translate-x-[1.875rem]'
+                              : 'translate-x-0.5'
+                          } inline-block h-5 w-5 transform rounded-full transition-transform duration-200 ${
+                            highContrast ? 'bg-hc-background' : 'bg-ghost-white dark:bg-gray-200'
+                          }`}
+                        />
+                      </button>
+                    </div>
+
+                    {/* Volume Slider */}
+                    <div className="pt-2">
+                      <div className="flex items-center justify-between mb-1">
+                        <p
+                          className={`text-sm ${
+                            highContrast ? 'text-hc-text' : 'text-gray-600 dark:text-gray-300'
+                          }`}
+                        >
+                          Volume
+                        </p>
+                        <p
+                          className={`text-xs font-medium ${
+                            highContrast ? 'text-hc-text' : 'text-gray-500 dark:text-gray-400'
+                          }`}
+                        >
+                          {Math.round(soundSettings.volume * 100)}%
+                        </p>
+                      </div>
+                      <input
+                        type="range"
+                        min="0"
+                        max="100"
+                        value={Math.round(soundSettings.volume * 100)}
+                        onChange={(e) => {
+                          const next = updateSoundSettings({
+                            volume: parseInt(e.target.value, 10) / 100,
+                          });
+                          setSoundSettings({ ...next });
+                        }}
+                        className="w-full h-2 rounded-full appearance-none cursor-pointer accent-green-500"
+                      />
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+
           {/* Accessibility Section */}
           <div className="mb-8">
             {/* Section Card */}
@@ -685,7 +895,7 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
                         className={`${
                           theme === 'dark' ? 'translate-x-[2.125rem]' : 'translate-x-0.5'
                         } inline-flex h-7 w-7 items-center justify-center transform rounded-full transition-transform duration-200 ${
-                          highContrast ? 'bg-hc-background' : 'bg-white'
+                          highContrast ? 'bg-hc-background' : 'bg-ghost-white'
                         }`}
                       >
                         <img
@@ -725,7 +935,9 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
                         className={`${
                           highContrast ? 'translate-x-[2.125rem]' : 'translate-x-0.5'
                         } inline-flex h-7 w-7 items-center justify-center transform rounded-full transition-transform duration-200 ${
-                          highContrast ? 'bg-hc-background border-2 border-hc-border' : 'bg-white'
+                          highContrast
+                            ? 'bg-hc-background border-2 border-hc-border'
+                            : 'bg-ghost-white'
                         }`}
                       >
                         <img src="/ui/shared/eye.png" alt="High Contrast" className="w-4 h-4" />
@@ -763,7 +975,7 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
                         className={`${
                           reduceMotion ? 'translate-x-[2.125rem]' : 'translate-x-0.5'
                         } inline-flex h-7 w-7 items-center justify-center transform rounded-full transition-transform duration-200 ${
-                          highContrast ? 'bg-hc-background' : 'bg-white dark:bg-gray-200'
+                          highContrast ? 'bg-hc-background' : 'bg-ghost-white dark:bg-gray-200'
                         }`}
                       >
                         <img src="/ui/shared/motion.png" alt="Motion" className="w-4 h-4" />

@@ -13,7 +13,7 @@ import {
   hasPlayedPuzzle,
   getPuzzleResult,
 } from '@/lib/storage';
-import { playFailureSound, playSuccessSound } from '@/lib/sounds';
+import { playFailureSound, playTandemCompletionSound } from '@/lib/sounds';
 import { Capacitor } from '@capacitor/core';
 import notificationService from '@/services/notificationService';
 import logger from '@/lib/logger';
@@ -204,7 +204,7 @@ export function useGame() {
 
       // Play appropriate sound
       if (won) {
-        playSuccessSound();
+        playTandemCompletionSound();
       } else {
         playFailureSound();
       }

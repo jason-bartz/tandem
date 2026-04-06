@@ -208,8 +208,7 @@ function TandemGameContainer({ initialPuzzleData }) {
       if (timer.elapsed >= GAME_CONFIG.HARD_MODE_TIME_LIMIT) {
         // Time's up in hard mode
         game.setHardModeTimeUp(true);
-        game.endGame(false); // End game as failure
-        playSound('incorrect');
+        game.endGame(false); // End game as failure (plays failure sound internally)
         incorrectAnswer(); // Haptic feedback for failure
       }
     }

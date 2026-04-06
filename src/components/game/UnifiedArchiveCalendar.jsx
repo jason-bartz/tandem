@@ -676,10 +676,10 @@ export default function UnifiedArchiveCalendar({
                   activeTab === 'tandem'
                     ? highContrast
                       ? 'bg-hc-primary text-white border-hc-border'
-                      : 'bg-accent-blue text-white'
+                      : 'bg-accent-blue text-white border-accent-blue'
                     : highContrast
                       ? 'bg-hc-surface text-hc-text border-hc-border hover:bg-hc-focus'
-                      : 'bg-accent-blue/20 text-accent-blue border-accent-blue/50 dark:border-accent-blue/30 hover:bg-accent-blue/30'
+                      : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600'
                 }
               `}
                 style={{
@@ -705,10 +705,10 @@ export default function UnifiedArchiveCalendar({
                   activeTab === 'mini'
                     ? highContrast
                       ? 'bg-hc-primary text-white border-hc-border'
-                      : 'bg-accent-yellow text-gray-900'
+                      : 'bg-accent-yellow text-gray-900 border-accent-yellow'
                     : highContrast
                       ? 'bg-hc-surface text-hc-text border-hc-border hover:bg-hc-focus'
-                      : 'bg-accent-yellow/20 text-yellow-700 dark:text-yellow-500 border-accent-yellow/50 dark:border-accent-yellow/30 hover:bg-accent-yellow/30'
+                      : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600'
                 }
               `}
                 style={{
@@ -734,10 +734,10 @@ export default function UnifiedArchiveCalendar({
                   activeTab === 'reel'
                     ? highContrast
                       ? 'bg-hc-primary text-white border-hc-border'
-                      : 'bg-red-500 text-white'
+                      : 'bg-red-500 text-white border-red-500'
                     : highContrast
                       ? 'bg-hc-surface text-hc-text border-hc-border hover:bg-hc-focus'
-                      : 'bg-red-500/20 text-red-600 dark:text-red-400 border-red-500/50 dark:border-red-500/30 hover:bg-red-500/30'
+                      : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600'
                 }
               `}
                 style={{
@@ -763,10 +763,10 @@ export default function UnifiedArchiveCalendar({
                   activeTab === 'soup'
                     ? highContrast
                       ? 'bg-hc-primary text-white border-hc-border'
-                      : 'bg-green-500 text-white'
+                      : 'bg-green-500 text-white border-green-500'
                     : highContrast
                       ? 'bg-hc-surface text-hc-text border-hc-border hover:bg-hc-focus'
-                      : 'bg-green-500/20 text-green-600 dark:text-green-400 border-green-500/50 dark:border-green-500/30 hover:bg-green-500/30'
+                      : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600'
                 }
               `}
                 style={{

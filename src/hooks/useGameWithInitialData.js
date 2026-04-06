@@ -9,7 +9,7 @@ import {
   hasPlayedPuzzle,
   getPuzzleResult,
 } from '@/lib/storage';
-import { playFailureSound, playSuccessSound } from '@/lib/sounds';
+import { playFailureSound, playTandemCompletionSound } from '@/lib/sounds';
 import statsService from '@/services/stats.service';
 import { getApiUrl, capacitorFetch } from '@/lib/api-config';
 import logger from '@/lib/logger';
@@ -248,7 +248,7 @@ export function useGameWithInitialData(initialPuzzleData) {
       setWon(won);
 
       if (won) {
-        playSuccessSound();
+        playTandemCompletionSound();
       } else {
         playFailureSound();
       }

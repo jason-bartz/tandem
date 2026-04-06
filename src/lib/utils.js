@@ -72,6 +72,15 @@ export function formatDateShort(dateString) {
   return `${month}/${day}/${year}`;
 }
 
+export function formatDateFull(dateString) {
+  const date = new Date(dateString + 'T00:00:00');
+  return date.toLocaleDateString('en-US', {
+    month: 'long',
+    day: 'numeric',
+    year: 'numeric',
+  });
+}
+
 export function generateShareText(
   puzzleDate,
   theme,
@@ -133,6 +142,7 @@ export function generateShareText(
   }
 
   shareText += puzzleEmojis.join('');
+  shareText += '\n\ntandemdaily.com';
 
   return shareText;
 }

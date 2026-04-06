@@ -6,7 +6,7 @@ import { getCurrentPuzzleNumber } from '@/lib/puzzleNumber';
 import { getCurrentMiniPuzzleInfo } from '@/lib/miniUtils';
 import { getCurrentReelPuzzleNumber, getLocalDateString } from '@/lib/reelConnectionsUtils';
 import { SOUP_STORAGE_KEYS } from '@/lib/daily-alchemy.constants';
-import { playStartSound } from '@/lib/sounds';
+import { playTandemStartSound, playAllFourDoneFanfare } from '@/lib/sounds';
 import UnifiedStatsModal from '@/components/stats/UnifiedStatsModal';
 import UnifiedArchiveCalendar from './UnifiedArchiveCalendar';
 import HowToPlayModal from './HowToPlayModal';
@@ -159,13 +159,27 @@ export default function WelcomeScreen({
     loadCompletionStatus();
   }, [puzzle?.date, miniPuzzleInfo.isoDate]);
 
+  // Play "All Four Done" fanfare when all games are completed (once per day)
+  useEffect(() => {
+    if (tandemCompleted && miniCompleted && soupCompleted && reelCompleted) {
+      const today = new Date().toISOString().split('T')[0];
+      const lastFanfare = localStorage.getItem('tandem_allFourFanfare');
+      if (lastFanfare !== today) {
+        localStorage.setItem('tandem_allFourFanfare', today);
+        // Small delay to let the screen settle
+        const timer = setTimeout(() => playAllFourDoneFanfare(), 600);
+        return () => clearTimeout(timer);
+      }
+    }
+  }, [tandemCompleted, miniCompleted, soupCompleted, reelCompleted]);
+
   // Play welcome sound on native app (only on initial app open, not on navigation back)
   useEffect(() => {
     if (Capacitor.isNativePlatform() && !_welcomeSoundPlayedThisSession) {
       _welcomeSoundPlayedThisSession = true;
       const timer = setTimeout(() => {
         try {
-          playStartSound();
+          playTandemStartSound();
           welcomeMelody();
         } catch (e) {
           // Sound/haptics might fail on some devices

@@ -8,9 +8,10 @@ import {
   getCurrentPuzzleInfo,
   generateShareText,
   formatDateShort,
+  formatDateFull,
   getRandomCongratulation,
 } from '@/lib/utils';
-import { playSuccessSound } from '@/lib/sounds';
+import { stopAmbientTexture } from '@/lib/sounds';
 import UnifiedStatsModal from '@/components/stats/UnifiedStatsModal';
 import UnifiedArchiveCalendar from './UnifiedArchiveCalendar';
 import HowToPlayModal from './HowToPlayModal';
@@ -89,9 +90,9 @@ export default function CompleteScreen({
     if (won) {
       setCongratsMessage(getRandomCongratulation());
 
-      // Play success sound and trigger celebration haptics
+      // Stop ambient texture and trigger celebration haptics
       try {
-        playSuccessSound();
+        stopAmbientTexture();
         celebration(); // Trigger haptic celebration pattern
       } catch (e) {
         // Sound might fail on some browsers
@@ -367,7 +368,7 @@ export default function CompleteScreen({
                 <ShareButton shareText={shareText} />
                 <ShareImageCard
                   gameName="Daily Tandem"
-                  date={formatDateShort(puzzleDate)}
+                  date={formatDateFull(puzzleDate)}
                   emoji="🔗"
                   message={puzzleTheme ? `Theme: ${puzzleTheme}` : ''}
                   stats={[

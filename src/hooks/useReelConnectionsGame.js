@@ -5,10 +5,12 @@ import confetti from 'canvas-confetti';
 import { useMidnightRefresh } from '@/hooks/useMidnightRefresh';
 import { useReelConnectionsStats } from '@/hooks/useReelConnectionsStats';
 import {
-  playCorrectSound,
-  playErrorSound,
+  playReelCorrectSound,
+  playReelErrorSound,
   playOneAwaySound,
-  playCrowdDisappointmentSound,
+  playCrowdDisappointmentSynthesized,
+  playApplauseSynthesized,
+  playReelCompletionSound,
 } from '@/lib/sounds';
 import { useAuth } from '@/contexts/AuthContext';
 import { capacitorFetch, getApiUrl } from '@/lib/api-config';
@@ -275,10 +277,9 @@ export function useReelConnectionsGame() {
   // Confetti effect when game is won
   useEffect(() => {
     if (gameWon && !isRevealing) {
-      // Play clapping sound
-      const clappingAudio = new Audio('/sounds/human_clapping_8_people.mp3');
-      clappingAudio.volume = 0.26;
-      clappingAudio.play().catch(() => {});
+      // Play synthesized applause and completion sound
+      playApplauseSynthesized();
+      playReelCompletionSound();
       celebration();
 
       const duration = REEL_CONFIG.CONFETTI_DURATION_MS;
@@ -473,7 +474,7 @@ export function useReelConnectionsGame() {
     const isCorrect = selectedMovies.every((m) => m.groupId === groupId);
 
     if (isCorrect) {
-      playCorrectSound();
+      playReelCorrectSound();
       correctAnswer();
 
       const group = puzzle.groups.find((g) => g.id === groupId);
@@ -510,7 +511,7 @@ export function useReelConnectionsGame() {
         setShakeGrid(true);
         setTimeout(() => setShakeGrid(false), REEL_CONFIG.SHAKE_DURATION_MS);
       } else {
-        playErrorSound();
+        playReelErrorSound();
         incorrectAnswer();
         setShakeGrid(true);
         setTimeout(() => setShakeGrid(false), REEL_CONFIG.SHAKE_DURATION_MS);
@@ -522,7 +523,7 @@ export function useReelConnectionsGame() {
 
       if (newMistakes >= REEL_CONFIG.MAX_MISTAKES) {
         setGameOver(true);
-        playCrowdDisappointmentSound();
+        playCrowdDisappointmentSynthesized();
         heavyTap();
         startReveal(false);
       }
@@ -642,7 +643,7 @@ export function useReelConnectionsGame() {
     // Format completion time
     const timeStr = startTime && endTime ? `⏱️ ${formatTime(endTime - startTime)}\n` : '';
 
-    const shareText = `Reel Connections\n${dateStr}\n${timeStr}${emojiGrid}`;
+    const shareText = `Reel Connections\n${dateStr}\n${timeStr}${emojiGrid}\n\ntandemdaily.com`;
 
     if (navigator.share) {
       try {

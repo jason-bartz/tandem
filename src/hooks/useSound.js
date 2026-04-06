@@ -1,17 +1,19 @@
-import { useState, useEffect } from 'react';
-import { STORAGE_KEYS, SOUND_CONFIG } from '@/lib/constants';
+import { useState, useEffect, useCallback } from 'react';
+import { SOUND_CONFIG } from '@/lib/constants';
 import { initAudio } from '@/lib/sounds';
+import { getSoundSettings, updateSoundSettings, getVolumeFor } from '@/lib/soundSettings';
 
 export function useSound() {
   const [soundEnabled, setSoundEnabled] = useState(true);
 
   useEffect(() => {
-    const saved = localStorage.getItem(STORAGE_KEYS.SOUND);
-    setSoundEnabled(saved !== 'false');
+    const settings = getSoundSettings();
+    setSoundEnabled(settings.masterEnabled);
   }, []);
 
-  const playSound = (type) => {
-    if (!soundEnabled || !SOUND_CONFIG.ENABLED) {
+  const playSound = useCallback((type) => {
+    const settings = getSoundSettings();
+    if (!settings.masterEnabled || !settings.sfxEnabled) {
       return;
     }
 
@@ -26,6 +28,7 @@ export function useSound() {
     }
 
     const { frequencies, duration } = soundConfig;
+    const vol = getVolumeFor('sfx');
 
     if (type === 'complete') {
       frequencies.forEach((freq, i) => {
@@ -36,7 +39,7 @@ export function useSound() {
         gainNode.connect(audioContext.destination);
 
         oscillator.frequency.setValueAtTime(freq, audioContext.currentTime + i * 0.1);
-        gainNode.gain.setValueAtTime(SOUND_CONFIG.VOLUME, audioContext.currentTime + i * 0.1);
+        gainNode.gain.setValueAtTime(SOUND_CONFIG.VOLUME * vol, audioContext.currentTime + i * 0.1);
         gainNode.gain.exponentialRampToValueAtTime(
           0.01,
           audioContext.currentTime + i * 0.1 + duration
@@ -59,23 +62,24 @@ export function useSound() {
         );
       });
 
-      gainNode.gain.setValueAtTime(SOUND_CONFIG.VOLUME, audioContext.currentTime);
+      gainNode.gain.setValueAtTime(SOUND_CONFIG.VOLUME * vol, audioContext.currentTime);
       gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
 
       oscillator.start(audioContext.currentTime);
       oscillator.stop(audioContext.currentTime + duration);
     }
-  };
+  }, []);
 
-  const toggleSound = () => {
-    const newState = !soundEnabled;
+  const toggleSound = useCallback(() => {
+    const settings = getSoundSettings();
+    const newState = !settings.masterEnabled;
+    updateSoundSettings({ masterEnabled: newState });
     setSoundEnabled(newState);
-    localStorage.setItem(STORAGE_KEYS.SOUND, newState.toString());
 
     if (newState) {
       playSound('correct');
     }
-  };
+  }, [playSound]);
 
   return {
     soundEnabled,

@@ -1,4 +1,6 @@
 // Audio effects for the game
+import { getVolumeFor } from './soundSettings';
+
 let audioContext = null;
 let _visibilityListenerAdded = false;
 
@@ -6,6 +8,40 @@ let _visibilityListenerAdded = false;
 function isSoundEnabled() {
   if (typeof window === 'undefined') return false;
   return localStorage.getItem('tandemSound') !== 'false';
+}
+
+// --- Shared utilities ---
+
+// Create a noise buffer for percussion/texture synthesis
+function createNoiseBuffer(context, duration) {
+  const bufferSize = Math.floor(context.sampleRate * duration);
+  const buffer = context.createBuffer(1, bufferSize, context.sampleRate);
+  const data = buffer.getChannelData(0);
+  for (let i = 0; i < bufferSize; i++) {
+    data[i] = Math.random() * 2 - 1;
+  }
+  return buffer;
+}
+
+// Create a stereo panner (spatial audio)
+function createPanner(context, pan) {
+  if (context.createStereoPanner) {
+    const panner = context.createStereoPanner();
+    panner.pan.value = pan;
+    return panner;
+  }
+  // Fallback: connect directly
+  return null;
+}
+
+// Connect through optional panner to destination
+function connectToOutput(context, source, panner) {
+  if (panner) {
+    source.connect(panner);
+    panner.connect(context.destination);
+  } else {
+    source.connect(context.destination);
+  }
 }
 
 // Initialize or resume the shared AudioContext.
@@ -1416,5 +1452,1312 @@ export function playSaveSound() {
 
     osc.start(currentTime + start);
     osc.stop(currentTime + start + duration + 0.02);
+  });
+}
+
+// =============================================================================
+// A: SIGNATURE COMPLETION SOUNDS — Per-game variants with shared melodic DNA
+// =============================================================================
+
+// Shared "Tandem ding" motif: rising 3-note pattern resolving to a satisfying peak
+// Each game transposes to its own key and uses a unique timbre
+
+// Tandem: Marimba-like (warm wood) — C major
+export function playTandemCompletionSound() {
+  const context = initAudio();
+  if (!context) return;
+  const t = context.currentTime;
+  const vol = getVolumeFor('sfx');
+  if (vol === 0) return;
+
+  // Wood transient (noise burst through bandpass)
+  const noiseLen = 0.03;
+  const noiseBuf = createNoiseBuffer(context, noiseLen);
+
+  const motif = [
+    { freq: 523.25, start: 0, dur: 0.18 }, // C5
+    { freq: 659.25, start: 0.12, dur: 0.18 }, // E5
+    { freq: 783.99, start: 0.24, dur: 0.18 }, // G5
+    { freq: 1046.5, start: 0.38, dur: 0.45 }, // C6 — peak
+  ];
+
+  motif.forEach(({ freq, start, dur }) => {
+    // Wood transient
+    const noise = context.createBufferSource();
+    noise.buffer = noiseBuf;
+    const bp = context.createBiquadFilter();
+    bp.type = 'bandpass';
+    bp.frequency.value = freq * 1.5;
+    bp.Q.value = 2;
+    const ng = context.createGain();
+    ng.gain.setValueAtTime(0.12 * vol, t + start);
+    ng.gain.exponentialRampToValueAtTime(0.001, t + start + 0.02);
+    noise.connect(bp);
+    bp.connect(ng);
+    ng.connect(context.destination);
+    noise.start(t + start);
+    noise.stop(t + start + noiseLen);
+
+    // Triangle body (marimba-like)
+    const osc = context.createOscillator();
+    osc.type = 'triangle';
+    osc.frequency.setValueAtTime(freq, t + start);
+    const g = context.createGain();
+    g.gain.setValueAtTime(0, t + start);
+    g.gain.linearRampToValueAtTime(0.18 * vol, t + start + 0.008);
+    g.gain.setValueAtTime(0.14 * vol, t + start + dur * 0.4);
+    g.gain.exponentialRampToValueAtTime(0.001, t + start + dur);
+
+    const lp = context.createBiquadFilter();
+    lp.type = 'lowpass';
+    lp.frequency.value = 2200;
+    lp.Q.value = 0.7;
+
+    osc.connect(lp);
+    lp.connect(g);
+    g.connect(context.destination);
+    osc.start(t + start);
+    osc.stop(t + start + dur + 0.05);
+  });
+
+  // Warm harmonic undertone
+  const sub = context.createOscillator();
+  sub.type = 'sine';
+  sub.frequency.value = 261.63; // C4
+  const sg = context.createGain();
+  sg.gain.setValueAtTime(0, t + 0.38);
+  sg.gain.linearRampToValueAtTime(0.06 * vol, t + 0.42);
+  sg.gain.exponentialRampToValueAtTime(0.001, t + 0.85);
+  sub.connect(sg);
+  sg.connect(context.destination);
+  sub.start(t + 0.38);
+  sub.stop(t + 0.9);
+
+  // Bell shimmer on peak
+  const bell = context.createOscillator();
+  bell.type = 'sine';
+  bell.frequency.value = 2093; // C7
+  const bg = context.createGain();
+  bg.gain.setValueAtTime(0, t + 0.42);
+  bg.gain.linearRampToValueAtTime(0.05 * vol, t + 0.44);
+  bg.gain.exponentialRampToValueAtTime(0.001, t + 0.8);
+  bell.connect(bg);
+  bg.connect(context.destination);
+  bell.start(t + 0.42);
+  bell.stop(t + 0.85);
+}
+
+// Mini: Piano-like (detuned sine pairs for chorus) — F major
+export function playMiniCompletionSound() {
+  const context = initAudio();
+  if (!context) return;
+  const t = context.currentTime;
+  const vol = getVolumeFor('sfx');
+  if (vol === 0) return;
+
+  const motif = [
+    { freq: 349.23, start: 0, dur: 0.2 }, // F4
+    { freq: 440, start: 0.13, dur: 0.2 }, // A4
+    { freq: 523.25, start: 0.26, dur: 0.2 }, // C5
+    { freq: 698.46, start: 0.4, dur: 0.5 }, // F5 — peak
+  ];
+
+  motif.forEach(({ freq, start, dur }) => {
+    // Detuned pair for chorus/piano feel
+    [-1.5, 1.5].forEach((detune) => {
+      const osc = context.createOscillator();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(freq, t + start);
+      osc.detune.value = detune;
+
+      const g = context.createGain();
+      g.gain.setValueAtTime(0, t + start);
+      g.gain.linearRampToValueAtTime(0.12 * vol, t + start + 0.005);
+      g.gain.setValueAtTime(0.09 * vol, t + start + dur * 0.3);
+      g.gain.exponentialRampToValueAtTime(0.001, t + start + dur);
+
+      osc.connect(g);
+      g.connect(context.destination);
+      osc.start(t + start);
+      osc.stop(t + start + dur + 0.05);
+    });
+  });
+
+  // Soft sustain pedal resonance
+  const res = context.createOscillator();
+  res.type = 'sine';
+  res.frequency.value = 174.61; // F3
+  const rg = context.createGain();
+  rg.gain.setValueAtTime(0, t + 0.4);
+  rg.gain.linearRampToValueAtTime(0.04 * vol, t + 0.45);
+  rg.gain.exponentialRampToValueAtTime(0.001, t + 0.9);
+  res.connect(rg);
+  rg.connect(context.destination);
+  res.start(t + 0.4);
+  res.stop(t + 0.95);
+}
+
+// Reel: Cinematic (brass-like filtered sawtooth) — Bb major
+export function playReelCompletionSound() {
+  const context = initAudio();
+  if (!context) return;
+  const t = context.currentTime;
+  const vol = getVolumeFor('sfx');
+  if (vol === 0) return;
+
+  const motif = [
+    { freq: 233.08, start: 0, dur: 0.2 }, // Bb3
+    { freq: 293.66, start: 0.12, dur: 0.2 }, // D4
+    { freq: 349.23, start: 0.24, dur: 0.2 }, // F4
+    { freq: 466.16, start: 0.38, dur: 0.5 }, // Bb4 — peak
+  ];
+
+  motif.forEach(({ freq, start, dur }) => {
+    const osc = context.createOscillator();
+    osc.type = 'sawtooth';
+    osc.frequency.setValueAtTime(freq, t + start);
+
+    // Lowpass to tame sawtooth into brass-like warmth
+    const lp = context.createBiquadFilter();
+    lp.type = 'lowpass';
+    lp.frequency.setValueAtTime(freq * 3, t + start);
+    lp.frequency.exponentialRampToValueAtTime(freq * 1.5, t + start + dur);
+    lp.Q.value = 1.2;
+
+    const g = context.createGain();
+    g.gain.setValueAtTime(0, t + start);
+    g.gain.linearRampToValueAtTime(0.08 * vol, t + start + 0.02);
+    g.gain.setValueAtTime(0.06 * vol, t + start + dur * 0.5);
+    g.gain.exponentialRampToValueAtTime(0.001, t + start + dur);
+
+    osc.connect(lp);
+    lp.connect(g);
+    g.connect(context.destination);
+    osc.start(t + start);
+    osc.stop(t + start + dur + 0.05);
+  });
+
+  // Dramatic low brass support
+  const brass = context.createOscillator();
+  brass.type = 'sawtooth';
+  brass.frequency.value = 116.54; // Bb2
+  const blp = context.createBiquadFilter();
+  blp.type = 'lowpass';
+  blp.frequency.value = 400;
+  blp.Q.value = 0.7;
+  const bg = context.createGain();
+  bg.gain.setValueAtTime(0, t + 0.38);
+  bg.gain.linearRampToValueAtTime(0.05 * vol, t + 0.42);
+  bg.gain.exponentialRampToValueAtTime(0.001, t + 0.9);
+  brass.connect(blp);
+  blp.connect(bg);
+  bg.connect(context.destination);
+  brass.start(t + 0.38);
+  brass.stop(t + 0.95);
+
+  // Cinematic cymbal shimmer
+  const noiseBuf = createNoiseBuffer(context, 0.5);
+  const cymbal = context.createBufferSource();
+  cymbal.buffer = noiseBuf;
+  const hp = context.createBiquadFilter();
+  hp.type = 'highpass';
+  hp.frequency.value = 6000;
+  const cg = context.createGain();
+  cg.gain.setValueAtTime(0, t + 0.38);
+  cg.gain.linearRampToValueAtTime(0.04 * vol, t + 0.42);
+  cg.gain.exponentialRampToValueAtTime(0.001, t + 0.85);
+  cymbal.connect(hp);
+  hp.connect(cg);
+  cg.connect(context.destination);
+  cymbal.start(t + 0.38);
+  cymbal.stop(t + 0.9);
+}
+
+// Alchemy: Enhanced version of existing soup win (mystical with shared motif DNA)
+export function playAlchemyCompletionSound() {
+  // Delegate to existing sound which already has the right character
+  playSoupWinSound();
+}
+
+// =============================================================================
+// B: PER-GAME SONIC PALETTES — Tandem and Mini get unique correct/error sounds
+// =============================================================================
+
+// Tandem correct: Wood block tap (warm, tactile)
+export function playTandemCorrectSound() {
+  const context = initAudio();
+  if (!context) return;
+  const t = context.currentTime;
+  const vol = getVolumeFor('sfx');
+  if (vol === 0) return;
+
+  // Noise transient (wood attack)
+  const noiseBuf = createNoiseBuffer(context, 0.025);
+  const noise = context.createBufferSource();
+  noise.buffer = noiseBuf;
+  const bp = context.createBiquadFilter();
+  bp.type = 'bandpass';
+  bp.frequency.value = 1800;
+  bp.Q.value = 1.5;
+  const ng = context.createGain();
+  ng.gain.setValueAtTime(0.15 * vol, t);
+  ng.gain.exponentialRampToValueAtTime(0.001, t + 0.02);
+  noise.connect(bp);
+  bp.connect(ng);
+  ng.connect(context.destination);
+  noise.start(t);
+  noise.stop(t + 0.03);
+
+  // Warm triangle body
+  const osc = context.createOscillator();
+  osc.type = 'triangle';
+  osc.frequency.setValueAtTime(659.25, t); // E5
+  osc.frequency.setValueAtTime(880, t + 0.04); // A5
+  const g = context.createGain();
+  g.gain.setValueAtTime(0, t);
+  g.gain.linearRampToValueAtTime(0.14 * vol, t + 0.006);
+  g.gain.exponentialRampToValueAtTime(0.001, t + 0.15);
+
+  const lp = context.createBiquadFilter();
+  lp.type = 'lowpass';
+  lp.frequency.value = 2000;
+
+  osc.connect(lp);
+  lp.connect(g);
+  g.connect(context.destination);
+  osc.start(t);
+  osc.stop(t + 0.18);
+}
+
+// Tandem error: Soft wooden "bonk" (not harsh)
+export function playTandemErrorSound() {
+  const context = initAudio();
+  if (!context) return;
+  const t = context.currentTime;
+  const vol = getVolumeFor('sfx');
+  if (vol === 0) return;
+
+  // Low wood thud
+  const osc = context.createOscillator();
+  osc.type = 'triangle';
+  osc.frequency.setValueAtTime(220, t);
+  osc.frequency.exponentialRampToValueAtTime(120, t + 0.08);
+  const g = context.createGain();
+  g.gain.setValueAtTime(0.12 * vol, t);
+  g.gain.exponentialRampToValueAtTime(0.001, t + 0.12);
+  const lp = context.createBiquadFilter();
+  lp.type = 'lowpass';
+  lp.frequency.value = 800;
+  osc.connect(lp);
+  lp.connect(g);
+  g.connect(context.destination);
+  osc.start(t);
+  osc.stop(t + 0.15);
+
+  // Muffled noise for wood texture
+  const noiseBuf = createNoiseBuffer(context, 0.04);
+  const noise = context.createBufferSource();
+  noise.buffer = noiseBuf;
+  const bp = context.createBiquadFilter();
+  bp.type = 'lowpass';
+  bp.frequency.value = 600;
+  const ng = context.createGain();
+  ng.gain.setValueAtTime(0.06 * vol, t);
+  ng.gain.exponentialRampToValueAtTime(0.001, t + 0.04);
+  noise.connect(bp);
+  bp.connect(ng);
+  ng.connect(context.destination);
+  noise.start(t);
+  noise.stop(t + 0.05);
+}
+
+// Mini correct: Pencil-scratch ping (crisp, cerebral)
+export function playMiniCorrectSound() {
+  const context = initAudio();
+  if (!context) return;
+  const t = context.currentTime;
+  const vol = getVolumeFor('sfx');
+  if (vol === 0) return;
+
+  // Scratch transient (short noise through highpass)
+  const noiseBuf = createNoiseBuffer(context, 0.015);
+  const noise = context.createBufferSource();
+  noise.buffer = noiseBuf;
+  const hp = context.createBiquadFilter();
+  hp.type = 'highpass';
+  hp.frequency.value = 3000;
+  const ng = context.createGain();
+  ng.gain.setValueAtTime(0.06 * vol, t);
+  ng.gain.exponentialRampToValueAtTime(0.001, t + 0.012);
+  noise.connect(hp);
+  hp.connect(ng);
+  ng.connect(context.destination);
+  noise.start(t);
+  noise.stop(t + 0.02);
+
+  // Clean sine ping
+  [-1.2, 1.2].forEach((detune) => {
+    const osc = context.createOscillator();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(698.46, t); // F5
+    osc.detune.value = detune;
+    const g = context.createGain();
+    g.gain.setValueAtTime(0, t);
+    g.gain.linearRampToValueAtTime(0.1 * vol, t + 0.004);
+    g.gain.exponentialRampToValueAtTime(0.001, t + 0.12);
+    osc.connect(g);
+    g.connect(context.destination);
+    osc.start(t);
+    osc.stop(t + 0.15);
+  });
+}
+
+// Mini error: Soft eraser rub
+export function playMiniErrorSound() {
+  const context = initAudio();
+  if (!context) return;
+  const t = context.currentTime;
+  const vol = getVolumeFor('sfx');
+  if (vol === 0) return;
+
+  // Filtered noise sweep down (eraser)
+  const noiseBuf = createNoiseBuffer(context, 0.15);
+  const noise = context.createBufferSource();
+  noise.buffer = noiseBuf;
+  const bp = context.createBiquadFilter();
+  bp.type = 'bandpass';
+  bp.frequency.setValueAtTime(1200, t);
+  bp.frequency.exponentialRampToValueAtTime(400, t + 0.12);
+  bp.Q.value = 1;
+  const g = context.createGain();
+  g.gain.setValueAtTime(0.08 * vol, t);
+  g.gain.exponentialRampToValueAtTime(0.001, t + 0.12);
+  noise.connect(bp);
+  bp.connect(g);
+  g.connect(context.destination);
+  noise.start(t);
+  noise.stop(t + 0.15);
+}
+
+// Reel correct: Cinematic "reveal" with pan direction
+export function playReelCorrectSound(pan = 0) {
+  const context = initAudio();
+  if (!context) return;
+  const t = context.currentTime;
+  const vol = getVolumeFor('sfx');
+  if (vol === 0) return;
+
+  const panner = createPanner(context, pan);
+
+  // Brass stab
+  const osc = context.createOscillator();
+  osc.type = 'sawtooth';
+  osc.frequency.setValueAtTime(466.16, t); // Bb4
+  osc.frequency.setValueAtTime(587.33, t + 0.05); // D5
+  const lp = context.createBiquadFilter();
+  lp.type = 'lowpass';
+  lp.frequency.setValueAtTime(2000, t);
+  lp.frequency.exponentialRampToValueAtTime(800, t + 0.15);
+  lp.Q.value = 1;
+  const g = context.createGain();
+  g.gain.setValueAtTime(0, t);
+  g.gain.linearRampToValueAtTime(0.1 * vol, t + 0.01);
+  g.gain.exponentialRampToValueAtTime(0.001, t + 0.2);
+  osc.connect(lp);
+  lp.connect(g);
+  connectToOutput(context, g, panner);
+  osc.start(t);
+  osc.stop(t + 0.25);
+
+  // Subtle cymbal hit
+  const noiseBuf = createNoiseBuffer(context, 0.12);
+  const cymbal = context.createBufferSource();
+  cymbal.buffer = noiseBuf;
+  const hp = context.createBiquadFilter();
+  hp.type = 'highpass';
+  hp.frequency.value = 5000;
+  const cg = context.createGain();
+  cg.gain.setValueAtTime(0.03 * vol, t);
+  cg.gain.exponentialRampToValueAtTime(0.001, t + 0.1);
+  cymbal.connect(hp);
+  hp.connect(cg);
+  connectToOutput(context, cg, panner ? createPanner(context, pan) : null);
+  cymbal.start(t);
+  cymbal.stop(t + 0.15);
+}
+
+// Reel error: Dramatic "wrong answer" buzzer (soft, cinematic)
+export function playReelErrorSound() {
+  const context = initAudio();
+  if (!context) return;
+  const t = context.currentTime;
+  const vol = getVolumeFor('sfx');
+  if (vol === 0) return;
+
+  // Low brass buzz
+  const osc = context.createOscillator();
+  osc.type = 'sawtooth';
+  osc.frequency.setValueAtTime(130, t);
+  osc.frequency.linearRampToValueAtTime(100, t + 0.15);
+  const lp = context.createBiquadFilter();
+  lp.type = 'lowpass';
+  lp.frequency.value = 500;
+  lp.Q.value = 0.8;
+  const g = context.createGain();
+  g.gain.setValueAtTime(0, t);
+  g.gain.linearRampToValueAtTime(0.06 * vol, t + 0.015);
+  g.gain.exponentialRampToValueAtTime(0.001, t + 0.2);
+  osc.connect(lp);
+  lp.connect(g);
+  g.connect(context.destination);
+  osc.start(t);
+  osc.stop(t + 0.25);
+}
+
+// =============================================================================
+// C: KEYPRESS PITCH ESCALATION — pitch rises as row fills
+// =============================================================================
+
+// position: 0-based index of the letter being typed
+// totalLetters: total letters in the row (e.g., 5)
+export function playKeyPressEscalating(position = 0, totalLetters = 5) {
+  const context = initAudio();
+  if (!context) return;
+
+  const vol = getVolumeFor('keypress');
+  if (vol === 0) return;
+
+  const t = context.currentTime;
+
+  // Base pitch rises with position
+  const basePitch = 180 + (position / Math.max(totalLetters - 1, 1)) * 80;
+  const clickPitch = 1200 + (position / Math.max(totalLetters - 1, 1)) * 400;
+
+  // Layer 1: Low-frequency "thock" body
+  const thock = context.createOscillator();
+  thock.type = 'triangle';
+  thock.frequency.setValueAtTime(basePitch, t);
+
+  const thockGain = context.createGain();
+  thockGain.gain.setValueAtTime(0.15 * vol, t);
+  thockGain.gain.exponentialRampToValueAtTime(0.001, t + 0.04);
+
+  const thockFilter = context.createBiquadFilter();
+  thockFilter.type = 'lowpass';
+  thockFilter.frequency.value = 800;
+  thockFilter.Q.value = 0.5;
+
+  thock.connect(thockFilter);
+  thockFilter.connect(thockGain);
+  thockGain.connect(context.destination);
+  thock.start(t);
+  thock.stop(t + 0.05);
+
+  // Layer 2: Mid-frequency click (escalating)
+  const click = context.createOscillator();
+  click.type = 'sine';
+  click.frequency.setValueAtTime(clickPitch, t);
+
+  const clickGain = context.createGain();
+  clickGain.gain.setValueAtTime(0.08 * vol, t);
+  clickGain.gain.exponentialRampToValueAtTime(0.001, t + 0.015);
+
+  click.connect(clickGain);
+  clickGain.connect(context.destination);
+  click.start(t);
+  click.stop(t + 0.02);
+
+  // Layer 3: Subtle high tap
+  const tap = context.createOscillator();
+  tap.type = 'triangle';
+  tap.frequency.setValueAtTime(2400 + position * 100, t);
+
+  const tapGain = context.createGain();
+  tapGain.gain.setValueAtTime(0.03 * vol, t);
+  tapGain.gain.exponentialRampToValueAtTime(0.001, t + 0.01);
+
+  tap.connect(tapGain);
+  tapGain.connect(context.destination);
+  tap.start(t);
+  tap.stop(t + 0.012);
+}
+
+// =============================================================================
+// D: STREAK CHIME — Progressive audio reward based on streak length
+// =============================================================================
+
+// Wraps a game's completion sound with progressive layers based on streak
+// game: 'tandem' | 'mini' | 'reel' | 'alchemy'
+// streakCount: current streak length
+export function playStreakCompletionSound(game, streakCount = 1) {
+  const context = initAudio();
+  if (!context) return;
+  const t = context.currentTime;
+  const vol = getVolumeFor('sfx');
+  if (vol === 0) return;
+
+  // Play the base game completion sound
+  switch (game) {
+    case 'tandem':
+      playTandemCompletionSound();
+      break;
+    case 'mini':
+      playMiniCompletionSound();
+      break;
+    case 'reel':
+      playReelCompletionSound();
+      break;
+    case 'alchemy':
+      playAlchemyCompletionSound();
+      break;
+    default:
+      playTandemCompletionSound();
+  }
+
+  // Day 1-6: Just the base sound
+  if (streakCount < 7) return;
+
+  // Day 7+: Add a harmonic 5th undertone
+  const fifthFreqs = {
+    tandem: 196, // G3 (5th below C4)
+    mini: 130.81, // C3 (5th below F3)
+    reel: 155.56, // Eb3 (5th below Bb3)
+    alchemy: 196, // G3
+  };
+
+  const fifth = context.createOscillator();
+  fifth.type = 'sine';
+  fifth.frequency.value = fifthFreqs[game] || 196;
+  const fg = context.createGain();
+  fg.gain.setValueAtTime(0, t + 0.3);
+  fg.gain.linearRampToValueAtTime(0.05 * vol, t + 0.4);
+  fg.gain.exponentialRampToValueAtTime(0.001, t + 1.0);
+  fifth.connect(fg);
+  fg.connect(context.destination);
+  fifth.start(t + 0.3);
+  fifth.stop(t + 1.1);
+
+  // Day 30+: Add a brief ascending arpeggio before the ding
+  if (streakCount < 30) return;
+
+  const graceNotes = [
+    { freq: 392, start: -0.15, dur: 0.08 }, // G4
+    { freq: 440, start: -0.1, dur: 0.08 }, // A4
+    { freq: 493.88, start: -0.05, dur: 0.08 }, // B4
+  ];
+
+  graceNotes.forEach(({ freq, start, dur }) => {
+    const osc = context.createOscillator();
+    osc.type = 'triangle';
+    osc.frequency.value = freq;
+    const g = context.createGain();
+    // Grace notes play before the completion, so use max(0, scheduled time)
+    const schedTime = Math.max(t + start, t);
+    g.gain.setValueAtTime(0, schedTime);
+    g.gain.linearRampToValueAtTime(0.06 * vol, schedTime + 0.005);
+    g.gain.exponentialRampToValueAtTime(0.001, schedTime + dur);
+    osc.connect(g);
+    g.connect(context.destination);
+    osc.start(schedTime);
+    osc.stop(schedTime + dur + 0.02);
+  });
+
+  // Day 100+: Full mini-fanfare with sparkle cascade
+  if (streakCount < 100) return;
+
+  const sparkles = [
+    { freq: 2093, start: 0.6, dur: 0.15 }, // C7
+    { freq: 2349.32, start: 0.65, dur: 0.15 }, // D7
+    { freq: 2637.02, start: 0.7, dur: 0.15 }, // E7
+    { freq: 3135.96, start: 0.75, dur: 0.2 }, // G7
+    { freq: 4186.01, start: 0.82, dur: 0.25 }, // C8
+  ];
+
+  sparkles.forEach(({ freq, start, dur }) => {
+    const osc = context.createOscillator();
+    osc.type = 'sine';
+    osc.frequency.value = freq;
+    const g = context.createGain();
+    g.gain.setValueAtTime(0, t + start);
+    g.gain.linearRampToValueAtTime(0.04 * vol, t + start + 0.008);
+    g.gain.exponentialRampToValueAtTime(0.001, t + start + dur);
+    osc.connect(g);
+    g.connect(context.destination);
+    osc.start(t + start);
+    osc.stop(t + start + dur + 0.02);
+  });
+}
+
+// =============================================================================
+// E: ALL FOUR DONE FANFARE — Plays when all 4 daily games are complete
+// =============================================================================
+
+export function playAllFourDoneFanfare() {
+  const context = initAudio();
+  if (!context) return;
+  const t = context.currentTime;
+  const vol = getVolumeFor('sfx');
+  if (vol === 0) return;
+
+  // Movement 1: Tandem motif fragment (C major, marimba)
+  const m1 = [
+    { freq: 523.25, start: 0, dur: 0.12, type: 'triangle' }, // C5
+    { freq: 659.25, start: 0.08, dur: 0.12, type: 'triangle' }, // E5
+  ];
+
+  // Movement 2: Mini motif fragment (F major, piano)
+  const m2 = [
+    { freq: 698.46, start: 0.2, dur: 0.12, type: 'sine' }, // F5
+    { freq: 880, start: 0.28, dur: 0.12, type: 'sine' }, // A5
+  ];
+
+  // Movement 3: Reel motif fragment (Bb, brass)
+  const m3 = [
+    { freq: 932.33, start: 0.4, dur: 0.12, type: 'sawtooth' }, // Bb5
+    { freq: 1174.66, start: 0.48, dur: 0.12, type: 'sawtooth' }, // D6
+  ];
+
+  // Movement 4: Alchemy motif fragment (mystical, resolves)
+  const m4 = [
+    { freq: 1318.51, start: 0.6, dur: 0.12, type: 'triangle' }, // E6
+    { freq: 1567.98, start: 0.68, dur: 0.12, type: 'triangle' }, // G6
+  ];
+
+  // Grand resolution chord
+  const resolution = [
+    { freq: 261.63, start: 0.82, dur: 0.8, type: 'sine' }, // C4
+    { freq: 329.63, start: 0.84, dur: 0.78, type: 'sine' }, // E4
+    { freq: 392, start: 0.86, dur: 0.76, type: 'sine' }, // G4
+    { freq: 523.25, start: 0.88, dur: 0.74, type: 'sine' }, // C5
+    { freq: 659.25, start: 0.9, dur: 0.72, type: 'sine' }, // E5
+    { freq: 1046.5, start: 0.92, dur: 0.7, type: 'triangle' }, // C6
+  ];
+
+  [...m1, ...m2, ...m3, ...m4].forEach(({ freq, start, dur, type }) => {
+    const osc = context.createOscillator();
+    osc.type = type;
+    osc.frequency.value = freq;
+
+    const g = context.createGain();
+    g.gain.setValueAtTime(0, t + start);
+    g.gain.linearRampToValueAtTime(0.12 * vol, t + start + 0.008);
+    g.gain.exponentialRampToValueAtTime(0.001, t + start + dur);
+
+    if (type === 'sawtooth') {
+      const lp = context.createBiquadFilter();
+      lp.type = 'lowpass';
+      lp.frequency.value = freq * 2;
+      lp.Q.value = 0.8;
+      osc.connect(lp);
+      lp.connect(g);
+    } else {
+      osc.connect(g);
+    }
+    g.connect(context.destination);
+    osc.start(t + start);
+    osc.stop(t + start + dur + 0.05);
+  });
+
+  // Resolution chord with swell
+  resolution.forEach(({ freq, start, dur, type }) => {
+    const osc = context.createOscillator();
+    osc.type = type;
+    osc.frequency.value = freq;
+    const g = context.createGain();
+    g.gain.setValueAtTime(0, t + start);
+    g.gain.linearRampToValueAtTime(0.08 * vol, t + start + 0.05);
+    g.gain.setValueAtTime(0.06 * vol, t + start + dur * 0.6);
+    g.gain.exponentialRampToValueAtTime(0.001, t + start + dur);
+    osc.connect(g);
+    g.connect(context.destination);
+    osc.start(t + start);
+    osc.stop(t + start + dur + 0.1);
+  });
+
+  // Final sparkle cascade
+  const sparkles = [
+    { freq: 2093, start: 1.1, dur: 0.15 },
+    { freq: 2637.02, start: 1.15, dur: 0.15 },
+    { freq: 3135.96, start: 1.2, dur: 0.15 },
+    { freq: 3951.07, start: 1.25, dur: 0.2 },
+    { freq: 4186.01, start: 1.32, dur: 0.3 },
+  ];
+
+  sparkles.forEach(({ freq, start, dur }) => {
+    const osc = context.createOscillator();
+    osc.type = 'sine';
+    osc.frequency.value = freq;
+    const g = context.createGain();
+    g.gain.setValueAtTime(0, t + start);
+    g.gain.linearRampToValueAtTime(0.05 * vol, t + start + 0.008);
+    g.gain.exponentialRampToValueAtTime(0.001, t + start + dur);
+    osc.connect(g);
+    g.connect(context.destination);
+    osc.start(t + start);
+    osc.stop(t + start + dur + 0.05);
+  });
+
+  // Warm bass note to ground everything
+  const bass = context.createOscillator();
+  bass.type = 'sine';
+  bass.frequency.value = 65.41; // C2
+  const bg = context.createGain();
+  bg.gain.setValueAtTime(0, t + 0.82);
+  bg.gain.linearRampToValueAtTime(0.07 * vol, t + 0.9);
+  bg.gain.setValueAtTime(0.05 * vol, t + 1.2);
+  bg.gain.exponentialRampToValueAtTime(0.001, t + 1.7);
+  bass.connect(bg);
+  bg.connect(context.destination);
+  bass.start(t + 0.82);
+  bass.stop(t + 1.8);
+}
+
+// =============================================================================
+// F: SPATIAL AUDIO — Directional pan for Reel and Alchemy
+// =============================================================================
+
+// Alchemy: Combine with left-center-right pan
+export function playCombineSoundSpatial(leftPan = -0.4, rightPan = 0.4) {
+  const context = initAudio();
+  if (!context) return;
+  const t = context.currentTime;
+  const vol = getVolumeFor('sfx');
+  if (vol === 0) return;
+
+  // Left element (ascending note)
+  const leftPanner = createPanner(context, leftPan);
+  const osc1 = context.createOscillator();
+  osc1.type = 'triangle';
+  osc1.frequency.setValueAtTime(392, t); // G4
+  const g1 = context.createGain();
+  g1.gain.setValueAtTime(0, t);
+  g1.gain.linearRampToValueAtTime(0.1 * vol, t + 0.01);
+  g1.gain.exponentialRampToValueAtTime(0.001, t + 0.12);
+  osc1.connect(g1);
+  connectToOutput(context, g1, leftPanner);
+  osc1.start(t);
+  osc1.stop(t + 0.15);
+
+  // Right element (ascending note)
+  const rightPanner = createPanner(context, rightPan);
+  const osc2 = context.createOscillator();
+  osc2.type = 'triangle';
+  osc2.frequency.setValueAtTime(523.25, t + 0.06); // C5
+  const g2 = context.createGain();
+  g2.gain.setValueAtTime(0, t + 0.06);
+  g2.gain.linearRampToValueAtTime(0.1 * vol, t + 0.07);
+  g2.gain.exponentialRampToValueAtTime(0.001, t + 0.18);
+  osc2.connect(g2);
+  connectToOutput(context, g2, rightPanner);
+  osc2.start(t + 0.06);
+  osc2.stop(t + 0.2);
+
+  // Center merge (chime at center)
+  const osc3 = context.createOscillator();
+  osc3.type = 'sine';
+  osc3.frequency.setValueAtTime(783.99, t + 0.14); // G5
+  const g3 = context.createGain();
+  g3.gain.setValueAtTime(0, t + 0.14);
+  g3.gain.linearRampToValueAtTime(0.12 * vol, t + 0.15);
+  g3.gain.exponentialRampToValueAtTime(0.001, t + 0.35);
+  osc3.connect(g3);
+  g3.connect(context.destination); // center = no pan
+  osc3.start(t + 0.14);
+  osc3.stop(t + 0.4);
+
+  // Sparkle dust at center
+  [1318.51, 1567.98].forEach((freq, i) => {
+    const s = context.createOscillator();
+    s.type = 'sine';
+    s.frequency.value = freq;
+    const sg = context.createGain();
+    sg.gain.setValueAtTime(0, t + 0.18 + i * 0.04);
+    sg.gain.linearRampToValueAtTime(0.03 * vol, t + 0.19 + i * 0.04);
+    sg.gain.exponentialRampToValueAtTime(0.001, t + 0.28 + i * 0.04);
+    s.connect(sg);
+    sg.connect(context.destination);
+    s.start(t + 0.18 + i * 0.04);
+    s.stop(t + 0.32 + i * 0.04);
+  });
+}
+
+// Mini: Directional correct sound based on across/down
+export function playMiniCorrectSoundDirectional(direction = 'across') {
+  const context = initAudio();
+  if (!context) return;
+  const t = context.currentTime;
+  const vol = getVolumeFor('sfx');
+  if (vol === 0) return;
+
+  // Across = slight left-to-right sweep, Down = center
+  const pan = direction === 'across' ? 0.15 : 0;
+  const panner = createPanner(context, pan);
+
+  // Pencil ping with directional hint
+  [-1.2, 1.2].forEach((detune) => {
+    const osc = context.createOscillator();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(698.46, t); // F5
+    osc.detune.value = detune;
+    const g = context.createGain();
+    g.gain.setValueAtTime(0, t);
+    g.gain.linearRampToValueAtTime(0.1 * vol, t + 0.004);
+    g.gain.exponentialRampToValueAtTime(0.001, t + 0.12);
+    osc.connect(g);
+    connectToOutput(context, g, panner ? createPanner(context, pan) : null);
+    osc.start(t);
+    osc.stop(t + 0.15);
+  });
+}
+
+// =============================================================================
+// G: SYNTHESIZED REPLACEMENTS FOR STOCK AUDIO FILES
+// =============================================================================
+
+// Replace clapper.wav — Film clapper synthesis
+export function playClapperSoundSynthesized() {
+  const context = initAudio();
+  if (!context) return;
+  const t = context.currentTime;
+  const vol = getVolumeFor('sfx');
+  if (vol === 0) return;
+
+  // Sharp transient "clap" (noise burst)
+  const noiseBuf = createNoiseBuffer(context, 0.04);
+  const noise = context.createBufferSource();
+  noise.buffer = noiseBuf;
+  const bp = context.createBiquadFilter();
+  bp.type = 'bandpass';
+  bp.frequency.value = 2500;
+  bp.Q.value = 2;
+  const ng = context.createGain();
+  ng.gain.setValueAtTime(0.3 * vol, t);
+  ng.gain.exponentialRampToValueAtTime(0.001, t + 0.035);
+  noise.connect(bp);
+  bp.connect(ng);
+  ng.connect(context.destination);
+  noise.start(t);
+  noise.stop(t + 0.04);
+
+  // Wood resonance body
+  const wood = context.createOscillator();
+  wood.type = 'triangle';
+  wood.frequency.setValueAtTime(400, t);
+  wood.frequency.exponentialRampToValueAtTime(150, t + 0.06);
+  const wg = context.createGain();
+  wg.gain.setValueAtTime(0.2 * vol, t);
+  wg.gain.exponentialRampToValueAtTime(0.001, t + 0.08);
+  const lp = context.createBiquadFilter();
+  lp.type = 'lowpass';
+  lp.frequency.value = 1200;
+  wood.connect(lp);
+  lp.connect(wg);
+  wg.connect(context.destination);
+  wood.start(t);
+  wood.stop(t + 0.1);
+
+  // Second clap (the board closing) — slightly delayed
+  const noise2 = context.createBufferSource();
+  noise2.buffer = noiseBuf;
+  const bp2 = context.createBiquadFilter();
+  bp2.type = 'bandpass';
+  bp2.frequency.value = 3500;
+  bp2.Q.value = 2.5;
+  const ng2 = context.createGain();
+  ng2.gain.setValueAtTime(0.25 * vol, t + 0.05);
+  ng2.gain.exponentialRampToValueAtTime(0.001, t + 0.08);
+  noise2.connect(bp2);
+  bp2.connect(ng2);
+  ng2.connect(context.destination);
+  noise2.start(t + 0.05);
+  noise2.stop(t + 0.09);
+}
+
+// Replace crowd-disappointment.mp3 — Synthesized crowd "aww"
+export function playCrowdDisappointmentSynthesized() {
+  const context = initAudio();
+  if (!context) return;
+  const t = context.currentTime;
+  const vol = getVolumeFor('sfx');
+  if (vol === 0) return;
+
+  // Multiple descending tones at different frequencies = "crowd" feel
+  const voices = [
+    { freq: 350, endFreq: 200, start: 0, dur: 0.6, type: 'sine' },
+    { freq: 320, endFreq: 180, start: 0.02, dur: 0.55, type: 'triangle' },
+    { freq: 280, endFreq: 160, start: 0.04, dur: 0.5, type: 'sine' },
+    { freq: 400, endFreq: 220, start: 0.01, dur: 0.58, type: 'triangle' },
+    { freq: 260, endFreq: 150, start: 0.03, dur: 0.52, type: 'sine' },
+  ];
+
+  voices.forEach(({ freq, endFreq, start, dur, type }) => {
+    const osc = context.createOscillator();
+    osc.type = type;
+    osc.frequency.setValueAtTime(freq, t + start);
+    osc.frequency.linearRampToValueAtTime(endFreq, t + start + dur);
+
+    // Add slight random vibrato for organic crowd feel
+    const vibrato = context.createOscillator();
+    vibrato.frequency.value = 4 + Math.random() * 3;
+    const vg = context.createGain();
+    vg.gain.value = 3 + Math.random() * 2;
+    vibrato.connect(vg);
+    vg.connect(osc.frequency);
+
+    const g = context.createGain();
+    g.gain.setValueAtTime(0, t + start);
+    g.gain.linearRampToValueAtTime(0.04 * vol, t + start + 0.05);
+    g.gain.setValueAtTime(0.035 * vol, t + start + dur * 0.5);
+    g.gain.exponentialRampToValueAtTime(0.001, t + start + dur);
+
+    const lp = context.createBiquadFilter();
+    lp.type = 'lowpass';
+    lp.frequency.value = 800;
+
+    osc.connect(lp);
+    lp.connect(g);
+    g.connect(context.destination);
+    osc.start(t + start);
+    osc.stop(t + start + dur + 0.1);
+    vibrato.start(t + start);
+    vibrato.stop(t + start + dur + 0.1);
+  });
+
+  // Breathy noise component
+  const noiseBuf = createNoiseBuffer(context, 0.7);
+  const noise = context.createBufferSource();
+  noise.buffer = noiseBuf;
+  const bp = context.createBiquadFilter();
+  bp.type = 'bandpass';
+  bp.frequency.setValueAtTime(600, t);
+  bp.frequency.linearRampToValueAtTime(300, t + 0.6);
+  bp.Q.value = 0.8;
+  const ng = context.createGain();
+  ng.gain.setValueAtTime(0, t);
+  ng.gain.linearRampToValueAtTime(0.03 * vol, t + 0.05);
+  ng.gain.exponentialRampToValueAtTime(0.001, t + 0.6);
+  noise.connect(bp);
+  bp.connect(ng);
+  ng.connect(context.destination);
+  noise.start(t);
+  noise.stop(t + 0.7);
+}
+
+// Replace human_clapping_8_people.mp3 — Synthesized applause
+export function playApplauseSynthesized() {
+  const context = initAudio();
+  if (!context) return;
+  const t = context.currentTime;
+  const vol = getVolumeFor('sfx');
+  if (vol === 0) return;
+
+  // Applause = many short noise bursts at slightly random intervals
+  const clapCount = 24;
+  const duration = 1.8;
+
+  for (let i = 0; i < clapCount; i++) {
+    const start = (i / clapCount) * duration + (Math.random() - 0.5) * 0.06;
+    const noiseBuf = createNoiseBuffer(context, 0.025);
+    const noise = context.createBufferSource();
+    noise.buffer = noiseBuf;
+
+    const bp = context.createBiquadFilter();
+    bp.type = 'bandpass';
+    bp.frequency.value = 2000 + Math.random() * 2000;
+    bp.Q.value = 1 + Math.random();
+
+    const g = context.createGain();
+    // Swell: quiet → loud → fade
+    const progress = i / clapCount;
+    const envelope =
+      progress < 0.3
+        ? progress / 0.3 // ramp up
+        : progress > 0.7
+          ? (1 - progress) / 0.3 // ramp down
+          : 1; // sustain
+    g.gain.setValueAtTime(0.12 * vol * envelope, t + start);
+    g.gain.exponentialRampToValueAtTime(0.001, t + start + 0.02);
+
+    // Random stereo position
+    const pan = createPanner(context, (Math.random() - 0.5) * 0.8);
+    noise.connect(bp);
+    bp.connect(g);
+    connectToOutput(context, g, pan);
+
+    const schedStart = Math.max(t + start, t);
+    noise.start(schedStart);
+    noise.stop(schedStart + 0.025);
+  }
+}
+
+// =============================================================================
+// H: AMBIENT TEXTURE LAYERS — Subtle atmospheric drones per game
+// =============================================================================
+
+let _ambientNodes = null;
+
+// Start ambient texture for a game
+// game: 'tandem' | 'mini' | 'reel' | 'alchemy'
+export function startAmbientTexture(game) {
+  stopAmbientTexture(); // Clean up any existing
+
+  const context = initAudio();
+  if (!context) return;
+
+  const vol = getVolumeFor('ambient');
+  if (vol === 0) return;
+
+  const nodes = [];
+  const t = context.currentTime;
+  const masterGain = context.createGain();
+  // Fade in over 3 seconds
+  masterGain.gain.setValueAtTime(0, t);
+  masterGain.gain.linearRampToValueAtTime(1, t + 3);
+  masterGain.connect(context.destination);
+
+  switch (game) {
+    case 'tandem': {
+      // Warm pad: gentle C major drone
+      [261.63, 329.63, 392].forEach((freq) => {
+        const osc = context.createOscillator();
+        osc.type = 'sine';
+        osc.frequency.value = freq;
+        const g = context.createGain();
+        g.gain.value = vol * 0.3;
+        // Slow LFO tremolo
+        const lfo = context.createOscillator();
+        lfo.frequency.value = 0.2 + Math.random() * 0.1;
+        const lfoG = context.createGain();
+        lfoG.gain.value = vol * 0.08;
+        lfo.connect(lfoG);
+        lfoG.connect(g.gain);
+        const lp = context.createBiquadFilter();
+        lp.type = 'lowpass';
+        lp.frequency.value = 400;
+        osc.connect(lp);
+        lp.connect(g);
+        g.connect(masterGain);
+        osc.start(t);
+        lfo.start(t);
+        nodes.push(osc, lfo);
+      });
+      break;
+    }
+    case 'mini': {
+      // Library ambience: gentle white noise at very low volume
+      const bufferSize = context.sampleRate * 4;
+      const buffer = context.createBuffer(1, bufferSize, context.sampleRate);
+      const data = buffer.getChannelData(0);
+      for (let i = 0; i < bufferSize; i++) {
+        data[i] = Math.random() * 2 - 1;
+      }
+      const noise = context.createBufferSource();
+      noise.buffer = buffer;
+      noise.loop = true;
+      const lp = context.createBiquadFilter();
+      lp.type = 'lowpass';
+      lp.frequency.value = 800;
+      const g = context.createGain();
+      g.gain.value = vol * 0.4;
+      noise.connect(lp);
+      lp.connect(g);
+      g.connect(masterGain);
+      noise.start(t);
+      nodes.push(noise);
+      break;
+    }
+    case 'reel': {
+      // Film projector hum: low buzz + flutter
+      const hum = context.createOscillator();
+      hum.type = 'sawtooth';
+      hum.frequency.value = 60;
+      const lp = context.createBiquadFilter();
+      lp.type = 'lowpass';
+      lp.frequency.value = 200;
+      lp.Q.value = 0.5;
+      const g = context.createGain();
+      g.gain.value = vol * 0.35;
+      // Flutter LFO (projector mechanism)
+      const flutter = context.createOscillator();
+      flutter.frequency.value = 8;
+      const flutterG = context.createGain();
+      flutterG.gain.value = vol * 0.1;
+      flutter.connect(flutterG);
+      flutterG.connect(g.gain);
+      hum.connect(lp);
+      lp.connect(g);
+      g.connect(masterGain);
+      hum.start(t);
+      flutter.start(t);
+      nodes.push(hum, flutter);
+      break;
+    }
+    case 'alchemy': {
+      // Mystical bubbling: random pitched pops at intervals
+      // Use a repeating noise-burst pattern
+      const osc = context.createOscillator();
+      osc.type = 'sine';
+      osc.frequency.value = 130.81; // C3
+      const g = context.createGain();
+      g.gain.value = vol * 0.25;
+      // Shimmer LFO
+      const lfo = context.createOscillator();
+      lfo.frequency.value = 0.3;
+      const lfoG = context.createGain();
+      lfoG.gain.value = vol * 0.1;
+      lfo.connect(lfoG);
+      lfoG.connect(g.gain);
+      const lp = context.createBiquadFilter();
+      lp.type = 'lowpass';
+      lp.frequency.value = 300;
+      osc.connect(lp);
+      lp.connect(g);
+      g.connect(masterGain);
+      osc.start(t);
+      lfo.start(t);
+      nodes.push(osc, lfo);
+
+      // High shimmer
+      const shimmer = context.createOscillator();
+      shimmer.type = 'sine';
+      shimmer.frequency.value = 1046.5; // C6
+      const sg = context.createGain();
+      sg.gain.value = vol * 0.1;
+      const sLfo = context.createOscillator();
+      sLfo.frequency.value = 0.15;
+      const sLfoG = context.createGain();
+      sLfoG.gain.value = vol * 0.05;
+      sLfo.connect(sLfoG);
+      sLfoG.connect(sg.gain);
+      shimmer.connect(sg);
+      sg.connect(masterGain);
+      shimmer.start(t);
+      sLfo.start(t);
+      nodes.push(shimmer, sLfo);
+      break;
+    }
+  }
+
+  _ambientNodes = { nodes, masterGain, context };
+}
+
+// Stop ambient texture with fade-out
+export function stopAmbientTexture() {
+  if (!_ambientNodes) return;
+
+  const { nodes, masterGain, context } = _ambientNodes;
+  const t = context.currentTime;
+
+  // Fade out over 1 second
+  masterGain.gain.setValueAtTime(masterGain.gain.value, t);
+  masterGain.gain.linearRampToValueAtTime(0, t + 1);
+
+  // Stop all nodes after fade
+  setTimeout(() => {
+    nodes.forEach((node) => {
+      try {
+        node.stop();
+      } catch {
+        /* already stopped */
+      }
+    });
+    try {
+      masterGain.disconnect();
+    } catch {
+      /* already disconnected */
+    }
+  }, 1100);
+
+  _ambientNodes = null;
+}
+
+// =============================================================================
+// Tandem start sound (branded — replaces generic playStartSound on Tandem)
+// =============================================================================
+
+export function playTandemStartSound() {
+  const context = initAudio();
+  if (!context) return;
+  const t = context.currentTime;
+  const vol = getVolumeFor('sfx');
+  if (vol === 0) return;
+
+  // Quick marimba-like ascending motif
+  const notes = [
+    { freq: 392, start: 0, dur: 0.12 }, // G4
+    { freq: 523.25, start: 0.1, dur: 0.12 }, // C5
+    { freq: 659.25, start: 0.2, dur: 0.15 }, // E5
+    { freq: 523.25, start: 0.32, dur: 0.1 }, // C5 (bounce)
+    { freq: 659.25, start: 0.4, dur: 0.2 }, // E5 (settle)
+  ];
+
+  const noiseBuf = createNoiseBuffer(context, 0.02);
+
+  notes.forEach(({ freq, start, dur }) => {
+    // Wood transient
+    const noise = context.createBufferSource();
+    noise.buffer = noiseBuf;
+    const bp = context.createBiquadFilter();
+    bp.type = 'bandpass';
+    bp.frequency.value = freq * 1.5;
+    bp.Q.value = 1.5;
+    const ng = context.createGain();
+    ng.gain.setValueAtTime(0.08 * vol, t + start);
+    ng.gain.exponentialRampToValueAtTime(0.001, t + start + 0.015);
+    noise.connect(bp);
+    bp.connect(ng);
+    ng.connect(context.destination);
+    noise.start(t + start);
+    noise.stop(t + start + 0.02);
+
+    // Triangle body
+    const osc = context.createOscillator();
+    osc.type = 'triangle';
+    osc.frequency.value = freq;
+    const g = context.createGain();
+    g.gain.setValueAtTime(0, t + start);
+    g.gain.linearRampToValueAtTime(0.15 * vol, t + start + 0.006);
+    g.gain.exponentialRampToValueAtTime(0.001, t + start + dur);
+    const lp = context.createBiquadFilter();
+    lp.type = 'lowpass';
+    lp.frequency.value = 2000;
+    osc.connect(lp);
+    lp.connect(g);
+    g.connect(context.destination);
+    osc.start(t + start);
+    osc.stop(t + start + dur + 0.05);
+  });
+}
+
+// Mini start sound (clean, cerebral)
+export function playMiniStartSound() {
+  const context = initAudio();
+  if (!context) return;
+  const t = context.currentTime;
+  const vol = getVolumeFor('sfx');
+  if (vol === 0) return;
+
+  // Soft piano-like chord spread
+  const notes = [
+    { freq: 349.23, start: 0, dur: 0.25 }, // F4
+    { freq: 440, start: 0.05, dur: 0.22 }, // A4
+    { freq: 523.25, start: 0.1, dur: 0.2 }, // C5
+  ];
+
+  notes.forEach(({ freq, start, dur }) => {
+    [-1.5, 1.5].forEach((detune) => {
+      const osc = context.createOscillator();
+      osc.type = 'sine';
+      osc.frequency.value = freq;
+      osc.detune.value = detune;
+      const g = context.createGain();
+      g.gain.setValueAtTime(0, t + start);
+      g.gain.linearRampToValueAtTime(0.09 * vol, t + start + 0.008);
+      g.gain.exponentialRampToValueAtTime(0.001, t + start + dur);
+      osc.connect(g);
+      g.connect(context.destination);
+      osc.start(t + start);
+      osc.stop(t + start + dur + 0.05);
+    });
   });
 }

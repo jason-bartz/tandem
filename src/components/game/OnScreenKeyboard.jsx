@@ -3,8 +3,8 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useHaptics } from '@/hooks/useHaptics';
 import { useTheme } from '@/contexts/ThemeContext';
-import { STORAGE_KEYS } from '@/lib/constants';
-import { playKeyPressSound } from '@/lib/sounds';
+import { playKeyPressSound, playKeyPressEscalating } from '@/lib/sounds';
+import { getSoundSettings } from '@/lib/soundSettings';
 
 const KEYBOARD_LAYOUTS = {
   QWERTY: [
@@ -32,6 +32,8 @@ export default function OnScreenKeyboard({
   isMobilePhone = false,
   checkButtonColor = 'var(--primary)', // Default blue for Daily Tandem
   actionKeyType = 'check', // 'check' for checkmark (ENTER), 'tab' for tab arrow (TAB)
+  keyPosition = 0, // Current position in the row (for pitch escalation)
+  rowLength = 5, // Total letters in the row
 }) {
   const { lightTap } = useHaptics();
   const { highContrast, isDark, reduceMotion } = useTheme();
@@ -40,11 +42,11 @@ export default function OnScreenKeyboard({
   const [hasAnimated, setHasAnimated] = useState(false);
   const [isVisible, setIsVisible] = useState(reduceMotion); // Immediately visible if reduce motion is on
 
-  // Load sound preference from localStorage
+  // Load sound preference
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem(STORAGE_KEYS.SOUND);
-      setSoundEnabled(saved !== 'false');
+      const settings = getSoundSettings();
+      setSoundEnabled(settings.masterEnabled);
     }
   }, []);
 
@@ -87,9 +89,14 @@ export default function OnScreenKeyboard({
     setPressedKeys((prev) => new Set(prev).add(key));
     lightTap();
 
-    // Play keypress sound if enabled
+    // Play keypress sound with pitch escalation if enabled
     if (soundEnabled) {
-      playKeyPressSound();
+      const settings = getSoundSettings();
+      if (settings.keypressEnabled) {
+        playKeyPressEscalating(keyPosition, rowLength);
+      } else {
+        playKeyPressSound();
+      }
     }
 
     // Call the parent handler
