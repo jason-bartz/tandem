@@ -38,7 +38,6 @@ import {
   Flag,
   BarChart3,
   ShieldCheck,
-  Keyboard,
   BellRing,
 } from 'lucide-react';
 
@@ -566,20 +565,8 @@ export default function AdminDashboard() {
           })}
         </nav>
 
-        {/* Shortcut help at bottom */}
-        <div className="mt-auto px-1.5 pb-1">
-          <button
-            onClick={toggleShortcutHelp}
-            title="Keyboard shortcuts (?)"
-            className="flex items-center gap-2.5 h-9 px-2 rounded-md text-sm font-medium whitespace-nowrap text-text-muted hover:bg-muted hover:text-text-primary transition-all duration-200 w-full"
-          >
-            <Keyboard size={16} className="flex-shrink-0" />
-            <span className="hidden sm:inline opacity-100 text-xs font-semibold">Shortcuts</span>
-            <kbd className="ml-auto hidden sm:inline opacity-100 text-[10px] font-bold bg-gray-100 text-gray-400 rounded border border-gray-200 px-1 py-0.5">
-              ?
-            </kbd>
-          </button>
-        </div>
+        {/* Spacer to push sidebar content up */}
+        <div className="mt-auto" />
       </aside>
 
       {/* Content */}
@@ -758,6 +745,14 @@ export default function AdminDashboard() {
 
       {/* Keyboard shortcut help overlay */}
       {showShortcutHelp && <KeyboardShortcutHelp onClose={toggleShortcutHelp} />}
+
+      {/* Fixed bottom-right shortcut hint */}
+      <button
+        onClick={toggleShortcutHelp}
+        className="fixed bottom-4 right-4 hidden sm:flex items-center gap-1.5 text-xs text-text-muted hover:text-text-secondary transition-all duration-200"
+      >
+        <span>Press <kbd className="font-bold bg-bg-surface text-text-muted rounded px-1 py-0.5">?</kbd> for keyboard shortcuts</span>
+      </button>
     </div>
   );
 }
