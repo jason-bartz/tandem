@@ -39,7 +39,7 @@ function StatBlock({ label, value, sub }) {
 function GameStatsCard({ title, color, stats }) {
   if (!stats) {
     return (
-      <div className={`rounded-lg border border-border-main p-3 bg-${color}/5`}>
+      <div className={`rounded-lg p-3 bg-bg-surface`}>
         <h5 className={`text-xs font-bold text-${color} mb-2`}>{title}</h5>
         <p className="text-xs text-text-muted">No data</p>
       </div>
@@ -48,7 +48,7 @@ function GameStatsCard({ title, color, stats }) {
 
   return (
     <div
-      className={`rounded-lg border border-border-main p-3`}
+      className={`rounded-lg p-3`}
       style={{ backgroundColor: `var(--${color}-bg, transparent)` }}
     >
       <h5 className="text-xs font-bold mb-2" style={{ color: `var(--${color})` }}>
@@ -88,7 +88,7 @@ function GamesCompletedChart({ stats }) {
   if (total === 0) return null;
 
   return (
-    <div className="mt-3 rounded-lg border border-border-main p-3">
+    <div className="mt-3 rounded-lg bg-bg-surface p-3">
       <div className="flex justify-between items-center mb-2">
         <span className="text-xs font-bold text-text-secondary">Games Completed</span>
         <span className="text-xs font-bold text-text-primary">{total}</span>
@@ -141,9 +141,9 @@ export default function UserDetailPanel({ user, onClose }) {
 
   return (
     <tr>
-      <td colSpan="7" className="p-0">
-        <div className="border-t border-border-light bg-bg-card">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-0 divide-y lg:divide-y-0 lg:divide-x divide-border-main">
+      <td colSpan="8" className="p-0">
+        <div className="bg-bg-card">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-0">
             {/* Profile Section */}
             <div className="p-4 sm:p-5">
               <h4 className="text-sm font-bold text-text-primary mb-3 flex items-center gap-2">
@@ -175,10 +175,10 @@ export default function UserDetailPanel({ user, onClose }) {
                 <div className="flex justify-between">
                   <span className="text-text-secondary font-medium">Account Type</span>
                   <span
-                    className={`text-xs font-bold px-2 py-0.5 rounded-full border ${
+                    className={`text-xs font-bold px-2 py-0.5 rounded-full ${
                       user.isAnonymous
-                        ? 'bg-gray-100 dark:bg-gray-800 border-border-main text-text-secondary'
-                        : 'bg-accent-green/20 border-accent-green text-accent-green'
+                        ? 'bg-gray-100 dark:bg-gray-800 text-text-secondary'
+                        : 'bg-accent-green/20 text-accent-green'
                     }`}
                   >
                     {user.isAnonymous ? 'Anonymous' : 'Registered'}
@@ -273,7 +273,7 @@ export default function UserDetailPanel({ user, onClose }) {
               <GamesCompletedChart stats={stats} />
 
               {/* Achievements */}
-              <div className="mt-3 rounded-lg border border-border-main p-3">
+              <div className="mt-3 rounded-lg bg-bg-surface p-3">
                 <div className="flex justify-between items-center">
                   <span className="text-xs font-bold text-text-secondary">Achievements</span>
                   <span className="text-lg font-bold text-accent-purple">
@@ -292,7 +292,7 @@ export default function UserDetailPanel({ user, onClose }) {
                   <button
                     onClick={handlePasswordReset}
                     disabled={resetting}
-                    className="w-full px-3 py-2 bg-accent-blue text-white font-bold text-sm rounded-xl active:translate-y-0 transition-transform disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0"
+                    className="w-full px-3 py-2 bg-primary hover:bg-primary-hover text-white font-semibold text-sm rounded-md transition-all duration-200 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
                   >
                     {resetting ? 'Sending...' : 'Send Password Reset'}
                   </button>
@@ -300,10 +300,10 @@ export default function UserDetailPanel({ user, onClose }) {
 
                 {resetMessage && (
                   <div
-                    className={`text-xs font-bold p-2 rounded-lg border ${
+                    className={`text-xs font-bold p-2 rounded-md ${
                       resetMessage.startsWith('Error')
-                        ? 'bg-accent-red/20 border-accent-red text-accent-red'
-                        : 'bg-accent-green/20 border-accent-green text-accent-green'
+                        ? 'bg-accent-red/20 text-accent-red'
+                        : 'bg-accent-green/20 text-accent-green'
                     }`}
                   >
                     {resetMessage}
@@ -312,7 +312,7 @@ export default function UserDetailPanel({ user, onClose }) {
 
                 <button
                   onClick={onClose}
-                  className="w-full px-3 py-2 bg-bg-surface text-text-secondary border border-border-main font-bold text-sm rounded-xl hover:bg-bg-card transition-colors"
+                  className="w-full px-3 py-2 bg-bg-surface text-text-secondary font-semibold text-sm rounded-md hover:bg-muted transition-all duration-200 hover:scale-105"
                 >
                   Close
                 </button>

@@ -71,8 +71,8 @@ function formatTime(seconds) {
 
 function MetricCard({ label, value, sub, color = 'text-text-primary' }) {
   return (
-    <div className="bg-bg-card rounded-lg border border-border-main p-3 sm:p-4">
-      <div className={`text-xl sm:text-2xl font-bold ${color}`}>
+    <div className="bg-bg-card rounded-lg p-4">
+      <div className={`text-xl font-bold ${color}`}>
         {value !== null && value !== undefined ? value.toLocaleString() : '--'}
       </div>
       <div className="text-xs font-bold text-text-secondary mt-0.5">{label}</div>
@@ -83,7 +83,7 @@ function MetricCard({ label, value, sub, color = 'text-text-primary' }) {
 
 function ChartCard({ title, children }) {
   return (
-    <div className="bg-bg-card rounded-lg border border-border-main p-4 sm:p-5">
+    <div className="bg-bg-card rounded-lg p-4">
       <h4 className="text-sm font-bold text-text-primary mb-4">{title}</h4>
       {children}
     </div>
@@ -456,19 +456,19 @@ export default function AnalyticsDashboard() {
   if (loading) {
     return (
       <div className="bg-bg-surface rounded-lg">
-        <div className="px-4 sm:px-6 py-4 border-b border-border-light">
+        <div className="px-4 py-4 border-b border-border-light">
           <h2 className="text-lg font-bold text-text-primary">Analytics</h2>
         </div>
-        <div className="p-4 sm:p-6">
+        <div className="p-4">
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
             {[...Array(4)].map((_, i) => (
               <div
                 key={i}
-                className="bg-bg-card rounded-lg border border-border-main p-4 h-16 skeleton-shimmer"
+                className="bg-gray-200 dark:bg-gray-700 rounded-lg p-4 h-16 skeleton-shimmer"
               />
             ))}
           </div>
-          <div className="bg-bg-card rounded-lg border border-border-main h-80 skeleton-shimmer" />
+          <div className="bg-gray-200 dark:bg-gray-700 rounded-lg h-80 skeleton-shimmer" />
         </div>
       </div>
     );
@@ -476,7 +476,7 @@ export default function AnalyticsDashboard() {
 
   return (
     <div className="bg-bg-surface rounded-lg">
-      <div className="px-4 sm:px-6 py-4 border-b border-border-light">
+      <div className="px-4 py-4 border-b border-border-light">
         <div className="flex items-center justify-between flex-wrap gap-3">
           <h2 className="text-lg font-bold text-text-primary">Analytics</h2>
           <div className="flex items-center gap-2">
@@ -507,12 +507,12 @@ export default function AnalyticsDashboard() {
       </div>
 
       {error && (
-        <div className="mx-4 sm:mx-6 mt-4 bg-accent-red/20 border-2 border-accent-red rounded-lg p-3">
+        <div className="mx-4 mt-4 bg-accent-red/20 rounded-lg p-3">
           <p className="text-accent-red font-bold text-sm">{error}</p>
         </div>
       )}
 
-      <div className="p-4 sm:p-6 space-y-6">
+      <div className="p-4 space-y-6">
         {/* Summary Metrics */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           <MetricCard

@@ -432,7 +432,7 @@ export default function DailyAlchemyPuzzleEditor({ puzzle, date, onSave, onCance
   const exactMatch = searchResults.some((el) => el.name.toLowerCase() === searchText.toLowerCase());
 
   return (
-    <div className="bg-ghost-white dark:bg-gray-800 rounded-lg p-2.5 sm:p-4 overflow-visible">
+    <div className="bg-ghost-white dark:bg-gray-800 rounded-lg p-4 overflow-visible">
       <div className="mb-4">
         <h2 className="text-lg font-black text-text-primary">
           {puzzle ? 'Edit puzzle' : 'Create new puzzle'}
@@ -477,7 +477,7 @@ export default function DailyAlchemyPuzzleEditor({ puzzle, date, onSave, onCance
               type="button"
               onClick={handleSuggestTargets}
               disabled={isSuggestingTargets || loading}
-              className="px-2.5 py-1 text-xs bg-accent-yellow text-gray-900 rounded-md font-bold transition-transform disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-2.5 py-1 text-xs bg-accent-yellow text-gray-900 rounded-md font-bold hover:scale-105 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
               title="Get AI-suggested targets"
             >
               {isSuggestingTargets ? (
@@ -537,7 +537,7 @@ export default function DailyAlchemyPuzzleEditor({ puzzle, date, onSave, onCance
               <button
                 type="button"
                 onClick={clearTargetElement}
-                className="absolute right-3 top-1/2 -translate-y-1/2 p-1 hover:bg-gray-200 dark:hover:bg-gray-600 rounded"
+                className="absolute right-3 top-1/2 -translate-y-1/2 p-1 hover:bg-muted rounded"
               >
                 <X className="w-4 h-4 text-gray-400" />
               </button>
@@ -602,12 +602,12 @@ export default function DailyAlchemyPuzzleEditor({ puzzle, date, onSave, onCance
                           type="button"
                           onClick={() => handleSelectTargetSuggestion(suggestion)}
                           disabled={loading}
-                          className="p-2 sm:p-3 text-left rounded-lg border border-black/20 dark:border-white/20 bg-bg-card hover:border-green-500 hover:bg-green-50 dark:hover:bg-green-900/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                          className="p-3 text-left rounded-lg border border-border-main dark:border-white/20 bg-bg-card hover:border-green-500 hover:bg-green-50 dark:hover:bg-green-900/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                         >
-                          <div className="font-bold text-xs sm:text-sm text-text-primary">
+                          <div className="font-bold text-sm text-text-primary">
                             {suggestion.emoji} {suggestion.name}
                           </div>
-                          <div className="text-[10px] sm:text-xs text-text-secondary mt-0.5 line-clamp-1">
+                          <div className="text-xs text-text-secondary mt-0.5 line-clamp-1">
                             {suggestion.description}
                           </div>
                           <div className="text-[10px] text-green-600 dark:text-green-400 mt-1 font-medium">
@@ -665,7 +665,7 @@ export default function DailyAlchemyPuzzleEditor({ puzzle, date, onSave, onCance
                     <button
                       type="button"
                       onClick={openAddModal}
-                      className="w-full px-4 py-3 flex items-center gap-3 hover:bg-green-50 dark:hover:bg-green-900/30 transition-colors text-left border-t-2 border-gray-200 dark:border-gray-700"
+                      className="w-full px-4 py-3 flex items-center gap-3 hover:bg-green-50 dark:hover:bg-green-900/30 transition-colors text-left border-t border-gray-200 dark:border-gray-700"
                     >
                       <div className="w-8 h-8 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center">
                         <Plus className="w-5 h-5 text-green-600 dark:text-green-400" />
@@ -716,7 +716,7 @@ export default function DailyAlchemyPuzzleEditor({ puzzle, date, onSave, onCance
                 type="button"
                 onClick={handleGenerateDescription}
                 disabled={isGeneratingDescription || loading}
-                className="px-2.5 py-1 text-xs bg-indigo-500 text-white rounded-md font-bold transition-transform disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1.5"
+                className="px-2.5 py-1 text-xs bg-indigo-500 text-white rounded-md font-bold hover:scale-105 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1.5"
               >
                 {isGeneratingDescription && <Loader2 className="w-3 h-3 animate-spin" />}
                 <span>{formData.description ? 'Regenerate' : 'Generate'}</span>
@@ -738,10 +738,10 @@ export default function DailyAlchemyPuzzleEditor({ puzzle, date, onSave, onCance
         )}
 
         {/* Generate Path Button */}
-        <div className="p-3 sm:p-4 rounded-lg border border-border-light dark:border-gray-600">
+        <div className="p-4 rounded-lg border border-border-light dark:border-gray-600">
           <div className="flex items-center justify-between gap-2">
-            <h3 className="text-base sm:text-lg font-bold text-text-primary flex items-center gap-2">
-              <Route className="w-4 h-4 sm:w-5 sm:h-5 text-orange-500" />
+            <h3 className="text-lg font-bold text-text-primary flex items-center gap-2">
+              <Route className="w-5 h-5 text-orange-500" />
               Solution Path
             </h3>
             <button
@@ -766,7 +766,7 @@ export default function DailyAlchemyPuzzleEditor({ puzzle, date, onSave, onCance
 
           {/* Path Error */}
           {pathError && (
-            <div className="mt-3 p-3 bg-red-50 dark:bg-red-900/20 border-2 border-red-500 rounded-lg">
+            <div className="mt-3 p-3 bg-red-50 dark:bg-red-900/20 border border-red-500 rounded-lg">
               <p className="text-sm text-red-600 dark:text-red-400">{pathError}</p>
             </div>
           )}
@@ -829,12 +829,12 @@ export default function DailyAlchemyPuzzleEditor({ puzzle, date, onSave, onCance
         </div>
 
         {/* Action Buttons */}
-        <div className="flex gap-2 pt-3 border-t-2">
+        <div className="flex gap-2 pt-3 border-t border-border-light">
           <button
             type="button"
             onClick={onCancel}
             disabled={loading}
-            className="px-3 sm:px-4 py-1.5 text-xs sm:text-sm font-bold bg-ghost-white dark:bg-gray-700 text-text-primary rounded-md sm:rounded-lg transition-all"
+            className="px-4 py-1.5 text-sm font-bold bg-ghost-white dark:bg-gray-700 text-text-primary rounded-md hover:scale-105 transition-all duration-200"
           >
             <span className="sm:hidden">Back</span>
             <span className="hidden sm:inline">Back to Calendar</span>
@@ -842,7 +842,7 @@ export default function DailyAlchemyPuzzleEditor({ puzzle, date, onSave, onCance
           <button
             type="submit"
             disabled={loading}
-            className="px-3 sm:px-4 py-1.5 text-xs sm:text-sm font-bold bg-green-500 text-white rounded-md sm:rounded-lg transition-all disabled:opacity-50"
+            className="px-4 py-1.5 text-sm font-bold bg-green-500 text-white rounded-md hover:scale-105 transition-all duration-200 disabled:opacity-50"
           >
             <span className="sm:hidden">{loading ? 'Saving...' : 'Save'}</span>
             <span className="hidden sm:inline">{loading ? 'Saving...' : 'Save Puzzle'}</span>
@@ -868,7 +868,7 @@ export default function DailyAlchemyPuzzleEditor({ puzzle, date, onSave, onCance
               setSuggestError(null);
             }}
             disabled={loading}
-            className="px-3 sm:px-4 py-1.5 text-xs sm:text-sm font-bold bg-accent-orange text-white rounded-md sm:rounded-lg transition-all disabled:opacity-50"
+            className="px-4 py-1.5 text-sm font-bold bg-accent-orange text-white rounded-md hover:scale-105 transition-all duration-200 disabled:opacity-50"
           >
             Clear
           </button>

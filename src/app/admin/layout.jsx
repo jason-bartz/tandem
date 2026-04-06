@@ -167,7 +167,7 @@ export default function AdminLayout({ children }) {
 
   return (
     <div className="admin-theme min-h-screen bg-ghost-white">
-      <nav className="bg-bg-surface border-b-[1.5px]">
+      <nav className="bg-bg-surface border-b border-border-light">
         <div className="w-full max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-14 sm:h-16">
             {/* Left: Greeting */}
@@ -190,7 +190,7 @@ export default function AdminLayout({ children }) {
                 href="/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="hidden sm:inline-block px-3 py-1 text-sm bg-accent-blue text-white rounded-lg font-bold active:translate-y-0 transition-transform"
+                className="hidden sm:inline-block px-3 py-1.5 text-sm bg-primary text-white rounded-md font-semibold hover:bg-primary-hover hover:scale-105 transition-all duration-200"
               >
                 View Game
               </a>
@@ -202,7 +202,7 @@ export default function AdminLayout({ children }) {
                     e.stopPropagation();
                     setShowUserMenu(!showUserMenu);
                   }}
-                  className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-bold bg-bg-card border border-border-main hover:bg-bg-surface transition-colors"
+                  className="flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-semibold bg-bg-card hover:bg-bg-surface transition-all duration-200"
                 >
                   <div className="w-6 h-6 rounded-full overflow-hidden bg-accent-blue/20 flex items-center justify-center">
                     {currentUser?.avatar?.image_path ? (
@@ -237,7 +237,7 @@ export default function AdminLayout({ children }) {
 
                 {showUserMenu && (
                   <div
-                    className="absolute right-0 top-full mt-2 w-56 bg-bg-card border border-border-main rounded-lg overflow-hidden z-50"
+                    className="absolute right-0 top-full mt-2 w-56 bg-bg-card rounded-lg overflow-hidden z-50"
                     onClick={(e) => e.stopPropagation()}
                   >
                     <div className="px-4 py-3 border-b border-border-light">

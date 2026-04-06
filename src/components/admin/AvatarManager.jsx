@@ -265,7 +265,7 @@ export default function AvatarManager() {
             </div>
             <button
               onClick={() => setShowUploadForm(true)}
-              className="px-2.5 py-1 text-xs bg-accent-green text-white font-bold rounded-md active:translate-y-0 transition-transform whitespace-nowrap"
+              className="px-2.5 py-1 text-xs bg-accent-green text-white font-bold rounded-md hover:scale-105 transition-all duration-200 whitespace-nowrap"
             >
               Add
             </button>
@@ -280,12 +280,12 @@ export default function AvatarManager() {
           {/* Message */}
           {message && (
             <div
-              className={`px-4 py-3 rounded-lg border-2 mb-4 ${
+              className={`px-4 py-3 rounded-lg mb-4 ${
                 message.type === 'success'
-                  ? 'bg-accent-green/20 border-accent-green text-accent-green'
+                  ? 'bg-accent-green/20 text-accent-green'
                   : message.type === 'error'
-                    ? 'bg-accent-red/20 border-accent-red text-accent-red'
-                    : 'bg-accent-blue/20 border-accent-blue text-accent-blue'
+                    ? 'bg-accent-red/20 text-accent-red'
+                    : 'bg-accent-blue/20 text-accent-blue'
               }`}
             >
               {message.text}
@@ -315,7 +315,7 @@ export default function AvatarManager() {
                           />
                         </div>
                       ) : (
-                        <div className="w-24 h-24 rounded-full border-2 border-dashed border-text-muted flex items-center justify-center text-text-muted">
+                        <div className="w-24 h-24 rounded-full border border-dashed border-text-muted flex items-center justify-center text-text-muted">
                           No image
                         </div>
                       )}
@@ -330,7 +330,7 @@ export default function AvatarManager() {
                         />
                         <label
                           htmlFor="avatar-image"
-                          className="inline-block px-4 py-2 bg-accent-blue text-white font-bold rounded-lg cursor-pointer active:translate-y-0 transition-transform"
+                          className="inline-block px-4 py-2 bg-accent-blue text-white font-bold rounded-md cursor-pointer hover:scale-105 transition-all duration-200"
                         >
                           Choose Image
                         </label>
@@ -427,7 +427,7 @@ export default function AvatarManager() {
                     <button
                       onClick={handleUpload}
                       disabled={saving}
-                      className="flex-1 px-4 py-2 bg-accent-green text-white font-bold rounded-xl active:translate-y-0 transition-transform disabled:opacity-50"
+                      className="flex-1 px-4 py-2 bg-accent-green text-white font-bold rounded-md hover:scale-105 transition-all duration-200 disabled:opacity-50"
                     >
                       {saving ? 'Creating...' : 'Create Avatar'}
                     </button>
@@ -436,7 +436,7 @@ export default function AvatarManager() {
                         resetUploadForm();
                         setShowUploadForm(false);
                       }}
-                      className="px-4 py-2 bg-bg-card text-text-primary font-bold rounded-xl active:translate-y-0 transition-transform"
+                      className="px-4 py-2 bg-bg-card text-text-primary font-bold rounded-md hover:scale-105 transition-all duration-200"
                     >
                       Cancel
                     </button>
@@ -516,13 +516,13 @@ export default function AvatarManager() {
                     <button
                       onClick={handleSaveEdit}
                       disabled={saving}
-                      className="flex-1 px-4 py-2 bg-accent-blue text-white font-bold rounded-xl active:translate-y-0 transition-transform disabled:opacity-50"
+                      className="flex-1 px-4 py-2 bg-accent-blue text-white font-bold rounded-md hover:scale-105 transition-all duration-200 disabled:opacity-50"
                     >
                       {saving ? 'Saving...' : 'Save Changes'}
                     </button>
                     <button
                       onClick={() => setEditingAvatar(null)}
-                      className="px-4 py-2 bg-bg-card text-text-primary font-bold rounded-xl active:translate-y-0 transition-transform"
+                      className="px-4 py-2 bg-bg-card text-text-primary font-bold rounded-md hover:scale-105 transition-all duration-200"
                     >
                       Cancel
                     </button>

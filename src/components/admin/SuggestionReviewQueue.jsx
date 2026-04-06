@@ -125,9 +125,9 @@ export default function SuggestionReviewQueue({ date, onSelectSuggestion, onClos
   const currentOptions = activeGame ? suggestionsByGame[activeGame] || [] : [];
 
   return (
-    <div className="bg-bg-surface rounded-2xl border-2 border-border-light overflow-hidden">
+    <div className="bg-bg-surface rounded-lg overflow-hidden">
       {/* Header */}
-      <div className="px-3 sm:px-4 py-2.5 sm:py-3 border-b border-border-light flex items-center justify-between gap-2">
+      <div className="px-4 py-3 border-b border-border-light flex items-center justify-between gap-2">
         <div className="flex items-center gap-2 min-w-0">
           <h3 className="text-sm font-bold text-text-primary whitespace-nowrap">
             Puzzle Suggestions
@@ -142,7 +142,7 @@ export default function SuggestionReviewQueue({ date, onSelectSuggestion, onClos
           <button
             onClick={() => handleGenerate()}
             disabled={generating}
-            className="px-3 py-1.5 text-xs font-bold bg-primary text-white rounded-xl hover:bg-primary-hover transition-colors disabled:opacity-50"
+            className="px-3 py-1.5 text-xs font-bold bg-primary text-white rounded-md hover:bg-primary-hover hover:scale-105 transition-all duration-200 disabled:opacity-50"
           >
             {generating ? 'Generating...' : 'Generate All'}
           </button>
@@ -197,7 +197,7 @@ export default function SuggestionReviewQueue({ date, onSelectSuggestion, onClos
       </div>
 
       {/* Content */}
-      <div className="p-3 sm:p-4">
+      <div className="p-4">
         {loading ? (
           <div className="flex items-center justify-center py-12">
             <Loader2 size={24} className="animate-spin text-text-muted" />
@@ -243,7 +243,7 @@ function EmptyState({ gameId, generating, onGenerate }) {
       <button
         onClick={onGenerate}
         disabled={generating}
-        className="px-4 py-2 text-sm font-bold bg-primary text-white rounded-xl hover:bg-primary-hover transition-colors disabled:opacity-50"
+        className="px-4 py-2 text-sm font-bold bg-primary text-white rounded-md hover:bg-primary-hover hover:scale-105 transition-all duration-200 disabled:opacity-50"
       >
         {generating ? 'Generating...' : `Generate ${game?.count || 3} Options`}
       </button>
@@ -269,9 +269,9 @@ function SuggestionCard({ option, gameId, optionCount, onSelect, onDismiss, onRe
   return (
     <div
       className={`
-        relative rounded-2xl border-2 transition-all flex flex-col snap-start flex-shrink-0 ${widthClass}
-        ${isSelected ? 'border-accent-green bg-accent-green/5' : isDismissed ? 'border-border-light bg-bg-surface opacity-60' : 'border-border-light bg-bg-card hover:border-text-muted'}
-        ${isError ? 'border-accent-red/50 bg-accent-red/5' : ''}
+        relative rounded-lg transition-all flex flex-col snap-start flex-shrink-0 ${widthClass}
+        ${isSelected ? 'border-2 border-accent-green bg-accent-green/5' : isDismissed ? 'bg-bg-surface opacity-60' : 'bg-bg-card'}
+        ${isError ? 'bg-accent-red/5' : ''}
       `}
     >
       {/* Status badge */}
@@ -310,14 +310,14 @@ function SuggestionCard({ option, gameId, optionCount, onSelect, onDismiss, onRe
           <button
             onClick={onRestore}
             disabled={updating}
-            className="flex-1 px-2 py-1.5 text-xs font-bold text-text-secondary bg-bg-surface rounded-xl hover:bg-gray-200 transition-colors disabled:opacity-50 text-center"
+            className="flex-1 px-2 py-1.5 text-xs font-bold text-text-secondary bg-bg-surface rounded-md hover:bg-muted hover:scale-105 transition-all duration-200 disabled:opacity-50 text-center"
           >
             Restore
           </button>
         ) : isSelected ? (
           <button
             onClick={onSelect}
-            className="flex-1 px-2 py-1.5 text-xs font-bold text-white bg-accent-green rounded-xl hover:opacity-90 transition-colors text-center"
+            className="flex-1 px-2 py-1.5 text-xs font-bold text-white bg-accent-green rounded-md hover:opacity-90 hover:scale-105 transition-all duration-200 text-center"
           >
             Open in Editor
           </button>
@@ -326,14 +326,14 @@ function SuggestionCard({ option, gameId, optionCount, onSelect, onDismiss, onRe
             <button
               onClick={onSelect}
               disabled={updating || isError}
-              className="flex-1 px-2 py-1.5 text-xs font-bold text-white bg-primary rounded-xl hover:bg-primary-hover transition-colors disabled:opacity-50 text-center"
+              className="flex-1 px-2 py-1.5 text-xs font-bold text-white bg-primary rounded-md hover:bg-primary-hover hover:scale-105 transition-all duration-200 disabled:opacity-50 text-center"
             >
               {updating ? 'Loading...' : 'Use This'}
             </button>
             <button
               onClick={onDismiss}
               disabled={updating}
-              className="px-3 py-1.5 text-xs font-bold text-text-secondary bg-bg-surface rounded-xl hover:bg-gray-200 transition-colors disabled:opacity-50"
+              className="px-3 py-1.5 text-xs font-bold text-text-secondary bg-bg-surface rounded-md hover:bg-muted hover:scale-105 transition-all duration-200 disabled:opacity-50"
             >
               Skip
             </button>

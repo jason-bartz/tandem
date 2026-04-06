@@ -199,7 +199,7 @@ export default function PathGenerator({ onPathAccepted }) {
 
       {/* Error Display */}
       {error && (
-        <div className="p-4 bg-red-50 dark:bg-red-900/20 border-2 border-red-500 rounded-lg flex items-start gap-3">
+        <div className="p-4 bg-red-50 dark:bg-red-900/20 border border-red-500 rounded-lg flex items-start gap-3">
           <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
           <div>
             <p className="font-bold text-red-600 dark:text-red-400">Error</p>
@@ -210,7 +210,7 @@ export default function PathGenerator({ onPathAccepted }) {
 
       {/* Success Message */}
       {saveResult && (
-        <div className="p-4 bg-green-50 dark:bg-green-900/20 border-2 border-green-500 rounded-lg flex items-start gap-3">
+        <div className="p-4 bg-green-50 dark:bg-green-900/20 border border-green-500 rounded-lg flex items-start gap-3">
           <Check className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
           <div className="flex-1">
             <p className="font-bold text-green-600 dark:text-green-400">Path Saved Successfully!</p>
@@ -219,7 +219,7 @@ export default function PathGenerator({ onPathAccepted }) {
               {saveResult.skipped} already existed.
             </p>
             {saveResult.conflicts && saveResult.conflicts.length > 0 && (
-              <div className="mt-3 p-3 bg-amber-50 dark:bg-amber-900/20 border-2 border-amber-500 rounded-lg">
+              <div className="mt-3 p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-500 rounded-lg">
                 <p className="font-bold text-amber-600 dark:text-amber-400 flex items-center gap-2">
                   <AlertCircle className="w-4 h-4" />
                   {saveResult.conflicts.length} Conflict
@@ -271,7 +271,7 @@ export default function PathGenerator({ onPathAccepted }) {
         <div className="space-y-4">
           {/* Validation Warning Banner */}
           {paths.some((p) => p.validationSummary?.hasConflicts) && (
-            <div className="p-4 bg-red-50 dark:bg-red-900/20 border-2 border-red-500 rounded-lg flex items-start gap-3">
+            <div className="p-4 bg-red-50 dark:bg-red-900/20 border border-red-500 rounded-lg flex items-start gap-3">
               <AlertTriangle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
               <div>
                 <p className="font-bold text-red-600 dark:text-red-400">
@@ -318,7 +318,7 @@ export default function PathGenerator({ onPathAccepted }) {
 
       {/* Empty State */}
       {!isGenerating && !paths && !error && (
-        <div className="p-8 text-center bg-gray-50 dark:bg-gray-900 rounded-lg border border-dashed border-border-main">
+        <div className="p-8 text-center bg-gray-50 dark:bg-gray-900 rounded-lg border border-dashed border-border-light">
           <Sparkles className="w-12 h-12 text-gray-400 mx-auto mb-3" />
           <p className="text-lg font-bold text-text-secondary">
             Enter a target element to generate paths
@@ -413,7 +413,7 @@ function PathCard({ path, onSave, isSaving, isSaved }) {
   const validationSummary = path.validationSummary;
 
   return (
-    <div className={`${colors.bg} border-2 ${colors.border} rounded-xl overflow-hidden`}>
+    <div className={`${colors.bg} border ${colors.border} rounded-lg overflow-hidden`}>
       {/* Header */}
       <div className="p-4 border-b-[2px] dark:border-white/10">
         <div className="flex items-center justify-between">
@@ -474,12 +474,12 @@ function PathCard({ path, onSave, isSaving, isSaved }) {
               return (
                 <div key={idx} className="space-y-1">
                   <div
-                    className={`flex items-center gap-2 text-sm bg-bg-card dark:bg-gray-800 rounded-lg p-2 border-2 ${
+                    className={`flex items-center gap-2 text-sm bg-bg-card dark:bg-gray-800 rounded-lg p-2 border ${
                       isConflict
                         ? 'border-red-400 bg-red-50 dark:bg-red-900/20'
                         : isExists
                           ? 'border-amber-300 bg-amber-50 dark:bg-amber-900/20'
-                          : 'border-border-main/10 dark:border-white/10'
+                          : 'border-border-light dark:border-white/10'
                     }`}
                   >
                     <span className="text-xs font-bold text-gray-400 w-5">{step.step}.</span>

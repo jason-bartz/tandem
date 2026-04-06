@@ -112,7 +112,7 @@ export default function ReelConnectionsPuzzleCalendar({
           <div
             key={dayNumber}
             className={`
-              relative aspect-square min-h-0 p-1.5 sm:p-2 rounded-lg border overflow-hidden transition-all cursor-pointer
+              relative aspect-square min-h-0 p-2 rounded-lg border overflow-hidden transition-all cursor-pointer
               ${today ? 'border-accent-yellow bg-accent-yellow/20' : ''}
               ${puzzleExists ? 'bg-accent-red/10' : ''}
               ${holiday && !puzzleExists ? 'bg-accent-orange/10' : ''}
@@ -122,7 +122,7 @@ export default function ReelConnectionsPuzzleCalendar({
             onClick={() => handleDayClick(dayNumber)}
           >
             <div className="flex justify-between items-start">
-              <div className="text-xs sm:text-sm font-bold text-text-primary">{dayNumber}</div>
+              <div className="text-sm font-bold text-text-primary">{dayNumber}</div>
               {holiday && (
                 <div className="text-[10px] sm:text-xs">
                   {holiday === 'Christmas'
@@ -146,15 +146,15 @@ export default function ReelConnectionsPuzzleCalendar({
               )}
             </div>
             {holiday && (
-              <div className="hidden sm:block text-[8px] sm:text-[10px] text-text-primary mt-0.5 sm:mt-1 font-bold overflow-hidden text-ellipsis whitespace-nowrap">
+              <div className="hidden sm:block text-[10px] text-text-primary mt-1 font-bold overflow-hidden text-ellipsis whitespace-nowrap">
                 {holiday}
               </div>
             )}
 
             {/* Display first connection on desktop */}
             {puzzle && puzzle.groups && puzzle.groups[0] && (
-              <div className="mt-0.5 sm:mt-1 flex-1">
-                <div className="hidden sm:block text-[9px] sm:text-[11px] text-text-primary font-medium leading-tight break-words line-clamp-3">
+              <div className="mt-1 flex-1">
+                <div className="hidden sm:block text-[11px] text-text-primary font-medium leading-tight break-words line-clamp-3">
                   {puzzle.groups[0].connection}
                 </div>
               </div>
@@ -175,13 +175,13 @@ export default function ReelConnectionsPuzzleCalendar({
   };
 
   return (
-    <div className="bg-bg-surface rounded-lg p-3 sm:p-6">
+    <div className="bg-bg-surface rounded-lg p-4">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="relative">
           <button
             onClick={() => setShowMonthPicker(!showMonthPicker)}
-            className="text-base sm:text-lg font-bold text-text-primary hover:text-accent-red transition-colors flex items-center gap-2"
+            className="text-lg font-bold text-text-primary hover:text-accent-red transition-colors flex items-center gap-2"
           >
             {currentMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -219,7 +219,7 @@ export default function ReelConnectionsPuzzleCalendar({
                       setCurrentMonth(newDate);
                       setShowMonthPicker(false);
                     }}
-                    className={`px-3 py-2 rounded text-sm font-bold border transition-transform ${
+                    className={`px-3 py-2 rounded text-sm font-bold border transition-all duration-200 ${
                       currentMonth.getMonth() === index
                         ? 'bg-accent-red text-white'
                         : 'bg-bg-card text-text-secondary hover:bg-accent-red/20'
@@ -244,7 +244,7 @@ export default function ReelConnectionsPuzzleCalendar({
                 />
                 <button
                   onClick={() => setShowMonthPicker(false)}
-                  className="px-4 py-2 bg-accent-green rounded text-white font-bold transition-transform"
+                  className="px-4 py-2 bg-accent-green rounded text-white font-bold transition-all duration-200"
                 >
                   Done
                 </button>
@@ -256,19 +256,19 @@ export default function ReelConnectionsPuzzleCalendar({
         <div className="flex items-center space-x-1 sm:space-x-2">
           <button
             onClick={goToToday}
-            className="px-2 sm:px-3 py-1 text-xs sm:text-sm bg-accent-red text-white rounded-lg font-bold transition-transform"
+            className="px-3 py-1 text-sm bg-accent-red text-white rounded-md font-bold transition-all duration-200"
           >
             Today
           </button>
           <button
             onClick={previousMonth}
-            className="p-1.5 sm:p-2 text-text-primary font-bold text-lg hover:text-accent-red transition-colors"
+            className="p-2 text-text-primary font-bold text-lg hover:text-accent-red transition-colors"
           >
             ←
           </button>
           <button
             onClick={nextMonth}
-            className="p-1.5 sm:p-2 text-text-primary font-bold text-lg hover:text-accent-red transition-colors"
+            className="p-2 text-text-primary font-bold text-lg hover:text-accent-red transition-colors"
           >
             →
           </button>
@@ -276,7 +276,7 @@ export default function ReelConnectionsPuzzleCalendar({
       </div>
 
       {/* Day labels */}
-      <div className="grid grid-cols-7 gap-1 sm:gap-2 md:gap-3 mb-2 sm:mb-3">
+      <div className="grid grid-cols-7 gap-2 md:gap-3 mb-3">
         {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day) => (
           <div key={day} className="text-center text-[10px] sm:text-xs font-bold text-text-primary">
             {day}
@@ -285,7 +285,7 @@ export default function ReelConnectionsPuzzleCalendar({
       </div>
 
       {/* Calendar grid */}
-      <div className="grid grid-cols-7 gap-1 sm:gap-2 md:gap-3">{renderDays()}</div>
+      <div className="grid grid-cols-7 gap-2 md:gap-3">{renderDays()}</div>
 
       {/* Legend */}
       <div className="mt-6 pt-4 border-t border-border-light">
@@ -295,11 +295,11 @@ export default function ReelConnectionsPuzzleCalendar({
             <span className="hidden sm:inline">Has puzzle</span>
           </div>
           <div className="flex items-center gap-1.5">
-            <div className="w-3 h-3 rounded border-2 border-accent-yellow bg-accent-yellow/20" />
+            <div className="w-3 h-3 rounded border border-accent-yellow bg-accent-yellow/20" />
             <span className="hidden sm:inline">Today</span>
           </div>
           <div className="flex items-center gap-1.5">
-            <div className="w-3 h-3 rounded border-2 border-accent-red" />
+            <div className="w-3 h-3 rounded border border-accent-red" />
             <span className="hidden sm:inline">Selected</span>
           </div>
         </div>

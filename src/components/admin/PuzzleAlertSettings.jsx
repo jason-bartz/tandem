@@ -170,7 +170,7 @@ export default function PuzzleAlertSettings() {
       {/* Status message */}
       {message && (
         <div
-          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium ${
+          className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium ${
             message.type === 'success'
               ? 'bg-accent-green/10 text-accent-green'
               : message.type === 'error'
@@ -188,7 +188,7 @@ export default function PuzzleAlertSettings() {
       )}
 
       {/* Enable/Disable toggle */}
-      <div className="bg-bg-surface border border-border-light rounded-2xl p-4">
+      <div className="bg-bg-surface rounded-lg p-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             {settings.enabled ? (
@@ -223,14 +223,14 @@ export default function PuzzleAlertSettings() {
       </div>
 
       {/* Discord Webhook URL */}
-      <div className="bg-bg-surface border border-border-light rounded-2xl p-4 space-y-2">
+      <div className="bg-bg-surface rounded-lg p-4 space-y-2">
         <label className="block text-sm font-bold text-text-primary">Discord Webhook URL</label>
         <input
           type="url"
           value={settings.webhook_url || ''}
           onChange={(e) => setSettings((prev) => ({ ...prev, webhook_url: e.target.value }))}
           placeholder="https://discord.com/api/webhooks/..."
-          className="w-full px-3 py-2 text-sm bg-ghost-white border border-border-light rounded-xl text-text-primary placeholder-text-muted focus:outline-none focus:ring-2 focus:ring-accent-blue/30 focus:border-accent-blue"
+          className="w-full px-3 py-2 text-sm bg-ghost-white border border-border-light rounded-lg text-text-primary placeholder-text-muted focus:border-2 focus:border-primary focus:outline-none"
         />
         <p className="text-xs text-text-muted">
           Create a webhook in your Discord channel settings and paste the URL here.
@@ -238,7 +238,7 @@ export default function PuzzleAlertSettings() {
       </div>
 
       {/* Alert Start Time */}
-      <div className="bg-bg-surface border border-border-light rounded-2xl p-4 space-y-2">
+      <div className="bg-bg-surface rounded-lg p-4 space-y-2">
         <label className="block text-sm font-bold text-text-primary">Start Alerting At</label>
         <p className="text-xs text-text-muted">
           Alerts won&apos;t fire before this time (Eastern Time). The first check after this hour
@@ -252,7 +252,7 @@ export default function PuzzleAlertSettings() {
               alert_start_hour: parseInt(e.target.value),
             }))
           }
-          className="w-full px-3 py-2 text-sm bg-ghost-white border border-border-light rounded-xl text-text-primary focus:outline-none focus:ring-2 focus:ring-accent-blue/30 focus:border-accent-blue"
+          className="w-full px-3 py-2 text-sm bg-ghost-white border border-border-light rounded-lg text-text-primary focus:border-2 focus:border-primary focus:outline-none"
         >
           {HOUR_OPTIONS.map((opt) => (
             <option key={opt.value} value={opt.value}>
@@ -263,7 +263,7 @@ export default function PuzzleAlertSettings() {
       </div>
 
       {/* Reminder Frequency */}
-      <div className="bg-bg-surface border border-border-light rounded-2xl p-4 space-y-2">
+      <div className="bg-bg-surface rounded-lg p-4 space-y-2">
         <label className="block text-sm font-bold text-text-primary">Reminders</label>
         <p className="text-xs text-text-muted">
           If puzzles are still missing after the first alert, how often should reminders be sent?
@@ -276,7 +276,7 @@ export default function PuzzleAlertSettings() {
               check_interval_hours: parseInt(e.target.value),
             }))
           }
-          className="w-full px-3 py-2 text-sm bg-ghost-white border border-border-light rounded-xl text-text-primary focus:outline-none focus:ring-2 focus:ring-accent-blue/30 focus:border-accent-blue"
+          className="w-full px-3 py-2 text-sm bg-ghost-white border border-border-light rounded-lg text-text-primary focus:border-2 focus:border-primary focus:outline-none"
         >
           {REMINDER_OPTIONS.map((opt) => (
             <option key={opt.value} value={opt.value}>
@@ -287,7 +287,7 @@ export default function PuzzleAlertSettings() {
       </div>
 
       {/* Games to Monitor */}
-      <div className="bg-bg-surface border border-border-light rounded-2xl p-4 space-y-3">
+      <div className="bg-bg-surface rounded-lg p-4 space-y-3">
         <label className="block text-sm font-bold text-text-primary">Games to Monitor</label>
         <div className="grid grid-cols-2 gap-2">
           {GAME_OPTIONS.map((game) => {
@@ -296,7 +296,7 @@ export default function PuzzleAlertSettings() {
               <button
                 key={game.id}
                 onClick={() => toggleGame(game.id)}
-                className={`flex items-center gap-2.5 px-3 py-2.5 rounded-xl border text-sm font-medium transition-colors ${
+                className={`flex items-center gap-2.5 px-3 py-2.5 rounded-md border text-sm font-medium transition-all duration-200 ${
                   isActive
                     ? 'border-accent-blue bg-accent-blue/10 text-accent-blue'
                     : 'border-border-light bg-ghost-white text-text-muted hover:border-border-main'
@@ -329,7 +329,7 @@ export default function PuzzleAlertSettings() {
         <button
           onClick={handleSave}
           disabled={saving}
-          className="px-5 py-2 text-sm font-bold bg-text-primary text-ghost-white rounded-xl active:translate-y-0 transition-transform disabled:opacity-50"
+          className="px-5 py-2 text-sm font-bold bg-text-primary text-ghost-white rounded-md hover:scale-105 transition-all duration-200 disabled:opacity-50"
         >
           {saving ? (
             <span className="flex items-center gap-2">
@@ -343,7 +343,7 @@ export default function PuzzleAlertSettings() {
         <button
           onClick={handleTest}
           disabled={testing || !settings.webhook_url || !settings.enabled}
-          className="flex items-center gap-2 px-4 py-2 text-sm font-bold text-accent-blue bg-accent-blue/10 rounded-xl hover:bg-accent-blue/20 transition-colors disabled:opacity-40"
+          className="flex items-center gap-2 px-4 py-2 text-sm font-bold text-accent-blue bg-accent-blue/10 rounded-md hover:bg-accent-blue/20 hover:scale-105 transition-all duration-200 disabled:opacity-40"
         >
           {testing ? (
             <>

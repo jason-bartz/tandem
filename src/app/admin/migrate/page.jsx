@@ -65,7 +65,7 @@ export default function MigratePage() {
             <button
               onClick={() => runMigration('json')}
               disabled={status === 'running'}
-              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 rounded-lg"
+              className="px-4 py-2 bg-blue-600 disabled:bg-gray-600 rounded-md font-semibold hover:scale-105 transition-all duration-200"
             >
               {status === 'running' ? 'Running...' : 'Export as JSON'}
             </button>
@@ -73,7 +73,7 @@ export default function MigratePage() {
             <button
               onClick={() => runMigration('migrate')}
               disabled={status === 'running'}
-              className="px-4 py-2 bg-green-600 hover:bg-green-700 disabled:bg-gray-600 rounded-lg"
+              className="px-4 py-2 bg-green-600 disabled:bg-gray-600 rounded-md font-semibold hover:scale-105 transition-all duration-200"
             >
               {status === 'running' ? 'Running...' : 'Migrate to Supabase'}
             </button>

@@ -148,7 +148,7 @@ export default function AnnouncementManager() {
       {/* Status message */}
       {message && (
         <div
-          className={`p-3 rounded-xl text-sm font-medium ${
+          className={`p-3 rounded-lg text-sm font-medium ${
             message.type === 'error'
               ? 'bg-accent-red/10 text-accent-red'
               : message.type === 'success'

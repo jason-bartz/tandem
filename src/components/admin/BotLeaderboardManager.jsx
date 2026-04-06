@@ -159,14 +159,14 @@ export default function BotLeaderboardManager() {
     <div className="space-y-6">
       {/* Header */}
       <div className="bg-bg-surface rounded-lg">
-        <div className="px-4 sm:px-6 py-3 sm:py-4 border-b border-border-light">
+        <div className="px-4 py-3 border-b border-border-light">
           <div className="flex items-center gap-3">
             <Image src="/ui/shared/leaderboard-admin.png" alt="" width={24} height={24} />
             <h3 className="text-lg font-bold text-text-primary">Leaderboards Manager</h3>
           </div>
         </div>
 
-        <div className="p-4 sm:p-6 space-y-6">
+        <div className="p-4 space-y-6">
           {/* Message */}
           {message && (
             <div
@@ -372,7 +372,7 @@ export default function BotLeaderboardManager() {
             <button
               onClick={handleSave}
               disabled={saving}
-              className="px-4 sm:px-6 py-2.5 sm:py-3 text-sm sm:text-base bg-accent-blue text-white font-bold rounded-xl active:translate-y-0 transition-transform disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
+              className="px-4 py-2.5 text-sm bg-accent-blue text-white font-bold rounded-md hover:scale-105 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
             >
               {saving ? 'Saving...' : 'Save'}
             </button>
@@ -380,7 +380,7 @@ export default function BotLeaderboardManager() {
             <button
               onClick={handleGenerate}
               disabled={generating || !formData.enabled}
-              className="px-4 sm:px-6 py-2.5 sm:py-3 text-sm sm:text-base bg-accent-green text-white font-bold rounded-xl active:translate-y-0 transition-transform disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
+              className="px-4 py-2.5 text-sm bg-accent-green text-white font-bold rounded-md hover:scale-105 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
             >
               {generating ? 'Running...' : 'Run Now'}
             </button>

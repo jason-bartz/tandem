@@ -72,7 +72,7 @@ export default function AdminLogin() {
                 required
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                className="w-full px-4 py-3 border border-border-main rounded-lg bg-bg-card text-text-primary font-medium focus:outline-none focus:ring-2 focus:ring-accent-blue"
+                className="w-full bg-bg-surface rounded-md text-text-primary border-0 h-12 px-4 font-medium focus:bg-bg-card focus:border-2 focus:border-primary focus:outline-none"
                 placeholder="Enter username"
                 autoComplete="username"
               />
@@ -88,7 +88,7 @@ export default function AdminLogin() {
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-4 py-3 border border-border-main rounded-lg bg-bg-card text-text-primary font-medium focus:outline-none focus:ring-2 focus:ring-accent-blue"
+                className="w-full bg-bg-surface rounded-md text-text-primary border-0 h-12 px-4 font-medium focus:bg-bg-card focus:border-2 focus:border-primary focus:outline-none"
                 placeholder="Enter password"
                 autoComplete="current-password"
               />
@@ -97,7 +97,7 @@ export default function AdminLogin() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full px-6 py-3 bg-accent-blue text-white font-bold rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-transform"
+              className="w-full px-6 py-3 bg-accent-blue text-white font-semibold rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:scale-105 transition-all duration-200"
             >
               {loading ? 'Signing in...' : 'Sign In'}
             </button>

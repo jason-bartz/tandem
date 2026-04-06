@@ -128,7 +128,7 @@ export default function TeamManager() {
         {isAdmin && (
           <button
             onClick={() => setShowInvite(true)}
-            className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-accent-blue text-white font-bold rounded-xl text-xs sm:text-sm transition-transform active:translate-y-0 whitespace-nowrap flex-shrink-0"
+            className="flex items-center gap-2 px-4 py-2 bg-accent-blue text-white font-bold rounded-md text-sm transition-all duration-200 hover:scale-105 whitespace-nowrap flex-shrink-0"
           >
             <UserPlus className="w-4 h-4" />
             Invite
@@ -188,7 +188,7 @@ export default function TeamManager() {
           return (
             <div
               key={user.id}
-              className={`flex items-center gap-3 sm:gap-4 p-3 sm:p-4 bg-bg-surface rounded-xl border border-border-light ${
+              className={`flex items-center gap-4 p-4 bg-bg-surface rounded-lg ${
                 !user.is_active ? 'opacity-50' : ''
               }`}
             >
@@ -245,13 +245,13 @@ export default function TeamManager() {
 
               {/* Actions */}
               {canEdit && !isSelf && (
-                <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
+                <div className="flex items-center gap-2 flex-shrink-0">
                   {/* Role change dropdown for owners */}
                   {isOwner && user.role !== 'owner' && (
                     <select
                       value={user.role}
                       onChange={(e) => handleRoleChange(user, e.target.value)}
-                      className="px-1.5 sm:px-2 py-1 text-xs bg-bg-card border border-border-main rounded-lg font-semibold text-text-primary"
+                      className="px-2 py-1 text-xs bg-bg-card border border-border-main rounded-lg font-semibold text-text-primary"
                     >
                       <option value="editor">Editor</option>
                       <option value="admin">Admin</option>
@@ -259,7 +259,7 @@ export default function TeamManager() {
                   )}
                   <button
                     onClick={() => handleToggleActive(user)}
-                    className={`px-2 sm:px-3 py-1.5 text-xs font-bold rounded-lg transition-colors whitespace-nowrap ${
+                    className={`px-3 py-2 text-xs font-bold rounded-md transition-all duration-200 hover:scale-105 whitespace-nowrap ${
                       user.is_active
                         ? 'bg-accent-red/10 text-accent-red hover:bg-accent-red/20'
                         : 'bg-accent-green/10 text-accent-green hover:bg-accent-green/20'
@@ -328,8 +328,8 @@ function InviteModal({ onClose, onSuccess, canInviteAdmin }) {
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-bg-card rounded-2xl w-full max-w-md">
-        <div className="px-4 sm:px-6 py-3 sm:py-4 border-b border-border-light flex items-center justify-between">
+      <div className="bg-bg-card rounded-lg w-full max-w-md">
+        <div className="px-4 sm:px-6 py-4 border-b border-border-light flex items-center justify-between">
           <h3 className="text-base font-bold text-text-primary">Invite Team Member</h3>
           <button
             onClick={onClose}
@@ -418,14 +418,14 @@ function InviteModal({ onClose, onSuccess, canInviteAdmin }) {
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 px-4 py-2.5 text-sm font-bold text-text-primary bg-bg-surface rounded-xl transition-colors hover:bg-gray-200"
+              className="flex-1 px-4 py-2.5 text-sm font-bold text-text-primary bg-bg-surface rounded-md transition-all duration-200 hover:scale-105 hover:bg-muted"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={loading}
-              className="flex-1 px-4 py-2.5 text-sm font-bold bg-accent-blue text-white rounded-xl disabled:opacity-50 transition-transform active:translate-y-0"
+              className="flex-1 px-4 py-2.5 text-sm font-bold bg-accent-blue text-white rounded-md disabled:opacity-50 transition-all duration-200 hover:scale-105"
             >
               {loading ? 'Creating...' : 'Create'}
             </button>

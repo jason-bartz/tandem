@@ -322,7 +322,7 @@ export default function EmailBlastManager() {
       <div className="space-y-6">
         {message && (
           <div
-            className={`p-3 rounded-xl text-sm font-medium ${
+            className={`p-3 rounded-lg text-sm font-medium ${
               message.type === 'error'
                 ? 'bg-accent-red/10 text-accent-red'
                 : message.type === 'success'
@@ -339,7 +339,7 @@ export default function EmailBlastManager() {
           <h2 className="text-lg font-bold text-text-primary">Email</h2>
           <button
             onClick={handleNewBlast}
-            className="flex items-center gap-2 px-4 py-2 bg-accent-blue text-white rounded-lg font-bold text-sm hover:bg-accent-blue/90 transition-colors"
+            className="flex items-center gap-2 px-4 py-2 bg-accent-blue text-white rounded-md font-bold text-sm hover:bg-accent-blue/90 hover:scale-105 transition-all duration-200"
           >
             <Plus size={16} />
             New Blast
@@ -353,7 +353,7 @@ export default function EmailBlastManager() {
             className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
               !statusFilter
                 ? 'bg-text-primary text-bg-surface'
-                : 'bg-bg-surface text-text-secondary hover:bg-gray-200 dark:hover:bg-gray-700'
+                : 'bg-bg-surface text-text-secondary hover:bg-muted'
             }`}
           >
             All (
@@ -370,7 +370,7 @@ export default function EmailBlastManager() {
               className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
                 statusFilter === status
                   ? 'bg-text-primary text-bg-surface'
-                  : 'bg-bg-surface text-text-secondary hover:bg-gray-200 dark:hover:bg-gray-700'
+                  : 'bg-bg-surface text-text-secondary hover:bg-muted'
               }`}
             >
               {status.charAt(0).toUpperCase() + status.slice(1)} ({count})
@@ -477,7 +477,7 @@ export default function EmailBlastManager() {
       {/* Confirmation modal */}
       {showConfirmSend && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-bg-surface rounded-2xl max-w-md w-full p-6 space-y-4">
+          <div className="bg-bg-surface rounded-lg max-w-md w-full p-6 space-y-4">
             <div className="flex items-center gap-3">
               <AlertCircle size={24} className="text-accent-red" />
               <h3 className="text-lg font-bold text-text-primary">
@@ -492,14 +492,14 @@ export default function EmailBlastManager() {
             <div className="flex justify-end gap-3">
               <button
                 onClick={() => setShowConfirmSend(false)}
-                className="px-4 py-2 rounded-lg text-sm font-semibold text-text-secondary hover:bg-gray-200 dark:hover:bg-gray-700"
+                className="px-4 py-2 rounded-md text-sm font-semibold text-text-secondary hover:bg-muted"
               >
                 Cancel
               </button>
               <button
                 onClick={() => handleSubmit(confirmAction)}
                 disabled={saving}
-                className={`px-4 py-2 rounded-lg text-sm font-bold text-white ${
+                className={`px-4 py-2 rounded-md text-sm font-bold text-white ${
                   confirmAction === 'send'
                     ? 'bg-accent-red hover:bg-accent-red/90'
                     : 'bg-accent-blue hover:bg-accent-blue/90'
@@ -518,7 +518,7 @@ export default function EmailBlastManager() {
 
       {message && (
         <div
-          className={`p-3 rounded-xl text-sm font-medium ${
+          className={`p-3 rounded-lg text-sm font-medium ${
             message.type === 'error'
               ? 'bg-accent-red/10 text-accent-red'
               : message.type === 'success'
@@ -543,14 +543,14 @@ export default function EmailBlastManager() {
           <button
             onClick={() => handleSubmit('draft')}
             disabled={saving || !subject.trim() || !body.trim()}
-            className="flex-1 sm:flex-none px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-bold bg-bg-surface text-text-primary border border-border-main hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors whitespace-nowrap"
+            className="flex-1 sm:flex-none px-4 py-2 rounded-md text-sm font-bold bg-bg-surface text-text-primary hover:bg-muted hover:scale-105 disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-200 whitespace-nowrap"
           >
             Draft
           </button>
           <button
             onClick={() => handleSubmit('schedule')}
             disabled={saving || !subject.trim() || !body.trim() || !scheduledAt}
-            className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-bold bg-accent-blue text-white hover:bg-accent-blue/90 disabled:opacity-40 disabled:cursor-not-allowed transition-colors whitespace-nowrap"
+            className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-4 py-2 rounded-md text-sm font-bold bg-accent-blue text-white hover:bg-accent-blue/90 hover:scale-105 disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-200 whitespace-nowrap"
           >
             <Clock size={14} className="hidden sm:block" />
             Schedule
@@ -558,7 +558,7 @@ export default function EmailBlastManager() {
           <button
             onClick={() => handleSubmit('send')}
             disabled={saving || !subject.trim() || !body.trim()}
-            className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-bold bg-accent-green text-white hover:bg-accent-green/90 disabled:opacity-40 disabled:cursor-not-allowed transition-colors whitespace-nowrap"
+            className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-4 py-2 rounded-md text-sm font-bold bg-accent-green text-white hover:bg-accent-green/90 hover:scale-105 disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-200 whitespace-nowrap"
           >
             <Send size={14} className="hidden sm:block" />
             Send
@@ -645,7 +645,7 @@ Use blank lines for paragraph breaks."
                     className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors ${
                       category === cat.value
                         ? `${cat.color} text-white`
-                        : 'bg-bg-card text-text-secondary hover:bg-gray-200 dark:hover:bg-gray-700'
+                        : 'bg-bg-card text-text-secondary hover:bg-muted'
                     }`}
                   >
                     {cat.label}
@@ -675,7 +675,7 @@ Use blank lines for paragraph breaks."
                 <button
                   onClick={handleAddTag}
                   disabled={!tagInput.trim()}
-                  className="p-2 rounded-lg bg-bg-card text-text-secondary hover:bg-gray-200 dark:hover:bg-gray-700 disabled:opacity-40"
+                  className="p-2 rounded-lg bg-bg-card text-text-secondary hover:bg-muted disabled:opacity-40"
                 >
                   <Plus size={14} />
                 </button>
@@ -714,7 +714,7 @@ Use blank lines for paragraph breaks."
                 className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-bold transition-colors whitespace-nowrap ${
                   recipientType === 'all'
                     ? 'bg-accent-blue text-white'
-                    : 'bg-bg-card text-text-secondary hover:bg-gray-200 dark:hover:bg-gray-700'
+                    : 'bg-bg-card text-text-secondary hover:bg-muted'
                 }`}
               >
                 <Users size={14} />
@@ -725,7 +725,7 @@ Use blank lines for paragraph breaks."
                 className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-bold transition-colors whitespace-nowrap ${
                   recipientType === 'manual'
                     ? 'bg-accent-blue text-white'
-                    : 'bg-bg-card text-text-secondary hover:bg-gray-200 dark:hover:bg-gray-700'
+                    : 'bg-bg-card text-text-secondary hover:bg-muted'
                 }`}
               >
                 <Mail size={14} />
@@ -735,7 +735,7 @@ Use blank lines for paragraph breaks."
                 className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-bold cursor-pointer transition-colors whitespace-nowrap ${
                   recipientType === 'import'
                     ? 'bg-accent-blue text-white'
-                    : 'bg-bg-card text-text-secondary hover:bg-gray-200 dark:hover:bg-gray-700'
+                    : 'bg-bg-card text-text-secondary hover:bg-muted'
                 }`}
               >
                 <Upload size={14} />

@@ -42,10 +42,10 @@ export default function ElementManager() {
     <div className="space-y-4 sm:space-y-6">
       <h2 className="text-lg font-bold text-text-primary">Elements</h2>
       {/* Main Tabs */}
-      <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
+      <div className="flex items-center gap-2 flex-wrap">
         <button
           onClick={() => setActiveTab('library')}
-          className={`px-2.5 sm:px-3.5 py-1.5 sm:py-2 text-xs sm:text-sm font-bold rounded-md sm:rounded-lg transition-all ${
+          className={`px-3.5 py-2 text-sm font-bold rounded-md transition-all duration-200 ${
             activeTab === 'library'
               ? 'bg-blue-500 text-white'
               : 'bg-bg-card text-text-secondary hover:bg-blue-100 dark:hover:bg-blue-900/20'
@@ -55,18 +55,18 @@ export default function ElementManager() {
         </button>
         <button
           onClick={() => setActiveTab('create')}
-          className={`px-2.5 sm:px-3.5 py-1.5 sm:py-2 text-xs sm:text-sm font-bold rounded-md sm:rounded-lg transition-all flex items-center gap-1 sm:gap-1.5 ${
+          className={`px-3.5 py-2 text-sm font-bold rounded-md transition-all duration-200 flex items-center gap-1.5 ${
             activeTab === 'create'
               ? 'bg-green-500 text-white'
               : 'bg-bg-card text-text-secondary hover:bg-green-100 dark:hover:bg-green-900/20'
           }`}
         >
-          <Plus className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+          <Plus className="w-4 h-4" />
           Create
         </button>
         <button
           onClick={() => setActiveTab('discoveries')}
-          className={`px-2.5 sm:px-3.5 py-1.5 sm:py-2 text-xs sm:text-sm font-bold rounded-md sm:rounded-lg transition-all ${
+          className={`px-3.5 py-2 text-sm font-bold rounded-md transition-all duration-200 ${
             activeTab === 'discoveries'
               ? 'bg-amber-500 text-white'
               : 'bg-bg-card text-text-secondary hover:bg-amber-100 dark:hover:bg-amber-900/20'
@@ -94,31 +94,31 @@ function CreateSection() {
   return (
     <div className="space-y-4">
       {/* Mode Selector */}
-      <div className="bg-bg-card dark:bg-gray-800 rounded-lg sm:rounded-xl border-2 sm:p-3 sm:p-4">
-        <p className="text-xs sm:text-sm text-text-secondary mb-2 sm:mb-3 font-medium">
+      <div className="bg-bg-card dark:bg-gray-800 rounded-lg p-4">
+        <p className="text-sm text-text-secondary mb-3 font-medium">
           Choose how to add elements:
         </p>
-        <div className="flex flex-wrap gap-1.5 sm:gap-2">
+        <div className="flex flex-wrap gap-2">
           <button
             onClick={() => setCreateMode('ai')}
-            className={`px-2.5 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-bold rounded-md sm:rounded-lg border-2 transition-all flex items-center gap-1.5 sm:gap-2 ${
+            className={`px-4 py-2 text-sm font-bold rounded-md transition-all duration-200 flex items-center gap-2 ${
               createMode === 'ai'
                 ? 'bg-green-500 text-white'
-                : 'bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400 border-green-300 dark:border-green-700 hover:bg-green-100 dark:hover:bg-green-900/30'
+                : 'bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400 border border-green-300 dark:border-green-700 hover:bg-green-100 dark:hover:bg-green-900/30'
             }`}
           >
-            <Wand2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+            <Wand2 className="w-4 h-4" />
             AI Generator
           </button>
           <button
             onClick={() => setCreateMode('pathway')}
-            className={`px-2.5 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-bold rounded-md sm:rounded-lg border-2 transition-all flex items-center gap-1.5 sm:gap-2 ${
+            className={`px-4 py-2 text-sm font-bold rounded-md transition-all duration-200 flex items-center gap-2 ${
               createMode === 'pathway'
                 ? 'bg-purple-500 text-white'
-                : 'bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-400 border-purple-300 dark:border-purple-700 hover:bg-purple-100 dark:hover:bg-purple-900/30'
+                : 'bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-400 border border-purple-300 dark:border-purple-700 hover:bg-purple-100 dark:hover:bg-purple-900/30'
             }`}
           >
-            <Route className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+            <Route className="w-4 h-4" />
             Manual Pathway
           </button>
         </div>
@@ -390,7 +390,7 @@ function MultiPathGenerator() {
 
       {/* Error Display */}
       {error && (
-        <div className="p-4 bg-red-50 dark:bg-red-900/20 border-2 border-red-500 rounded-lg flex items-start gap-3">
+        <div className="p-4 bg-red-50 dark:bg-red-900/20 border border-red-500 rounded-lg flex items-start gap-3">
           <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
           <div>
             <p className="font-bold text-red-600 dark:text-red-400">Error</p>
@@ -401,7 +401,7 @@ function MultiPathGenerator() {
 
       {/* Success Message */}
       {saveResults && (
-        <div className="p-4 bg-green-50 dark:bg-green-900/20 border-2 border-green-500 rounded-lg flex items-start gap-3">
+        <div className="p-4 bg-green-50 dark:bg-green-900/20 border border-green-500 rounded-lg flex items-start gap-3">
           <Check className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
           <div className="flex-1">
             <p className="font-bold text-green-600 dark:text-green-400">
@@ -412,7 +412,7 @@ function MultiPathGenerator() {
               {saveResults.created !== 1 ? 's' : ''}, {saveResults.skipped} already existed.
             </p>
             {saveResults.conflicts && saveResults.conflicts.length > 0 && (
-              <div className="mt-3 p-3 bg-amber-50 dark:bg-amber-900/20 border-2 border-amber-500 rounded-lg">
+              <div className="mt-3 p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-500 rounded-lg">
                 <p className="font-bold text-amber-600 dark:text-amber-400 flex items-center gap-2">
                   <AlertCircle className="w-4 h-4" />
                   {saveResults.conflicts.length} Conflict
@@ -474,7 +474,7 @@ function MultiPathGenerator() {
         <div className="space-y-4">
           {/* Validation Warning Banner */}
           {paths.some((p) => p.validationSummary?.hasConflicts) && (
-            <div className="p-4 bg-red-50 dark:bg-red-900/20 border-2 border-red-500 rounded-lg flex items-start gap-3">
+            <div className="p-4 bg-red-50 dark:bg-red-900/20 border border-red-500 rounded-lg flex items-start gap-3">
               <AlertTriangle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
               <div>
                 <p className="font-bold text-red-600 dark:text-red-400">
@@ -535,7 +535,7 @@ function MultiPathGenerator() {
             <button
               onClick={saveSelectedPaths}
               disabled={isSaving || selectedPaths.size === 0}
-              className="px-8 py-4 bg-green-500 text-white text-lg font-bold rounded-xl hover:bg-green-600 transition-colors disabled:opacity-50 flex items-center gap-3"
+              className="px-8 py-4 bg-green-500 text-white text-lg font-bold rounded-md hover:bg-green-600 hover:scale-105 transition-all duration-200 disabled:opacity-50 flex items-center gap-3"
             >
               {isSaving ? (
                 <>
@@ -555,7 +555,7 @@ function MultiPathGenerator() {
 
       {/* Empty State */}
       {!isGenerating && !paths && !error && (
-        <div className="p-6 text-center bg-gray-50 dark:bg-gray-900 rounded-lg border border-dashed border-border-main">
+        <div className="p-6 text-center bg-gray-50 dark:bg-gray-900 rounded-lg border border-dashed border-border-light">
           <p className="text-sm font-bold text-text-secondary">
             Enter a target element to generate paths
           </p>
@@ -650,7 +650,7 @@ function PathCardWithCheckbox({ path, isSelected, onToggle, onDeleteConflict }) 
 
   return (
     <div
-      className={`${colors.bg} border-2 ${colors.border} rounded-xl overflow-hidden ${
+      className={`${colors.bg} border ${colors.border} rounded-lg overflow-hidden ${
         isSelected ? 'ring-4 ring-green-500/50' : 'opacity-70'
       } transition-all cursor-pointer`}
       onClick={onToggle}
@@ -723,12 +723,12 @@ function PathCardWithCheckbox({ path, isSelected, onToggle, onDeleteConflict }) 
               return (
                 <div key={idx} className="space-y-1">
                   <div
-                    className={`flex items-center gap-2 text-sm bg-bg-card dark:bg-gray-800 rounded-lg p-2 border-2 ${
+                    className={`flex items-center gap-2 text-sm bg-bg-card dark:bg-gray-800 rounded-lg p-2 border ${
                       isConflict
                         ? 'border-red-400 bg-red-50 dark:bg-red-900/20'
                         : isExists
                           ? 'border-amber-300 bg-amber-50 dark:bg-amber-900/20'
-                          : 'border-border-main/10 dark:border-white/10'
+                          : 'border-border-light dark:border-white/10'
                     }`}
                   >
                     <span className="text-xs font-bold text-gray-400 w-5">{step.step}.</span>
@@ -908,7 +908,7 @@ function PathwayBuilder() {
 
   return (
     <div className="space-y-4">
-      <div className="bg-purple-50 dark:bg-purple-900/20 rounded-xl border-2 border-purple-500 p-4 sm:p-6">
+      <div className="bg-purple-50 dark:bg-purple-900/20 rounded-lg border border-purple-500 p-6">
         <h3 className="text-base font-bold text-purple-600 dark:text-purple-400 mb-3 flex items-center gap-2">
           <GitBranch className="w-4 h-4" />
           Build a Pathway
@@ -916,7 +916,7 @@ function PathwayBuilder() {
 
         {/* Error Display */}
         {error && (
-          <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 border-2 border-red-500 rounded-lg flex items-center gap-2">
+          <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-500 rounded-lg flex items-center gap-2">
             <AlertCircle className="w-4 h-4 text-red-500" />
             <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
           </div>
@@ -939,7 +939,7 @@ function PathwayBuilder() {
         {/* Add Row Button */}
         <button
           onClick={addRow}
-          className="mt-3 px-3 py-1.5 text-sm bg-bg-card dark:bg-gray-800 text-purple-600 dark:text-purple-400 font-bold rounded-md border-2 border-purple-500 border-dashed hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-colors flex items-center gap-1.5"
+          className="mt-3 px-3 py-1.5 text-sm bg-bg-card dark:bg-gray-800 text-purple-600 dark:text-purple-400 font-bold rounded-md border border-purple-500 border-dashed hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-colors flex items-center gap-1.5"
         >
           <Plus className="w-3.5 h-3.5" />
           Add Step
@@ -947,7 +947,7 @@ function PathwayBuilder() {
 
         {/* Save Button */}
         <div className="mt-4 flex items-center justify-between">
-          <div className="text-xs sm:text-sm text-text-secondary">
+          <div className="text-sm text-text-secondary">
             {rows.length} step{rows.length !== 1 ? 's' : ''}
             {finalElement && (
               <span>
@@ -959,7 +959,7 @@ function PathwayBuilder() {
           <button
             onClick={savePathway}
             disabled={isSaving || !isValid}
-            className="px-3 sm:px-4 py-1.5 sm:py-2 text-sm bg-purple-500 text-white font-bold rounded-md hover:bg-purple-600 transition-colors disabled:opacity-50 flex items-center gap-1.5"
+            className="px-4 py-2 text-sm bg-purple-500 text-white font-bold rounded-md hover:bg-purple-600 hover:scale-105 transition-all duration-200 disabled:opacity-50 flex items-center gap-1.5"
           >
             {isSaving ? (
               <>
@@ -978,13 +978,13 @@ function PathwayBuilder() {
       </div>
 
       {/* Starter Elements Reference */}
-      <div className="bg-gray-50 dark:bg-gray-900 rounded-lg border border-dashed border-border-main p-4">
+      <div className="bg-gray-50 dark:bg-gray-900 rounded-lg border border-dashed border-border-light p-4">
         <h4 className="font-bold text-text-secondary mb-2">Starter Elements</h4>
         <div className="flex flex-wrap gap-3">
           {STARTER_ELEMENTS.map((el) => (
             <span
               key={el.id}
-              className="px-3 py-1.5 bg-bg-card dark:bg-gray-800 rounded-full border border-border-main text-sm flex items-center gap-1.5"
+              className="px-3 py-1.5 bg-bg-card dark:bg-gray-800 rounded-full border border-border-light text-sm flex items-center gap-1.5"
             >
               <span>{el.emoji}</span>
               <span className="font-medium">{el.name}</span>
@@ -1067,7 +1067,7 @@ function PathwayRow({ row, index, onUpdate, onRemove, canRemove }) {
   }, []);
 
   return (
-    <div className="p-2 sm:p-3 bg-bg-card dark:bg-gray-800 rounded-lg/10 dark:border-white/10">
+    <div className="p-3 bg-bg-card dark:bg-gray-800 rounded-lg">
       {/* Desktop: single row | Mobile: stacked rows */}
       <div className="hidden sm:flex items-center gap-2">
         {/* Step number */}
@@ -1093,7 +1093,7 @@ function PathwayRow({ row, index, onUpdate, onRemove, canRemove }) {
                 <button
                   key={i}
                   onClick={() => selectSuggestion('a', s)}
-                  className="w-full px-3 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2 text-sm"
+                  className="w-full px-3 py-2 text-left hover:bg-muted flex items-center gap-2 text-sm"
                 >
                   <span>{s.emoji}</span>
                   <span className="font-medium">{s.name}</span>
@@ -1125,7 +1125,7 @@ function PathwayRow({ row, index, onUpdate, onRemove, canRemove }) {
                 <button
                   key={i}
                   onClick={() => selectSuggestion('b', s)}
-                  className="w-full px-3 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2 text-sm"
+                  className="w-full px-3 py-2 text-left hover:bg-muted flex items-center gap-2 text-sm"
                 >
                   <span>{s.emoji}</span>
                   <span className="font-medium">{s.name}</span>
@@ -1157,7 +1157,7 @@ function PathwayRow({ row, index, onUpdate, onRemove, canRemove }) {
                 <button
                   key={i}
                   onClick={() => selectSuggestion('result', s)}
-                  className="w-full px-3 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2 text-sm"
+                  className="w-full px-3 py-2 text-left hover:bg-muted flex items-center gap-2 text-sm"
                 >
                   <span>{s.emoji}</span>
                   <span className="font-medium">{s.name}</span>
@@ -1215,7 +1215,7 @@ function PathwayRow({ row, index, onUpdate, onRemove, canRemove }) {
                 <button
                   key={i}
                   onClick={() => selectSuggestion('a', s)}
-                  className="w-full px-3 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2 text-sm"
+                  className="w-full px-3 py-2 text-left hover:bg-muted flex items-center gap-2 text-sm"
                 >
                   <span>{s.emoji}</span>
                   <span className="font-medium">{s.name}</span>
@@ -1248,7 +1248,7 @@ function PathwayRow({ row, index, onUpdate, onRemove, canRemove }) {
                 <button
                   key={i}
                   onClick={() => selectSuggestion('b', s)}
-                  className="w-full px-3 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2 text-sm"
+                  className="w-full px-3 py-2 text-left hover:bg-muted flex items-center gap-2 text-sm"
                 >
                   <span>{s.emoji}</span>
                   <span className="font-medium">{s.name}</span>
@@ -1281,7 +1281,7 @@ function PathwayRow({ row, index, onUpdate, onRemove, canRemove }) {
                 <button
                   key={i}
                   onClick={() => selectSuggestion('result', s)}
-                  className="w-full px-3 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2 text-sm"
+                  className="w-full px-3 py-2 text-left hover:bg-muted flex items-center gap-2 text-sm"
                 >
                   <span>{s.emoji}</span>
                   <span className="font-medium">{s.name}</span>
@@ -1371,7 +1371,7 @@ function EmojiEditor({ pathway, saveResults, onDone }) {
   return (
     <div className="space-y-4">
       {/* Success Banner */}
-      <div className="p-4 bg-green-50 dark:bg-green-900/20 border-2 border-green-500 rounded-lg flex items-start gap-3">
+      <div className="p-4 bg-green-50 dark:bg-green-900/20 border border-green-500 rounded-lg flex items-start gap-3">
         <Check className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
         <div>
           <p className="font-bold text-green-600 dark:text-green-400">Pathway Saved!</p>
@@ -1389,7 +1389,7 @@ function EmojiEditor({ pathway, saveResults, onDone }) {
       </div>
 
       {/* Emoji Editor */}
-      <div className="bg-purple-50 dark:bg-purple-900/20 rounded-xl border-2 border-purple-500 p-6">
+      <div className="bg-purple-50 dark:bg-purple-900/20 rounded-lg border border-purple-500 p-6">
         <h3 className="text-lg font-bold text-purple-600 dark:text-purple-400 mb-2 flex items-center gap-2">
           <Pencil className="w-5 h-5" />
           Edit Element Emojis
@@ -1399,7 +1399,7 @@ function EmojiEditor({ pathway, saveResults, onDone }) {
         </p>
 
         {saveError && (
-          <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 border-2 border-red-500 rounded-lg flex items-center gap-2">
+          <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-500 rounded-lg flex items-center gap-2">
             <AlertCircle className="w-4 h-4 text-red-500" />
             <p className="text-sm text-red-600 dark:text-red-400">{saveError}</p>
           </div>
@@ -1410,7 +1410,7 @@ function EmojiEditor({ pathway, saveResults, onDone }) {
           {uniqueElements.map((name) => (
             <div
               key={name}
-              className="flex items-center gap-2 p-2 bg-bg-card dark:bg-gray-800 rounded-lg/10 dark:border-white/10"
+              className="flex items-center gap-2 p-2 bg-bg-card dark:bg-gray-800 rounded-lg"
             >
               <input
                 type="text"
@@ -1455,7 +1455,7 @@ function EmojiEditor({ pathway, saveResults, onDone }) {
       </div>
 
       {/* Pathway Preview */}
-      <div className="bg-gray-50 dark:bg-gray-900 rounded-lg border border-dashed border-border-main p-4">
+      <div className="bg-gray-50 dark:bg-gray-900 rounded-lg border border-dashed border-border-light p-4">
         <h4 className="font-bold text-text-secondary mb-3 flex items-center gap-2">
           <GitBranch className="w-4 h-4" />
           Pathway Preview
@@ -1464,7 +1464,7 @@ function EmojiEditor({ pathway, saveResults, onDone }) {
           {pathway.steps.map((step, idx) => (
             <div
               key={idx}
-              className="flex items-center gap-2 text-sm bg-bg-card dark:bg-gray-800 rounded-lg p-2 border border-border-main"
+              className="flex items-center gap-2 text-sm bg-bg-card dark:bg-gray-800 rounded-lg p-2 border border-border-light"
             >
               <span className="text-xs font-bold text-gray-400 w-5">{step.step}.</span>
               <span className="text-lg">{editedEmojis[step.elementA] || step.emojiA}</span>
@@ -1592,7 +1592,7 @@ function ElementBrowser({ onSelectElement, externalSearch = '', onSearchChange }
   );
 
   return (
-    <div className="bg-bg-card dark:bg-gray-800 rounded-xl p-6">
+    <div className="bg-bg-card dark:bg-gray-800 rounded-lg p-6">
       {/* Header with Search */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
         <h3 className="text-lg font-bold text-text-primary">
@@ -1619,13 +1619,13 @@ function ElementBrowser({ onSelectElement, externalSearch = '', onSearchChange }
       </div>
 
       {/* Letter Filter Row */}
-      <div className="flex flex-wrap gap-0.5 mb-4 pb-4 border-b border-border-main">
+      <div className="flex flex-wrap gap-0.5 mb-4 pb-4 border-b border-border-light">
         <button
           onClick={() => handleLetterChange('all')}
           className={`px-2 py-0.5 text-xs font-semibold rounded transition-all ${
             selectedLetter === 'all'
               ? 'bg-blue-500 text-white'
-              : 'bg-gray-100 dark:bg-gray-700 text-text-primary hover:bg-gray-200 dark:hover:bg-gray-600'
+              : 'bg-gray-100 dark:bg-gray-700 text-text-primary hover:bg-muted'
           }`}
         >
           All
@@ -1639,7 +1639,7 @@ function ElementBrowser({ onSelectElement, externalSearch = '', onSearchChange }
               className={`w-6 h-6 text-xs font-semibold rounded transition-all ${
                 selectedLetter === letter
                   ? 'bg-blue-500 text-white'
-                  : 'bg-gray-100 dark:bg-gray-700 text-text-primary hover:bg-gray-200 dark:hover:bg-gray-600'
+                  : 'bg-gray-100 dark:bg-gray-700 text-text-primary hover:bg-muted'
               }`}
               title={count > 0 ? `${count} elements` : 'No elements'}
             >
@@ -1651,7 +1651,7 @@ function ElementBrowser({ onSelectElement, externalSearch = '', onSearchChange }
 
       {/* Error Display */}
       {error && (
-        <div className="p-4 mb-4 bg-red-50 dark:bg-red-900/20 border-2 border-red-500 rounded-lg">
+        <div className="p-4 mb-4 bg-red-50 dark:bg-red-900/20 border border-red-500 rounded-lg">
           <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
         </div>
       )}
@@ -1705,7 +1705,7 @@ function ElementBrowser({ onSelectElement, externalSearch = '', onSearchChange }
 
       {/* Pagination */}
       {!isLoading && pagination.totalPages > 1 && (
-        <div className="flex items-center justify-between mt-4 pt-4 border-t border-border-main">
+        <div className="flex items-center justify-between mt-4 pt-4 border-t border-border-light">
           <p className="text-sm text-text-secondary">
             Page {pagination.page} of {pagination.totalPages} ({pagination.total} elements)
           </p>
@@ -1713,14 +1713,14 @@ function ElementBrowser({ onSelectElement, externalSearch = '', onSearchChange }
             <button
               onClick={() => handlePageChange(1)}
               disabled={pagination.page <= 1}
-              className="px-2 py-1 text-sm font-bold rounded-lg bg-bg-card dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-2 py-1 text-sm font-bold rounded-lg bg-bg-card dark:bg-gray-700 hover:bg-muted disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <ChevronLeft className="w-4 h-4" />
             </button>
             <button
               onClick={() => handlePageChange(pagination.page - 1)}
               disabled={pagination.page <= 1}
-              className="px-2 py-1 text-sm font-bold rounded-lg bg-bg-card dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-2 py-1 text-sm font-bold rounded-lg bg-bg-card dark:bg-gray-700 hover:bg-muted disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Prev
             </button>
@@ -1758,7 +1758,7 @@ function ElementBrowser({ onSelectElement, externalSearch = '', onSearchChange }
                     className={`min-w-8 px-2 py-1 text-sm font-bold rounded-lg transition-colors ${
                       p === current
                         ? 'bg-blue-500 text-white'
-                        : 'bg-bg-card dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 text-text-primary'
+                        : 'bg-bg-card dark:bg-gray-700 hover:bg-muted text-text-primary'
                     }`}
                   >
                     {p}
@@ -1769,14 +1769,14 @@ function ElementBrowser({ onSelectElement, externalSearch = '', onSearchChange }
             <button
               onClick={() => handlePageChange(pagination.page + 1)}
               disabled={pagination.page >= pagination.totalPages}
-              className="px-2 py-1 text-sm font-bold rounded-lg bg-bg-card dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-2 py-1 text-sm font-bold rounded-lg bg-bg-card dark:bg-gray-700 hover:bg-muted disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Next
             </button>
             <button
               onClick={() => handlePageChange(pagination.totalPages)}
               disabled={pagination.page >= pagination.totalPages}
-              className="px-2 py-1 text-sm font-bold rounded-lg bg-bg-card dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-2 py-1 text-sm font-bold rounded-lg bg-bg-card dark:bg-gray-700 hover:bg-muted disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <ChevronRight className="w-4 h-4" />
             </button>
@@ -1919,7 +1919,7 @@ function AddCombinationForm({ elementName, elementEmoji, mode, onSave, onCancel 
   };
 
   return (
-    <div className="p-3 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg border-2 border-yellow-500">
+    <div className="p-3 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg border border-yellow-500">
       <div className="flex flex-wrap items-center gap-2 mb-2">
         {mode === 'createdBy' ? (
           <>
@@ -2286,7 +2286,7 @@ function ElementDetailModal({ element, onClose, onElementUpdated, onElementDelet
       onClick={onClose}
     >
       <div
-        className="bg-bg-card dark:bg-gray-800 rounded-lg border-2 w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col"
+        className="bg-bg-card dark:bg-gray-800 rounded-lg w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
@@ -2375,7 +2375,7 @@ function ElementDetailModal({ element, onClose, onElementUpdated, onElementDelet
                 )}
                 <button
                   onClick={onClose}
-                  className="p-2 text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                  className="p-2 text-gray-500 hover:bg-muted rounded-lg transition-colors"
                 >
                   <X className="w-5 h-5" />
                 </button>
@@ -2423,7 +2423,7 @@ function ElementDetailModal({ element, onClose, onElementUpdated, onElementDelet
         <div className="flex-1 overflow-y-auto p-4">
           {/* Error Display */}
           {error && (
-            <div className="p-3 mb-4 bg-red-50 dark:bg-red-900/20 border-2 border-red-500 rounded-lg">
+            <div className="p-3 mb-4 bg-red-50 dark:bg-red-900/20 border border-red-500 rounded-lg">
               <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
             </div>
           )}
@@ -2438,19 +2438,19 @@ function ElementDetailModal({ element, onClose, onElementUpdated, onElementDelet
           {/* Stats */}
           {!isLoading && details && (
             <div className="grid grid-cols-3 gap-4 mb-6">
-              <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-xl text-center">
+              <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-center">
                 <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">
                   {details.stats?.waysToCreate || 0}
                 </p>
                 <p className="text-sm text-blue-600 dark:text-blue-400">Ways to Create</p>
               </div>
-              <div className="p-4 bg-purple-50 dark:bg-purple-900/20 rounded-xl text-center">
+              <div className="p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg text-center">
                 <p className="text-2xl font-bold text-purple-600 dark:text-purple-400">
                   {details.stats?.usedInCombinations || 0}
                 </p>
                 <p className="text-sm text-purple-600 dark:text-purple-400">Used In</p>
               </div>
-              <div className="p-4 bg-green-50 dark:bg-green-900/20 rounded-xl text-center">
+              <div className="p-4 bg-green-50 dark:bg-green-900/20 rounded-lg text-center">
                 <p className="text-2xl font-bold text-green-600 dark:text-green-400">
                   {details.stats?.totalUses || 0}
                 </p>
@@ -2471,7 +2471,7 @@ function ElementDetailModal({ element, onClose, onElementUpdated, onElementDelet
                   }
                 }}
                 disabled={pathLoading}
-                className="w-full flex items-center justify-between p-3 hover:bg-gray-50 dark:hover:bg-gray-700/50 rounded-lg transition-colors disabled:opacity-50 border border-border-light dark:border-gray-600"
+                className="w-full flex items-center justify-between p-3 hover:bg-muted rounded-lg transition-colors disabled:opacity-50 border border-border-light dark:border-gray-600"
               >
                 <span className="font-bold text-orange-700 dark:text-orange-300 flex items-center gap-2">
                   <Route className="w-5 h-5" />
@@ -2578,7 +2578,7 @@ function ElementDetailModal({ element, onClose, onElementUpdated, onElementDelet
 
           {/* Starter element message */}
           {!isLoading && isStarter && (
-            <div className="p-4 bg-green-50 dark:bg-green-900/20 rounded-xl">
+            <div className="p-4 bg-green-50 dark:bg-green-900/20 rounded-lg">
               <p className="text-sm text-green-600 dark:text-green-400 font-medium">
                 This is a starter element. It cannot be created by combining other elements and
                 cannot be edited or deleted.
@@ -2747,7 +2747,7 @@ function FirstDiscoveriesSection() {
   const weekGroups = groupDiscoveriesByWeek(filteredDiscoveries);
 
   return (
-    <div className="bg-bg-card dark:bg-gray-800 rounded-xl p-6">
+    <div className="bg-bg-card dark:bg-gray-800 rounded-lg p-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
         <h3 className="text-lg font-bold text-text-primary flex items-center gap-2">
@@ -2770,7 +2770,7 @@ function FirstDiscoveriesSection() {
             {searchQuery && (
               <button
                 onClick={() => setSearchQuery('')}
-                className="absolute right-2 top-1/2 -translate-y-1/2 p-0.5 rounded hover:bg-gray-200 dark:hover:bg-gray-600"
+                className="absolute right-2 top-1/2 -translate-y-1/2 p-0.5 rounded hover:bg-muted"
               >
                 <X className="w-3.5 h-3.5 text-gray-400" />
               </button>
@@ -2779,7 +2779,7 @@ function FirstDiscoveriesSection() {
           <button
             onClick={() => fetchDiscoveries(pagination.page)}
             disabled={isLoading}
-            className="p-1.5 sm:px-3 sm:py-1.5 text-sm font-medium rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors flex items-center gap-1.5"
+            className="p-1.5 sm:px-3 sm:py-1.5 text-sm font-medium rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-muted transition-colors flex items-center gap-1.5"
           >
             <RotateCcw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
             <span className="hidden sm:inline">Refresh</span>
@@ -2789,7 +2789,7 @@ function FirstDiscoveriesSection() {
 
       {/* Error state */}
       {error && (
-        <div className="mb-4 p-4 bg-red-50 dark:bg-red-900/20 border-2 border-red-500 rounded-lg flex items-center gap-2">
+        <div className="mb-4 p-4 bg-red-50 dark:bg-red-900/20 border border-red-500 rounded-lg flex items-center gap-2">
           <AlertCircle className="w-5 h-5 text-red-500" />
           <p className="text-red-600 dark:text-red-400">{error}</p>
         </div>
@@ -2866,11 +2866,11 @@ function FirstDiscoveriesSection() {
 
       {/* Pagination */}
       {!isLoading && pagination.totalPages > 1 && (
-        <div className="flex items-center justify-center gap-2 mt-6 pt-4 border-t border-border-main">
+        <div className="flex items-center justify-center gap-2 mt-6 pt-4 border-t border-border-light">
           <button
             onClick={() => fetchDiscoveries(pagination.page - 1)}
             disabled={pagination.page <= 1}
-            className="p-2 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100 dark:hover:bg-gray-700"
+            className="p-2 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-muted"
           >
             <ChevronLeft className="w-5 h-5" />
           </button>
@@ -2880,7 +2880,7 @@ function FirstDiscoveriesSection() {
           <button
             onClick={() => fetchDiscoveries(pagination.page + 1)}
             disabled={pagination.page >= pagination.totalPages}
-            className="p-2 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100 dark:hover:bg-gray-700"
+            className="p-2 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-muted"
           >
             <ChevronRight className="w-5 h-5" />
           </button>
@@ -2983,25 +2983,20 @@ function FirstDiscoveryDetailModal({ discovery, onClose }) {
       onClick={onClose}
     >
       <div
-        className="bg-bg-card dark:bg-gray-800 rounded-xl p-6 max-w-md w-full relative my-auto"
+        className="bg-bg-card dark:bg-gray-800 rounded-lg p-6 max-w-md w-full relative my-auto"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Close button */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors z-10"
+          className="absolute top-4 right-4 p-1.5 rounded-lg hover:bg-muted transition-colors z-10"
         >
           <X className="w-5 h-5" />
         </button>
 
-        {/* Exportable card content - wrapper provides padding for shadow */}
-        <div ref={cardRef} className="bg-bg-card p-3 pb-[22px] pr-[22px]">
-          {/* Outer card with fake shadow div for html2canvas compatibility */}
-          <div className="relative">
-            {/* Shadow element - positioned behind the card */}
-            <div className="absolute top-[6px] left-[6px] right-[-6px] bottom-[-6px] bg-black rounded-xl" />
-            {/* Main card */}
-            <div className="relative bg-amber-50 rounded-xl p-6">
+        {/* Exportable card content */}
+        <div ref={cardRef} className="bg-bg-card p-3">
+          <div className="bg-amber-50 rounded-lg p-6">
               {/* Element display */}
               <div className="text-center mb-6">
                 <span className="text-6xl mb-3 block">{discovery.resultEmoji}</span>
@@ -3022,12 +3017,9 @@ function FirstDiscoveryDetailModal({ discovery, onClose }) {
                 </div>
               </div>
 
-              {/* Combination that made it - with emojis and fake shadow */}
-              <div className="relative mb-6">
-                {/* Shadow element */}
-                <div className="absolute top-[4px] left-[4px] right-[-4px] bottom-[-4px] bg-black rounded-xl" />
-                {/* Main combining box */}
-                <div className="relative bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl p-4">
+              {/* Combination that made it */}
+              <div className="mb-6">
+                <div className="bg-blue-50 rounded-lg p-4">
                   <p className="text-xs text-gray-500 mb-3 tracking-wide font-bold text-center">
                     Created By Combining
                   </p>
@@ -3051,7 +3043,7 @@ function FirstDiscoveryDetailModal({ discovery, onClose }) {
 
               {/* Discovery info - no time for export */}
               <div className="space-y-3">
-                <div className="flex items-center justify-between py-2 border-b border-border-main">
+                <div className="flex items-center justify-between py-2 border-b border-border-light">
                   <span className="text-sm text-gray-500">Discovered by</span>
                   <span className="font-bold text-gray-900">
                     {discovery.username || 'Anonymous Player'}
@@ -3066,12 +3058,11 @@ function FirstDiscoveryDetailModal({ discovery, onClose }) {
               </div>
 
               {/* Branding */}
-              <div className="mt-4 pt-4 border-t border-border-main text-center">
+              <div className="mt-4 pt-4 border-t border-border-light text-center">
                 <span className="text-xs font-bold text-gray-400">
                   tandemdaily.com/daily-alchemy
                 </span>
               </div>
-            </div>
           </div>
         </div>
 
@@ -3080,7 +3071,7 @@ function FirstDiscoveryDetailModal({ discovery, onClose }) {
           <button
             onClick={handleSaveAsPng}
             disabled={isSaving}
-            className="flex-1 py-3 bg-blue-500 text-white font-bold rounded-xl hover:bg-blue-600 transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
+            className="flex-1 py-3 bg-blue-500 text-white font-bold rounded-md hover:bg-blue-600 hover:scale-105 transition-all duration-200 flex items-center justify-center gap-2 disabled:opacity-50"
           >
             {isSaving ? (
               <Loader2 className="w-5 h-5 animate-spin" />
@@ -3091,7 +3082,7 @@ function FirstDiscoveryDetailModal({ discovery, onClose }) {
           </button>
           <button
             onClick={onClose}
-            className="flex-1 py-3 bg-amber-500 text-white font-bold rounded-xl hover:bg-amber-600 transition-colors"
+            className="flex-1 py-3 bg-amber-500 text-white font-bold rounded-md hover:bg-amber-600 hover:scale-105 transition-all duration-200"
           >
             Close
           </button>

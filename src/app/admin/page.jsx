@@ -364,10 +364,10 @@ export default function AdminDashboard() {
       case 'tandem':
         return (
           <div className="bg-bg-surface rounded-lg">
-            <div className="px-3 sm:px-6 py-2.5 sm:py-4 border-b border-border-light">
+            <div className="px-4 py-3">
               <div className="flex items-center gap-2 sm:gap-3">
                 <Image src="/ui/games/tandem.png" alt="" width={24} height={24} />
-                <h3 className="text-sm sm:text-lg font-bold text-text-primary">
+                <h3 className="text-lg font-bold text-text-primary">
                   {editingPuzzle ? 'Edit' : 'Create'} Daily Tandem Puzzle
                 </h3>
               </div>
@@ -397,14 +397,14 @@ export default function AdminDashboard() {
                   height={24}
                   className="flex-shrink-0"
                 />
-                <h3 className="text-sm sm:text-lg font-bold text-text-primary truncate">
+                <h3 className="text-lg font-bold text-text-primary truncate">
                   {editingPuzzle ? 'Edit' : 'Create'} Daily Mini Puzzle
                 </h3>
               </div>
               {editingPuzzle && (
                 <button
                   onClick={() => handleDeleteMiniPuzzle(editingPuzzle.id)}
-                  className="px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm bg-accent-red text-white font-bold rounded-xl active:translate-y-0 transition-transform whitespace-nowrap flex-shrink-0"
+                  className="px-3 sm:px-4 py-1.5 sm:py-2 text-sm bg-accent-red text-white font-bold rounded-md hover:scale-105 transition-all duration-200 whitespace-nowrap flex-shrink-0"
                 >
                   Delete
                 </button>
@@ -432,14 +432,14 @@ export default function AdminDashboard() {
                   height={24}
                   className="flex-shrink-0"
                 />
-                <h3 className="text-sm sm:text-lg font-bold text-text-primary truncate">
+                <h3 className="text-lg font-bold text-text-primary truncate">
                   {editingPuzzle ? 'Edit' : 'Create'} Reel Connections Puzzle
                 </h3>
               </div>
               {editingPuzzle && (
                 <button
                   onClick={() => handleDeleteReelPuzzle(editingPuzzle.id)}
-                  className="px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm bg-accent-red text-white font-bold rounded-xl active:translate-y-0 transition-transform whitespace-nowrap flex-shrink-0"
+                  className="px-3 sm:px-4 py-1.5 sm:py-2 text-sm bg-accent-red text-white font-bold rounded-md hover:scale-105 transition-all duration-200 whitespace-nowrap flex-shrink-0"
                 >
                   Delete
                 </button>
@@ -468,14 +468,14 @@ export default function AdminDashboard() {
                   height={24}
                   className="flex-shrink-0"
                 />
-                <h3 className="text-sm sm:text-lg font-bold text-text-primary truncate">
+                <h3 className="text-lg font-bold text-text-primary truncate">
                   {editingPuzzle ? 'Edit' : 'Create'} Daily Alchemy Puzzle
                 </h3>
               </div>
               {editingPuzzle?.id && (
                 <button
                   onClick={() => handleDeleteSoupPuzzle(editingPuzzle.id)}
-                  className="px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm bg-accent-red text-white font-bold rounded-xl active:translate-y-0 transition-transform whitespace-nowrap flex-shrink-0"
+                  className="px-3 sm:px-4 py-1.5 sm:py-2 text-sm bg-accent-red text-white font-bold rounded-md hover:scale-105 transition-all duration-200 whitespace-nowrap flex-shrink-0"
                 >
                   Delete
                 </button>
@@ -532,7 +532,7 @@ export default function AdminDashboard() {
   return (
     <div className="flex min-h-[calc(100vh-64px)]">
       {/* Sidebar — icon rail on mobile, expands on hover on desktop */}
-      <aside className="admin-sidebar flex-shrink-0 w-11 sm:w-44 bg-ghost-white border-r border-border-light flex flex-col py-2 overflow-hidden overflow-y-auto z-30">
+      <aside className="admin-sidebar flex-shrink-0 w-11 sm:w-44 bg-bg-surface flex flex-col py-2 overflow-hidden overflow-y-auto z-30">
         <nav className="flex flex-col gap-0.5 px-1.5">
           {TABS.map((tab, idx) => {
             const Icon = tab.icon;
@@ -543,8 +543,8 @@ export default function AdminDashboard() {
                 onClick={() => handleTabClick(tab.id)}
                 title={tab.label}
                 className={`
-                  relative flex items-center gap-2.5 h-9 px-2 rounded-lg text-sm font-medium whitespace-nowrap transition-colors
-                  ${isActive ? 'bg-text-primary text-ghost-white' : 'text-text-secondary hover:bg-gray-200 hover:text-text-primary'}
+                  relative flex items-center gap-2.5 h-9 px-2 rounded-md text-sm font-medium whitespace-nowrap transition-all duration-200
+                  ${isActive ? 'bg-text-primary text-ghost-white' : 'text-text-secondary hover:bg-muted hover:text-text-primary'}
                 `}
               >
                 <Icon size={16} className="flex-shrink-0" />
@@ -571,7 +571,7 @@ export default function AdminDashboard() {
           <button
             onClick={toggleShortcutHelp}
             title="Keyboard shortcuts (?)"
-            className="flex items-center gap-2.5 h-9 px-2 rounded-lg text-sm font-medium whitespace-nowrap text-text-muted hover:bg-gray-200 hover:text-text-primary transition-colors w-full"
+            className="flex items-center gap-2.5 h-9 px-2 rounded-md text-sm font-medium whitespace-nowrap text-text-muted hover:bg-muted hover:text-text-primary transition-all duration-200 w-full"
           >
             <Keyboard size={16} className="flex-shrink-0" />
             <span className="hidden sm:inline opacity-100 text-xs font-semibold">Shortcuts</span>
@@ -594,7 +594,7 @@ export default function AdminDashboard() {
                   <h3 className="text-lg font-bold text-text-primary">Theme Tracker</h3>
                   <button
                     onClick={() => setCalendarSubTab('calendar')}
-                    className="px-3 py-1.5 text-sm rounded-md font-semibold text-text-secondary bg-bg-surface hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+                    className="px-3 py-1.5 text-sm rounded-md font-semibold text-text-secondary bg-bg-surface hover:bg-muted transition-all duration-200"
                   >
                     Back to Calendar
                   </button>
@@ -613,7 +613,7 @@ export default function AdminDashboard() {
                   <h3 className="text-lg font-bold text-text-primary">Puzzle Suggestions</h3>
                   <button
                     onClick={() => setCalendarSubTab('calendar')}
-                    className="px-3 py-1.5 text-sm rounded-md font-semibold text-text-secondary bg-bg-surface hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+                    className="px-3 py-1.5 text-sm rounded-md font-semibold text-text-secondary bg-bg-surface hover:bg-muted transition-all duration-200"
                   >
                     Back to Calendar
                   </button>
@@ -675,8 +675,8 @@ export default function AdminDashboard() {
       {showThemesModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="bg-bg-surface rounded-lg w-full max-w-6xl max-h-[90vh] flex flex-col">
-            <div className="px-4 sm:px-6 py-3 sm:py-4 border-b border-border-light flex items-center justify-between">
-              <h3 className="text-base sm:text-lg font-bold text-text-primary">Theme Tracker</h3>
+            <div className="px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between">
+              <h3 className="text-lg font-bold text-text-primary">Theme Tracker</h3>
               <button
                 onClick={() => setShowThemesModal(false)}
                 className="p-2 hover:bg-bg-card rounded-lg transition-colors"
@@ -715,8 +715,8 @@ export default function AdminDashboard() {
       {showConnectionsModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="bg-bg-surface rounded-lg w-full max-w-6xl max-h-[90vh] flex flex-col">
-            <div className="px-4 sm:px-6 py-3 sm:py-4 border-b border-border-light flex items-center justify-between">
-              <h3 className="text-base sm:text-lg font-bold text-text-primary">
+            <div className="px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between">
+              <h3 className="text-lg font-bold text-text-primary">
                 Connection Tracker
               </h3>
               <button

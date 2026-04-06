@@ -58,7 +58,7 @@ export default function ResetPassword() {
           </p>
           <button
             onClick={() => router.push('/admin/forgot-password')}
-            className="px-6 py-3 bg-accent-blue text-white font-bold rounded-lg transition-transform"
+            className="px-6 py-3 bg-accent-blue text-white font-semibold rounded-md hover:scale-105 transition-all duration-200"
           >
             Request New Link
           </button>
@@ -90,7 +90,7 @@ export default function ResetPassword() {
             </div>
             <button
               onClick={() => router.push('/admin/login')}
-              className="w-full px-6 py-3 bg-accent-blue text-white font-bold rounded-lg transition-transform"
+              className="w-full px-6 py-3 bg-accent-blue text-white font-semibold rounded-md hover:scale-105 transition-all duration-200"
             >
               Sign In
             </button>
@@ -107,7 +107,7 @@ export default function ResetPassword() {
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-4 py-3 border border-border-main rounded-lg bg-bg-card text-text-primary font-medium focus:outline-none focus:ring-2 focus:ring-accent-blue"
+                className="w-full bg-bg-surface rounded-md text-text-primary border-0 h-12 px-4 font-medium focus:bg-bg-card focus:border-2 focus:border-primary focus:outline-none"
                 placeholder="Enter new password"
                 autoComplete="new-password"
               />
@@ -129,7 +129,7 @@ export default function ResetPassword() {
                 required
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
-                className="w-full px-4 py-3 border border-border-main rounded-lg bg-bg-card text-text-primary font-medium focus:outline-none focus:ring-2 focus:ring-accent-blue"
+                className="w-full bg-bg-surface rounded-md text-text-primary border-0 h-12 px-4 font-medium focus:bg-bg-card focus:border-2 focus:border-primary focus:outline-none"
                 placeholder="Confirm new password"
                 autoComplete="new-password"
               />
@@ -138,7 +138,7 @@ export default function ResetPassword() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full px-6 py-3 bg-accent-blue text-white font-bold rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-transform"
+              className="w-full px-6 py-3 bg-accent-blue text-white font-semibold rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:scale-105 transition-all duration-200"
             >
               {loading ? 'Resetting...' : 'Reset Password'}
             </button>

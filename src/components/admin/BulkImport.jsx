@@ -82,7 +82,7 @@ export default function BulkImport({ onClose, onSuccess }) {
 
   return (
     <div className="fixed inset-0 bg-black/70 flex items-center justify-center p-3 sm:p-4 z-50">
-      <div className="bg-bg-surface rounded-lg border-2 border-border-main max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+      <div className="bg-bg-surface rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
         <div className="p-4 sm:p-6">
           <div className="flex justify-between items-center mb-4 sm:mb-6">
             <h2 className="text-xl sm:text-2xl font-bold text-text-primary">Bulk Import Puzzles</h2>
@@ -109,14 +109,14 @@ export default function BulkImport({ onClose, onSuccess }) {
           <div className="space-y-3 sm:space-y-4">
             <div className="grid grid-cols-1 gap-3 sm:gap-4">
               <div>
-                <label className="block text-xs sm:text-sm font-bold text-text-primary mb-2">
+                <label className="block text-sm font-bold text-text-primary mb-2">
                   Start Date
                 </label>
                 <input
                   type="date"
                   value={startDate}
                   onChange={(e) => setStartDate(e.target.value)}
-                  className="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border border-border-main rounded-lg bg-bg-card text-text-primary font-medium focus:outline-none focus:ring-2 focus:ring-accent-blue"
+                  className="w-full px-4 py-2 text-sm border border-border-main rounded-lg bg-bg-card text-text-primary font-medium focus:outline-none focus:ring-2 focus:ring-accent-blue"
                 />
                 <p className="text-xs text-text-secondary font-medium mt-1">
                   Puzzles will be assigned to available dates starting from this date
@@ -132,7 +132,7 @@ export default function BulkImport({ onClose, onSuccess }) {
                     className="mt-0.5 rounded border-border-main text-accent-blue focus:ring-accent-blue"
                   />
                   <div>
-                    <span className="text-xs sm:text-sm font-bold text-text-primary block">
+                    <span className="text-sm font-bold text-text-primary block">
                       Overwrite existing puzzles
                     </span>
                     <p className="text-xs text-text-secondary font-medium mt-0.5">
@@ -147,13 +147,13 @@ export default function BulkImport({ onClose, onSuccess }) {
 
             <div>
               <div className="flex justify-between items-center mb-2">
-                <label className="block text-xs sm:text-sm font-bold text-text-primary">
+                <label className="block text-sm font-bold text-text-primary">
                   JSON Data
                 </label>
                 <button
                   type="button"
                   onClick={loadSampleData}
-                  className="text-xs sm:text-sm text-accent-blue hover:text-accent-green font-bold transition-colors"
+                  className="text-sm text-accent-blue hover:text-accent-green font-bold transition-colors"
                 >
                   Load Sample
                 </button>
@@ -162,7 +162,7 @@ export default function BulkImport({ onClose, onSuccess }) {
                 value={jsonInput}
                 onChange={(e) => setJsonInput(e.target.value)}
                 placeholder="Paste your JSON array of puzzles here..."
-                className="w-full h-48 sm:h-64 px-3 sm:px-4 py-2 text-xs sm:text-sm border border-border-main rounded-lg bg-bg-card text-text-primary font-mono focus:outline-none focus:ring-2 focus:ring-accent-blue"
+                className="w-full h-48 sm:h-64 px-4 py-2 text-sm border border-border-main rounded-lg bg-bg-card text-text-primary font-mono focus:outline-none focus:ring-2 focus:ring-accent-blue"
                 spellCheck={false}
               />
               <p className="text-xs text-text-secondary font-medium mt-1">
@@ -172,7 +172,7 @@ export default function BulkImport({ onClose, onSuccess }) {
 
             {message && (
               <div
-                className={`p-3 sm:p-4 rounded-lg border-2 text-sm sm:text-base font-bold ${
+                className={`p-3 sm:p-4 rounded-lg border text-sm font-bold ${
                   message.startsWith('✅')
                     ? 'bg-accent-green/20 border-accent-green text-text-primary'
                     : message.startsWith('❌')
@@ -185,11 +185,11 @@ export default function BulkImport({ onClose, onSuccess }) {
             )}
 
             {results && results.summary && (
-              <div className="bg-bg-card border-2 border-border-main p-3 sm:p-4 rounded-lg">
-                <h3 className="text-sm sm:text-base font-bold text-text-primary mb-2">
+              <div className="bg-bg-card p-3 sm:p-4 rounded-lg">
+                <h3 className="text-sm font-bold text-text-primary mb-2">
                   Import Summary
                 </h3>
-                <div className="space-y-1 text-xs sm:text-sm text-text-primary font-medium">
+                <div className="space-y-1 text-sm text-text-primary font-medium">
                   <p>Total puzzles: {results.summary.total}</p>
                   <p>Successfully imported: {results.summary.successful}</p>
                   {results.summary.failed > 0 && (
@@ -202,7 +202,7 @@ export default function BulkImport({ onClose, onSuccess }) {
 
                 {results.imported && results.imported.length > 0 && (
                   <div className="mt-3">
-                    <h4 className="text-xs sm:text-sm font-bold text-text-primary mb-1">
+                    <h4 className="text-sm font-bold text-text-primary mb-1">
                       Imported Puzzles:
                     </h4>
                     <div className="max-h-32 overflow-y-auto">
@@ -217,7 +217,7 @@ export default function BulkImport({ onClose, onSuccess }) {
 
                 {results.errors && results.errors.length > 0 && (
                   <div className="mt-3">
-                    <h4 className="text-xs sm:text-sm font-bold text-accent-red mb-1">Errors:</h4>
+                    <h4 className="text-sm font-bold text-accent-red mb-1">Errors:</h4>
                     <div className="max-h-32 overflow-y-auto">
                       {results.errors.map((error, index) => (
                         <div key={index} className="text-xs text-accent-red font-medium">
@@ -234,14 +234,14 @@ export default function BulkImport({ onClose, onSuccess }) {
               <button
                 type="button"
                 onClick={onClose}
-                className="w-full sm:w-auto px-4 sm:px-6 py-2 text-sm sm:text-base border-2 border-border-main bg-bg-card text-text-primary rounded-lg font-bold hover:bg-text-muted/20 transition-colors"
+                className="w-full sm:w-auto px-4 sm:px-6 py-2 text-sm border border-border-main bg-bg-card text-text-primary rounded-md font-semibold hover:bg-text-muted/20 hover:scale-105 transition-all duration-200"
               >
                 Cancel
               </button>
               <button
                 onClick={handleImport}
                 disabled={loading || !jsonInput.trim()}
-                className="w-full sm:w-auto px-4 sm:px-6 py-2 text-sm sm:text-base bg-gradient-to-r from-accent-blue to-accent-green border-2 border-border-main text-white rounded-lg font-bold transition-transform disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full sm:w-auto px-4 sm:px-6 py-2 text-sm bg-gradient-to-r from-accent-blue to-accent-green border border-border-main text-white rounded-md font-semibold hover:scale-105 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {loading ? 'Importing...' : 'Import Puzzles'}
               </button>

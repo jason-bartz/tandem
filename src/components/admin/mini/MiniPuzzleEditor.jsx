@@ -986,7 +986,7 @@ export default function MiniPuzzleEditor({ puzzle, date, onSave, onCancel, loadi
 
   // ─── Render ────────────────────────────────────────────────────
   return (
-    <div className="bg-ghost-white dark:bg-gray-800 rounded-lg p-3 sm:p-4">
+    <div className="bg-ghost-white dark:bg-gray-800 rounded-lg p-4">
       {/* Header + Status */}
       <div className="mb-3">
         <h2 className="text-lg font-black text-text-primary">
@@ -1232,7 +1232,7 @@ export default function MiniPuzzleEditor({ puzzle, date, onSave, onCancel, loadi
             </div>
 
             {/* Grid with Preview Support */}
-            <div className="inline-block rounded-lg overflow-hidden border-2">
+            <div className="inline-block rounded-lg overflow-hidden border">
               <div className="grid grid-cols-5">
                 {formData.grid.map((row, rowIndex) =>
                   row.map((cell, colIndex) => {
@@ -1253,7 +1253,7 @@ export default function MiniPuzzleEditor({ puzzle, date, onSave, onCancel, loadi
                             if (newValue === '.') newValue = '■';
                             if (newValue === '' || /^[A-Z■]$/.test(newValue)) {
                               handleGridChange(rowIndex, colIndex, newValue);
-                              if (/^[A-Z]$/.test(newValue)) {
+                              if (/^[A-Z■]$/.test(newValue)) {
                                 setTimeout(() => advanceToNextCell(), 0);
                               }
                             }
@@ -1409,12 +1409,12 @@ export default function MiniPuzzleEditor({ puzzle, date, onSave, onCancel, loadi
         </div>
 
         {/* Action Buttons */}
-        <div className="flex gap-2 pt-3 border-t-2">
+        <div className="flex gap-2 pt-3 border-t">
           <button
             type="button"
             onClick={onCancel}
             disabled={loading}
-            className="px-3 sm:px-4 py-1.5 text-xs sm:text-sm font-bold bg-ghost-white dark:bg-gray-700 text-text-primary rounded-md sm:rounded-lg transition-all"
+            className="px-4 py-2 text-sm font-bold bg-ghost-white dark:bg-gray-700 text-text-primary rounded-md transition-all duration-200"
           >
             <span className="sm:hidden">Back</span>
             <span className="hidden sm:inline">Back to Calendar</span>
@@ -1422,7 +1422,7 @@ export default function MiniPuzzleEditor({ puzzle, date, onSave, onCancel, loadi
           <button
             type="submit"
             disabled={loading}
-            className="px-3 sm:px-4 py-1.5 text-xs sm:text-sm font-bold bg-accent-yellow text-gray-900 rounded-md sm:rounded-lg transition-all disabled:opacity-50"
+            className="px-4 py-2 text-sm font-bold bg-accent-yellow text-gray-900 rounded-md transition-all duration-200 disabled:opacity-50"
           >
             <span className="sm:hidden">{loading ? 'Saving...' : 'Save'}</span>
             <span className="hidden sm:inline">{loading ? 'Saving...' : 'Save Puzzle'}</span>
@@ -1431,7 +1431,7 @@ export default function MiniPuzzleEditor({ puzzle, date, onSave, onCancel, loadi
             type="button"
             onClick={clearAll}
             disabled={isGenerating}
-            className="px-3 sm:px-4 py-1.5 text-xs sm:text-sm font-bold bg-red-600 text-white rounded-md sm:rounded-lg transition-all disabled:opacity-50"
+            className="px-4 py-2 text-sm font-bold bg-red-600 text-white rounded-md transition-all duration-200 disabled:opacity-50"
             title="Clear grid, clues, and stats"
           >
             Clear

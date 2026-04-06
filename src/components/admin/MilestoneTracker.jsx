@@ -85,7 +85,7 @@ function MilestoneCard({ milestone }) {
   const nextThreshold = milestone.thresholds.find((t) => !t.reached);
 
   return (
-    <div className="bg-bg-card rounded-xl border border-border-main p-3 space-y-2 aspect-square flex flex-col justify-between">
+    <div className="bg-bg-card rounded-lg p-3 space-y-2 aspect-square flex flex-col justify-between">
       {/* Header */}
       <div>
         <div className="flex items-center justify-between mb-1">
@@ -182,7 +182,7 @@ function LoadingSkeleton() {
             {[...Array(3)].map((_, j) => (
               <div
                 key={j}
-                className="bg-bg-card rounded-xl border border-border-main p-4 h-32 skeleton-shimmer"
+                className="bg-gray-200 dark:bg-gray-700 rounded-lg p-4 h-32 skeleton-shimmer"
               />
             ))}
           </div>
@@ -244,10 +244,10 @@ export default function MilestoneTracker() {
   if (loading) {
     return (
       <div className="bg-bg-surface rounded-lg">
-        <div className="px-4 sm:px-6 py-3 sm:py-4 border-b border-border-light">
+        <div className="px-4 py-4 border-b border-border-light">
           <h2 className="text-lg font-bold text-text-primary">Milestones</h2>
         </div>
-        <div className="p-4 sm:p-6">
+        <div className="p-4">
           <LoadingSkeleton />
         </div>
       </div>
@@ -257,7 +257,7 @@ export default function MilestoneTracker() {
   return (
     <div className="bg-bg-surface rounded-lg">
       {/* Header */}
-      <div className="px-4 sm:px-6 py-3 sm:py-4 border-b border-border-light">
+      <div className="px-4 py-4 border-b border-border-light">
         <div className="flex items-center justify-between">
           <div>
             <h2 className="text-lg font-bold text-text-primary">Milestones</h2>
@@ -274,7 +274,7 @@ export default function MilestoneTracker() {
           <button
             onClick={() => fetchMilestones(true)}
             disabled={refreshing}
-            className="px-3 py-1.5 bg-bg-card border border-border-main rounded-lg font-bold text-xs text-text-secondary hover:bg-bg-surface transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1.5"
+            className="px-3 py-1.5 bg-bg-card rounded-md font-bold text-xs text-text-secondary hover:bg-muted transition-all duration-200 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1.5"
           >
             {refreshing ? (
               <>
@@ -298,7 +298,7 @@ export default function MilestoneTracker() {
         </div>
       </div>
 
-      <div className="p-4 sm:p-6 space-y-6">
+      <div className="p-4 space-y-6">
         {/* Error */}
         {error && (
           <div className="px-4 py-3 rounded-lg bg-accent-red/20 text-accent-red font-bold text-sm">

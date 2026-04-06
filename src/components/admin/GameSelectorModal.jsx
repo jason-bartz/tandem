@@ -155,7 +155,7 @@ export default function GameSelectorModal({ date, puzzles, onSelectGame, onClose
       className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
       onClick={handleBackdropClick}
     >
-      <div className="bg-bg-surface rounded-xl w-full max-w-md overflow-hidden">
+      <div className="bg-bg-surface rounded-lg w-full max-w-md overflow-hidden">
         {/* Header */}
         <div className="p-4 sm:p-5 border-b border-border-light bg-bg-card">
           <div className="flex items-start justify-between">
@@ -172,7 +172,7 @@ export default function GameSelectorModal({ date, puzzles, onSelectGame, onClose
             </div>
             <button
               onClick={onClose}
-              className="p-1.5 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+              className="p-1.5 hover:bg-muted rounded-lg transition-colors"
               aria-label="Close"
             >
               <svg
@@ -211,10 +211,9 @@ export default function GameSelectorModal({ date, puzzles, onSelectGame, onClose
                 <button
                   onClick={() => onSelectGame(game.id, hasPuzzle ? puzzles[game.id] : null)}
                   className={`
-                    w-full p-4 rounded-xl
-                    flex items-center gap-4 transition-all
-                    active:translate-y-0
-                    ${hasPuzzle ? game.bgColor : 'bg-bg-card hover:bg-gray-50'}
+                    w-full p-4 rounded-md
+                    flex items-center gap-4 hover:scale-105 transition-all duration-200
+                    ${hasPuzzle ? game.bgColor : 'bg-bg-card hover:bg-muted'}
                     ${hasHistory ? 'rounded-b-none' : ''}
                   `}
                 >
@@ -230,10 +229,10 @@ export default function GameSelectorModal({ date, puzzles, onSelectGame, onClose
 
                   {/* Game info */}
                   <div className="flex-1 text-left">
-                    <h3 className="text-base sm:text-lg font-bold text-text-primary">
+                    <h3 className="text-base font-bold text-text-primary">
                       {game.name}
                     </h3>
-                    <p className="text-xs sm:text-sm text-text-secondary">{game.description}</p>
+                    <p className="text-sm text-text-secondary">{game.description}</p>
                     {hasPuzzle && (
                       <p className="text-xs font-bold text-accent-green mt-1 flex items-center gap-1">
                         <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
@@ -251,7 +250,7 @@ export default function GameSelectorModal({ date, puzzles, onSelectGame, onClose
                   {/* Action indicator */}
                   <div
                     className={`
-                      px-3 py-1.5 rounded-lg text-xs sm:text-sm font-bold flex-shrink-0
+                      px-3 py-1.5 rounded-lg text-sm font-bold flex-shrink-0
                       ${hasPuzzle ? 'bg-accent-green text-white' : 'bg-accent-yellow text-gray-900'}
                     `}
                   >
@@ -261,8 +260,8 @@ export default function GameSelectorModal({ date, puzzles, onSelectGame, onClose
 
                 {/* Audit signature — admin-only, shows who created/edited */}
                 {hasHistory && (
-                  <div className={`${game.bgColor} rounded-b-xl px-4 pb-3 pt-0`}>
-                    <div className="border-t border-black/10 pt-2 space-y-0.5">
+                  <div className={`${game.bgColor} rounded-b-lg px-4 pb-3 pt-0`}>
+                    <div className="border-t border-border-light pt-2 space-y-0.5">
                       {created && (
                         <p className="text-[11px] text-gray-600">
                           <span className="font-semibold">
@@ -295,7 +294,7 @@ export default function GameSelectorModal({ date, puzzles, onSelectGame, onClose
         <div className="p-4 sm:p-5 border-t border-border-light bg-bg-card">
           <button
             onClick={onClose}
-            className="w-full py-2.5 px-4 text-sm font-bold text-text-primary bg-bg-surface rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 active:translate-y-0 transition-all"
+            className="w-full py-2.5 px-4 text-sm font-semibold text-text-primary bg-bg-surface rounded-md hover:bg-muted hover:scale-105 transition-all duration-200"
           >
             Cancel
           </button>

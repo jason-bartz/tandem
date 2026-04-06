@@ -49,12 +49,12 @@ export default function StatsOverview() {
   };
 
   const StatCard = ({ title, value, color = 'plum' }) => (
-    <div className="bg-bg-card dark:bg-gray-800 rounded-lg p-4 sm:p-6">
-      <div className="text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+    <div className="bg-bg-card dark:bg-gray-800 rounded-lg p-4">
+      <div className="text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
         {title}
       </div>
       <div
-        className={`mt-1 sm:mt-2 text-2xl sm:text-3xl font-bold bg-gradient-to-r ${getColorClasses(color)} bg-clip-text text-transparent`}
+        className={`mt-1 sm:mt-2 text-2xl font-bold bg-gradient-to-r ${getColorClasses(color)} bg-clip-text text-transparent`}
       >
         {value.toLocaleString()}
       </div>
@@ -157,18 +157,18 @@ export default function StatsOverview() {
   };
 
   return (
-    <div className="space-y-4 sm:space-y-6 w-full overflow-x-auto">
+    <div className="space-y-4 w-full overflow-x-auto">
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mb-4">
-        <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">
+        <h2 className="text-xl font-bold text-gray-900 dark:text-white">
           Statistics Overview
         </h2>
         <button
           onClick={exportToCSV}
           disabled={exporting || loading}
-          className="w-full sm:w-auto px-3 sm:px-4 py-2 text-sm sm:text-base bg-primary text-white rounded-lg hover:scale-105 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
+          className="w-full sm:w-auto px-4 py-2 text-sm bg-primary text-white rounded-md hover:scale-105 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
         >
           <svg
-            className="w-4 h-4 sm:w-5 sm:h-5"
+            className="w-4 h-4"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -184,7 +184,7 @@ export default function StatsOverview() {
         </button>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
         <StatCard title="Games Played" value={stats.played} />
         <StatCard title="Games Completed" value={stats.completed} color="emerald" />
         <StatCard title="Completion Rate" value={`${stats.completionRate}%`} color="sky" />
@@ -197,29 +197,29 @@ export default function StatsOverview() {
         <StatCard title="Perfect Games" value={stats.perfectGames} color="amber" />
       </div>
 
-      <div className="bg-bg-card dark:bg-gray-800 rounded-lg p-4 sm:p-6">
-        <h3 className="text-base sm:text-lg font-medium text-gray-900 dark:text-white mb-3 sm:mb-4">
+      <div className="bg-bg-card dark:bg-gray-800 rounded-lg p-4">
+        <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">
           Daily Activity (Last 7 Days)
         </h3>
         {dailyActivity.length > 0 ? (
           <ActivityChart data={dailyActivity} />
         ) : (
-          <div className="h-48 sm:h-64 flex items-center justify-center text-gray-500 dark:text-gray-400">
-            <p className="text-sm sm:text-base">No activity data available yet</p>
+          <div className="h-48 flex items-center justify-center text-gray-500 dark:text-gray-400">
+            <p className="text-sm">No activity data available yet</p>
           </div>
         )}
       </div>
 
-      <div className="bg-bg-card dark:bg-gray-800 rounded-lg p-4 sm:p-6">
-        <h3 className="text-base sm:text-lg font-medium text-gray-900 dark:text-white mb-3 sm:mb-4">
+      <div className="bg-bg-card dark:bg-gray-800 rounded-lg p-4">
+        <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">
           Top Performing Puzzles
         </h3>
         {popularPuzzles.length > 0 ? (
           <CompletionRateChart data={popularPuzzles} />
         ) : (
-          <div className="text-gray-500 dark:text-gray-400 text-center py-6 sm:py-8">
-            <p className="text-sm sm:text-base">Not enough data yet</p>
-            <p className="text-xs sm:text-sm mt-1">Puzzles need at least 10 plays to appear here</p>
+          <div className="text-gray-500 dark:text-gray-400 text-center py-6">
+            <p className="text-sm">Not enough data yet</p>
+            <p className="text-sm mt-1">Puzzles need at least 10 plays to appear here</p>
           </div>
         )}
       </div>

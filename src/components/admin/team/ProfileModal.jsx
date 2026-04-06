@@ -191,8 +191,8 @@ export default function ProfileModal({ onClose }) {
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-bg-card rounded-2xl w-full max-w-lg max-h-[90vh] flex flex-col">
-        <div className="px-4 sm:px-6 py-3 sm:py-4 border-b border-border-light flex items-center justify-between">
+      <div className="bg-bg-card rounded-lg w-full max-w-lg max-h-[90vh] flex flex-col">
+        <div className="px-4 sm:px-6 py-4 border-b border-border-light flex items-center justify-between">
           <h3 className="text-base font-bold text-text-primary">Profile & Settings</h3>
           <button
             onClick={onClose}
@@ -211,7 +211,7 @@ export default function ProfileModal({ onClose }) {
           ) : (
             <div className="p-4 sm:p-6 space-y-6">
               {/* User card */}
-              <div className="flex items-center gap-4 p-4 bg-bg-surface rounded-xl">
+              <div className="flex items-center gap-4 p-4 bg-bg-surface rounded-lg">
                 <div className="w-12 h-12 rounded-full overflow-hidden bg-accent-blue/10 flex items-center justify-center flex-shrink-0">
                   {profile?.avatar?.image_path ? (
                     <Image
@@ -352,7 +352,7 @@ export default function ProfileModal({ onClose }) {
                   <button
                     type="submit"
                     disabled={saving}
-                    className="w-full px-4 py-2.5 text-sm font-bold bg-accent-blue text-white rounded-xl disabled:opacity-50 transition-transform active:translate-y-0"
+                    className="w-full px-4 py-2.5 text-sm font-bold bg-accent-blue text-white rounded-md disabled:opacity-50 transition-all duration-200 hover:scale-105"
                   >
                     {saving ? 'Saving...' : 'Save Profile'}
                   </button>
@@ -368,7 +368,7 @@ export default function ProfileModal({ onClose }) {
                   {avatarsLoading ? (
                     <div className="grid grid-cols-4 gap-3">
                       {[...Array(8)].map((_, i) => (
-                        <div key={i} className="aspect-square bg-bg-surface rounded-xl" />
+                        <div key={i} className="aspect-square bg-bg-surface rounded-lg" />
                       ))}
                     </div>
                   ) : (
@@ -377,7 +377,7 @@ export default function ProfileModal({ onClose }) {
                       <button
                         onClick={() => handleSaveAvatar(null)}
                         disabled={saving}
-                        className={`flex flex-col items-center gap-1.5 p-3 rounded-xl border-2 transition-all ${
+                        className={`flex flex-col items-center gap-1.5 p-3 rounded-lg border-2 transition-all ${
                           !selectedAvatarId
                             ? 'border-accent-blue bg-accent-blue/5'
                             : 'border-border-light hover:border-border-main'
@@ -393,7 +393,7 @@ export default function ProfileModal({ onClose }) {
                           key={avatar.id}
                           onClick={() => handleSaveAvatar(avatar.id)}
                           disabled={saving}
-                          className={`flex flex-col items-center gap-1.5 p-3 rounded-xl border-2 transition-all ${
+                          className={`flex flex-col items-center gap-1.5 p-3 rounded-lg border-2 transition-all ${
                             selectedAvatarId === avatar.id
                               ? 'border-accent-blue bg-accent-blue/5'
                               : 'border-border-light hover:border-border-main'
@@ -469,7 +469,7 @@ export default function ProfileModal({ onClose }) {
                   <button
                     type="submit"
                     disabled={saving}
-                    className="w-full px-4 py-2.5 text-sm font-bold bg-accent-blue text-white rounded-xl disabled:opacity-50 transition-transform active:translate-y-0"
+                    className="w-full px-4 py-2.5 text-sm font-bold bg-accent-blue text-white rounded-md disabled:opacity-50 transition-all duration-200 hover:scale-105"
                   >
                     {saving ? 'Changing...' : 'Change Password'}
                   </button>

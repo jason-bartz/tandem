@@ -115,9 +115,42 @@ function formatTimestamp(value) {
   }
 }
 
+function PlatformBadge({ platform }) {
+  if (!platform) return <span className="text-text-muted text-xs">--</span>;
+  if (platform === 'ios') {
+    return (
+      <span className="inline-flex items-center gap-1 text-xs font-semibold text-text-secondary bg-bg-surface rounded-full px-2 py-0.5">
+        <svg width={12} height={12} viewBox="0 0 24 24" fill="currentColor">
+          <path d="M17.05 20.28c-.98.95-2.05.88-3.08.4-1.09-.5-2.08-.48-3.24 0-1.44.62-2.2.44-3.06-.4C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z" />
+        </svg>
+        iOS
+      </span>
+    );
+  }
+  return (
+    <span className="inline-flex items-center gap-1 text-xs font-semibold text-text-secondary bg-bg-surface rounded-full px-2 py-0.5">
+      <svg
+        width={12}
+        height={12}
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <circle cx="12" cy="12" r="10" />
+        <line x1="2" y1="12" x2="22" y2="12" />
+        <path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z" />
+      </svg>
+      Web
+    </span>
+  );
+}
+
 function MetricCard({ label, value, color = 'text-text-primary' }) {
   return (
-    <div className="bg-bg-surface rounded-lg border border-border-main p-3 text-center">
+    <div className="bg-bg-surface rounded-lg p-3 text-center">
       <div className={`text-xl font-bold ${color}`}>
         {value !== null && value !== undefined ? value.toLocaleString() : '--'}
       </div>
@@ -131,13 +164,13 @@ function LoadingSkeleton() {
     <div className="space-y-6 skeleton-shimmer">
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
         {[...Array(4)].map((_, i) => (
-          <div key={i} className="bg-bg-card rounded-lg border border-border-main p-3 h-16" />
+          <div key={i} className="bg-gray-200 dark:bg-gray-700 rounded-lg p-3 h-16" />
         ))}
       </div>
-      <div className="bg-bg-card rounded-lg border border-border-main h-12" />
+      <div className="bg-gray-200 dark:bg-gray-700 rounded-lg h-12" />
       <div className="space-y-2">
         {[...Array(4)].map((_, i) => (
-          <div key={i} className="bg-bg-card rounded-lg border border-border-main h-14" />
+          <div key={i} className="bg-gray-200 dark:bg-gray-700 rounded-lg h-14" />
         ))}
       </div>
     </div>
@@ -294,10 +327,10 @@ export default function UserManagement() {
   if (loading && users.length === 0) {
     return (
       <div className="bg-bg-surface rounded-lg">
-        <div className="px-3 sm:px-6 py-3 sm:py-4 border-b border-border-light">
+        <div className="px-4 sm:px-6 py-4">
           <h2 className="text-lg font-bold text-text-primary">Users</h2>
         </div>
-        <div className="p-3 sm:p-6">
+        <div className="p-4 sm:p-6">
           <LoadingSkeleton />
         </div>
       </div>
@@ -306,17 +339,17 @@ export default function UserManagement() {
 
   return (
     <div className="bg-bg-surface rounded-lg">
-      <div className="px-3 sm:px-6 py-3 sm:py-4 border-b border-border-light">
+      <div className="px-4 sm:px-6 py-4">
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-bold text-text-primary">Users</h2>
           <button
             onClick={handleExport}
             disabled={exporting}
-            className="px-3 py-1.5 bg-bg-card border border-border-main rounded-lg font-bold text-xs text-text-secondary hover:bg-bg-surface hover:border-gray-400 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1.5"
+            className="px-3 py-2 bg-bg-surface rounded-md font-semibold text-xs text-text-secondary hover:bg-muted transition-all duration-200 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1.5"
           >
             {exporting ? (
               <>
-                <div className="w-3 h-3 border border-orange-500 border-t-transparent rounded-full animate-spin" />
+                <div className="w-3 h-3 border-2 border-primary border-t-transparent rounded-full animate-spin" />
                 Exporting...
               </>
             ) : (
@@ -336,7 +369,7 @@ export default function UserManagement() {
         </div>
       </div>
 
-      <div className="p-3 sm:p-6 space-y-4 sm:space-y-6">
+      <div className="p-4 sm:p-6 space-y-4 sm:space-y-6">
         {/* Metrics Bar */}
         {metrics && (
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
@@ -363,7 +396,7 @@ export default function UserManagement() {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search by username, email, or user ID..."
-              className="w-full px-4 py-2.5 border border-border-main rounded-lg bg-bg-card text-text-primary font-medium text-sm placeholder:text-text-muted focus:outline-none focus:border-orange-500 transition-colors"
+              className="w-full px-4 py-2.5 bg-bg-surface rounded-md text-text-primary font-medium text-sm placeholder:text-text-muted focus:outline-none focus:bg-bg-card focus:border-2 focus:border-primary transition-colors"
             />
             {search && (
               <button
@@ -385,7 +418,7 @@ export default function UserManagement() {
           <select
             value={typeFilter}
             onChange={(e) => setTypeFilter(e.target.value)}
-            className="px-3 py-2.5 border border-border-main rounded-lg bg-bg-card text-text-primary font-bold text-sm cursor-pointer focus:outline-none focus:border-orange-500"
+            className="px-3 py-2.5 bg-bg-surface rounded-md text-text-primary font-semibold text-sm cursor-pointer focus:outline-none focus:border-2 focus:border-primary"
           >
             {TYPE_OPTIONS.map((opt) => (
               <option key={opt.value} value={opt.value}>
@@ -397,7 +430,7 @@ export default function UserManagement() {
           <select
             value={sortOrder}
             onChange={(e) => setSortOrder(e.target.value)}
-            className="px-3 py-2.5 border border-border-main rounded-lg bg-bg-card text-text-primary font-bold text-sm cursor-pointer focus:outline-none focus:border-orange-500"
+            className="px-3 py-2.5 bg-bg-surface rounded-md text-text-primary font-semibold text-sm cursor-pointer focus:outline-none focus:border-2 focus:border-primary"
           >
             {SORT_OPTIONS.map((opt) => (
               <option key={opt.value} value={opt.value}>
@@ -408,7 +441,7 @@ export default function UserManagement() {
         </div>
 
         {error && (
-          <div className="bg-accent-red/20 border-2 border-accent-red rounded-lg p-3">
+          <div className="bg-accent-red/20 rounded-md p-3">
             <p className="text-accent-red font-bold text-sm">{error}</p>
           </div>
         )}
@@ -417,34 +450,34 @@ export default function UserManagement() {
         <div className="overflow-x-auto rounded-lg">
           <table className="w-full text-sm">
             <thead>
-              <tr className="bg-bg-card border-b border-border-light">
-                <th className="text-left px-3 py-2.5 font-bold text-text-secondary text-xs uppercase tracking-wide">
+              <tr className="bg-bg-card">
+                <th className="text-left px-3 py-2.5 font-semibold text-text-secondary text-xs uppercase tracking-wider">
                   User
                 </th>
-                <th className="text-left px-3 py-2.5 font-bold text-text-secondary text-xs uppercase tracking-wide hidden sm:table-cell">
+                <th className="text-left px-3 py-2.5 font-semibold text-text-secondary text-xs uppercase tracking-wider hidden sm:table-cell">
                   Email
                 </th>
-                <th className="text-center px-3 py-2.5 font-bold text-text-secondary text-xs uppercase tracking-wide hidden sm:table-cell w-10">
+                <th className="text-center px-3 py-2.5 font-semibold text-text-secondary text-xs uppercase tracking-wider hidden sm:table-cell w-10">
                   Auth
                 </th>
-                <th className="text-left px-3 py-2.5 font-bold text-text-secondary text-xs uppercase tracking-wide hidden md:table-cell">
+                <th className="text-left px-3 py-2.5 font-semibold text-text-secondary text-xs uppercase tracking-wider hidden md:table-cell">
                   Games
                 </th>
-                <th className="text-center px-3 py-2.5 font-bold text-text-secondary text-xs uppercase tracking-wide hidden lg:table-cell">
+                <th className="text-center px-3 py-2.5 font-semibold text-text-secondary text-xs uppercase tracking-wider hidden md:table-cell">
+                  Platform
+                </th>
+                <th className="text-center px-3 py-2.5 font-semibold text-text-secondary text-xs uppercase tracking-wider hidden lg:table-cell">
                   Country
                 </th>
-                <th className="text-left px-3 py-2.5 font-bold text-text-secondary text-xs uppercase tracking-wide hidden lg:table-cell">
+                <th className="text-left px-3 py-2.5 font-semibold text-text-secondary text-xs uppercase tracking-wider hidden lg:table-cell">
                   Created
                 </th>
-                <th className="text-left px-3 py-2.5 font-bold text-text-secondary text-xs uppercase tracking-wide hidden lg:table-cell">
-                  Last Active
-                </th>
-                <th className="text-center px-3 py-2.5 font-bold text-text-secondary text-xs uppercase tracking-wide w-10">
+                <th className="text-center px-3 py-2.5 font-semibold text-text-secondary text-xs uppercase tracking-wider w-10">
                   &nbsp;
                 </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-border-main">
+            <tbody>
               {users.length === 0 && !loading ? (
                 <tr>
                   <td colSpan="8" className="text-center py-12 text-text-muted font-medium">
@@ -458,7 +491,7 @@ export default function UserManagement() {
                   <Fragment key={user.id}>
                     <tr
                       onClick={() => handleExpandUser(user.id)}
-                      className={`cursor-pointer transition-colors hover:bg-bg-card/80 ${
+                      className={`cursor-pointer transition-all duration-200 hover:bg-bg-card ${
                         expandedUserId === user.id ? 'bg-bg-card' : ''
                       }`}
                     >
@@ -505,6 +538,9 @@ export default function UserManagement() {
                           )}
                         </div>
                       </td>
+                      <td className="px-3 py-3 text-center hidden md:table-cell">
+                        <PlatformBadge platform={user.platform} />
+                      </td>
                       <td className="px-3 py-3 text-center hidden lg:table-cell">
                         {user.countryFlag ? (
                           <span title={user.countryCode || ''} className="text-base">
@@ -517,12 +553,9 @@ export default function UserManagement() {
                       <td className="px-3 py-3 text-text-secondary text-xs hidden lg:table-cell">
                         {formatTimestamp(user.createdAt)}
                       </td>
-                      <td className="px-3 py-3 text-text-secondary text-xs hidden lg:table-cell">
-                        {user.lastSignInAt ? formatTimestamp(user.lastSignInAt) : '--'}
-                      </td>
                       <td className="px-3 py-3 text-center">
                         <svg
-                          className={`w-4 h-4 text-text-muted transition-transform inline-block ${
+                          className={`w-4 h-4 text-text-muted transition-transform duration-200 inline-block ${
                             expandedUserId === user.id ? 'rotate-180' : ''
                           }`}
                           fill="none"
@@ -542,8 +575,8 @@ export default function UserManagement() {
                       (detailLoading ? (
                         <tr key={`${user.id}-detail`}>
                           <td colSpan="8" className="p-0">
-                            <div className="border-t border-border-light bg-bg-card p-8 text-center">
-                              <div className="inline-block w-6 h-6 border-2 border-orange-500 border-t-transparent rounded-full animate-spin" />
+                            <div className="bg-bg-card p-8 text-center">
+                              <div className="inline-block w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
                               <p className="text-sm text-text-secondary mt-2 font-medium">
                                 Loading user details...
                               </p>
@@ -562,7 +595,7 @@ export default function UserManagement() {
                       ) : (
                         <tr key={`${user.id}-detail`}>
                           <td colSpan="8" className="p-0">
-                            <div className="border-t border-border-light bg-bg-card p-6 text-center">
+                            <div className="bg-bg-card p-6 text-center">
                               <p className="text-sm text-accent-red font-bold">
                                 Failed to load user details
                               </p>
@@ -580,7 +613,7 @@ export default function UserManagement() {
         {/* Loading overlay for page changes */}
         {loading && users.length > 0 && (
           <div className="text-center py-2">
-            <div className="inline-block w-5 h-5 border-2 border-orange-500 border-t-transparent rounded-full animate-spin" />
+            <div className="inline-block w-5 h-5 border-2 border-primary border-t-transparent rounded-full animate-spin" />
           </div>
         )}
 
@@ -597,7 +630,7 @@ export default function UserManagement() {
               <button
                 onClick={() => handlePageChange(pagination.page - 1)}
                 disabled={pagination.page <= 1}
-                className="px-2.5 py-1.5 border border-border-main rounded-lg font-bold text-xs text-text-secondary hover:bg-bg-card disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                className="px-2.5 py-1.5 rounded-md font-semibold text-xs text-text-secondary hover:bg-bg-card disabled:opacity-30 disabled:cursor-not-allowed transition-all duration-200"
               >
                 Prev
               </button>
@@ -606,10 +639,10 @@ export default function UserManagement() {
                 <button
                   key={num}
                   onClick={() => handlePageChange(num)}
-                  className={`px-2.5 py-1.5 border rounded-lg font-bold text-xs transition-colors ${
+                  className={`px-2.5 py-1.5 rounded-md font-semibold text-xs transition-all duration-200 ${
                     num === pagination.page
-                      ? 'border-orange-500 bg-orange-500/20 text-text-primary'
-                      : 'border-border-main text-text-secondary hover:bg-bg-card'
+                      ? 'bg-primary text-white'
+                      : 'text-text-secondary hover:bg-bg-card'
                   }`}
                 >
                   {num}
@@ -619,7 +652,7 @@ export default function UserManagement() {
               <button
                 onClick={() => handlePageChange(pagination.page + 1)}
                 disabled={pagination.page >= pagination.totalPages}
-                className="px-2.5 py-1.5 border border-border-main rounded-lg font-bold text-xs text-text-secondary hover:bg-bg-card disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                className="px-2.5 py-1.5 rounded-md font-semibold text-xs text-text-secondary hover:bg-bg-card disabled:opacity-30 disabled:cursor-not-allowed transition-all duration-200"
               >
                 Next
               </button>

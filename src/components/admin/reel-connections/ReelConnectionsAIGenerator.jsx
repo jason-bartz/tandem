@@ -85,7 +85,7 @@ export default function ReelConnectionsAIGenerator({
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="sticky top-0 bg-ghost-white dark:bg-gray-800 border-b border-border-main px-6 py-4 flex items-center justify-between rounded-t-2xl">
+        <div className="sticky top-0 bg-ghost-white dark:bg-gray-800 border-b border-border-main px-6 py-4 flex items-center justify-between rounded-t-lg">
           <div>
             <h2
               id="ai-generator-title"
@@ -100,7 +100,7 @@ export default function ReelConnectionsAIGenerator({
           <button
             onClick={onClose}
             disabled={loading}
-            className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors disabled:opacity-50"
+            className="p-2 rounded-full hover:bg-muted transition-colors disabled:opacity-50"
             aria-label="Close generator"
           >
             <svg
@@ -321,11 +321,11 @@ export default function ReelConnectionsAIGenerator({
         </div>
 
         {/* Footer Actions */}
-        <div className="sticky bottom-0 bg-ghost-white dark:bg-gray-800 border-t border-border-main px-6 py-4 flex gap-3 rounded-b-2xl">
+        <div className="sticky bottom-0 bg-ghost-white dark:bg-gray-800 border-t border-border-main px-6 py-4 flex gap-3 rounded-b-lg">
           <button
             onClick={onClose}
             disabled={loading}
-            className="flex-1 px-6 py-3 border border-border-main text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium"
+            className="flex-1 px-6 py-3 border border-border-main text-gray-700 dark:text-gray-300 rounded-lg hover:bg-muted disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium"
           >
             Cancel
           </button>

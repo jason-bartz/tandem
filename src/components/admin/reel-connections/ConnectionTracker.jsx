@@ -307,11 +307,11 @@ export default function ConnectionTracker({ onEditPuzzle }) {
 
   if (error) {
     return (
-      <div className="bg-accent-red/20 border-2 border-accent-red rounded-lg p-4">
+      <div className="bg-accent-red/20 border border-accent-red rounded-lg p-4">
         <p className="text-text-primary font-bold">Error: {error}</p>
         <button
           onClick={fetchAllPuzzles}
-          className="mt-2 px-4 py-2 bg-accent-red text-white rounded font-bold transition-transform"
+          className="mt-2 px-4 py-2 bg-accent-red text-white rounded font-bold transition-all duration-200"
         >
           Retry
         </button>
@@ -322,47 +322,47 @@ export default function ConnectionTracker({ onEditPuzzle }) {
   return (
     <div className="space-y-4 sm:space-y-6">
       {/* Stats Cards */}
-      <div className="bg-bg-surface rounded-lg p-4 sm:p-6">
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4 text-center">
+      <div className="bg-bg-surface rounded-lg p-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 text-center">
           <div className="p-3 bg-bg-card rounded-lg">
-            <div className="text-xl sm:text-2xl font-bold text-text-primary">{stats.total}</div>
-            <div className="text-xs sm:text-sm text-text-secondary font-medium">Total Puzzles</div>
+            <div className="text-2xl font-bold text-text-primary">{stats.total}</div>
+            <div className="text-sm text-text-secondary font-medium">Total Puzzles</div>
           </div>
-          <div className="p-3 bg-bg-card rounded-lg border border-accent-green">
-            <div className="text-xl sm:text-2xl font-bold text-text-primary">{stats.unique}</div>
-            <div className="text-xs sm:text-sm text-text-secondary font-medium">
+          <div className="p-3 bg-bg-card rounded-lg">
+            <div className="text-2xl font-bold text-text-primary">{stats.unique}</div>
+            <div className="text-sm text-text-secondary font-medium">
               Unique Connections
             </div>
           </div>
-          <div className="p-3 bg-bg-card rounded-lg border border-accent-red">
-            <div className="text-xl sm:text-2xl font-bold text-text-primary">
+          <div className="p-3 bg-bg-card rounded-lg">
+            <div className="text-2xl font-bold text-text-primary">
               {stats.duplicates}
             </div>
-            <div className="text-xs sm:text-sm text-text-secondary font-medium">
+            <div className="text-sm text-text-secondary font-medium">
               Duplicate Connections
             </div>
           </div>
-          <div className="p-3 bg-bg-card rounded-lg border border-accent-blue">
-            <div className="text-xl sm:text-2xl font-bold text-text-primary">{stats.past}</div>
-            <div className="text-xs sm:text-sm text-text-secondary font-medium">Past Puzzles</div>
+          <div className="p-3 bg-bg-card rounded-lg">
+            <div className="text-2xl font-bold text-text-primary">{stats.past}</div>
+            <div className="text-sm text-text-secondary font-medium">Past Puzzles</div>
           </div>
-          <div className="p-3 bg-bg-card rounded-lg border border-accent-pink">
-            <div className="text-xl sm:text-2xl font-bold text-text-primary">{stats.future}</div>
-            <div className="text-xs sm:text-sm text-text-secondary font-medium">Scheduled</div>
+          <div className="p-3 bg-bg-card rounded-lg">
+            <div className="text-2xl font-bold text-text-primary">{stats.future}</div>
+            <div className="text-sm text-text-secondary font-medium">Scheduled</div>
           </div>
         </div>
       </div>
 
       {/* Filters and Table */}
       <div className="bg-bg-surface rounded-lg">
-        <div className="p-3 sm:p-4 border-b-2">
-          <div className="flex flex-col gap-3 sm:gap-4">
+        <div className="p-4 border-b">
+          <div className="flex flex-col gap-4">
             <input
               type="text"
               placeholder="Search connections, dates, or movies..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full px-3 sm:px-4 py-2 text-sm sm:text-base rounded-lg bg-bg-card text-text-primary font-medium focus:outline-none focus:ring-2 focus:ring-accent-blue"
+              className="w-full px-4 py-2 text-sm rounded-lg bg-bg-card text-text-primary font-medium focus:outline-none focus:ring-2 focus:ring-accent-blue"
             />
 
             <div className="flex flex-col sm:flex-row gap-2">
@@ -370,14 +370,14 @@ export default function ConnectionTracker({ onEditPuzzle }) {
                 type="date"
                 value={dateRange.start}
                 onChange={(e) => setDateRange({ ...dateRange, start: e.target.value })}
-                className="flex-1 px-3 sm:px-4 py-2 text-sm sm:text-base rounded-lg bg-bg-card text-text-primary font-medium focus:outline-none focus:ring-2 focus:ring-accent-blue"
+                className="flex-1 px-4 py-2 text-sm rounded-lg bg-bg-card text-text-primary font-medium focus:outline-none focus:ring-2 focus:ring-accent-blue"
                 placeholder="Start Date"
               />
               <input
                 type="date"
                 value={dateRange.end}
                 onChange={(e) => setDateRange({ ...dateRange, end: e.target.value })}
-                className="flex-1 px-3 sm:px-4 py-2 text-sm sm:text-base rounded-lg bg-bg-card text-text-primary font-medium focus:outline-none focus:ring-2 focus:ring-accent-blue"
+                className="flex-1 px-4 py-2 text-sm rounded-lg bg-bg-card text-text-primary font-medium focus:outline-none focus:ring-2 focus:ring-accent-blue"
                 placeholder="End Date"
               />
             </div>
@@ -386,7 +386,7 @@ export default function ConnectionTracker({ onEditPuzzle }) {
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
-                className="flex-1 px-3 sm:px-4 py-2 text-sm sm:text-base rounded-lg bg-bg-card text-text-primary font-bold focus:outline-none focus:ring-2 focus:ring-accent-blue"
+                className="flex-1 px-4 py-2 text-sm rounded-lg bg-bg-card text-text-primary font-bold focus:outline-none focus:ring-2 focus:ring-accent-blue"
               >
                 <option value="date">Sort by Date</option>
                 <option value="connection">Sort by Connection</option>
@@ -394,14 +394,14 @@ export default function ConnectionTracker({ onEditPuzzle }) {
 
               <button
                 onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
-                className="px-3 sm:px-4 py-2 text-sm sm:text-base bg-bg-card text-text-primary rounded-lg font-bold hover:bg-accent-yellow/20 transition-colors"
+                className="px-4 py-2 text-sm bg-bg-card text-text-primary rounded-md font-bold hover:bg-accent-yellow/20 transition-colors"
               >
                 {sortOrder === 'asc' ? '↑' : '↓'}
               </button>
 
               <button
                 onClick={() => setShowDuplicatesOnly(!showDuplicatesOnly)}
-                className={`px-3 sm:px-4 py-2 text-sm sm:text-base rounded-lg font-bold transition-transform whitespace-nowrap ${
+                className={`px-4 py-2 text-sm rounded-md font-bold transition-all duration-200 whitespace-nowrap ${
                   showDuplicatesOnly
                     ? 'bg-accent-red text-white'
                     : 'bg-bg-card text-text-primary hover:bg-accent-red/20'
@@ -412,7 +412,7 @@ export default function ConnectionTracker({ onEditPuzzle }) {
 
               <button
                 onClick={exportToCSV}
-                className="px-3 sm:px-4 py-2 text-sm sm:text-base bg-accent-blue text-white rounded-lg font-bold transition-transform whitespace-nowrap"
+                className="px-4 py-2 text-sm bg-accent-blue text-white rounded-md font-bold transition-all duration-200 whitespace-nowrap"
               >
                 Export
               </button>
@@ -506,7 +506,7 @@ export default function ConnectionTracker({ onEditPuzzle }) {
                     <td className="px-3 sm:px-6 py-2 sm:py-4 whitespace-nowrap align-top">
                       <button
                         onClick={() => onEditPuzzle && onEditPuzzle(puzzle)}
-                        className="px-2 sm:px-3 py-1 bg-accent-green text-white text-[10px] sm:text-xs rounded font-bold transition-transform"
+                        className="px-3 py-1 bg-accent-green text-white text-xs rounded font-bold transition-all duration-200"
                       >
                         Edit
                       </button>
@@ -518,7 +518,7 @@ export default function ConnectionTracker({ onEditPuzzle }) {
           </table>
 
           {filteredAndSortedPuzzles.length === 0 && (
-            <div className="text-center py-6 sm:py-8 text-sm sm:text-base text-text-secondary font-medium">
+            <div className="text-center py-8 text-sm text-text-secondary font-medium">
               No puzzles found matching your criteria
             </div>
           )}

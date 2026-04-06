@@ -599,7 +599,7 @@ function UnifiedPuzzleCalendar({ onSelectDate, onRefresh, onOpenSuggestions }, r
                       new Date(currentMonth.getFullYear() - 1, currentMonth.getMonth(), 1)
                     )
                   }
-                  className="px-3 py-1 text-sm font-bold bg-bg-card rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
+                  className="px-3 py-1 text-sm font-bold bg-bg-card rounded-lg hover:bg-muted"
                 >
                   ←
                 </button>
@@ -612,7 +612,7 @@ function UnifiedPuzzleCalendar({ onSelectDate, onRefresh, onOpenSuggestions }, r
                       new Date(currentMonth.getFullYear() + 1, currentMonth.getMonth(), 1)
                     )
                   }
-                  className="px-3 py-1 text-sm font-bold bg-bg-card rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
+                  className="px-3 py-1 text-sm font-bold bg-bg-card rounded-lg hover:bg-muted"
                 >
                   →
                 </button>
@@ -625,7 +625,7 @@ function UnifiedPuzzleCalendar({ onSelectDate, onRefresh, onOpenSuggestions }, r
           {/* Prev/Next arrows */}
           <button
             onClick={viewMode === 'month' ? goToPreviousMonth : goToPreviousWeek}
-            className="h-8 w-8 flex items-center justify-center rounded-md bg-bg-surface hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+            className="h-8 w-8 flex items-center justify-center rounded-md bg-bg-surface hover:bg-muted transition-colors"
           >
             <svg
               className="w-4 h-4 text-text-secondary"
@@ -643,7 +643,7 @@ function UnifiedPuzzleCalendar({ onSelectDate, onRefresh, onOpenSuggestions }, r
           </button>
           <button
             onClick={viewMode === 'month' ? goToNextMonth : goToNextWeek}
-            className="h-8 w-8 flex items-center justify-center rounded-md bg-bg-surface hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+            className="h-8 w-8 flex items-center justify-center rounded-md bg-bg-surface hover:bg-muted transition-colors"
           >
             <svg
               className="w-4 h-4 text-text-secondary"
@@ -660,7 +660,7 @@ function UnifiedPuzzleCalendar({ onSelectDate, onRefresh, onOpenSuggestions }, r
           {/* Today button */}
           <button
             onClick={goToToday}
-            className="h-8 px-3 text-xs font-semibold rounded-md bg-bg-surface text-text-secondary hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+            className="h-8 px-3 text-xs font-semibold rounded-md bg-bg-surface text-text-secondary hover:bg-muted transition-colors"
           >
             Today
           </button>
@@ -677,7 +677,7 @@ function UnifiedPuzzleCalendar({ onSelectDate, onRefresh, onOpenSuggestions }, r
               className={`px-3 text-xs font-semibold transition-colors ${
                 viewMode === 'week'
                   ? 'bg-text-primary text-bg-primary dark:bg-gray-100 dark:text-gray-900'
-                  : 'text-text-secondary hover:bg-gray-200 dark:hover:bg-gray-700'
+                  : 'text-text-secondary hover:bg-muted'
               }`}
             >
               Week
@@ -687,7 +687,7 @@ function UnifiedPuzzleCalendar({ onSelectDate, onRefresh, onOpenSuggestions }, r
               className={`px-3 text-xs font-semibold transition-colors ${
                 viewMode === 'month'
                   ? 'bg-text-primary text-bg-primary dark:bg-gray-100 dark:text-gray-900'
-                  : 'text-text-secondary hover:bg-gray-200 dark:hover:bg-gray-700'
+                  : 'text-text-secondary hover:bg-muted'
               }`}
             >
               Month

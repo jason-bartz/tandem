@@ -166,14 +166,14 @@ export default function ElementDetailModal({
                   type="text"
                   value={editEmoji}
                   onChange={(e) => setEditEmoji(e.target.value)}
-                  className="w-12 h-12 text-3xl text-center rounded-lg border-2"
+                  className="w-12 h-12 text-3xl text-center rounded-md border-2"
                   placeholder="✨"
                 />
                 <input
                   type="text"
                   value={editName}
                   onChange={(e) => setEditName(e.target.value)}
-                  className="text-xl font-bold px-3 py-1 rounded-lg border-2"
+                  className="text-xl font-bold px-3 py-1 rounded-md border-2"
                 />
               </>
             ) : (
@@ -190,7 +190,7 @@ export default function ElementDetailModal({
                 <button
                   onClick={handleSave}
                   disabled={saving}
-                  className="p-2 rounded-lg border-2 bg-green-500 text-white hover:bg-green-600 disabled:opacity-50"
+                  className="p-2 rounded-md border-2 bg-green-500 text-white font-semibold hover:scale-105 transition-all duration-200 disabled:opacity-50"
                 >
                   <Save className="w-5 h-5" />
                 </button>
@@ -201,7 +201,7 @@ export default function ElementDetailModal({
                     setEditEmoji(element.emoji);
                     setError(null);
                   }}
-                  className="p-2 rounded-lg border-2 bg-gray-200 hover:bg-gray-300"
+                  className="p-2 rounded-md border-2 bg-muted hover:scale-105 transition-all duration-200"
                 >
                   <X className="w-5 h-5" />
                 </button>
@@ -210,13 +210,13 @@ export default function ElementDetailModal({
               <>
                 <button
                   onClick={() => setEditing(true)}
-                  className="p-2 rounded-lg border-2 bg-blue-500 text-white hover:bg-blue-600"
+                  className="p-2 rounded-md border-2 bg-blue-500 text-white font-semibold hover:scale-105 transition-all duration-200"
                 >
                   <Edit2 className="w-5 h-5" />
                 </button>
                 <button
                   onClick={() => setShowDeleteConfirm(true)}
-                  className="p-2 rounded-lg border-2 bg-red-500 text-white hover:bg-red-600"
+                  className="p-2 rounded-md border-2 bg-red-500 text-white font-semibold hover:scale-105 transition-all duration-200"
                 >
                   <Trash2 className="w-5 h-5" />
                 </button>
@@ -224,7 +224,7 @@ export default function ElementDetailModal({
             )}
             <button
               onClick={onClose}
-              className="p-2 rounded-lg border-2 bg-bg-card hover:bg-gray-100"
+              className="p-2 rounded-md border-2 bg-bg-card hover:bg-muted transition-all duration-200"
             >
               <X className="w-5 h-5" />
             </button>
@@ -233,7 +233,7 @@ export default function ElementDetailModal({
 
         {/* Error */}
         {error && (
-          <div className="mx-4 mt-4 p-3 bg-red-100 border-2 border-red-500 rounded-lg text-red-700 text-sm">
+          <div className="mx-4 mt-4 p-3 bg-red-100 border-2 border-red-500 rounded-md text-red-700 text-sm">
             {error}
           </div>
         )}
@@ -248,10 +248,10 @@ export default function ElementDetailModal({
             <div className="space-y-4">
               {/* Stats */}
               <div className="flex gap-4 text-sm">
-                <div className="px-3 py-1 bg-blue-100 rounded-lg">
+                <div className="px-3 py-1 bg-blue-100 rounded-md">
                   <span className="font-bold">{details.stats.asInputCount}</span> as input
                 </div>
-                <div className="px-3 py-1 bg-green-100 rounded-lg">
+                <div className="px-3 py-1 bg-green-100 rounded-md">
                   <span className="font-bold">{details.stats.asResultCount}</span> as result
                 </div>
               </div>
@@ -301,7 +301,7 @@ export default function ElementDetailModal({
                         {pathData.path.map((step, index) => (
                           <div
                             key={index}
-                            className="flex items-center gap-2 text-sm p-2 bg-bg-card rounded-lg border border-purple-200"
+                            className="flex items-center gap-2 text-sm p-2 bg-bg-card rounded-md border border-purple-200"
                           >
                             <span className="text-purple-500 font-mono text-xs w-6">
                               {index + 1}.
@@ -424,14 +424,14 @@ export default function ElementDetailModal({
               <div className="flex gap-3">
                 <button
                   onClick={() => setShowDeleteConfirm(false)}
-                  className="flex-1 px-4 py-2 rounded-lg border-2 bg-gray-100 hover:bg-gray-200 font-bold"
+                  className="flex-1 px-4 py-2 rounded-md border-2 bg-muted font-semibold hover:scale-105 transition-all duration-200"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={handleDelete}
                   disabled={saving}
-                  className="flex-1 px-4 py-2 rounded-lg border-2 bg-red-500 text-white hover:bg-red-600 font-bold disabled:opacity-50"
+                  className="flex-1 px-4 py-2 rounded-md border-2 bg-red-500 text-white font-semibold hover:scale-105 transition-all duration-200 disabled:opacity-50"
                 >
                   {saving ? 'Deleting...' : 'Delete'}
                 </button>
@@ -528,7 +528,7 @@ function CombinationRow({ combo, highlightElement, onEdit, onDelete, isResult })
   }
 
   return (
-    <div className="flex items-center justify-between p-3 hover:bg-gray-50 group">
+    <div className="flex items-center justify-between p-3 hover:bg-muted group">
       <div className="flex items-center gap-2 text-sm">
         {isResult ? (
           <>
@@ -563,7 +563,7 @@ function CombinationRow({ combo, highlightElement, onEdit, onDelete, isResult })
       <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
         <button
           onClick={() => setEditing(true)}
-          className="p-1 rounded hover:bg-blue-100"
+          className="p-1 rounded hover:bg-muted"
           title="Edit"
         >
           <Edit2 className="w-4 h-4 text-blue-600" />
@@ -571,7 +571,7 @@ function CombinationRow({ combo, highlightElement, onEdit, onDelete, isResult })
         <button
           onClick={handleDelete}
           disabled={saving}
-          className="p-1 rounded hover:bg-red-100 disabled:opacity-50"
+          className="p-1 rounded hover:bg-muted disabled:opacity-50"
           title="Delete"
         >
           <Trash2 className="w-4 h-4 text-red-600" />
