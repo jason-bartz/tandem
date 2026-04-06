@@ -13,6 +13,7 @@ export const KEYBOARD_SHORTCUTS = [
       { keys: ['Enter'], description: 'Select element / Combine' },
       { keys: ['F'], description: 'Favorite focused element' },
       { keys: ['/'], description: 'Search' },
+      { keys: ['R'], description: 'Cycle sort order' },
     ],
   },
   {
@@ -52,6 +53,8 @@ export function useAlchemyKeyboard({
   toggleFavorite,
   onToggleFavoritesPanel,
   showFavoritesPanel,
+  setSortOrder,
+  sortOrder,
   isComplete,
   freePlayMode,
   disabled,
@@ -64,6 +67,7 @@ export function useAlchemyKeyboard({
   const [keyboardActive, setKeyboardActive] = useState(false);
 
   const hasUsedKeyboard = useRef(false);
+  const sortCycleRef = useRef(['newest', 'alphabetical', 'firstDiscoveries', 'mostUsed', 'random']);
 
   const isSearchFocused = useCallback(() => {
     return document.activeElement === searchInputRef?.current;
@@ -256,6 +260,16 @@ export function useAlchemyKeyboard({
         return;
       }
 
+      // ─── Sort cycling ───
+      if (key === 'r' || key === 'R') {
+        e.preventDefault();
+        const cycle = sortCycleRef.current;
+        const currentIdx = cycle.indexOf(sortOrder);
+        const nextIdx = (currentIdx + 1) % cycle.length;
+        setSortOrder?.(cycle[nextIdx]);
+        return;
+      }
+
       // ─── Operator toggle ───
       if (key === '+' || key === '=') {
         e.preventDefault();
@@ -303,6 +317,8 @@ export function useAlchemyKeyboard({
       toggleOperatorMode,
       toggleFavorite,
       onToggleFavoritesPanel,
+      setSortOrder,
+      sortOrder,
       searchInputRef,
       setSearchQuery,
       clampIndex,

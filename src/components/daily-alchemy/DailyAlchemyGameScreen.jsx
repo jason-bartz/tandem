@@ -652,6 +652,8 @@ export function DailyAlchemyGameScreen({
     toggleFavorite: onToggleFavorite,
     onToggleFavoritesPanel,
     showFavoritesPanel,
+    setSortOrder,
+    sortOrder,
     isComplete,
     freePlayMode,
     disabled: isCombining || (isComplete && !freePlayMode),
