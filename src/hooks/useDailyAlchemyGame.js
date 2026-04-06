@@ -6,7 +6,7 @@ import { useHaptics } from '@/hooks/useHaptics';
 import logger from '@/lib/logger';
 import { getApiUrl, capacitorFetch } from '@/lib/api-config';
 import {
-  playCombineSoundSpatial,
+  playCombineSound,
   playCombineButtonSound,
   playFailureSound,
   playFirstDiscoverySound,
@@ -17,7 +17,6 @@ import {
   playSoupWinSound,
   playFavoriteAddSound,
   playFavoriteClearSound,
-  stopAmbientTexture,
 } from '@/lib/sounds';
 import {
   SOUP_GAME_STATES,
@@ -1901,7 +1900,7 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
         playFirstDiscoverySound();
       } else if (isNew) {
         soupNewElement();
-        playCombineSoundSpatial(); // Spatial magical sound for new discoveries
+        playCombineSound(); // Wondrous magical sound for new discoveries
       } else {
         soupCombine();
         playNewElementSound(); // Simple chime for existing elements
@@ -2038,8 +2037,7 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
 
     logger.info('[ElementSoup] Puzzle completed!');
 
-    // Stop ambient and play victory sound
-    stopAmbientTexture();
+    // Play victory sound and celebration haptic
     playSoupWinSound();
     celebration();
 
