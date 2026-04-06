@@ -29,8 +29,6 @@ const ANONYMOUS_NAMES = [
   'Mysterious Stranger',
 ];
 
-export const dynamic = 'force-dynamic';
-
 const DISCOVERY_LIMIT = 50;
 
 /**
