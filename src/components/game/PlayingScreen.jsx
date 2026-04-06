@@ -1,6 +1,6 @@
 'use client';
 import { useState, useEffect, useRef, lazy, Suspense } from 'react';
-import { formatTime, formatDateShort } from '@/lib/utils';
+import { formatTime, formatDateShort, cn } from '@/lib/utils';
 import { playHintSound, playTandemCorrectSound, playTandemErrorSound } from '@/lib/sounds';
 import PuzzleRow from './PuzzleRow';
 import HintDisplay from './HintDisplay';
@@ -21,8 +21,9 @@ const FeedbackPane = lazy(() => import('@/components/FeedbackPane'));
 const LeaderboardModal = lazy(() => import('@/components/leaderboard/LeaderboardModal'));
 import { useHaptics } from '@/hooks/useHaptics';
 import { useTheme } from '@/contexts/ThemeContext';
-import platformService from '@/services/platform';
 import { motion } from 'framer-motion';
+import { useTandemKeyboard } from '@/hooks/useTandemKeyboard';
+import TandemKeyboardShortcutsModal from './TandemKeyboardShortcutsModal';
 
 export default function PlayingScreen({
   puzzle,
@@ -144,120 +145,35 @@ export default function PlayingScreen({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [puzzle]);
 
-  // Hardware keyboard support for desktop
-  useEffect(() => {
-    if (platformService.isPlatformNative()) return;
-
-    const handleKeyDown = (e) => {
-      // Ignore if any modal is open or game is complete
-      if (showRules || showHowToPlay || showStats || showArchive || showSettings || solved === 4)
-        return;
-
-      // Ignore if typing in another input field (but not our readonly game inputs)
-      const isOurInput = e.target.getAttribute('aria-label')?.startsWith('Answer');
-      if (!isOurInput && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA')) return;
-
-      if (e.key === 'Enter') {
-        e.preventDefault();
-
-        // Check the current answer at focused index
-        if (answers[focusedIndex].trim()) {
-          const result = onCheckSingleAnswer(focusedIndex);
-
-          // Play sounds and haptics
-          if (!result.gameComplete) {
-            try {
-              if (result.isCorrect) {
-                playTandemCorrectSound();
-                correctAnswer();
-                setCorrectFlashIndex(focusedIndex);
-                setTimeout(() => setCorrectFlashIndex(null), 800);
-              } else {
-                playTandemErrorSound();
-                incorrectAnswer();
-              }
-            } catch (err) {
-              // Sound might fail
-            }
-          }
-
-          // Move to next field if correct
-          if (result.isCorrect && !result.gameComplete) {
-            setTimeout(() => {
-              const nextEmptyIndex = answers.findIndex(
-                (answer, idx) => idx > focusedIndex && !correctAnswers[idx]
-              );
-              if (nextEmptyIndex !== -1) {
-                setFocusedIndex(nextEmptyIndex);
-              }
-            }, 300);
-          }
-        }
-      } else if (e.key === 'Backspace') {
-        e.preventDefault();
-
-        if (correctAnswers[focusedIndex]) {
-          return;
-        }
-
-        // Use helper that handles locked letters
-        if (game.handleBackspace) {
-          game.handleBackspace(focusedIndex);
-        } else {
-          // Fallback to simple behavior
-          const currentValue = answers[focusedIndex];
-          if (currentValue && currentValue.length > 0) {
-            onUpdateAnswer(focusedIndex, currentValue.slice(0, -1));
-          }
-        }
-      } else if (/^[a-zA-Z]$/.test(e.key)) {
-        e.preventDefault();
-
-        if (correctAnswers[focusedIndex]) {
-          return;
-        }
-
-        const answerLength = puzzle?.puzzles[focusedIndex]?.answer
-          ? puzzle.puzzles[focusedIndex].answer.includes(',')
-            ? puzzle.puzzles[focusedIndex].answer.split(',')[0].trim().length
-            : puzzle.puzzles[focusedIndex].answer.length
-          : 15;
-
-        // Use helper that handles locked letters
-        if (game.handleLetterInput) {
-          game.handleLetterInput(focusedIndex, e.key.toUpperCase(), answerLength);
-        } else {
-          // Fallback to simple behavior
-          const currentValue = answers[focusedIndex] || '';
-          if (currentValue.length < answerLength) {
-            onUpdateAnswer(focusedIndex, currentValue + e.key.toUpperCase());
-          }
-        }
-      }
-    };
-
-    document.addEventListener('keydown', handleKeyDown);
-
-    return () => {
-      document.removeEventListener('keydown', handleKeyDown);
-    };
-  }, [
+  // Keyboard controls (hardware keyboard — desktop)
+  const {
+    showShortcuts,
+    setShowShortcuts,
+    checkAnswer: _kbCheckAnswer,
+    applyHint: _kbApplyHint,
+  } = useTandemKeyboard({
     focusedIndex,
+    setFocusedIndex,
     answers,
     correctAnswers,
+    puzzle,
+    onUpdateAnswer,
+    onCheckSingleAnswer,
+    onUseHint,
+    hintsUsed,
+    unlockedHints,
+    solved,
+    game,
+    isHardMode,
+    correctAnswerCallback: correctAnswer,
+    incorrectAnswerCallback: incorrectAnswer,
+    setCorrectFlashIndex,
     showRules,
     showHowToPlay,
     showStats,
     showArchive,
     showSettings,
-    solved,
-    puzzle,
-    onUpdateAnswer,
-    onCheckSingleAnswer,
-    correctAnswer,
-    incorrectAnswer,
-    game,
-  ]);
+  });
 
   const handleKeyboardInput = (key) => {
     if (key === 'ARROW_UP') {
@@ -772,6 +688,39 @@ export default function PlayingScreen({
           />
         )}
       </Suspense>
+
+      {/* Keyboard shortcut hint — desktop only */}
+      {solved < 4 && (
+        <div className="hidden lg:block">
+          <button
+            onClick={() => setShowShortcuts(true)}
+            className={cn(
+              'fixed bottom-4 right-4 z-30',
+              'flex items-center gap-1.5 px-2.5 py-1.5',
+              'bg-bg-card/90 dark:bg-gray-800/90 backdrop-blur-sm',
+              'rounded-lg',
+              'text-xs text-gray-400 dark:text-gray-500',
+              'hover:text-gray-600 dark:hover:text-gray-300',
+              'transition-colors duration-150'
+            )}
+            aria-label="Show keyboard shortcuts"
+          >
+            <span>
+              Press{' '}
+              <kbd className="px-1 py-0.5 bg-gray-100 dark:bg-gray-700 rounded text-[10px] font-mono font-medium border border-gray-300 dark:border-gray-600">
+                ?
+              </kbd>{' '}
+              for keyboard shortcuts
+            </span>
+          </button>
+        </div>
+      )}
+
+      {/* Keyboard Shortcuts Modal */}
+      <TandemKeyboardShortcutsModal
+        isOpen={showShortcuts}
+        onClose={() => setShowShortcuts(false)}
+      />
     </>
   );
 }
