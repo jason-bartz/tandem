@@ -30,7 +30,10 @@ function MovieSearchInput({ value, onChange, groupColor, onShuffle, shuffleLoadi
   const [query, setQuery] = useState('');
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(false);
   const [showResults, setShowResults] = useState(false);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
   const searchTimeout = useRef(null);
   const containerRef = useRef(null);
 
@@ -46,9 +49,43 @@ function MovieSearchInput({ value, onChange, groupColor, onShuffle, shuffleLoadi
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  const fetchMovies = async (searchQuery, pageNum, append = false) => {
+    if (append) {
+      setLoadingMore(true);
+    } else {
+      setLoading(true);
+    }
+    try {
+      const response = await fetch(
+        `/api/admin/reel-connections/search?q=${encodeURIComponent(searchQuery)}&page=${pageNum}`,
+        {
+          headers: await authService.getAuthHeaders(),
+        }
+      );
+      const data = await response.json();
+      const movies = data.movies || [];
+      if (append) {
+        setResults((prev) => [...prev, ...movies]);
+      } else {
+        setResults(movies);
+      }
+      setTotalPages(data.totalPages || 0);
+      setPage(pageNum);
+      setShowResults(true);
+    } catch (error) {
+      logger.error('Search error:', error);
+      if (!append) setResults([]);
+    } finally {
+      setLoading(false);
+      setLoadingMore(false);
+    }
+  };
+
   useEffect(() => {
     if (query.trim().length < 1) {
       setResults([]);
+      setPage(1);
+      setTotalPages(0);
       return;
     }
 
@@ -57,24 +94,8 @@ function MovieSearchInput({ value, onChange, groupColor, onShuffle, shuffleLoadi
       clearTimeout(searchTimeout.current);
     }
 
-    searchTimeout.current = setTimeout(async () => {
-      setLoading(true);
-      try {
-        const response = await fetch(
-          `/api/admin/reel-connections/search?q=${encodeURIComponent(query)}`,
-          {
-            headers: await authService.getAuthHeaders(),
-          }
-        );
-        const data = await response.json();
-        setResults(data.movies || []);
-        setShowResults(true);
-      } catch (error) {
-        logger.error('Search error:', error);
-        setResults([]);
-      } finally {
-        setLoading(false);
-      }
+    searchTimeout.current = setTimeout(() => {
+      fetchMovies(query, 1);
     }, 300);
   }, [query]);
 
@@ -194,6 +215,15 @@ function MovieSearchInput({ value, onChange, groupColor, onShuffle, shuffleLoadi
                   </div>
                 </button>
               ))}
+              {page < totalPages && (
+                <button
+                  onClick={() => fetchMovies(query, page + 1, true)}
+                  disabled={loadingMore}
+                  className="w-full py-2.5 text-sm font-bold text-accent-blue hover:bg-accent-blue/10 transition-colors"
+                >
+                  {loadingMore ? 'Loading...' : 'Load More'}
+                </button>
+              )}
             </div>
           )}
         </div>
