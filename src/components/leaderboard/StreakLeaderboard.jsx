@@ -53,7 +53,7 @@ export default function StreakLeaderboard({ gameType }) {
   if (loading) {
     // Skeleton loader
     return (
-      <div className="p-6 space-y-3 animate-pulse">
+      <div className="p-6 space-y-3 skeleton-shimmer">
         {[...Array(10)].map((_, i) => (
           <div
             key={i}
@@ -114,10 +114,10 @@ export default function StreakLeaderboard({ gameType }) {
       {/* User's rank if not in top 10 */}
       {userEntry && userEntry.rank > 10 && (
         <div
-          className={`mt-6 p-4 rounded-xl border-2 ${
+          className={`mt-6 p-4 rounded-xl ${
             highContrast
-              ? 'bg-hc-primary/20 border-hc-border'
-              : 'bg-orange-50 dark:bg-orange-900/20 border-orange-200 dark:border-orange-800'
+              ? 'bg-hc-primary/20 border-2 border-hc-border'
+              : 'bg-orange-50 dark:bg-orange-900/20'
           }`}
         >
           <div className="flex items-center justify-between">
@@ -146,10 +146,10 @@ export default function StreakLeaderboard({ gameType }) {
       {/* Call to action if user hasn't submitted */}
       {!userEntry && user && (
         <div
-          className={`mt-6 p-4 rounded-xl border-2 ${
+          className={`mt-6 p-4 rounded-xl ${
             highContrast
-              ? 'bg-hc-surface border-hc-border'
-              : 'bg-purple-50 dark:bg-purple-900/20 border-purple-200 dark:border-purple-800'
+              ? 'bg-hc-surface border-2 border-hc-border'
+              : 'bg-purple-50 dark:bg-purple-900/20'
           }`}
         >
           <p

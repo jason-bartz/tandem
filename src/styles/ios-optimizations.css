@@ -96,28 +96,7 @@
   background-color: rgba(0, 0, 0, 0.4);
 }
 
-/* Skeleton loading animation */
-@keyframes ios-skeleton-pulse {
-  0% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.4;
-  }
-  100% {
-    opacity: 1;
-  }
-}
-
-.ios-skeleton {
-  animation: ios-skeleton-pulse 1.5s ease-in-out infinite;
-  background: linear-gradient(
-    90deg,
-    rgba(200, 200, 200, 0.2) 0%,
-    rgba(200, 200, 200, 0.3) 50%,
-    rgba(200, 200, 200, 0.2) 100%
-  );
-}
+/* Skeleton loading: use .skeleton-shimmer from globals.css (canonical source) */
 
 /* Bounce animation for loading dots */
 @keyframes ios-bounce {

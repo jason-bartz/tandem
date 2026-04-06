@@ -81,7 +81,7 @@ export default function DailyLeaderboard({ gameType }) {
   if (loading) {
     // Skeleton loader - mobile game best practice
     return (
-      <div className="p-6 space-y-3 animate-pulse">
+      <div className="p-6 space-y-3 skeleton-shimmer">
         {[...Array(10)].map((_, i) => (
           <div
             key={i}
@@ -142,10 +142,10 @@ export default function DailyLeaderboard({ gameType }) {
       {/* User's rank if not in top 10 */}
       {userRank && userRank.rank > 10 && (
         <div
-          className={`mt-6 p-4 rounded-xl border-2 ${
+          className={`mt-6 p-4 rounded-xl ${
             highContrast
-              ? 'bg-hc-primary/20 border-hc-border'
-              : 'bg-sky-50 dark:bg-sky-900/20 border-sky-200 dark:border-sky-800'
+              ? 'bg-hc-primary/20 border-2 border-hc-border'
+              : 'bg-sky-50 dark:bg-sky-900/20'
           }`}
         >
           <div className="flex items-center justify-between">
@@ -178,10 +178,10 @@ export default function DailyLeaderboard({ gameType }) {
       {/* Call to action if user hasn't played */}
       {!userRank && user && (
         <div
-          className={`mt-6 p-4 rounded-xl border-2 ${
+          className={`mt-6 p-4 rounded-xl ${
             highContrast
-              ? 'bg-hc-surface border-hc-border'
-              : 'bg-purple-50 dark:bg-purple-900/20 border-purple-200 dark:border-purple-800'
+              ? 'bg-hc-surface border-2 border-hc-border'
+              : 'bg-purple-50 dark:bg-purple-900/20'
           }`}
         >
           <p

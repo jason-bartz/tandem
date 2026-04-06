@@ -137,13 +137,13 @@ const SkeletonLoader = ({ count = 3, highContrast }) => (
             : 'bg-ghost-white dark:bg-bg-card border-border-main'
         }`}
       >
-        <div className="animate-pulse">
+        <div className="skeleton-shimmer">
           <div className="flex justify-between items-center">
             <div className="flex-1">
-              <div className="h-5 bg-gray-300 dark:bg-gray-600 rounded w-32 mb-2" />
+              <div className="h-5 bg-gray-200 dark:bg-gray-700 rounded w-32 mb-2" />
               <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-24" />
             </div>
-            <div className="w-6 h-6 bg-gray-300 dark:bg-gray-600 rounded-full" />
+            <div className="w-6 h-6 bg-gray-200 dark:bg-gray-700 rounded-full" />
           </div>
         </div>
       </div>

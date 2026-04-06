@@ -379,7 +379,7 @@ export default function SidebarMenu({
                       >
                         {profileLoading && !userAvatar && !username ? (
                           /* Loading skeleton */
-                          <div className="w-full h-full bg-ghost-white/20 animate-pulse" />
+                          <div className="w-full h-full bg-gray-200 dark:bg-gray-700 skeleton-shimmer" />
                         ) : userAvatar ? (
                           /* User's selected avatar */
                           <img
@@ -413,7 +413,7 @@ export default function SidebarMenu({
                         <p className="text-base font-bold text-text-primary truncate">
                           {profileLoading && !username ? (
                             /* Loading skeleton for username */
-                            <span className="inline-block h-4 w-24 bg-gray-300 dark:bg-gray-600 rounded animate-pulse" />
+                            <span className="inline-block h-4 w-24 bg-gray-200 dark:bg-gray-700 rounded skeleton-shimmer" />
                           ) : (
                             <>{username || 'Player'}!</>
                           )}

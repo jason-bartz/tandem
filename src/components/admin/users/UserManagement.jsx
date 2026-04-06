@@ -128,7 +128,7 @@ function MetricCard({ label, value, color = 'text-text-primary' }) {
 
 function LoadingSkeleton() {
   return (
-    <div className="space-y-6 animate-pulse">
+    <div className="space-y-6 skeleton-shimmer">
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
         {[...Array(4)].map((_, i) => (
           <div key={i} className="bg-bg-card rounded-lg border border-border-main p-3 h-16" />

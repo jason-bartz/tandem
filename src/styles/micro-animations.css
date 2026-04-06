@@ -179,33 +179,7 @@ button[aria-label='Close']:not(.no-animation)::before {
    LOADING ANIMATIONS (4.2)
    =========================================== */
 
-/* Enhanced skeleton shimmer */
-.skeleton {
-  background: linear-gradient(
-    90deg,
-    rgba(200, 200, 200, 0.1) 0%,
-    rgba(200, 200, 200, 0.3) 20%,
-    rgba(255, 255, 255, 0.5) 40%,
-    rgba(200, 200, 200, 0.3) 60%,
-    rgba(200, 200, 200, 0.1) 100%
-  );
-  background-size: 1000px 100%;
-  animation: skeletonShimmer 2s ease-in-out infinite;
-}
-
-/* Dark mode skeleton */
-[data-theme='dark'] .skeleton,
-.dark .skeleton {
-  background: linear-gradient(
-    90deg,
-    rgba(100, 100, 100, 0.1) 0%,
-    rgba(100, 100, 100, 0.3) 20%,
-    rgba(150, 150, 150, 0.5) 40%,
-    rgba(100, 100, 100, 0.3) 60%,
-    rgba(100, 100, 100, 0.1) 100%
-  );
-  background-size: 1000px 100%;
-}
+/* Skeleton loading: use .skeleton-shimmer from globals.css (canonical source) */
 
 /* iOS-style spinner */
 .spinner {

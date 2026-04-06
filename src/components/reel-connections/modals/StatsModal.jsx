@@ -150,7 +150,7 @@ export default function StatsModal({ isOpen, onClose }) {
                     {[...Array(5)].map((_, i) => (
                       <div
                         key={i}
-                        className="flex items-center gap-3 p-2 rounded-lg bg-ghost-white/5 animate-pulse"
+                        className="flex items-center gap-3 p-2 rounded-lg bg-gray-200 dark:bg-gray-700 skeleton-shimmer"
                       >
                         <div className="w-6 h-6 bg-ghost-white/10 rounded-lg" />
                         <div className="w-8 h-8 bg-ghost-white/10 rounded-full" />

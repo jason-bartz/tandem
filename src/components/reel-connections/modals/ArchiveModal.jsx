@@ -327,7 +327,10 @@ export default function ArchiveModal({ isOpen, onClose, onSelectDate }) {
         {isLoading ? (
           <div className="grid grid-cols-7 gap-2">
             {[...Array(35)].map((_, i) => (
-              <div key={i} className="aspect-square rounded-lg bg-ghost-white/5 animate-pulse" />
+              <div
+                key={i}
+                className="aspect-square rounded-lg bg-gray-200 dark:bg-gray-700 skeleton-shimmer"
+              />
             ))}
           </div>
         ) : (
