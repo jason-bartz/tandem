@@ -214,13 +214,14 @@ export function useAlchemyKeyboard({
         return;
       }
 
-      // ─── Enter / Space: select focused element, or combine ───
+      // ─── Enter: combine when both slots filled, otherwise select focused element ───
+      // ─── Space: always selects focused element (never combines) ───
       if (key === 'Enter' || key === ' ') {
         e.preventDefault();
-        if (focusIndex >= 0 && focusIndex < sortedElementBank.length) {
-          selectElement?.(sortedElementBank[focusIndex]);
-        } else if (key === 'Enter' && selectedA && selectedB && !isCombining && !isAnimating) {
+        if (key === 'Enter' && selectedA && selectedB && !isCombining && !isAnimating) {
           combineElements?.();
+        } else if (focusIndex >= 0 && focusIndex < sortedElementBank.length) {
+          selectElement?.(sortedElementBank[focusIndex]);
         }
         return;
       }
