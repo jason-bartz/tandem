@@ -13,7 +13,7 @@ import {
   DIFFICULTY_COLORS_HC,
   DIFFICULTY_ORDER,
 } from '@/lib/reel-connections.constants';
-import { playClapperSoundSynthesized, startAmbientTexture, stopAmbientTexture } from '@/lib/sounds';
+import { playClapperSoundSynthesized } from '@/lib/sounds';
 import { useHaptics } from '@/hooks/useHaptics';
 import { useTheme } from '@/contexts/ThemeContext';
 import { formatDateFull } from '@/lib/utils';
@@ -419,9 +419,6 @@ const ReelConnectionsGame = ({ titleFont = '' }) => {
       setShowingCompletedPuzzle(true);
       setShowCompleteScreen(false);
 
-      // Stop ambient (applause + completion sound play from the hook after reveal)
-      stopAmbientTexture();
-
       // After 2 seconds, transition to celebration screen
       const timer = setTimeout(() => {
         setShowingCompletedPuzzle(false);
@@ -456,7 +453,6 @@ const ReelConnectionsGame = ({ titleFont = '' }) => {
     // Close the clapper and play sound
     setClapperClosed(true);
     playClapperSoundSynthesized();
-    startAmbientTexture('reel');
 
     // Delay before starting the game to let the animation play
     setTimeout(() => {

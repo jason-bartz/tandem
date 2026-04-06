@@ -5,6 +5,7 @@ import { Trash2, BrushCleaning } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useTheme } from '@/contexts/ThemeContext';
 import ElementChip from './ElementChip';
+import { FAVORITE_KEY_LABELS } from '@/hooks/useAlchemyKeyboard';
 
 /**
  * EmbeddedFavorites - Embedded favorites section for desktop layout
@@ -21,6 +22,7 @@ export function EmbeddedFavorites({
   maxFavorites = 12,
   recentElements = [],
   firstDiscoveryElements = [],
+  ctrlHeld = false,
 }) {
   const { highContrast } = useTheme();
   const [draggedElement, setDraggedElement] = useState(null);
@@ -125,7 +127,7 @@ export function EmbeddedFavorites({
       )}
     >
       {/* Header */}
-      <div className="flex items-center justify-between px-3 py-2 border-b-2 flex-shrink-0">
+      <div className="flex items-center justify-between px-3 py-2 border-b-2 border-gray-200 dark:border-gray-700 flex-shrink-0">
         <h3 className="font-bold text-sm dark:text-white">
           Favorites ({favoriteElements.size}/{maxFavorites})
         </h3>
@@ -186,13 +188,14 @@ export function EmbeddedFavorites({
           </div>
         ) : (
           <div className="flex flex-wrap gap-2">
-            {favoritesList.map((element) => {
+            {favoritesList.map((element, index) => {
               const isSelected =
                 (selectedA && selectedA.id === element.id) ||
                 (selectedB && selectedB.id === element.id);
               const showNewBadge = recentElements.includes(element.name);
               const isFirstDiscovery = firstDiscoveryElements.includes(element.name);
               const isDragging = draggedElement?.id === element.id;
+              const keyLabel = FAVORITE_KEY_LABELS[index];
 
               return (
                 <div
@@ -200,7 +203,10 @@ export function EmbeddedFavorites({
                   draggable
                   onDragStart={(e) => handleDragStart(e, element)}
                   onDragEnd={handleDragEnd}
-                  className={cn('cursor-grab active:cursor-grabbing', isDragging && 'opacity-50')}
+                  className={cn(
+                    'cursor-grab active:cursor-grabbing relative',
+                    isDragging && 'opacity-50'
+                  )}
                 >
                   <ElementChip
                     element={{ ...element, isFirstDiscovery }}
@@ -210,6 +216,23 @@ export function EmbeddedFavorites({
                     size="small"
                     disableAnimations
                   />
+                  {/* Keyboard shortcut badge - shown while Ctrl is held */}
+                  {ctrlHeld && keyLabel && (
+                    <span
+                      className={cn(
+                        'absolute -top-1.5 -left-1.5 z-10',
+                        'flex items-center justify-center',
+                        'w-5 h-5 rounded-md',
+                        'bg-gray-900 dark:bg-gray-100',
+                        'text-white dark:text-gray-900',
+                        'text-[10px] font-bold leading-none',
+                        'shadow-[2px_2px_0px_rgba(0,0,0,0.2)]',
+                        'pointer-events-none'
+                      )}
+                    >
+                      {keyLabel}
+                    </span>
+                  )}
                 </div>
               );
             })}

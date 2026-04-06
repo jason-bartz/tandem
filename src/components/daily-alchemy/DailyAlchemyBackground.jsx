@@ -2,12 +2,17 @@
 
 import { useTheme } from '@/contexts/ThemeContext';
 import { cn } from '@/lib/utils';
-import { Starfield } from './Starfield';
+import { EvolutionaryBackground } from './EvolutionaryBackground';
 
 /**
- * DailyAlchemyBackground - White background with animated starfield constellation
+ * DailyAlchemyBackground - Evolutionary emoji background that shifts with gameplay progress
  */
-export function DailyAlchemyBackground({ className }) {
+export function DailyAlchemyBackground({
+  className,
+  mode = 'welcome',
+  progress = 0,
+  recentEmojis = [],
+}) {
   const { highContrast } = useTheme();
 
   // For high contrast mode, use solid background
@@ -17,7 +22,7 @@ export function DailyAlchemyBackground({ className }) {
 
   return (
     <div className={cn('absolute inset-0 -z-10 bg-bg-card dark:bg-gray-900', className)}>
-      <Starfield />
+      <EvolutionaryBackground mode={mode} progress={progress} recentEmojis={recentEmojis} />
     </div>
   );
 }

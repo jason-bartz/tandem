@@ -1,8 +1,8 @@
 'use client';
 
-import { useEffect, useState, useRef, useCallback } from 'react';
+import { useEffect, useState, useRef, useCallback, useMemo } from 'react';
 import { AnimatePresence, motion, useMotionValue, useAnimation, animate } from 'framer-motion';
-import { Check, Loader2, ChevronUp, ChevronDown, FolderOpen, Save, X } from 'lucide-react';
+import { Check, Loader2, ChevronUp, ChevronDown, Folder, FolderOpen, Save, X } from 'lucide-react';
 import Image from 'next/image';
 import html2canvas from 'html2canvas';
 import { cn } from '@/lib/utils';
@@ -593,6 +593,7 @@ export function DailyAlchemyGameScreen({
 
   // Creative Mode saves
   onOpenSavesModal,
+  isSavesModalOpen = false,
   isAutoSaving = false,
   autoSaveComplete = false,
   isSlotSwitching = false,
@@ -634,8 +635,14 @@ export function DailyAlchemyGameScreen({
   // Ref for search input (passed to ElementBank for / shortcut)
   const searchInputRef = useRef(null);
 
+  // Ordered list of favorite elements for keyboard shortcuts (Ctrl+1-0,-,=)
+  const favoritesList = useMemo(
+    () => elementBank.filter((el) => favoriteElements.has(el.name)),
+    [elementBank, favoriteElements]
+  );
+
   // Keyboard controls
-  const { focusIndex, showHelp, setShowHelp, keyboardActive } = useAlchemyKeyboard({
+  const { focusIndex, showHelp, setShowHelp, keyboardActive, ctrlHeld } = useAlchemyKeyboard({
     sortedElementBank,
     selectElement,
     selectedA,
@@ -664,6 +671,7 @@ export function DailyAlchemyGameScreen({
     searchQuery,
     onUseHint,
     hintCooldown,
+    favoritesList,
   });
 
   // Handle drag and drop to combination slots
@@ -724,7 +732,7 @@ export function DailyAlchemyGameScreen({
               'disabled:opacity-50 disabled:cursor-not-allowed'
             )}
           >
-            <FolderOpen className="w-4 h-4" />
+            {isSavesModalOpen ? <FolderOpen className="w-4 h-4" /> : <Folder className="w-4 h-4" />}
             <span>Saves</span>
           </button>
 
@@ -838,7 +846,7 @@ export function DailyAlchemyGameScreen({
                 'px-4 py-2.5 rounded-lg flex items-center gap-2',
                 highContrast
                   ? 'bg-hc-warning border-hc-warning'
-                  : 'bg-accent-yellow dark:bg-yellow-600 border-accent-yellow dark:border-yellow-700'
+                  : 'bg-soup-primary/20 dark:bg-green-900/30'
               )}
             >
               <Image
@@ -865,8 +873,8 @@ export function DailyAlchemyGameScreen({
                     'p-1 rounded-lg transition-colors flex-shrink-0',
                     highContrast
                       ? 'hover:bg-hc-surface focus:bg-hc-surface'
-                      : 'hover:bg-yellow-500 dark:hover:bg-yellow-700 focus:bg-yellow-500 dark:focus:bg-yellow-700',
-                    'focus:outline-none focus:ring-2 focus:ring-yellow-800'
+                      : 'hover:bg-soup-primary/30 dark:hover:bg-green-700/40 focus:bg-soup-primary/30 dark:focus:bg-green-700/40',
+                    'focus:outline-none focus:ring-2 focus:ring-green-800'
                   )}
                   aria-label="Dismiss hint"
                 >
@@ -918,6 +926,7 @@ export function DailyAlchemyGameScreen({
               maxFavorites={maxFavorites}
               recentElements={recentElements}
               firstDiscoveryElements={firstDiscoveryElements}
+              ctrlHeld={ctrlHeld}
             />
           </div>
         </div>
@@ -951,6 +960,7 @@ export function DailyAlchemyGameScreen({
             hideDesktopFavorites={true}
             searchInputRef={searchInputRef}
             keyboardFocusIndex={keyboardActive ? focusIndex : -1}
+            ctrlHeld={ctrlHeld}
           />
         </div>
       </div>

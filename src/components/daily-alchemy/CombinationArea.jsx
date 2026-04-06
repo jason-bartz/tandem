@@ -413,7 +413,7 @@ export function CombinationArea({
                   'rounded-lg',
                   highContrast
                     ? 'bg-hc-warning border-hc-warning'
-                    : 'bg-accent-yellow dark:bg-yellow-600 border-accent-yellow dark:border-yellow-700',
+                    : 'bg-soup-primary/20 dark:bg-green-900/30',
                   'flex items-start gap-2'
                 )}
               >
@@ -441,8 +441,8 @@ export function CombinationArea({
                       'p-1 sm:p-1.5 rounded-lg transition-colors flex-shrink-0',
                       highContrast
                         ? 'hover:bg-hc-surface focus:bg-hc-surface'
-                        : 'hover:bg-yellow-500 dark:hover:bg-yellow-700 focus:bg-yellow-500 dark:focus:bg-yellow-700',
-                      'focus:outline-none focus:ring-2 focus:ring-yellow-800'
+                        : 'hover:bg-soup-primary/30 dark:hover:bg-green-700/40 focus:bg-soup-primary/30 dark:focus:bg-green-700/40',
+                      'focus:outline-none focus:ring-2 focus:ring-green-800'
                     )}
                     aria-label="Dismiss hint"
                   >

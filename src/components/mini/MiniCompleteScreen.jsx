@@ -7,7 +7,7 @@ import confetti from 'canvas-confetti';
 import { useHaptics } from '@/hooks/useHaptics';
 import { useTheme } from '@/contexts/ThemeContext';
 
-import { playMiniCompletionSound, stopAmbientTexture } from '@/lib/sounds';
+import { playMiniCompletionSound } from '@/lib/sounds';
 import { useAuth } from '@/contexts/AuthContext';
 import { formatMiniTime, getMiniPuzzleInfoForDate } from '@/lib/miniUtils';
 import { generateMiniShareText } from '@/lib/miniShareText';
@@ -82,7 +82,6 @@ export default function MiniCompleteScreen({
   useEffect(() => {
     // Haptic and sound feedback
     celebration();
-    stopAmbientTexture();
     playMiniCompletionSound();
 
     // Confetti animation (yellow theme)

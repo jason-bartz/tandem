@@ -70,6 +70,8 @@ export function DailyAlchemyCompleteScreen({
   winningCombination,
   onShare,
   onStartFreePlay,
+  onContinueDiscovering,
+  elementCount = 0,
   onViewArchive,
   isArchive = false,
   hintsUsed = 0,
@@ -559,6 +561,33 @@ export function DailyAlchemyCompleteScreen({
             <div className="flex-1 h-[2px] bg-gray-300 dark:bg-gray-600" />
           </motion.div>
 
+          {/* Continue Discovering — import daily elements into creative mode */}
+          {onContinueDiscovering && (
+            <motion.div
+              className="w-full max-w-sm"
+              initial={!reduceMotion ? { opacity: 0, y: 10 } : false}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.6 }}
+            >
+              <button
+                onClick={onContinueDiscovering}
+                className={cn(
+                  'w-full flex flex-col items-center justify-center gap-1 py-3',
+                  'bg-soup-primary text-gray-900',
+                  'rounded-xl font-bold',
+                  'hover:bg-soup-primary/90',
+                  'transition-all duration-150',
+                  highContrast && 'border-2 border-hc-border'
+                )}
+              >
+                <span>Continue Discovering</span>
+                <span className="text-xs font-normal opacity-75">
+                  Take your {elementCount} elements into Creative Mode
+                </span>
+              </button>
+            </motion.div>
+          )}
+
           {/* Creative Mode Button */}
           <motion.button
             onClick={handleFreePlayClick}
@@ -577,7 +606,7 @@ export function DailyAlchemyCompleteScreen({
             )}
             initial={!reduceMotion ? { opacity: 0, y: 10 } : false}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.6 }}
+            transition={{ delay: 0.65 }}
           >
             <span>Play Creative Mode</span>
           </motion.button>
@@ -600,7 +629,7 @@ export function DailyAlchemyCompleteScreen({
             )}
             initial={!reduceMotion ? { opacity: 0, y: 10 } : false}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.65 }}
+            transition={{ delay: 0.7 }}
           >
             {/* Discord Logo */}
             <svg

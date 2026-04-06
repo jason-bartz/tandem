@@ -1,13 +1,7 @@
 'use client';
 import { useState, useEffect, useRef, lazy, Suspense } from 'react';
 import { formatTime, formatDateShort } from '@/lib/utils';
-import {
-  playHintSound,
-  playTandemCorrectSound,
-  playTandemErrorSound,
-  startAmbientTexture,
-  stopAmbientTexture,
-} from '@/lib/sounds';
+import { playHintSound, playTandemCorrectSound, playTandemErrorSound } from '@/lib/sounds';
 import PuzzleRow from './PuzzleRow';
 import HintDisplay from './HintDisplay';
 import HintEarnedToast from './HintEarnedToast';
@@ -83,12 +77,6 @@ export default function PlayingScreen({
   // Scroll to top on mount to ensure proper initial view
   useEffect(() => {
     window.scrollTo(0, 0);
-  }, []);
-
-  // Start/stop ambient texture when playing
-  useEffect(() => {
-    startAmbientTexture('tandem');
-    return () => stopAmbientTexture();
   }, []);
 
   // Check URL parameters for auto-opening settings

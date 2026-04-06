@@ -49,6 +49,7 @@ export function ElementBank({
   hideDesktopFavorites = false, // When true, hides favorites button on desktop (used when embedded favorites is shown)
   searchInputRef = null, // Ref forwarded from parent for keyboard shortcut (/ key)
   keyboardFocusIndex = -1, // Index of keyboard-focused element (-1 = none)
+  ctrlHeld = false, // Whether Ctrl key is held for favorite shortcut badges
 }) {
   const { highContrast } = useTheme();
   const { mediumTap } = useHaptics();
@@ -532,6 +533,7 @@ export function ElementBank({
             onClose={() => onToggleFavoritesPanel?.()}
             recentElements={recentElements}
             firstDiscoveryElements={firstDiscoveryElements}
+            ctrlHeld={ctrlHeld}
           />
         )}
       </div>

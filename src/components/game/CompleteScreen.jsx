@@ -11,7 +11,6 @@ import {
   formatDateFull,
   getRandomCongratulation,
 } from '@/lib/utils';
-import { stopAmbientTexture } from '@/lib/sounds';
 import UnifiedStatsModal from '@/components/stats/UnifiedStatsModal';
 import UnifiedArchiveCalendar from './UnifiedArchiveCalendar';
 import HowToPlayModal from './HowToPlayModal';
@@ -90,12 +89,11 @@ export default function CompleteScreen({
     if (won) {
       setCongratsMessage(getRandomCongratulation());
 
-      // Stop ambient texture and trigger celebration haptics
+      // Trigger celebration haptics
       try {
-        stopAmbientTexture();
-        celebration(); // Trigger haptic celebration pattern
+        celebration();
       } catch (e) {
-        // Sound might fail on some browsers
+        // Haptics might fail on some browsers
       }
 
       // Trigger confetti with sky/teal theme colors (only if reduce motion is disabled)

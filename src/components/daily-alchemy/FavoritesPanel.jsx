@@ -5,6 +5,7 @@ import { X, Trash2, BrushCleaning } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useTheme } from '@/contexts/ThemeContext';
 import ElementChip from './ElementChip';
+import { FAVORITE_KEY_LABELS } from '@/hooks/useAlchemyKeyboard';
 
 /**
  * FavoritesPanel - Panel showing favorite elements
@@ -22,6 +23,7 @@ export function FavoritesPanel({
   onClose,
   recentElements = [],
   firstDiscoveryElements = [],
+  ctrlHeld = false,
 }) {
   const { highContrast } = useTheme();
   const [draggedElement, setDraggedElement] = useState(null);
@@ -146,13 +148,14 @@ export function FavoritesPanel({
           ) : (
             <>
               <div className="flex flex-wrap gap-2 mb-3">
-                {favoritesList.map((element) => {
+                {favoritesList.map((element, index) => {
                   const isSelected =
                     (selectedA && selectedA.id === element.id) ||
                     (selectedB && selectedB.id === element.id);
                   const showNewBadge = recentElements.includes(element.name);
                   const isFirstDiscovery = firstDiscoveryElements.includes(element.name);
                   const isDragging = draggedElement?.id === element.id;
+                  const keyLabel = FAVORITE_KEY_LABELS[index];
 
                   return (
                     <div
@@ -161,7 +164,7 @@ export function FavoritesPanel({
                       onDragStart={(e) => handleDragStart(e, element)}
                       onDragEnd={handleDragEnd}
                       className={cn(
-                        'cursor-grab active:cursor-grabbing',
+                        'cursor-grab active:cursor-grabbing relative',
                         isDragging && 'opacity-50'
                       )}
                     >
@@ -173,6 +176,23 @@ export function FavoritesPanel({
                         size="small"
                         disableAnimations
                       />
+                      {/* Keyboard shortcut badge - shown while Ctrl is held */}
+                      {ctrlHeld && keyLabel && (
+                        <span
+                          className={cn(
+                            'absolute -top-1.5 -left-1.5 z-10',
+                            'flex items-center justify-center',
+                            'w-5 h-5 rounded-md',
+                            'bg-gray-900 dark:bg-gray-100',
+                            'text-white dark:text-gray-900',
+                            'text-[10px] font-bold leading-none',
+                            'shadow-[2px_2px_0px_rgba(0,0,0,0.2)]',
+                            'pointer-events-none'
+                          )}
+                        >
+                          {keyLabel}
+                        </span>
+                      )}
                     </div>
                   );
                 })}

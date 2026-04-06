@@ -939,6 +939,70 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
   }, [loadCreativeSave, activeSaveSlot]);
 
   /**
+   * Start creative mode pre-seeded with elements from a completed daily puzzle.
+   * Unlike startFreePlay, this does NOT load from a save slot — it uses the provided
+   * element bank directly. Autosave will persist to the active slot on future discoveries.
+   */
+  const startFreePlayWithElements = useCallback(
+    (importedElementBank, importedFirstDiscoveryElements = [], targetSlot = null) => {
+      playSoupStartSound();
+
+      // Reset autosave tracking before transitioning
+      setCreativeLoadComplete(false);
+      lastAutoSaveDiscoveryCount.current = 0;
+      lastAutoSaveFirstDiscoveryCount.current = 0;
+
+      // Set the target save slot for autosave
+      if (targetSlot) {
+        setActiveSaveSlot(targetSlot);
+        try {
+          localStorage.setItem(SOUP_STORAGE_KEYS.CREATIVE_ACTIVE_SLOT, String(targetSlot));
+        } catch {
+          // Ignore localStorage errors
+        }
+      }
+
+      setFreePlayMode(true);
+      setIsComplete(false);
+      setHasStarted(true);
+      setSelectedA(null);
+      setSelectedB(null);
+      setLastResult(null);
+      setStartTime(null);
+      setElapsedTime(0);
+
+      // Use the imported element bank directly
+      setElementBank(importedElementBank);
+      discoveredElements.current = new Set(importedElementBank.map((el) => el.name));
+
+      // Reset move tracking — fresh creative session
+      setMovesCount(0);
+      setCombinationPath([]);
+      madeCombinations.current = new Set();
+      setRecentElements([]);
+
+      // Carry over discovery stats from the daily puzzle
+      const nonStarterCount = importedElementBank.filter((el) => !el.isStarter).length;
+      setNewDiscoveries(nonStarterCount);
+      setFirstDiscoveries(importedFirstDiscoveryElements.length);
+      setFirstDiscoveryElements(importedFirstDiscoveryElements);
+
+      // Sync autosave refs with imported state to prevent immediate autosave
+      lastAutoSaveDiscoveryCount.current = nonStarterCount;
+      lastAutoSaveFirstDiscoveryCount.current = importedFirstDiscoveryElements.length;
+
+      // Fresh favorites
+      setFavoriteElements(new Set());
+
+      setGameState(SOUP_GAME_STATES.PLAYING);
+
+      // Mark load as complete — autosave is now safe to run on future discoveries
+      setCreativeLoadComplete(true);
+    },
+    [] // eslint-disable-line react-hooks/exhaustive-deps
+  );
+
+  /**
    * Start co-op mode with a given element bank
    * Called when joining or creating a co-op session
    */
@@ -2594,6 +2658,7 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
     // Actions
     startGame,
     startFreePlay,
+    startFreePlayWithElements,
     loadPuzzle,
     resetGame,
     resumeGame,

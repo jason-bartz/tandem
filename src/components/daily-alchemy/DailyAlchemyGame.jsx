@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
@@ -157,6 +157,7 @@ export function DailyAlchemyGame({ initialDate = null }) {
     // Actions
     startGame,
     startFreePlay,
+    startFreePlayWithElements,
     resetGame,
     resumeGame,
     hasSavedProgress,
@@ -325,6 +326,31 @@ export function DailyAlchemyGame({ initialDate = null }) {
       window.location.reload();
     }
   }, [coop]);
+
+  // Solo: Continue discovering — import daily puzzle elements into creative mode
+  // Finds the first empty save slot; if all slots are full, opens SavesModal to free one up
+  const [pendingContinueDiscovering, setPendingContinueDiscovering] = useState(false);
+
+  const handleContinueDiscovering = useCallback(async () => {
+    const summaries = await loadSlotSummaries();
+
+    // No summaries = unauthenticated user (no cloud saves), just use slot 1
+    if (!summaries || summaries.length === 0) {
+      startFreePlayWithElements(elementBank, firstDiscoveryElements, 1);
+      return;
+    }
+
+    const emptySlot = summaries.find((s) => !s.hasSave);
+
+    if (emptySlot) {
+      startFreePlayWithElements(elementBank, firstDiscoveryElements, emptySlot.slot);
+    } else {
+      // All slots full — open saves modal so user can free one up
+      setPendingContinueDiscovering(true);
+      setSavesModalSaveOnly(false);
+      setShowSavesModal(true);
+    }
+  }, [loadSlotSummaries, startFreePlayWithElements, elementBank, firstDiscoveryElements]);
 
   // Co-op: Handle continuing creative mode together after daily puzzle
   const handleCoopContinueCreative = useCallback(() => {
@@ -516,6 +542,24 @@ export function DailyAlchemyGame({ initialDate = null }) {
     [coop, elementBank, movesCount, firstDiscoveries, firstDiscoveryElements, favoriteElements]
   );
 
+  // ─── Evolutionary background props ────────────────────────────
+  const bgMode = useMemo(() => {
+    if (gameState === SOUP_GAME_STATES.WELCOME) return 'welcome';
+    if (freePlayMode) return 'freeplay';
+    return 'daily';
+  }, [gameState, freePlayMode]);
+
+  const bgProgress = useMemo(() => {
+    if (gameState === SOUP_GAME_STATES.COMPLETE) return 1;
+    if (!parMoves || !elementBank) return 0;
+    return Math.min(1, (elementBank.length - 4) / parMoves);
+  }, [gameState, parMoves, elementBank]);
+
+  const bgRecentEmojis = useMemo(() => {
+    if (!elementBank || elementBank.length === 0) return [];
+    return elementBank.slice(-25).map((e) => e.emoji);
+  }, [elementBank]);
+
   // Render based on game state
   if (serviceUnavailable) {
     return <ServiceOutage />;
@@ -542,7 +586,7 @@ export function DailyAlchemyGame({ initialDate = null }) {
         className="fixed inset-0 flex flex-col overflow-hidden bg-bg-card dark:bg-gray-900"
         style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}
       >
-        <DailyAlchemyBackground />
+        <DailyAlchemyBackground mode={bgMode} progress={bgProgress} recentEmojis={bgRecentEmojis} />
         {/* Main game card - pt-4 for web, pt-safe-ios for iOS notch */}
         {/* Desktop: wider container for side-by-side layout */}
         <div className="flex-1 flex flex-col max-w-md lg:max-w-4xl xl:max-w-5xl w-full mx-auto">
@@ -714,6 +758,7 @@ export function DailyAlchemyGame({ initialDate = null }) {
                       onClearHintMessage={clearHintMessage}
                       // Creative Mode saves
                       onOpenSavesModal={handleOpenSavesModal}
+                      isSavesModalOpen={showSavesModal}
                       isAutoSaving={isAutoSaving}
                       autoSaveComplete={autoSaveComplete}
                       isSlotSwitching={isSlotSwitching}
@@ -760,6 +805,8 @@ export function DailyAlchemyGame({ initialDate = null }) {
                     onShare={getShareText}
                     onPlayAgain={resetGame}
                     onStartFreePlay={startFreePlay}
+                    onContinueDiscovering={!coopMode ? handleContinueDiscovering : undefined}
+                    elementCount={elementBank.length}
                     onViewArchive={() => setShowArchive(true)}
                     isArchive={isArchive}
                     hintsUsed={hintsUsed}
@@ -838,7 +885,19 @@ export function DailyAlchemyGame({ initialDate = null }) {
       />
       <SavesModal
         isOpen={showSavesModal}
-        onClose={() => setShowSavesModal(false)}
+        onClose={() => {
+          setShowSavesModal(false);
+
+          // If user was trying to "Continue Discovering" but all slots were full,
+          // check again after they close the modal (they may have cleared a slot)
+          if (pendingContinueDiscovering) {
+            setPendingContinueDiscovering(false);
+            const emptySlot = slotSummaries.find((s) => !s.hasSave);
+            if (emptySlot) {
+              startFreePlayWithElements(elementBank, firstDiscoveryElements, emptySlot.slot);
+            }
+          }
+        }}
         slotSummaries={slotSummaries}
         activeSaveSlot={activeSaveSlot}
         onSwitchSlot={handleSwitchSlot}

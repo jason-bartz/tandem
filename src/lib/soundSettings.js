@@ -7,7 +7,6 @@ const DEFAULT_SETTINGS = {
   masterEnabled: true,
   sfxEnabled: true,
   keypressEnabled: true,
-  ambientEnabled: false,
   volume: 0.7, // 0-1 scale, maps to gain multiplier
 };
 
@@ -44,9 +43,13 @@ export function updateSoundSettings(updates) {
   cachedSettings = next;
 
   if (typeof window !== 'undefined') {
-    localStorage.setItem(SOUND_SETTINGS_KEY, JSON.stringify(next));
-    // Keep old key in sync for backward compat with isSoundEnabled() checks
-    localStorage.setItem('tandemSound', next.masterEnabled.toString());
+    try {
+      localStorage.setItem(SOUND_SETTINGS_KEY, JSON.stringify(next));
+      // Keep old key in sync for backward compat with isSoundEnabled() checks
+      localStorage.setItem('tandemSound', next.masterEnabled.toString());
+    } catch {
+      // QuotaExceededError - localStorage is full; settings still apply in-memory
+    }
   }
 
   return next;
@@ -62,8 +65,6 @@ export function getVolumeFor(category) {
       return s.sfxEnabled ? s.volume : 0;
     case 'keypress':
       return s.keypressEnabled ? s.volume * 0.6 : 0;
-    case 'ambient':
-      return s.ambientEnabled ? s.volume * 0.05 : 0;
     default:
       return s.volume;
   }

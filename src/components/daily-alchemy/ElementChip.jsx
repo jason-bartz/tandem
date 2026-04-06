@@ -227,7 +227,8 @@ function ElementChipInner({
         !disabled && !draggable && 'cursor-pointer',
         draggable && !disabled && 'cursor-grab active:cursor-grabbing',
         !disabled && ' hover:',
-        isSelected && 'bg-accent-yellow dark:bg-accent-yellow/70',
+        isSelected &&
+          'bg-accent-yellow dark:bg-accent-yellow/30 dark:border-accent-yellow dark:border-[1.5px]',
         isTarget && 'bg-yellow-100 dark:bg-yellow-900/40 border-yellow-500 ring-2 ring-yellow-400',
         disabled && 'opacity-50 cursor-not-allowed',
         isDragging && 'opacity-50',
@@ -360,7 +361,14 @@ function ElementChipInner({
       >
         {element.emoji}
       </span>
-      <span className="relative z-10 text-gray-900 dark:text-white">{element.name}</span>
+      <span
+        className={cn(
+          'relative z-10 text-gray-900 dark:text-white',
+          isSelected && 'dark:text-accent-yellow'
+        )}
+      >
+        {element.name}
+      </span>
     </motion.button>
   );
 }

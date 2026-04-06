@@ -737,7 +737,7 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
                           setSoundSettings({ ...next });
                           lightTap();
                         }}
-                        className={`relative inline-flex h-7 w-14 items-center rounded-full transition-colors duration-200 ${
+                        className={`relative inline-flex h-9 w-[4.5rem] items-center rounded-full transition-colors duration-200 ${
                           highContrast
                             ? soundSettings.keypressEnabled
                               ? 'bg-hc-primary'
@@ -752,96 +752,13 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
                         <span
                           className={`${
                             soundSettings.keypressEnabled
-                              ? 'translate-x-[1.875rem]'
+                              ? 'translate-x-[2.125rem]'
                               : 'translate-x-0.5'
-                          } inline-block h-5 w-5 transform rounded-full transition-transform duration-200 ${
+                          } inline-flex h-7 w-7 items-center justify-center transform rounded-full transition-transform duration-200 ${
                             highContrast ? 'bg-hc-background' : 'bg-ghost-white dark:bg-gray-200'
                           }`}
                         />
                       </button>
-                    </div>
-
-                    {/* Ambient Sounds */}
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p
-                          className={`text-sm ${
-                            highContrast ? 'text-hc-text' : 'text-gray-600 dark:text-gray-300'
-                          }`}
-                        >
-                          Ambient Sounds
-                        </p>
-                        <p
-                          className={`text-xs ${
-                            highContrast ? 'text-hc-text' : 'text-gray-400 dark:text-gray-500'
-                          }`}
-                        >
-                          Subtle background atmosphere
-                        </p>
-                      </div>
-                      <button
-                        onClick={() => {
-                          const next = updateSoundSettings({
-                            ambientEnabled: !soundSettings.ambientEnabled,
-                          });
-                          setSoundSettings({ ...next });
-                          lightTap();
-                        }}
-                        className={`relative inline-flex h-7 w-14 items-center rounded-full transition-colors duration-200 ${
-                          highContrast
-                            ? soundSettings.ambientEnabled
-                              ? 'bg-hc-primary'
-                              : 'bg-hc-surface border-2 border-hc-border'
-                            : soundSettings.ambientEnabled
-                              ? 'bg-green-500'
-                              : 'bg-gray-300 dark:bg-gray-600'
-                        }`}
-                        role="switch"
-                        aria-checked={soundSettings.ambientEnabled}
-                      >
-                        <span
-                          className={`${
-                            soundSettings.ambientEnabled
-                              ? 'translate-x-[1.875rem]'
-                              : 'translate-x-0.5'
-                          } inline-block h-5 w-5 transform rounded-full transition-transform duration-200 ${
-                            highContrast ? 'bg-hc-background' : 'bg-ghost-white dark:bg-gray-200'
-                          }`}
-                        />
-                      </button>
-                    </div>
-
-                    {/* Volume Slider */}
-                    <div className="pt-2">
-                      <div className="flex items-center justify-between mb-1">
-                        <p
-                          className={`text-sm ${
-                            highContrast ? 'text-hc-text' : 'text-gray-600 dark:text-gray-300'
-                          }`}
-                        >
-                          Volume
-                        </p>
-                        <p
-                          className={`text-xs font-medium ${
-                            highContrast ? 'text-hc-text' : 'text-gray-500 dark:text-gray-400'
-                          }`}
-                        >
-                          {Math.round(soundSettings.volume * 100)}%
-                        </p>
-                      </div>
-                      <input
-                        type="range"
-                        min="0"
-                        max="100"
-                        value={Math.round(soundSettings.volume * 100)}
-                        onChange={(e) => {
-                          const next = updateSoundSettings({
-                            volume: parseInt(e.target.value, 10) / 100,
-                          });
-                          setSoundSettings({ ...next });
-                        }}
-                        className="w-full h-2 rounded-full appearance-none cursor-pointer accent-green-500"
-                      />
                     </div>
                   </div>
                 )}

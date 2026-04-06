@@ -5,6 +5,32 @@ import { useEffect, useCallback, useRef, useState } from 'react';
 /**
  * Keyboard shortcut definitions for the help modal
  */
+/**
+ * Maps a key pressed while Ctrl is held to a favorite index (0-based).
+ * Physical key layout: 1 2 3 4 5 6 7 8 9 0 - =
+ * Maps to favorites:   0 1 2 3 4 5 6 7 8 9 10 11
+ */
+const CTRL_KEY_TO_FAVORITE_INDEX = {
+  1: 0,
+  2: 1,
+  3: 2,
+  4: 3,
+  5: 4,
+  6: 5,
+  7: 6,
+  8: 7,
+  9: 8,
+  0: 9,
+  '-': 10,
+  '=': 11,
+};
+
+/**
+ * Labels shown on favorite badges when Ctrl is held.
+ * Matches the physical key layout.
+ */
+export const FAVORITE_KEY_LABELS = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '='];
+
 export const KEYBOARD_SHORTCUTS = [
   {
     category: 'Navigate',
@@ -24,6 +50,13 @@ export const KEYBOARD_SHORTCUTS = [
       { keys: ['Esc'], description: 'Deselect / Dismiss' },
       { keys: ['+', '-'], description: 'Combine / Subtract mode' },
       { keys: ['H'], description: 'Use a hint' },
+    ],
+  },
+  {
+    category: 'Favorites',
+    shortcuts: [
+      { keys: ['Ctrl', '1-0'], description: 'Select favorite 1–10' },
+      { keys: ['Ctrl', '-  ='], description: 'Select favorite 11–12' },
     ],
   },
 ];
@@ -65,13 +98,15 @@ export function useAlchemyKeyboard({
   searchInputRef,
   setSearchQuery,
   searchQuery,
+  favoritesList = [],
 }) {
   const [focusIndex, setFocusIndex] = useState(-1);
   const [showHelp, setShowHelp] = useState(false);
   const [keyboardActive, setKeyboardActive] = useState(false);
+  const [ctrlHeld, setCtrlHeld] = useState(false);
 
   const hasUsedKeyboard = useRef(false);
-  const sortCycleRef = useRef(['newest', 'alphabetical', 'firstDiscoveries', 'mostUsed', 'random']);
+  const sortCycleRef = useRef(['newest', 'alpha', 'most_used', 'first_discoveries', 'random']);
 
   const isSearchFocused = useCallback(() => {
     return document.activeElement === searchInputRef?.current;
@@ -132,6 +167,11 @@ export function useAlchemyKeyboard({
       const key = e.key;
       const isInSearch = isSearchFocused();
 
+      // Track Ctrl held state for visual badges
+      if (key === 'Control') {
+        setCtrlHeld(true);
+      }
+
       // ─── Help modal toggle ───
       if (key === '?' && !isInSearch) {
         e.preventDefault();
@@ -183,6 +223,18 @@ export function useAlchemyKeyboard({
           }
         }
         return;
+      }
+
+      // ─── Ctrl + number: select a favorite element ───
+      if (e.ctrlKey && !e.metaKey && !e.altKey) {
+        const favIndex = CTRL_KEY_TO_FAVORITE_INDEX[key];
+        if (favIndex !== undefined) {
+          e.preventDefault();
+          if (favIndex < favoritesList.length) {
+            selectElement?.(favoritesList[favIndex]);
+          }
+          return;
+        }
       }
 
       // ─── Disabled state ───
@@ -340,14 +392,30 @@ export function useAlchemyKeyboard({
       getNavDirection,
       onUseHint,
       hintCooldown,
+      favoritesList,
     ]
   );
 
-  // Attach global keydown listener
+  // Track Ctrl key held state for favorite shortcut badges
+  const handleKeyUp = useCallback((e) => {
+    if (e.key === 'Control') {
+      setCtrlHeld(false);
+    }
+  }, []);
+
+  // Attach global keydown/keyup listeners
   useEffect(() => {
+    const handleBlur = () => setCtrlHeld(false);
+
     window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [handleKeyDown]);
+    window.addEventListener('keyup', handleKeyUp);
+    window.addEventListener('blur', handleBlur);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('keyup', handleKeyUp);
+      window.removeEventListener('blur', handleBlur);
+    };
+  }, [handleKeyDown, handleKeyUp]);
 
   // Scroll focused element into view
   useEffect(() => {
@@ -370,5 +438,6 @@ export function useAlchemyKeyboard({
     showHelp,
     setShowHelp,
     keyboardActive,
+    ctrlHeld,
   };
 }
