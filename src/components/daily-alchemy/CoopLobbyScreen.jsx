@@ -48,7 +48,7 @@ export function CoopLobbyScreen({
   matchmakingQueuePosition,
   matchmakingWaitTime,
   matchmakingError,
-  onStartMatchmaking,
+  onStartMatchmaking: _onStartMatchmaking,
   onSelectMatchmakingMode,
   onCancelMatchmaking,
   onExtendSearch,
@@ -526,29 +526,6 @@ export function CoopLobbyScreen({
               )}
             >
               Join with Code
-            </button>
-
-            {/* Matchmaking */}
-            <button
-              onClick={onStartMatchmaking}
-              className={cn(
-                'w-full flex items-center justify-center gap-3 py-4',
-                'bg-gradient-to-r from-amber-500 to-orange-500 text-white',
-                '',
-                'rounded-xl font-bold text-lg',
-                '',
-                'hover:from-amber-600 hover:to-orange-600',
-                ' hover:',
-                'active:translate-y-0',
-                'transition-all duration-150',
-                highContrast && 'border-2'
-              )}
-            >
-              <CoopIcon className="w-5 h-5" />
-              Matchmaking
-              <span className="text-[10px] font-bold bg-ghost-white/25 px-1.5 py-0.5 rounded-full uppercase tracking-wide">
-                Beta
-              </span>
             </button>
 
             {/* Terms notice */}

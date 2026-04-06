@@ -80,7 +80,7 @@ export default function UnifiedStatsModal({ isOpen, onClose }) {
               onClick={() => window.location.reload()}
               className={`w-full py-2 rounded-md font-semibold text-sm transition-all ${
                 highContrast
-                  ? 'bg-hc-primary text-hc-text'
+                  ? 'bg-hc-primary text-hc-primary-text'
                   : 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 hover:bg-red-200 dark:hover:bg-red-900/50'
               }`}
             >
@@ -139,7 +139,7 @@ export default function UnifiedStatsModal({ isOpen, onClose }) {
                   onClick={handleOpenAchievements}
                   className={`w-full py-3 px-4 rounded-md font-semibold transition-all duration-200 flex items-center justify-center hover:scale-105 ${
                     highContrast
-                      ? 'bg-hc-primary text-hc-text hover:bg-hc-primary/90'
+                      ? 'bg-hc-primary text-hc-primary-text hover:bg-hc-primary/90'
                       : 'bg-bg-surface text-text-primary dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600'
                   }`}
                 >

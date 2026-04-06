@@ -55,7 +55,7 @@ function TandemGameContainer({ initialPuzzleData }) {
   const timer = useTimer(
     game.gameState === GAME_STATES.PLAYING && !game.hardModeTimeUp && !showTutorial
   );
-  const { theme, toggleTheme } = useTheme();
+  const { theme, toggleTheme, highContrast } = useTheme();
   const { playSound } = useSound();
   const { correctAnswer, incorrectAnswer } = useHaptics();
   const { isMobilePhone, isSmallPhone } = useDeviceType();
@@ -252,7 +252,7 @@ function TandemGameContainer({ initialPuzzleData }) {
 
   if (!onboardingChecked || game.loading) {
     return (
-      <div className="fixed inset-0 w-full h-full overflow-y-auto overflow-x-hidden bg-bg-primary">
+      <div className={`fixed inset-0 w-full h-full overflow-y-auto overflow-x-hidden ${highContrast ? 'bg-hc-background' : 'bg-bg-primary'}`}>
         <div className="min-h-screen flex items-center justify-center py-6 px-4">
           <div className="w-full max-w-md mx-auto relative z-10 my-auto">
             {/* Loading skeleton */}
@@ -265,7 +265,7 @@ function TandemGameContainer({ initialPuzzleData }) {
 
   if (showOnboarding) {
     return (
-      <div className="fixed inset-0 w-full h-full bg-bg-primary">
+      <div className={`fixed inset-0 w-full h-full ${highContrast ? 'bg-hc-background' : 'bg-bg-primary'}`}>
         <OnboardingFlow
           onComplete={() => {
             setShowOnboarding(false);
@@ -280,8 +280,8 @@ function TandemGameContainer({ initialPuzzleData }) {
   // to WelcomeScreen so the other three games remain accessible.
   if (game.error && game.puzzle) {
     return (
-      <div className="fixed inset-0 w-full h-full flex items-center justify-center bg-bg-primary">
-        <div className="bg-ghost-white dark:bg-gray-800 rounded-lg p-8 max-w-md text-center mx-4">
+      <div className={`fixed inset-0 w-full h-full flex items-center justify-center ${highContrast ? 'bg-hc-background' : 'bg-bg-primary'}`}>
+        <div className={`rounded-lg p-8 max-w-md text-center mx-4 ${highContrast ? 'bg-hc-surface border-2 border-hc-border' : 'bg-ghost-white dark:bg-gray-800'}`}>
           <div className="mb-6">
             <Image
               src="/game/tandem/asleep.png"
@@ -291,7 +291,7 @@ function TandemGameContainer({ initialPuzzleData }) {
               className="mx-auto"
             />
           </div>
-          <p className="text-gray-600 dark:text-gray-400 mb-6">{game.error}</p>
+          <p className={`mb-6 ${highContrast ? 'text-hc-text' : 'text-gray-600 dark:text-gray-400'}`}>{game.error}</p>
           <button
             onClick={() => (window.location.href = '/')}
             className="px-6 py-3 bg-sky-600 text-white rounded-xl hover:bg-sky-700 transition-colors"
@@ -304,7 +304,7 @@ function TandemGameContainer({ initialPuzzleData }) {
   }
 
   // White canvas for all states (flat design)
-  const bgClass = 'bg-bg-primary';
+  const bgClass = highContrast ? 'bg-hc-background' : 'bg-bg-primary';
 
   return (
     <div className={`fixed inset-0 w-full h-full overflow-y-auto overflow-x-hidden ${bgClass}`}>

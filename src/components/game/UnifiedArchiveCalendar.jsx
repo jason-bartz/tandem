@@ -675,7 +675,7 @@ export default function UnifiedArchiveCalendar({
                 ${
                   activeTab === 'tandem'
                     ? highContrast
-                      ? 'bg-hc-primary text-white border-hc-border'
+                      ? 'bg-hc-primary text-hc-primary-text border-hc-border'
                       : 'bg-accent-blue text-white border-accent-blue'
                     : highContrast
                       ? 'bg-hc-surface text-hc-text border-hc-border hover:bg-hc-focus'
@@ -704,7 +704,7 @@ export default function UnifiedArchiveCalendar({
                 ${
                   activeTab === 'mini'
                     ? highContrast
-                      ? 'bg-hc-primary text-white border-hc-border'
+                      ? 'bg-hc-primary text-hc-primary-text border-hc-border'
                       : 'bg-accent-yellow text-gray-900 border-accent-yellow'
                     : highContrast
                       ? 'bg-hc-surface text-hc-text border-hc-border hover:bg-hc-focus'
@@ -733,7 +733,7 @@ export default function UnifiedArchiveCalendar({
                 ${
                   activeTab === 'reel'
                     ? highContrast
-                      ? 'bg-hc-primary text-white border-hc-border'
+                      ? 'bg-hc-primary text-hc-primary-text border-hc-border'
                       : 'bg-red-500 text-white border-red-500'
                     : highContrast
                       ? 'bg-hc-surface text-hc-text border-hc-border hover:bg-hc-focus'
@@ -762,7 +762,7 @@ export default function UnifiedArchiveCalendar({
                 ${
                   activeTab === 'soup'
                     ? highContrast
-                      ? 'bg-hc-primary text-white border-hc-border'
+                      ? 'bg-hc-primary text-hc-primary-text border-hc-border'
                       : 'bg-green-500 text-white border-green-500'
                     : highContrast
                       ? 'bg-hc-surface text-hc-text border-hc-border hover:bg-hc-focus'

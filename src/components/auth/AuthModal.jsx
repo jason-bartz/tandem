@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
+import { useTheme } from '@/contexts/ThemeContext';
 import { Capacitor } from '@capacitor/core';
 import LeftSidePanel from '@/components/shared/LeftSidePanel';
 import logger from '@/lib/logger';
@@ -37,6 +38,7 @@ export default function AuthModal({
     initialMessageType === 'success' ? initialMessage : null
   );
 
+  const { highContrast } = useTheme();
   const {
     signUp,
     signIn,
@@ -305,10 +307,18 @@ export default function AuthModal({
     >
       {/* Success message */}
       {successMessage && (
-        <div className="mb-4 p-3 bg-green-50 dark:bg-green-900/20 border-2 border-green-200 dark:border-green-800 rounded-lg relative">
+        <div
+          className={`mb-4 p-3 border-2 rounded-lg relative ${
+            highContrast
+              ? 'bg-hc-surface border-hc-success text-hc-success-text'
+              : 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800'
+          }`}
+        >
           <button
             onClick={() => setSuccessMessage(null)}
-            className="absolute top-2 right-2 text-accent-green hover:opacity-70"
+            className={`absolute top-2 right-2 hover:opacity-70 ${
+              highContrast ? 'text-hc-success' : 'text-accent-green'
+            }`}
             aria-label="Close message"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -320,14 +330,26 @@ export default function AuthModal({
               />
             </svg>
           </button>
-          <p className="text-sm text-accent-green pr-6">{successMessage}</p>
+          <p
+            className={`text-sm pr-6 ${highContrast ? 'text-hc-success' : 'text-accent-green'}`}
+          >
+            {successMessage}
+          </p>
         </div>
       )}
 
       {/* Error message */}
       {error && (
-        <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 border-2 border-red-200 dark:border-red-800 rounded-lg">
-          <p className="text-sm text-accent-red">{error}</p>
+        <div
+          className={`mb-4 p-3 border-2 rounded-lg ${
+            highContrast
+              ? 'bg-hc-surface border-hc-error'
+              : 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800'
+          }`}
+        >
+          <p className={`text-sm ${highContrast ? 'text-hc-error' : 'text-accent-red'}`}>
+            {error}
+          </p>
         </div>
       )}
 
@@ -341,7 +363,11 @@ export default function AuthModal({
         aria-label={mode === 'signup' ? 'Sign up with Google' : 'Sign in with Google'}
         className={`w-full p-4 rounded-lg border-2 transition-all flex items-center justify-center gap-3 mb-4 ${
           loading ? 'opacity-50 cursor-not-allowed' : 'hover:opacity-90'
-        } bg-bg-surface dark:bg-bg-card text-text-primary border-border-main`}
+        } ${
+          highContrast
+            ? 'bg-hc-surface text-hc-text border-hc-border'
+            : 'bg-bg-surface dark:bg-bg-card text-text-primary border-border-main'
+        }`}
       >
         {loading ? (
           <div className="animate-spin rounded-full h-5 w-5 border-2 border-gray-700 border-t-transparent dark:border-gray-200 dark:border-t-transparent"></div>
@@ -444,7 +470,11 @@ export default function AuthModal({
             id="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full px-4 py-3 border-2 border-border-main rounded-lg focus:border-primary focus:outline-none bg-bg-surface dark:bg-bg-card text-text-primary"
+            className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none ${
+              highContrast
+                ? 'bg-hc-surface border-hc-border text-hc-text focus:border-hc-focus ring-hc-focus'
+                : 'border-border-main bg-bg-surface dark:bg-bg-card text-text-primary focus:border-primary'
+            }`}
             placeholder="you@example.com"
             required
           />
@@ -476,7 +506,11 @@ export default function AuthModal({
               id="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-3 border-2 border-border-main rounded-lg focus:border-primary focus:outline-none bg-bg-surface dark:bg-bg-card text-text-primary"
+              className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none ${
+                highContrast
+                  ? 'bg-hc-surface border-hc-border text-hc-text focus:border-hc-focus ring-hc-focus'
+                  : 'border-border-main bg-bg-surface dark:bg-bg-card text-text-primary focus:border-primary'
+              }`}
               placeholder="••••••••"
               minLength={6}
               required
@@ -496,7 +530,11 @@ export default function AuthModal({
         <button
           type="submit"
           disabled={loading}
-          className="w-full p-4 text-white rounded-md text-base font-bold cursor-pointer transition-all tracking-wider disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none bg-accent-pink dark: hover:dark:hover:"
+          className={`w-full p-4 rounded-md text-base font-bold cursor-pointer transition-all tracking-wider disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none ${
+            highContrast
+              ? 'bg-hc-primary text-hc-primary-text border-2 border-hc-border'
+              : 'text-white bg-accent-pink dark: hover:dark:hover:'
+          }`}
         >
           {loading
             ? 'Please wait...'

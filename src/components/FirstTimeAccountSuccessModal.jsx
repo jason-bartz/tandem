@@ -193,7 +193,7 @@ export default function FirstTimeAccountSuccessModal({ isOpen, onClose, userId }
               >
                 <span
                   className={`w-5 h-5 flex-shrink-0 flex items-center justify-center rounded-full ${
-                    highContrast ? 'bg-hc-primary text-white' : 'bg-purple-500 text-white'
+                    highContrast ? 'bg-hc-primary text-hc-primary-text' : 'bg-purple-500 text-white'
                   }`}
                 >
                   <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -349,7 +349,7 @@ export default function FirstTimeAccountSuccessModal({ isOpen, onClose, userId }
               isSaving || !username.trim() ? 'opacity-50 cursor-not-allowed' : ''
             } ${
               highContrast
-                ? 'bg-hc-primary text-white border-hc-border hover:bg-hc-focus'
+                ? 'bg-hc-primary text-hc-primary-text border-hc-border hover:bg-hc-focus'
                 : 'bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:'
             }`}
           >

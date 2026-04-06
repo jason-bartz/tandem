@@ -15,7 +15,7 @@ import logger from '@/lib/logger';
 export default function GameContainer() {
   const game = useGame();
   const timer = useTimer(game.gameState === GAME_STATES.PLAYING);
-  const { theme, toggleTheme, isAuto, currentState } = useTheme();
+  const { theme, toggleTheme, isAuto, currentState, highContrast } = useTheme();
   const { playSound } = useSound();
 
   useMidnightRefresh(() => {
@@ -47,7 +47,7 @@ export default function GameContainer() {
 
   if (game.loading) {
     return (
-      <div className="fixed inset-0 w-full h-full flex items-center justify-center bg-bg-primary">
+      <div className={`fixed inset-0 w-full h-full flex items-center justify-center ${highContrast ? 'bg-hc-background' : 'bg-bg-primary'}`}>
         <LoadingSpinner size="large" text="Loading puzzle..." color="border-accent-blue" />
       </div>
     );
@@ -55,10 +55,10 @@ export default function GameContainer() {
 
   if (game.error) {
     return (
-      <div className="fixed inset-0 w-full h-full flex items-center justify-center bg-bg-primary">
-        <div className="bg-ghost-white dark:bg-gray-800 rounded-lg p-8 max-w-md text-center mx-4">
-          <h2 className="text-2xl font-bold mb-4 text-gray-800 dark:text-gray-200">Oops!</h2>
-          <p className="text-gray-600 dark:text-gray-400 mb-6">{game.error}</p>
+      <div className={`fixed inset-0 w-full h-full flex items-center justify-center ${highContrast ? 'bg-hc-background' : 'bg-bg-primary'}`}>
+        <div className={`rounded-lg p-8 max-w-md text-center mx-4 ${highContrast ? 'bg-hc-surface border-2 border-hc-border' : 'bg-ghost-white dark:bg-gray-800'}`}>
+          <h2 className={`text-2xl font-bold mb-4 ${highContrast ? 'text-hc-text' : 'text-gray-800 dark:text-gray-200'}`}>Oops!</h2>
+          <p className={`mb-6 ${highContrast ? 'text-hc-text' : 'text-gray-600 dark:text-gray-400'}`}>{game.error}</p>
           <button
             onClick={game.loadPuzzle}
             className="px-6 py-3 bg-sky-600 text-white rounded-xl hover:bg-sky-700 transition-colors"
@@ -72,7 +72,7 @@ export default function GameContainer() {
 
   // Main container with solid background
   return (
-    <div className={`fixed inset-0 w-full h-full overflow-auto bg-bg-primary ${theme}`}>
+    <div className={`fixed inset-0 w-full h-full overflow-auto ${highContrast ? 'bg-hc-background' : 'bg-bg-primary'} ${theme}`}>
       <div className="min-h-screen flex items-center justify-center p-4 pb-12">
         <div className="w-full max-w-md h-[90vh] sm:h-auto flex flex-col">
           {game.gameState === GAME_STATES.WELCOME && (

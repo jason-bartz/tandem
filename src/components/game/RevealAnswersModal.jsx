@@ -24,7 +24,7 @@ export default function RevealAnswersModal({ isOpen, onClose, puzzle }) {
           onClick={onClose}
           className={`w-full py-4 rounded-[18px] border-2 font-black text-lg transition-all ${
             highContrast
-              ? 'bg-hc-primary text-white border-hc-border hover:'
+              ? 'bg-hc-primary text-hc-primary-text border-hc-border hover:bg-hc-focus'
               : 'bg-accent-blue text-white border-gray-800 dark:border-gray-600 dark: hover:'
           }`}
         >

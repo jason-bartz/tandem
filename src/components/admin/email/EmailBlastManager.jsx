@@ -708,10 +708,10 @@ Use blank lines for paragraph breaks."
               Recipients
             </label>
 
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-2">
               <button
                 onClick={() => setRecipientType('all')}
-                className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-bold transition-colors ${
+                className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-bold transition-colors whitespace-nowrap ${
                   recipientType === 'all'
                     ? 'bg-accent-blue text-white'
                     : 'bg-bg-card text-text-secondary hover:bg-gray-200 dark:hover:bg-gray-700'
@@ -722,7 +722,7 @@ Use blank lines for paragraph breaks."
               </button>
               <button
                 onClick={() => setRecipientType('manual')}
-                className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-bold transition-colors ${
+                className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-bold transition-colors whitespace-nowrap ${
                   recipientType === 'manual'
                     ? 'bg-accent-blue text-white'
                     : 'bg-bg-card text-text-secondary hover:bg-gray-200 dark:hover:bg-gray-700'
@@ -732,7 +732,7 @@ Use blank lines for paragraph breaks."
                 Manual
               </button>
               <label
-                className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-bold cursor-pointer transition-colors ${
+                className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-bold cursor-pointer transition-colors whitespace-nowrap ${
                   recipientType === 'import'
                     ? 'bg-accent-blue text-white'
                     : 'bg-bg-card text-text-secondary hover:bg-gray-200 dark:hover:bg-gray-700'

@@ -92,14 +92,15 @@ export default function ShareButton({ shareText, className = '' }) {
         onClick={handleShare}
         className={`
           share-button
-          w-full py-3 px-4
-          rounded-md font-semibold
-          transition-all border-2
+          w-full h-14 px-4
+          rounded-md font-bold
+          transition-all duration-200
           flex items-center justify-center gap-2
+          hover:scale-105
           ${
             highContrast
-              ? 'bg-hc-success text-hc-success-text border-hc-border hover:bg-hc-focus'
-              : 'bg-accent-green text-white dark: hover:dark:hover:'
+              ? 'bg-hc-success text-hc-success-text border-2 border-hc-border hover:bg-hc-focus'
+              : 'bg-accent-green text-gray-900'
           }
           ${showSuccessBurst && !reduceMotion ? 'share-success' : ''}
           ${!copied && !error && !reduceMotion ? 'animate-attention-pulse' : ''}

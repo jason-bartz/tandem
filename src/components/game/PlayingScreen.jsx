@@ -503,7 +503,7 @@ export default function PlayingScreen({
                       animate={{ opacity: 1, y: 0 }}
                       className={`text-center py-1.5 px-3 rounded-md text-xs font-bold mt-2 ${
                         highContrast
-                          ? 'bg-hc-error text-white'
+                          ? 'bg-hc-error text-hc-error-text'
                           : 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300'
                       }`}
                     >
@@ -595,8 +595,12 @@ export default function PlayingScreen({
                         focusedIndex !== null &&
                         !correctAnswers[focusedIndex] &&
                         answers[focusedIndex]?.trim()
-                          ? 'bg-primary text-white hover:bg-primary-hover hover:scale-105'
-                          : 'bg-gray-200 dark:bg-gray-700 text-text-muted'
+                          ? highContrast
+                              ? 'bg-hc-primary text-hc-primary-text border-2 border-hc-border hover:scale-105'
+                              : 'bg-primary text-white hover:bg-primary-hover hover:scale-105'
+                          : highContrast
+                            ? 'bg-hc-surface text-hc-text border-2 border-hc-border'
+                            : 'bg-gray-200 dark:bg-gray-700 text-text-muted'
                       }`}
                       animate={
                         showSecondHintCelebration
@@ -633,7 +637,7 @@ export default function PlayingScreen({
                         }}
                         className={`px-6 py-3 font-bold rounded-md text-base transition-all duration-200 hover:scale-105 ${
                           highContrast
-                            ? 'bg-hc-warning text-black border-2 border-hc-border'
+                            ? 'bg-hc-warning text-hc-warning-text border-2 border-hc-border'
                             : 'bg-flat-accent text-gray-900 dark:text-gray-900'
                         } disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden whitespace-nowrap`}
                         disabled={focusedIndex === null || correctAnswers[focusedIndex]}
@@ -694,7 +698,7 @@ export default function PlayingScreen({
                     unlockedHints === 1 &&
                     solved >= 1 &&
                     hintsUsed < unlockedHints && (
-                      <p className="text-xs text-center text-gray-500 dark:text-gray-400">
+                      <p className={`text-xs text-center ${highContrast ? 'text-hc-text' : 'text-gray-500 dark:text-gray-400'}`}>
                         Get 1 more correct answer to unlock another hint!
                       </p>
                     )}

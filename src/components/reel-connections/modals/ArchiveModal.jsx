@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import ReelConnectionsModal from './ReelConnectionsModal';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import storageService from '@/core/storage/storageService';
+import { useTheme } from '@/contexts/ThemeContext';
 import logger from '@/lib/logger';
 
 const STORAGE_KEY = 'reel-connections-stats';
@@ -14,6 +15,7 @@ const STORAGE_KEY = 'reel-connections-stats';
  * No paywall - all archive puzzles are free
  */
 export default function ArchiveModal({ isOpen, onClose, onSelectDate }) {
+  const { highContrast } = useTheme();
   const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
   const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
   const [puzzleData, setPuzzleData] = useState({});
@@ -232,11 +234,17 @@ export default function ArchiveModal({ isOpen, onClose, onSelectDate }) {
                         min-h-[44px] aspect-square rounded-lg
                         transition-all duration-200
                         ${
-                          isToday
-                            ? 'bg-[#ffce00] text-[#0f0f1e] font-bold border-2 border-white'
-                            : isInteractive
-                              ? 'text-white/90 hover:bg-ghost-white/10 active:scale-95 cursor-pointer'
-                              : 'text-white/30 cursor-not-allowed'
+                          highContrast
+                            ? isToday
+                              ? 'bg-hc-primary text-hc-primary-text font-bold border-2 border-hc-border'
+                              : isInteractive
+                                ? 'text-hc-text hover:bg-hc-surface active:scale-95 cursor-pointer'
+                                : 'text-hc-text/40 cursor-not-allowed'
+                            : isToday
+                              ? 'bg-[#ffce00] text-[#0f0f1e] font-bold border-2 border-white'
+                              : isInteractive
+                                ? 'text-white/90 hover:bg-ghost-white/10 active:scale-95 cursor-pointer'
+                                : 'text-white/30 cursor-not-allowed'
                         }
                     `}
           style={{
@@ -253,16 +261,20 @@ export default function ArchiveModal({ isOpen, onClose, onSelectDate }) {
               className={`
                             w-2.5 h-2.5 rounded-full
                             ${
-                              isCompleted
-                                ? 'bg-green-400'
-                                : 'border-2 border-white/50 bg-transparent'
+                              highContrast
+                                ? isCompleted
+                                  ? 'bg-hc-success'
+                                  : 'border-2 border-hc-border bg-transparent'
+                                : isCompleted
+                                  ? 'bg-green-400'
+                                  : 'border-2 border-white/50 bg-transparent'
                             }
                         `}
             />
           )}
 
           {/* Grey dot for no puzzle */}
-          {!hasPuzzle && <div className="w-2 h-2 rounded-full bg-ghost-white/20" />}
+          {!hasPuzzle && <div className={`w-2 h-2 rounded-full ${highContrast ? 'bg-hc-surface' : 'bg-ghost-white/20'}`} />}
         </button>
       );
     }
@@ -282,9 +294,13 @@ export default function ArchiveModal({ isOpen, onClose, onSelectDate }) {
                             w-10 h-10 rounded-xl border-2 flex items-center justify-center
                             transition-all
                             ${
-                              !canGoPrevious
-                                ? 'opacity-30 cursor-not-allowed border-white/20 text-white/30'
-                                : 'border-white/30 text-white/80 hover:bg-ghost-white/10 active:scale-95'
+                              highContrast
+                                ? !canGoPrevious
+                                  ? 'opacity-30 cursor-not-allowed border-hc-border text-hc-text/40'
+                                  : 'border-hc-border text-hc-text hover:bg-hc-surface active:scale-95'
+                                : !canGoPrevious
+                                  ? 'opacity-30 cursor-not-allowed border-white/20 text-white/30'
+                                  : 'border-white/30 text-white/80 hover:bg-ghost-white/10 active:scale-95'
                             }
                         `}
             aria-label="Previous month"
@@ -292,7 +308,7 @@ export default function ArchiveModal({ isOpen, onClose, onSelectDate }) {
             <ChevronLeft className="w-5 h-5" />
           </button>
 
-          <div className="text-lg font-bold text-white">
+          <div className={`text-lg font-bold ${highContrast ? 'text-hc-text' : 'text-white'}`}>
             {monthNames[currentMonth]} {currentYear}
           </div>
 
@@ -303,9 +319,13 @@ export default function ArchiveModal({ isOpen, onClose, onSelectDate }) {
                             w-10 h-10 rounded-xl border-2 flex items-center justify-center
                             transition-all
                             ${
-                              !canGoNext
-                                ? 'opacity-30 cursor-not-allowed border-white/20 text-white/30'
-                                : 'border-white/30 text-white/80 hover:bg-ghost-white/10 active:scale-95'
+                              highContrast
+                                ? !canGoNext
+                                  ? 'opacity-30 cursor-not-allowed border-hc-border text-hc-text/40'
+                                  : 'border-hc-border text-hc-text hover:bg-hc-surface active:scale-95'
+                                : !canGoNext
+                                  ? 'opacity-30 cursor-not-allowed border-white/20 text-white/30'
+                                  : 'border-white/30 text-white/80 hover:bg-ghost-white/10 active:scale-95'
                             }
                         `}
             aria-label="Next month"
@@ -317,7 +337,7 @@ export default function ArchiveModal({ isOpen, onClose, onSelectDate }) {
         {/* Day Names */}
         <div className="grid grid-cols-7 gap-1">
           {dayNames.map((name) => (
-            <div key={name} className="text-center text-xs font-semibold text-white/50 py-2">
+            <div key={name} className={`text-center text-xs font-semibold py-2 ${highContrast ? 'text-hc-text' : 'text-white/50'}`}>
               {name}
             </div>
           ))}
@@ -329,7 +349,7 @@ export default function ArchiveModal({ isOpen, onClose, onSelectDate }) {
             {[...Array(35)].map((_, i) => (
               <div
                 key={i}
-                className="aspect-square rounded-lg bg-gray-200 dark:bg-gray-700 skeleton-shimmer"
+                className={`aspect-square rounded-lg skeleton-shimmer ${highContrast ? 'bg-hc-surface border-2 border-hc-border' : 'bg-gray-200 dark:bg-gray-700'}`}
               />
             ))}
           </div>
@@ -338,18 +358,18 @@ export default function ArchiveModal({ isOpen, onClose, onSelectDate }) {
         )}
 
         {/* Legend */}
-        <div className="flex flex-wrap gap-4 text-xs pt-4 border-t border-white/10">
+        <div className={`flex flex-wrap gap-4 text-xs pt-4 border-t ${highContrast ? 'border-hc-border' : 'border-white/10'}`}>
           <div className="flex items-center gap-1.5">
-            <div className="w-2.5 h-2.5 rounded-full bg-green-400" />
-            <span className="text-white/60">Completed</span>
+            <div className={`w-2.5 h-2.5 rounded-full ${highContrast ? 'bg-hc-success' : 'bg-green-400'}`} />
+            <span className={highContrast ? 'text-hc-text' : 'text-white/60'}>Completed</span>
           </div>
           <div className="flex items-center gap-1.5">
-            <div className="w-2.5 h-2.5 rounded-full border-2 border-white/50 bg-transparent" />
-            <span className="text-white/60">Not Played</span>
+            <div className={`w-2.5 h-2.5 rounded-full border-2 bg-transparent ${highContrast ? 'border-hc-border' : 'border-white/50'}`} />
+            <span className={highContrast ? 'text-hc-text' : 'text-white/60'}>Not Played</span>
           </div>
           <div className="flex items-center gap-1.5">
-            <div className="w-2 h-2 rounded-full bg-ghost-white/20" />
-            <span className="text-white/60">Unavailable</span>
+            <div className={`w-2 h-2 rounded-full ${highContrast ? 'bg-hc-surface' : 'bg-ghost-white/20'}`} />
+            <span className={highContrast ? 'text-hc-text' : 'text-white/60'}>Unavailable</span>
           </div>
         </div>
       </div>

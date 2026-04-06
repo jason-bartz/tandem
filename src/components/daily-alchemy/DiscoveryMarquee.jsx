@@ -4,6 +4,33 @@ import { useEffect, useState, useRef } from 'react';
 import { cn } from '@/lib/utils';
 import { useTheme } from '@/contexts/ThemeContext';
 import { getSupabaseBrowserClient } from '@/lib/supabase/client';
+import { containsProfanity } from '@/utils/validation/profanityFilter';
+
+const REDACTED_ELEMENT = '█████ REDACTED';
+const REDACTED_EMOJI = '';
+
+const ANONYMOUS_NAMES = [
+  'Anonymous',
+  'Unknown Player',
+  'Bashful Player',
+  'Unnamed Explorer',
+  'Mystery Alchemist',
+  'Secret Scientist',
+  'Hidden Genius',
+  'Incognito Player',
+  'Shy Discoverer',
+  'Nameless Wizard',
+  'Quiet Tinkerer',
+  'Shadow Alchemist',
+  'Elusive Explorer',
+  'Covert Chemist',
+  'Undercover Player',
+  'Masked Inventor',
+  'Enigmatic Explorer',
+  'Humble Alchemist',
+  'Silent Genius',
+  'Mysterious Stranger',
+];
 
 const DISCOVERY_LIMIT = 50;
 
@@ -121,9 +148,10 @@ export default function DiscoveryMarquee() {
 }
 
 function formatDiscovery(row) {
+  const flagged = containsProfanity(row.result_element);
   return {
-    element: row.result_element,
-    emoji: row.result_emoji || '✨',
-    username: row.username || 'Anonymous',
+    element: flagged ? REDACTED_ELEMENT : row.result_element,
+    emoji: flagged ? REDACTED_EMOJI : row.result_emoji || '✨',
+    username: row.username || ANONYMOUS_NAMES[Math.floor(Math.random() * ANONYMOUS_NAMES.length)],
   };
 }

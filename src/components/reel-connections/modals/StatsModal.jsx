@@ -9,6 +9,7 @@ import { useReelConnectionsStats } from '@/hooks/useReelConnectionsStats';
 import { useAuth } from '@/contexts/AuthContext';
 import { capacitorFetch, getApiUrl } from '@/lib/api-config';
 import { Trophy, Clock, Flame, Target, User } from 'lucide-react';
+import { useTheme } from '@/contexts/ThemeContext';
 import logger from '@/lib/logger';
 
 /**
@@ -20,6 +21,7 @@ import logger from '@/lib/logger';
 export default function StatsModal({ isOpen, onClose }) {
   const { stats, isLoaded, getAverageTimeMs, formatTime } = useReelConnectionsStats();
   const { user } = useAuth();
+  const { highContrast } = useTheme();
   const [showLeaderboard, setShowLeaderboard] = useState(false);
   const [activeTab, setActiveTab] = useState('daily');
   const [leaderboard, setLeaderboard] = useState([]);
@@ -82,6 +84,7 @@ export default function StatsModal({ isOpen, onClose }) {
               value={isLoaded ? stats.gamesPlayed : '-'}
               label="Played"
               color="bg-accent-yellow"
+              highContrast={highContrast}
             />
 
             {/* Average Time */}
@@ -90,6 +93,7 @@ export default function StatsModal({ isOpen, onClose }) {
               value={isLoaded ? (averageTime > 0 ? formatTime(averageTime) : '--:--') : '-'}
               label="Avg Time"
               color="bg-[#7ed957]"
+              highContrast={highContrast}
             />
 
             {/* Current Streak */}
@@ -98,6 +102,7 @@ export default function StatsModal({ isOpen, onClose }) {
               value={isLoaded ? stats.currentStreak : '-'}
               label="Current Streak"
               color="bg-[#ff5757]"
+              highContrast={highContrast}
             />
 
             {/* Best Streak */}
@@ -106,6 +111,7 @@ export default function StatsModal({ isOpen, onClose }) {
               value={isLoaded ? stats.bestStreak : '-'}
               label="Best Streak"
               color="bg-[#cb6ce6]"
+              highContrast={highContrast}
             />
           </div>
 
@@ -113,20 +119,28 @@ export default function StatsModal({ isOpen, onClose }) {
           {!showLeaderboard ? (
             <button
               onClick={() => setShowLeaderboard(true)}
-              className="w-full py-4 bg-accent-blue rounded-xl hover:scale-105 transition-all text-gray-800 font-black text-lg capitalize tracking-wide"
+              className={`w-full py-4 rounded-xl hover:scale-105 transition-all font-black text-lg capitalize tracking-wide ${
+                highContrast
+                  ? 'bg-hc-primary text-hc-primary-text border-2 border-hc-border'
+                  : 'bg-accent-blue text-gray-800'
+              }`}
             >
               View Leaderboard
             </button>
           ) : (
-            <div className="bg-ghost-white/5 rounded-xl overflow-hidden">
+            <div className={`rounded-xl overflow-hidden ${highContrast ? 'bg-hc-surface border-2 border-hc-border' : 'bg-ghost-white/5'}`}>
               {/* Tab Navigation */}
-              <div className="flex border-b-2 border-white/10">
+              <div className={`flex border-b-2 ${highContrast ? 'border-hc-border' : 'border-white/10'}`}>
                 <button
                   onClick={() => setActiveTab('daily')}
                   className={`flex-1 px-4 py-3 font-bold text-sm transition-all ${
-                    activeTab === 'daily'
-                      ? 'bg-accent-yellow text-gray-800'
-                      : 'text-white/60 hover:text-white hover:bg-ghost-white/5'
+                    highContrast
+                      ? activeTab === 'daily'
+                        ? 'bg-hc-primary text-hc-primary-text'
+                        : 'text-hc-text hover:bg-hc-surface'
+                      : activeTab === 'daily'
+                        ? 'bg-accent-yellow text-gray-800'
+                        : 'text-white/60 hover:text-white hover:bg-ghost-white/5'
                   }`}
                 >
                   Today
@@ -134,9 +148,13 @@ export default function StatsModal({ isOpen, onClose }) {
                 <button
                   onClick={() => setActiveTab('streak')}
                   className={`flex-1 px-4 py-3 font-bold text-sm transition-all ${
-                    activeTab === 'streak'
-                      ? 'bg-accent-yellow text-gray-800'
-                      : 'text-white/60 hover:text-white hover:bg-ghost-white/5'
+                    highContrast
+                      ? activeTab === 'streak'
+                        ? 'bg-hc-primary text-hc-primary-text'
+                        : 'text-hc-text hover:bg-hc-surface'
+                      : activeTab === 'streak'
+                        ? 'bg-accent-yellow text-gray-800'
+                        : 'text-white/60 hover:text-white hover:bg-ghost-white/5'
                   }`}
                 >
                   Best Streaks
@@ -150,21 +168,21 @@ export default function StatsModal({ isOpen, onClose }) {
                     {[...Array(5)].map((_, i) => (
                       <div
                         key={i}
-                        className="flex items-center gap-3 p-2 rounded-lg bg-gray-200 dark:bg-gray-700 skeleton-shimmer"
+                        className={`flex items-center gap-3 p-2 rounded-lg skeleton-shimmer ${highContrast ? 'bg-hc-surface border-2 border-hc-border' : 'bg-gray-200 dark:bg-gray-700'}`}
                       >
-                        <div className="w-6 h-6 bg-ghost-white/10 rounded-lg" />
-                        <div className="w-8 h-8 bg-ghost-white/10 rounded-full" />
-                        <div className="flex-1 h-4 bg-ghost-white/10 rounded" />
+                        <div className={`w-6 h-6 rounded-lg ${highContrast ? 'bg-hc-background' : 'bg-ghost-white/10'}`} />
+                        <div className={`w-8 h-8 rounded-full ${highContrast ? 'bg-hc-background' : 'bg-ghost-white/10'}`} />
+                        <div className={`flex-1 h-4 rounded ${highContrast ? 'bg-hc-background' : 'bg-ghost-white/10'}`} />
                       </div>
                     ))}
                   </div>
                 ) : leaderboard.length === 0 ? (
                   <div className="text-center py-6">
                     <div className="text-3xl mb-2">🎬</div>
-                    <p className="text-white/70 text-sm font-bold">
+                    <p className={`text-sm font-bold ${highContrast ? 'text-hc-text' : 'text-white/70'}`}>
                       {activeTab === 'daily' ? 'Be the First!' : 'Start Your Streak!'}
                     </p>
-                    <p className="text-white/50 text-xs mt-1">
+                    <p className={`text-xs mt-1 ${highContrast ? 'text-hc-text' : 'text-white/50'}`}>
                       {activeTab === 'daily'
                         ? "Complete today's puzzle to appear on the leaderboard"
                         : 'Build a streak to compete for the top spot'}
@@ -179,22 +197,23 @@ export default function StatsModal({ isOpen, onClose }) {
                         rank={idx + 1}
                         isCurrentUser={user?.id === entry.user_id}
                         isStreak={activeTab === 'streak'}
+                        highContrast={highContrast}
                       />
                     ))}
 
                     {/* User's rank if not in top 10 */}
                     {userRank && userRank.rank > 10 && (
-                      <div className="mt-4 pt-4 border-t-2 border-white/10">
-                        <div className="flex items-center justify-between p-3 rounded-xl bg-accent-yellow/20 border-2 border-accent-yellow">
+                      <div className={`mt-4 pt-4 border-t-2 ${highContrast ? 'border-hc-border' : 'border-white/10'}`}>
+                        <div className={`flex items-center justify-between p-3 rounded-xl border-2 ${highContrast ? 'bg-hc-surface border-hc-border' : 'bg-accent-yellow/20 border-accent-yellow'}`}>
                           <div>
-                            <p className="text-sm font-bold text-white">Your Rank</p>
-                            <p className="text-xs text-white/60">
+                            <p className={`text-sm font-bold ${highContrast ? 'text-hc-text' : 'text-white'}`}>Your Rank</p>
+                            <p className={`text-xs ${highContrast ? 'text-hc-text' : 'text-white/60'}`}>
                               {activeTab === 'streak'
                                 ? `${userRank.score} day streak`
                                 : formatTimeSeconds(userRank.score)}
                             </p>
                           </div>
-                          <div className="text-xl font-black text-accent-yellow">
+                          <div className={`text-xl font-black ${highContrast ? 'text-hc-text' : 'text-accent-yellow'}`}>
                             #{userRank.rank}
                           </div>
                         </div>
@@ -205,10 +224,14 @@ export default function StatsModal({ isOpen, onClose }) {
 
                 {/* Auth CTA for non-logged in users */}
                 {!user && !leaderboardLoading && (
-                  <div className="mt-4 pt-4 border-t-2 border-white/10">
+                  <div className={`mt-4 pt-4 border-t-2 ${highContrast ? 'border-hc-border' : 'border-white/10'}`}>
                     <button
                       onClick={() => setShowAuthModal(true)}
-                      className="w-full py-3 bg-accent-yellow rounded-xl hover:scale-105 transition-all text-gray-800 font-bold text-sm"
+                      className={`w-full py-3 rounded-xl hover:scale-105 transition-all font-bold text-sm ${
+                        highContrast
+                          ? 'bg-hc-primary text-hc-primary-text border-2 border-hc-border'
+                          : 'bg-accent-yellow text-gray-800'
+                      }`}
                     >
                       Sign In to Join Leaderboard
                     </button>
@@ -219,7 +242,11 @@ export default function StatsModal({ isOpen, onClose }) {
               {/* Hide Leaderboard button */}
               <button
                 onClick={() => setShowLeaderboard(false)}
-                className="w-full py-2 text-white/50 text-xs font-medium hover:text-white/70 transition-colors border-t-2 border-white/10"
+                className={`w-full py-2 text-xs font-medium transition-colors border-t-2 ${
+                  highContrast
+                    ? 'text-hc-text border-hc-border hover:bg-hc-surface'
+                    : 'text-white/50 hover:text-white/70 border-white/10'
+                }`}
               >
                 Hide Leaderboard
               </button>
@@ -228,8 +255,8 @@ export default function StatsModal({ isOpen, onClose }) {
 
           {/* Recent Games */}
           {isLoaded && stats.gameHistory.length > 0 && (
-            <div className="bg-ghost-white/5 rounded-xl p-4">
-              <h3 className="text-sm font-bold text-white/70 mb-3">Recent Games</h3>
+            <div className={`rounded-xl p-4 ${highContrast ? 'bg-hc-surface border-2 border-hc-border' : 'bg-ghost-white/5'}`}>
+              <h3 className={`text-sm font-bold mb-3 ${highContrast ? 'text-hc-text' : 'text-white/70'}`}>Recent Games</h3>
               <div className="space-y-2">
                 {stats.gameHistory.slice(0, 5).map((game, index) => (
                   <div
@@ -238,17 +265,25 @@ export default function StatsModal({ isOpen, onClose }) {
                   >
                     <div className="flex items-center gap-2">
                       <span
-                        className={`w-2 h-2 rounded-full ${game.won ? 'bg-[#7ed957]' : 'bg-[#ff5757]'}`}
+                        className={`w-2 h-2 rounded-full ${
+                          highContrast
+                            ? game.won ? 'bg-hc-success' : 'bg-hc-error'
+                            : game.won ? 'bg-[#7ed957]' : 'bg-[#ff5757]'
+                        }`}
                       />
-                      <span className="text-white/60">{formatDate(game.date)}</span>
+                      <span className={highContrast ? 'text-hc-text' : 'text-white/60'}>{formatDate(game.date)}</span>
                     </div>
                     <div className="flex items-center gap-3">
-                      {game.won && <span className="text-white/50">{formatTime(game.timeMs)}</span>}
+                      {game.won && <span className={highContrast ? 'text-hc-text' : 'text-white/50'}>{formatTime(game.timeMs)}</span>}
                       <span
                         className={`text-xs px-2 py-0.5 rounded ${
-                          game.won
-                            ? 'bg-[#7ed957]/20 text-[#7ed957]'
-                            : 'bg-[#ff5757]/20 text-[#ff5757]'
+                          highContrast
+                            ? game.won
+                              ? 'bg-hc-success text-hc-success-text'
+                              : 'bg-hc-error text-hc-error-text'
+                            : game.won
+                              ? 'bg-[#7ed957]/20 text-[#7ed957]'
+                              : 'bg-[#ff5757]/20 text-[#ff5757]'
                         }`}
                       >
                         {game.won ? 'Won' : 'Lost'}
@@ -264,24 +299,26 @@ export default function StatsModal({ isOpen, onClose }) {
           {isLoaded && stats.gamesPlayed === 0 && (
             <div className="text-center py-8">
               <div className="text-4xl mb-3">🎬</div>
-              <p className="text-white/70 mb-2">No games played yet</p>
-              <p className="text-sm text-white/50">Complete your first puzzle to see your stats!</p>
+              <p className={`mb-2 ${highContrast ? 'text-hc-text' : 'text-white/70'}`}>No games played yet</p>
+              <p className={`text-sm ${highContrast ? 'text-hc-text' : 'text-white/50'}`}>Complete your first puzzle to see your stats!</p>
             </div>
           )}
 
           {/* Loading State */}
           {!isLoaded && (
             <div className="text-center py-8">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-accent-yellow mx-auto" />
+              <div className={`animate-spin rounded-full h-8 w-8 border-b-2 mx-auto ${highContrast ? 'border-hc-primary' : 'border-accent-yellow'}`} />
             </div>
           )}
 
           {/* Account Management Link */}
           {user && (
-            <div className="pt-2 border-t-2 border-white/10">
+            <div className={`pt-2 border-t-2 ${highContrast ? 'border-hc-border' : 'border-white/10'}`}>
               <Link
                 href="/account"
-                className="flex items-center justify-center gap-2 py-3 text-white/60 hover:text-accent-yellow transition-colors text-sm font-medium"
+                className={`flex items-center justify-center gap-2 py-3 transition-colors text-sm font-medium ${
+                  highContrast ? 'text-hc-text hover:text-hc-primary' : 'text-white/60 hover:text-accent-yellow'
+                }`}
               >
                 <User className="w-4 h-4" />
                 Manage Account
@@ -305,17 +342,19 @@ export default function StatsModal({ isOpen, onClose }) {
 /**
  * StatCard - Individual stat display card
  */
-function StatCard({ icon, value, label, color }) {
+function StatCard({ icon, value, label, color, highContrast }) {
   return (
-    <div className="relative bg-ghost-white/5 rounded-xl p-4">
+    <div className={`relative rounded-xl p-4 ${highContrast ? 'bg-hc-surface border-2 border-hc-border' : 'bg-ghost-white/5'}`}>
       <div
-        className={`absolute top-3 right-3 w-8 h-8 ${color} rounded-lg flex items-center justify-center text-gray-900`}
+        className={`absolute top-3 right-3 w-8 h-8 rounded-lg flex items-center justify-center ${
+          highContrast ? 'bg-hc-primary text-hc-primary-text' : `${color} text-gray-900`
+        }`}
       >
         {icon}
       </div>
       <div className="pr-10">
-        <div className="text-3xl font-bold text-white mb-1">{value}</div>
-        <div className="text-xs text-white/60 tracking-wider">{label}</div>
+        <div className={`text-3xl font-bold mb-1 ${highContrast ? 'text-hc-text' : 'text-white'}`}>{value}</div>
+        <div className={`text-xs tracking-wider ${highContrast ? 'text-hc-text' : 'text-white/60'}`}>{label}</div>
       </div>
     </div>
   );
@@ -324,26 +363,36 @@ function StatCard({ icon, value, label, color }) {
 /**
  * LeaderboardEntry - Individual leaderboard row
  */
-function LeaderboardEntry({ entry, rank, isCurrentUser, isStreak }) {
+function LeaderboardEntry({ entry, rank, isCurrentUser, isStreak, highContrast }) {
   return (
     <div
       className={`flex items-center gap-2 p-2 rounded-lg transition-all ${
-        isCurrentUser
-          ? 'bg-accent-yellow/20 border-2 border-accent-yellow'
-          : 'bg-ghost-white/5 hover:bg-ghost-white/10'
+        highContrast
+          ? isCurrentUser
+            ? 'bg-hc-surface border-2 border-hc-primary'
+            : 'bg-hc-surface border-2 border-hc-border hover:bg-hc-background'
+          : isCurrentUser
+            ? 'bg-accent-yellow/20 border-2 border-accent-yellow'
+            : 'bg-ghost-white/5 hover:bg-ghost-white/10'
       }`}
     >
       {/* Rank */}
       <div
         className={`w-6 h-6 rounded-lg flex items-center justify-center font-bold text-xs flex-shrink-0 ${
-          isCurrentUser ? 'bg-accent-yellow text-gray-800' : 'bg-ghost-white/10 text-white/70'
+          highContrast
+            ? isCurrentUser
+              ? 'bg-hc-primary text-hc-primary-text'
+              : 'bg-hc-background text-hc-text'
+            : isCurrentUser
+              ? 'bg-accent-yellow text-gray-800'
+              : 'bg-ghost-white/10 text-white/70'
         }`}
       >
         {rank}
       </div>
 
       {/* Avatar */}
-      <div className="relative w-8 h-8 rounded-full overflow-hidden border-2 border-white/20 flex-shrink-0">
+      <div className={`relative w-8 h-8 rounded-full overflow-hidden border-2 flex-shrink-0 ${highContrast ? 'border-hc-border' : 'border-white/20'}`}>
         <Image
           src={(entry.avatar_image_path || entry.avatar_url || '/avatars/default.png').replace(
             '/images/avatars/',
@@ -360,7 +409,11 @@ function LeaderboardEntry({ entry, rank, isCurrentUser, isStreak }) {
       <div className="flex-1 min-w-0">
         <p
           className={`font-semibold text-sm truncate ${
-            isCurrentUser ? 'text-accent-yellow' : 'text-white'
+            highContrast
+              ? 'text-hc-text'
+              : isCurrentUser
+                ? 'text-accent-yellow'
+                : 'text-white'
           }`}
         >
           {entry.username || 'Anonymous'}
@@ -371,7 +424,11 @@ function LeaderboardEntry({ entry, rank, isCurrentUser, isStreak }) {
       {/* Score */}
       <div
         className={`text-right flex-shrink-0 font-bold text-sm ${
-          isCurrentUser ? 'text-accent-yellow' : 'text-white/70'
+          highContrast
+            ? 'text-hc-text'
+            : isCurrentUser
+              ? 'text-accent-yellow'
+              : 'text-white/70'
         }`}
       >
         {isStreak ? <span>{entry.score} 🔥</span> : formatTimeSeconds(entry.score)}

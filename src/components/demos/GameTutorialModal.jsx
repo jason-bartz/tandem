@@ -123,7 +123,7 @@ export default function GameTutorialModal({
                   'w-full py-2.5 rounded-md font-bold text-sm',
                   'transition-all duration-200 hover:scale-105',
                   highContrast
-                    ? 'bg-hc-primary text-white'
+                    ? 'bg-hc-primary text-hc-primary-text'
                     : `${accentColorClass} hover:${accentHoverClass} ${ctaTextColor}`
                 )}
               >

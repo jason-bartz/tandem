@@ -16,6 +16,7 @@ import {
 import { playClapperSoundSynthesized } from '@/lib/sounds';
 import { useHaptics } from '@/hooks/useHaptics';
 import { useTheme } from '@/contexts/ThemeContext';
+import { cn } from '@/lib/utils';
 import { formatDateFull } from '@/lib/utils';
 import ReelConnectionsLoadingSkeleton from './ReelConnectionsLoadingSkeleton';
 import SidebarMenu from '@/components/navigation/SidebarMenu';
@@ -33,6 +34,8 @@ import LoginReminderPopup from '@/components/shared/LoginReminderPopup';
 import ServiceOutage from '@/components/shared/ServiceOutage';
 import { useFloatingStatsBar } from '@/hooks/useFloatingStatsBar';
 import ShareImageCard from '@/components/shared/ShareImageCard';
+import { useReelConnectionsKeyboard } from '@/hooks/useReelConnectionsKeyboard';
+import ReelKeyboardShortcutsModal from './ReelKeyboardShortcutsModal';
 
 // Long press duration in milliseconds
 const LONG_PRESS_DURATION = 650;
@@ -204,7 +207,7 @@ const HintModal = ({
           <div className="px-5 pb-6">
             <button
               onClick={onClose}
-              className={`w-full py-3 rounded-xl hover:scale-105 transition-all font-bold text-lg ${highContrast ? 'bg-hc-primary text-white border-hc-border' : 'bg-accent-yellow text-gray-900'}`}
+              className={`w-full py-3 rounded-xl hover:scale-105 transition-all font-bold text-lg ${highContrast ? 'bg-hc-primary text-hc-primary-text border-hc-border' : 'bg-accent-yellow text-gray-900'}`}
             >
               Got it!
             </button>
@@ -527,6 +530,29 @@ const ReelConnectionsGame = ({ titleFont = '' }) => {
       setShowHintModal(true);
     }
   }, [hintUsed, getLowestUnsolvedCategory]);
+
+  // Keyboard controls
+  const { focusIndex, showShortcuts, setShowShortcuts, keyboardActive } =
+    useReelConnectionsKeyboard({
+      movies,
+      selectedMovies,
+      toggleMovieSelection,
+      handleSubmit,
+      handleShuffle,
+      handleDeselect,
+      handleHintClick,
+      onStartGame,
+      gameStarted,
+      gameWon,
+      gameOver,
+      solvingGroup,
+      hintUsed,
+      setEnlargedMovie,
+      enlargedMovie,
+      showHintModal,
+      isRevealing,
+      handleShare,
+    });
 
   // Reveal phase - showing groups one by one after game over
   if (isRevealing && gameOver) {
@@ -1007,7 +1033,7 @@ const ReelConnectionsGame = ({ titleFont = '' }) => {
                 <>
                   <button
                     onClick={handleShare}
-                    className={`w-full py-4 rounded-xl hover:scale-105 transition-all font-bold text-lg capitalize tracking-wide ${!reduceMotion ? 'animate-attention-pulse' : ''} ${highContrast ? 'bg-hc-success text-white border-hc-border' : 'bg-accent-green text-gray-900'}`}
+                    className={`w-full py-4 rounded-xl hover:scale-105 transition-all font-bold text-lg capitalize tracking-wide ${!reduceMotion ? 'animate-attention-pulse' : ''} ${highContrast ? 'bg-hc-success text-hc-success-text border-hc-border' : 'bg-accent-green text-gray-900'}`}
                   >
                     Share Results
                   </button>
@@ -1023,7 +1049,7 @@ const ReelConnectionsGame = ({ titleFont = '' }) => {
                     ]}
                     accentColor="bg-accent-red"
                     buttonLabel="Share as Image"
-                    buttonClassName="bg-bg-surface dark:bg-gray-700 text-text-primary border-border-main hover:bg-gray-200 dark:hover:bg-gray-600"
+                    buttonClassName="bg-bg-surface dark:bg-gray-700 text-text-primary hover:bg-gray-200 dark:hover:bg-gray-600"
                   />
                 </>
               )}
@@ -1032,7 +1058,7 @@ const ReelConnectionsGame = ({ titleFont = '' }) => {
               {!isWin && (
                 <button
                   onClick={handleViewPuzzle}
-                  className={`w-full py-4 rounded-xl hover:scale-105 transition-all font-bold text-lg capitalize tracking-wide ${highContrast ? 'bg-hc-warning text-black border-hc-border' : 'bg-accent-yellow text-gray-900'}`}
+                  className={`w-full py-4 rounded-xl hover:scale-105 transition-all font-bold text-lg capitalize tracking-wide ${highContrast ? 'bg-hc-warning text-hc-warning-text border-hc-border' : 'bg-accent-yellow text-gray-900'}`}
                 >
                   Back To Puzzle
                 </button>
@@ -1041,7 +1067,7 @@ const ReelConnectionsGame = ({ titleFont = '' }) => {
               {/* Leaderboard - Yellow */}
               <button
                 onClick={() => setShowLeaderboard(true)}
-                className={`w-full py-4 rounded-xl hover:scale-105 transition-all font-bold text-lg capitalize tracking-wide ${highContrast ? 'bg-hc-warning text-black border-hc-border' : 'bg-accent-yellow text-gray-900'}`}
+                className={`w-full py-4 rounded-xl hover:scale-105 transition-all font-bold text-lg capitalize tracking-wide ${highContrast ? 'bg-hc-warning text-hc-warning-text border-hc-border' : 'bg-accent-yellow text-gray-900'}`}
               >
                 Leaderboard
               </button>
@@ -1050,7 +1076,7 @@ const ReelConnectionsGame = ({ titleFont = '' }) => {
               {isWin && (
                 <button
                   onClick={handleViewPuzzle}
-                  className={`w-full py-4 rounded-xl hover:scale-105 transition-all font-bold text-lg capitalize tracking-wide ${highContrast ? 'bg-hc-warning text-black border-hc-border' : 'bg-accent-yellow text-gray-900'}`}
+                  className={`w-full py-4 rounded-xl hover:scale-105 transition-all font-bold text-lg capitalize tracking-wide ${highContrast ? 'bg-hc-warning text-hc-warning-text border-hc-border' : 'bg-accent-yellow text-gray-900'}`}
                 >
                   Back To Puzzle
                 </button>
@@ -1061,7 +1087,7 @@ const ReelConnectionsGame = ({ titleFont = '' }) => {
                 onClick={() => setShowArchive(true)}
                 className={`w-full py-4 rounded-xl hover:scale-105 transition-all font-bold text-lg capitalize tracking-wide ${
                   highContrast
-                    ? 'bg-hc-warning text-black border-hc-border'
+                    ? 'bg-hc-warning text-hc-warning-text border-hc-border'
                     : 'bg-accent-yellow text-gray-900'
                 }`}
               >
@@ -1097,10 +1123,10 @@ const ReelConnectionsGame = ({ titleFont = '' }) => {
               href="https://discord.com/invite/uSxtYQXtHN"
               target="_blank"
               rel="noopener noreferrer"
-              className={`w-full mt-6 p-4 flex items-center gap-3 rounded-xl transition-colors cursor-pointer text-left ${
+              className={`w-full mt-6 p-4 flex items-center gap-3 rounded-lg transition-all duration-200 cursor-pointer text-left ${
                 highContrast
                   ? 'bg-hc-surface border-2 border-hc-border hover:bg-hc-focus'
-                  : 'bg-gray-50 dark:bg-gray-800 border-2 border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 hover:border-gray-400 dark:hover:border-gray-500'
+                  : 'bg-bg-surface dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700'
               }`}
             >
               {/* Discord Logo */}
@@ -1117,7 +1143,7 @@ const ReelConnectionsGame = ({ titleFont = '' }) => {
                 <div className="flex items-center gap-2 mb-0.5">
                   <span className="text-sm font-semibold text-[#5865F2]">Join us on Discord</span>
                   <span
-                    className={`px-1.5 py-0.5 text-[10px] font-bold uppercase rounded ${highContrast ? 'bg-hc-primary text-white' : 'bg-accent-yellow text-gray-900'}`}
+                    className={`px-1.5 py-0.5 text-[10px] font-bold uppercase rounded ${highContrast ? 'bg-hc-primary text-hc-primary-text' : 'bg-accent-yellow text-gray-900'}`}
                   >
                     New
                   </span>
@@ -1222,7 +1248,7 @@ const ReelConnectionsGame = ({ titleFont = '' }) => {
           <p className={`mb-6 ${highContrast ? 'text-hc-text' : 'text-white/70'}`}>{error}</p>
           <button
             onClick={() => router.push('/')}
-            className={`px-6 py-3 rounded-xl transition-colors ${highContrast ? 'bg-hc-primary text-hc-background' : 'bg-accent-yellow text-gray-900 hover:bg-yellow-400'}`}
+            className={`px-6 py-3 rounded-xl transition-colors ${highContrast ? 'bg-hc-primary text-hc-primary-text' : 'bg-accent-yellow text-gray-900 hover:bg-yellow-400'}`}
           >
             Go Back
           </button>
@@ -1557,7 +1583,7 @@ const ReelConnectionsGame = ({ titleFont = '' }) => {
               <div
                 className={`grid grid-cols-4 gap-2 sm:gap-3 mb-4 sm:mb-6 ${shakeGrid && !reduceMotion ? 'animate-error-shake' : ''} ${!gameStarted ? 'blur-md pointer-events-none select-none' : ''} ${isShuffling && !reduceMotion ? 'scale-95 opacity-70' : 'scale-100 opacity-100'} transition-all duration-150`}
               >
-                {movies.map((movie) => {
+                {movies.map((movie, movieIdx) => {
                   const selected = isSelected(movie);
                   const orderNumber = selected
                     ? selectedMovies.findIndex((m) => m.imdbId === movie.imdbId) + 1
@@ -1565,10 +1591,12 @@ const ReelConnectionsGame = ({ titleFont = '' }) => {
                   // Check if this movie is being animated as part of a solving group
                   const solvingIndex = solvingMovies.findIndex((m) => m.imdbId === movie.imdbId);
                   const isSolving = solvingIndex !== -1;
+                  const isKbFocused = keyboardActive && focusIndex === movieIdx;
 
                   return (
                     <div
                       key={movie.imdbId}
+                      data-reel-kb-index={movieIdx}
                       className={`flex flex-col relative ${
                         reduceMotion
                           ? ''
@@ -1588,6 +1616,12 @@ const ReelConnectionsGame = ({ titleFont = '' }) => {
                         onContextMenu={(e) => e.preventDefault()}
                         disabled={isSolved(movie) || !gameStarted || isSolving}
                         className={`aspect-[2/3] rounded-lg sm:rounded-xl overflow-hidden transition-all transform hover:scale-105 active:scale-95 mb-0.5 sm:mb-1 touch-manipulation ${
+                          isKbFocused
+                            ? highContrast
+                              ? 'ring-2 ring-hc-primary ring-offset-2 ring-offset-hc-background'
+                              : 'ring-2 ring-accent-yellow ring-offset-2 ring-offset-[#0f0f1e]'
+                            : ''
+                        } ${
                           isSolving
                             ? highContrast
                               ? 'border-2 border-hc-primary'
@@ -1613,7 +1647,7 @@ const ReelConnectionsGame = ({ titleFont = '' }) => {
                                 className={`absolute inset-0 ${highContrast ? 'bg-hc-primary/20' : 'bg-[rgba(255,206,0,0.15)]'}`}
                               />
                               <div
-                                className={`absolute top-0.5 right-0.5 sm:top-1 sm:right-1 w-5 h-5 sm:w-6 sm:h-6 border-2 border-white rounded-full flex items-center justify-center ${highContrast ? 'bg-hc-primary' : 'bg-accent-yellow'}`}
+                                className={`absolute top-0.5 right-0.5 sm:top-1 sm:right-1 w-5 h-5 sm:w-6 sm:h-6 rounded-full flex items-center justify-center ${highContrast ? 'bg-hc-primary border-2 border-hc-border' : 'bg-accent-yellow'}`}
                               >
                                 <span
                                   className={`text-[10px] sm:text-xs font-bold ${highContrast ? 'text-white' : 'text-gray-900'}`}
@@ -1675,7 +1709,7 @@ const ReelConnectionsGame = ({ titleFont = '' }) => {
                     </p>
                     <button
                       onClick={onStartGame}
-                      className={`mx-auto flex items-center gap-2 px-6 sm:px-8 py-2.5 sm:py-3 rounded-lg hover:scale-105 transition-all font-bold text-base sm:text-lg tracking-wide ${highContrast ? 'bg-hc-primary text-white' : 'bg-accent-yellow text-gray-900'}`}
+                      className={`mx-auto flex items-center gap-2 px-6 sm:px-8 py-2.5 sm:py-3 rounded-lg hover:scale-105 transition-all font-bold text-base sm:text-lg tracking-wide ${highContrast ? 'bg-hc-primary text-hc-primary-text' : 'bg-accent-yellow text-gray-900'}`}
                     >
                       Action!
                       <Image
@@ -1784,6 +1818,39 @@ const ReelConnectionsGame = ({ titleFont = '' }) => {
         onClose={() => setShowLeaderboard(false)}
         gameType="reel"
         initialTab="daily"
+      />
+
+      {/* Keyboard shortcut hint — desktop only */}
+      {gameStarted && !gameWon && !gameOver && (
+        <div className="hidden lg:block">
+          <button
+            onClick={() => setShowShortcuts(true)}
+            className={cn(
+              'fixed bottom-4 right-4 z-30',
+              'flex items-center gap-1.5 px-2.5 py-1.5',
+              'bg-bg-card/90 dark:bg-gray-800/90 backdrop-blur-sm',
+              'rounded-lg',
+              'text-xs text-gray-400 dark:text-gray-500',
+              'hover:text-gray-600 dark:hover:text-gray-300',
+              'transition-colors duration-150'
+            )}
+            aria-label="Show keyboard shortcuts"
+          >
+            <span>
+              Press{' '}
+              <kbd className="px-1 py-0.5 bg-gray-100 dark:bg-gray-700 rounded text-[10px] font-mono font-medium border border-gray-300 dark:border-gray-600">
+                ?
+              </kbd>{' '}
+              for keyboard shortcuts
+            </span>
+          </button>
+        </div>
+      )}
+
+      {/* Keyboard Shortcuts Modal */}
+      <ReelKeyboardShortcutsModal
+        isOpen={showShortcuts}
+        onClose={() => setShowShortcuts(false)}
       />
     </div>
   );

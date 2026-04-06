@@ -254,9 +254,9 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
           {showAppBanner && !Capacitor.isNativePlatform() && (
             <div className="mb-6">
               <div
-                className={`rounded-lg border-2 p-5 dark: ${
+                className={`rounded-lg p-5 ${
                   highContrast
-                    ? 'bg-hc-primary border-hc-border'
+                    ? 'bg-hc-primary border-2 border-hc-border'
                     : 'bg-gradient-to-br from-sky-50 to-blue-50 dark:from-sky-900/30 dark:to-blue-900/30'
                 }`}
               >
@@ -301,10 +301,10 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
                     </a>
                     <button
                       onClick={handleAppBannerDismiss}
-                      className={`px-4 py-2 rounded-xl font-medium text-sm transition-all border-2 whitespace-nowrap ${
+                      className={`px-4 py-2 rounded-md font-medium text-sm transition-all whitespace-nowrap ${
                         highContrast
-                          ? 'bg-hc-surface text-hc-text border-hc-border hover:bg-hc-focus hover:text-white'
-                          : 'bg-ghost-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:'
+                          ? 'bg-hc-surface text-hc-text border-2 border-hc-border hover:bg-hc-focus hover:text-white'
+                          : 'bg-bg-surface dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                       }`}
                     >
                       Skip
@@ -319,14 +319,14 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
           <div className="mb-8">
             {/* Section Card */}
             <div
-              className={`rounded-lg border-2 overflow-hidden dark: ${
-                highContrast ? 'border-hc-border bg-hc-surface' : 'bg-bg-card dark:bg-gray-800'
+              className={`rounded-lg overflow-hidden ${
+                highContrast ? 'border-2 border-hc-border bg-hc-surface' : 'bg-bg-surface dark:bg-gray-800'
               }`}
             >
               {/* Section Header */}
               <div
-                className={`px-5 py-3 border-b-2 ${
-                  highContrast ? 'border-hc-border' : 'border-gray-300 dark:border-gray-600'
+                className={`px-5 py-3 ${
+                  highContrast ? 'border-b-2 border-hc-border' : 'bg-gray-200/50 dark:bg-gray-700/50'
                 }`}
               >
                 <h3 className="text-base font-bold text-gray-800 dark:text-gray-200">
@@ -371,7 +371,7 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
                     >
                       <span
                         className={`${
-                          hardModeEnabled ? 'translate-x-[2.125rem]' : 'translate-x-0.5'
+                          hardModeEnabled ? 'translate-x-[2.625rem]' : 'translate-x-0.5'
                         } inline-flex h-7 w-7 items-center justify-center transform rounded-full transition-transform duration-200 ${
                           highContrast ? 'bg-hc-background' : 'bg-ghost-white dark:bg-gray-200'
                         }`}
@@ -462,7 +462,7 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
                         >
                           <span
                             className={`${
-                              syncStatus.enabled ? 'translate-x-[2.125rem]' : 'translate-x-0.5'
+                              syncStatus.enabled ? 'translate-x-[2.625rem]' : 'translate-x-0.5'
                             } inline-flex h-7 w-7 items-center justify-center transform rounded-full transition-transform ${
                               highContrast
                                 ? 'bg-hc-background'
@@ -612,7 +612,7 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
                         <span
                           className={`${
                             notificationSettings.notificationsEnabled
-                              ? 'translate-x-[2.125rem]'
+                              ? 'translate-x-[2.625rem]'
                               : 'translate-x-0.5'
                           } inline-flex h-7 w-7 items-center justify-center transform rounded-full transition-transform ${
                             highContrast
@@ -645,13 +645,13 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
           {/* Sound Section */}
           <div className="mb-8">
             <div
-              className={`rounded-lg border-2 overflow-hidden dark: ${
-                highContrast ? 'border-hc-border bg-hc-surface' : 'bg-bg-card dark:bg-gray-800'
+              className={`rounded-lg overflow-hidden ${
+                highContrast ? 'border-2 border-hc-border bg-hc-surface' : 'bg-bg-surface dark:bg-gray-800'
               }`}
             >
               <div
-                className={`px-5 py-3 border-b-2 ${
-                  highContrast ? 'border-hc-border' : 'border-gray-300 dark:border-gray-600'
+                className={`px-5 py-3 ${
+                  highContrast ? 'border-b-2 border-hc-border' : 'bg-gray-200/50 dark:bg-gray-700/50'
                 }`}
               >
                 <h3 className="text-base font-bold text-gray-800 dark:text-gray-200">Sound</h3>
@@ -699,7 +699,7 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
                   >
                     <span
                       className={`${
-                        soundSettings.masterEnabled ? 'translate-x-[2.125rem]' : 'translate-x-0.5'
+                        soundSettings.masterEnabled ? 'translate-x-[2.625rem]' : 'translate-x-0.5'
                       } inline-flex h-7 w-7 items-center justify-center transform rounded-full transition-transform duration-200 ${
                         highContrast ? 'bg-hc-background' : 'bg-ghost-white dark:bg-gray-200'
                       }`}
@@ -752,7 +752,7 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
                         <span
                           className={`${
                             soundSettings.keypressEnabled
-                              ? 'translate-x-[2.125rem]'
+                              ? 'translate-x-[2.625rem]'
                               : 'translate-x-0.5'
                           } inline-flex h-7 w-7 items-center justify-center transform rounded-full transition-transform duration-200 ${
                             highContrast ? 'bg-hc-background' : 'bg-ghost-white dark:bg-gray-200'
@@ -770,14 +770,14 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
           <div className="mb-8">
             {/* Section Card */}
             <div
-              className={`rounded-lg border-2 overflow-hidden dark: ${
-                highContrast ? 'border-hc-border bg-hc-surface' : 'bg-bg-card dark:bg-gray-800'
+              className={`rounded-lg overflow-hidden ${
+                highContrast ? 'border-2 border-hc-border bg-hc-surface' : 'bg-bg-surface dark:bg-gray-800'
               }`}
             >
               {/* Section Header */}
               <div
-                className={`px-5 py-3 border-b-2 ${
-                  highContrast ? 'border-hc-border' : 'border-gray-300 dark:border-gray-600'
+                className={`px-5 py-3 ${
+                  highContrast ? 'border-b-2 border-hc-border' : 'bg-gray-200/50 dark:bg-gray-700/50'
                 }`}
               >
                 <h3 className="text-base font-bold text-gray-800 dark:text-gray-200">
@@ -810,7 +810,7 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
                     >
                       <span
                         className={`${
-                          theme === 'dark' ? 'translate-x-[2.125rem]' : 'translate-x-0.5'
+                          theme === 'dark' ? 'translate-x-[2.625rem]' : 'translate-x-0.5'
                         } inline-flex h-7 w-7 items-center justify-center transform rounded-full transition-transform duration-200 ${
                           highContrast ? 'bg-hc-background' : 'bg-ghost-white'
                         }`}
@@ -850,7 +850,7 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
                     >
                       <span
                         className={`${
-                          highContrast ? 'translate-x-[2.125rem]' : 'translate-x-0.5'
+                          highContrast ? 'translate-x-[2.625rem]' : 'translate-x-0.5'
                         } inline-flex h-7 w-7 items-center justify-center transform rounded-full transition-transform duration-200 ${
                           highContrast
                             ? 'bg-hc-background border-2 border-hc-border'
@@ -890,7 +890,7 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
                     >
                       <span
                         className={`${
-                          reduceMotion ? 'translate-x-[2.125rem]' : 'translate-x-0.5'
+                          reduceMotion ? 'translate-x-[2.625rem]' : 'translate-x-0.5'
                         } inline-flex h-7 w-7 items-center justify-center transform rounded-full transition-transform duration-200 ${
                           highContrast ? 'bg-hc-background' : 'bg-ghost-white dark:bg-gray-200'
                         }`}
@@ -916,42 +916,42 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
                   <div className="grid grid-cols-3 gap-2">
                     <button
                       onClick={() => handleKeyboardLayoutChange('QWERTY')}
-                      className={`px-2 py-1.5 rounded-lg text-xs font-bold text-center transition-all border-2 ${
+                      className={`px-2 py-1.5 rounded-md text-xs font-bold text-center transition-all ${
                         highContrast
                           ? keyboardLayout === 'QWERTY'
-                            ? 'bg-hc-primary text-white border-hc-border'
-                            : 'bg-hc-surface text-hc-text border-hc-border'
+                            ? 'bg-hc-primary text-hc-primary-text border-2 border-hc-border'
+                            : 'bg-hc-surface text-hc-text border-2 border-hc-border'
                           : keyboardLayout === 'QWERTY'
-                            ? 'bg-sky-500 text-white'
-                            : 'bg-ghost-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:'
+                            ? 'bg-accent-blue text-white'
+                            : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'
                       }`}
                     >
                       QWERTY
                     </button>
                     <button
                       onClick={() => handleKeyboardLayoutChange('QWERTZ')}
-                      className={`px-2 py-1.5 rounded-lg text-xs font-bold text-center transition-all border-2 ${
+                      className={`px-2 py-1.5 rounded-md text-xs font-bold text-center transition-all ${
                         highContrast
                           ? keyboardLayout === 'QWERTZ'
-                            ? 'bg-hc-primary text-white border-hc-border'
-                            : 'bg-hc-surface text-hc-text border-hc-border'
+                            ? 'bg-hc-primary text-hc-primary-text border-2 border-hc-border'
+                            : 'bg-hc-surface text-hc-text border-2 border-hc-border'
                           : keyboardLayout === 'QWERTZ'
-                            ? 'bg-sky-500 text-white'
-                            : 'bg-ghost-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:'
+                            ? 'bg-accent-blue text-white'
+                            : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'
                       }`}
                     >
                       QWERTZ
                     </button>
                     <button
                       onClick={() => handleKeyboardLayoutChange('AZERTY')}
-                      className={`px-2 py-1.5 rounded-lg text-xs font-bold text-center transition-all border-2 ${
+                      className={`px-2 py-1.5 rounded-md text-xs font-bold text-center transition-all ${
                         highContrast
                           ? keyboardLayout === 'AZERTY'
-                            ? 'bg-hc-primary text-white border-hc-border'
-                            : 'bg-hc-surface text-hc-text border-hc-border'
+                            ? 'bg-hc-primary text-hc-primary-text border-2 border-hc-border'
+                            : 'bg-hc-surface text-hc-text border-2 border-hc-border'
                           : keyboardLayout === 'AZERTY'
-                            ? 'bg-sky-500 text-white'
-                            : 'bg-ghost-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:'
+                            ? 'bg-accent-blue text-white'
+                            : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'
                       }`}
                     >
                       AZERTY

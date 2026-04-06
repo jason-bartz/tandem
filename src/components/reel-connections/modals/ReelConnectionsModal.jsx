@@ -3,6 +3,7 @@
 import { useEffect, useRef, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { X } from 'lucide-react';
+import { useTheme } from '@/contexts/ThemeContext';
 
 /**
  * ReelConnectionsModal - Base modal component styled for the cinematic Reel Connections theme
@@ -30,6 +31,7 @@ export default function ReelConnectionsModal({
   title,
   maxHeight = '80vh',
 }) {
+  const { highContrast } = useTheme();
   const modalRef = useRef(null);
   const contentRef = useRef(null);
   const touchStartY = useRef(null);
@@ -160,7 +162,7 @@ export default function ReelConnectionsModal({
       aria-labelledby={title ? 'modal-title' : undefined}
     >
       {/* Backdrop */}
-      <div className="absolute inset-0 bg-black/70" onClick={handleBackdropClick} />
+      <div className={`absolute inset-0 ${highContrast ? 'bg-black/90' : 'bg-black/70'}`} onClick={handleBackdropClick} />
 
       {/* Modal Container - Centered */}
       <div

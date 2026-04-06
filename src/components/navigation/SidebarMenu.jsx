@@ -14,6 +14,7 @@ import Image from 'next/image';
 import { ASSET_VERSION } from '@/lib/constants';
 import { isStandaloneAlchemy, homePath } from '@/lib/standalone';
 import TipJarButton from '@/components/shared/TipJarButton';
+import { Sun, Moon, Volume2, VolumeOff } from 'lucide-react';
 
 /**
  * SidebarMenu - Sliding sidebar navigation menu
@@ -232,7 +233,7 @@ export default function SidebarMenu({
             className={`fixed top-0 right-0 bottom-0 w-[22rem] max-w-[85vw] z-50 overflow-y-auto font-sans ${
               highContrast
                 ? 'bg-hc-surface border-l-2 border-hc-border'
-                : 'bg-bg-surface dark:bg-bg-card border-l-2 border-border-main'
+                : 'bg-bg-surface dark:bg-bg-card'
             }`}
             role="dialog"
             aria-label="Navigation menu"
@@ -248,16 +249,20 @@ export default function SidebarMenu({
                     toggleTheme();
                     lightTap();
                   }}
-                  className="w-10 h-10 flex items-center justify-center transition-opacity hover:opacity-70 active:opacity-50"
+                  className={`w-10 h-10 flex items-center justify-center transition-all ${
+                    highContrast
+                      ? 'hover:bg-hc-border/20 active:bg-hc-border/40 rounded-lg'
+                      : 'hover:opacity-70 active:opacity-50'
+                  }`}
                   aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
                   whileHover={{ scale: reduceMotion ? 1 : 1.1 }}
                   transition={{ duration: 0.2 }}
                 >
-                  <img
-                    src={isDark ? '/ui/shared/light-mode.png' : '/ui/shared/dark-mode.png'}
-                    alt=""
-                    className="w-6 h-6"
-                  />
+                  {isDark ? (
+                    <Sun className={`w-5 h-5 ${highContrast ? 'text-hc-text' : 'text-text-primary'}`} />
+                  ) : (
+                    <Moon className={`w-5 h-5 ${highContrast ? 'text-hc-text' : 'text-text-primary'}`} />
+                  )}
                 </motion.button>
 
                 {/* Sound toggle button */}
@@ -266,16 +271,20 @@ export default function SidebarMenu({
                     toggleSound();
                     lightTap();
                   }}
-                  className="w-10 h-10 flex items-center justify-center transition-opacity hover:opacity-70 active:opacity-50"
+                  className={`w-10 h-10 flex items-center justify-center transition-all ${
+                    highContrast
+                      ? 'hover:bg-hc-border/20 active:bg-hc-border/40 rounded-lg'
+                      : 'hover:opacity-70 active:opacity-50'
+                  }`}
                   aria-label={soundEnabled ? 'Mute sounds' : 'Unmute sounds'}
                   whileHover={{ scale: reduceMotion ? 1 : 1.1 }}
                   transition={{ duration: 0.2 }}
                 >
-                  <img
-                    src={soundEnabled ? '/ui/shared/volume-on.png' : '/ui/shared/volume-mute.png'}
-                    alt=""
-                    className="w-6 h-6"
-                  />
+                  {soundEnabled ? (
+                    <Volume2 className={`w-5 h-5 ${highContrast ? 'text-hc-text' : 'text-text-primary'}`} />
+                  ) : (
+                    <VolumeOff className={`w-5 h-5 ${highContrast ? 'text-hc-text' : 'text-text-primary'}`} />
+                  )}
                 </motion.button>
               </div>
 
@@ -283,13 +292,17 @@ export default function SidebarMenu({
               <motion.button
                 ref={closeButtonRef}
                 onClick={onClose}
-                className="w-10 h-10 flex items-center justify-center transition-opacity hover:opacity-70 active:opacity-50"
+                className={`w-10 h-10 flex items-center justify-center transition-all ${
+                  highContrast
+                    ? 'hover:bg-hc-border/20 active:bg-hc-border/40 rounded-lg'
+                    : 'hover:opacity-70 active:opacity-50'
+                }`}
                 aria-label="Close menu"
                 whileHover={{ rotate: reduceMotion ? 0 : 90 }}
                 transition={{ duration: 0.2 }}
               >
                 <svg
-                  className="w-6 h-6 text-text-primary"
+                  className={`w-6 h-6 ${highContrast ? 'text-hc-text' : 'text-text-primary'}`}
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -308,25 +321,25 @@ export default function SidebarMenu({
             <div className="px-6 pb-6 space-y-6">
               {/* Player Section */}
               <section>
-                <h3 className="text-xs font-bold text-text-secondary tracking-wider mb-3 px-1">
+                <h3 className={`text-xs font-bold tracking-wider mb-3 px-1 ${highContrast ? 'text-hc-text' : 'text-text-secondary'}`}>
                   Player
                 </h3>
                 {isGuest ? (
                   /* Guest Message with Sign-In CTA */
                   <div
-                    className={`w-full p-4 rounded-lg border-2 ${
+                    className={`w-full p-4 rounded-lg ${
                       highContrast
-                        ? 'bg-hc-surface border-hc-border'
-                        : 'bg-ghost-white dark:bg-bg-surface border-border-main dark:'
+                        ? 'bg-hc-surface border-2 border-hc-border'
+                        : 'bg-ghost-white dark:bg-bg-surface'
                     }`}
                   >
                     <div className="flex items-start gap-3 mb-3">
                       {/* Guest Avatar */}
                       <div
-                        className={`w-12 h-12 rounded-xl border-2 flex items-center justify-center flex-shrink-0 overflow-hidden ${
+                        className={`w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 overflow-hidden ${
                           highContrast
-                            ? 'bg-hc-primary border-hc-border'
-                            : 'bg-gray-300 dark:bg-gray-600 border-border-main'
+                            ? 'bg-hc-primary border-2 border-hc-border'
+                            : 'bg-gray-300 dark:bg-gray-600'
                         }`}
                       >
                         <img
@@ -338,8 +351,8 @@ export default function SidebarMenu({
 
                       {/* Greeting */}
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-bold text-text-primary">Hey Guest!</p>
-                        <p className="text-xs text-text-secondary mt-1">
+                        <p className={`text-sm font-bold ${highContrast ? 'text-hc-text' : 'text-text-primary'}`}>Hey Guest!</p>
+                        <p className={`text-xs mt-1 ${highContrast ? 'text-hc-text' : 'text-text-secondary'}`}>
                           Sign in or create a free account to access all games and join the
                           leaderboard.
                         </p>
@@ -350,8 +363,8 @@ export default function SidebarMenu({
                       onClick={() => handleNavigation('/account')}
                       className={`w-full p-3 text-white rounded-xl text-sm font-bold transition-all ${
                         highContrast
-                          ? 'bg-hc-primary border-2 border-hc-border hover:'
-                          : 'bg-accent-blue dark: hover:'
+                          ? 'bg-hc-primary text-hc-primary-text border-2 border-hc-border hover:bg-hc-focus'
+                          : 'bg-accent-blue hover:bg-blue-600'
                       }`}
                     >
                       Sign In / Create Account
@@ -361,20 +374,20 @@ export default function SidebarMenu({
                   /* Logged-In User Profile */
                   <button
                     onClick={() => handleNavigation('/account')}
-                    className={`w-full p-4 rounded-lg border-2 transition-all text-left ${
+                    className={`w-full p-4 rounded-lg transition-all duration-200 text-left ${
                       highContrast
-                        ? 'bg-hc-surface border-hc-border hover:bg-hc-primary'
-                        : 'bg-ghost-white dark:bg-bg-surface border-border-main dark: hover:'
+                        ? 'bg-hc-surface border-2 border-hc-border hover:bg-hc-primary hover:text-hc-primary-text'
+                        : 'bg-ghost-white dark:bg-bg-surface hover:bg-gray-200 dark:hover:bg-gray-700'
                     }`}
                   >
                     {/* Profile Header */}
                     <div className="flex items-center gap-3">
                       {/* Profile Picture */}
                       <div
-                        className={`w-12 h-12 rounded-xl border-2 flex items-center justify-center flex-shrink-0 overflow-hidden ${
+                        className={`w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 overflow-hidden ${
                           highContrast
-                            ? 'bg-hc-primary border-hc-border'
-                            : 'bg-accent-blue dark:bg-accent-pink border-border-main'
+                            ? 'bg-hc-primary border-2 border-hc-border'
+                            : 'bg-accent-blue dark:bg-accent-pink'
                         }`}
                       >
                         {profileLoading && !userAvatar && !username ? (
@@ -409,8 +422,8 @@ export default function SidebarMenu({
 
                       {/* Greeting */}
                       <div className="flex-1 min-w-0">
-                        <p className="text-xs text-text-secondary">Hey</p>
-                        <p className="text-base font-bold text-text-primary truncate">
+                        <p className={`text-xs ${highContrast ? 'text-hc-text' : 'text-text-secondary'}`}>Hey</p>
+                        <p className={`text-base font-bold truncate ${highContrast ? 'text-hc-text' : 'text-text-primary'}`}>
                           {profileLoading && !username ? (
                             /* Loading skeleton for username */
                             <span className="inline-block h-4 w-24 bg-gray-200 dark:bg-gray-700 rounded skeleton-shimmer" />
@@ -422,7 +435,7 @@ export default function SidebarMenu({
 
                       {/* Arrow */}
                       <svg
-                        className="w-5 h-5 text-text-secondary flex-shrink-0"
+                        className={`w-5 h-5 flex-shrink-0 ${highContrast ? 'text-hc-text' : 'text-text-secondary'}`}
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
@@ -498,7 +511,7 @@ export default function SidebarMenu({
               {/* Games Section */}
               {isStandaloneAlchemy ? null : (
                 <section>
-                  <h3 className="text-xs font-bold text-text-secondary tracking-wider mb-3 px-1">
+                  <h3 className={`text-xs font-bold tracking-wider mb-3 px-1 ${highContrast ? 'text-hc-text' : 'text-text-secondary'}`}>
                     Games
                   </h3>
                   <div className="space-y-2">
@@ -544,9 +557,9 @@ export default function SidebarMenu({
 
               {/* Support Section - Main Tandem site */}
               {!isStandaloneAlchemy && (
-                <section className="pt-4 border-t border-border-main space-y-4">
-                  <div className="p-4 rounded-lg border-2 border-border-main bg-surface-primary dark:">
-                    <p className="text-xs text-text-secondary leading-relaxed mb-3">
+                <section className={`pt-4 border-t space-y-4 ${highContrast ? 'border-hc-border' : 'border-border-main'}`}>
+                  <div className={`p-4 rounded-lg border-2 ${highContrast ? 'bg-hc-surface border-hc-border' : 'bg-bg-surface dark:bg-bg-card border-border-main'}`}>
+                    <p className={`text-xs leading-relaxed mb-3 ${highContrast ? 'text-hc-text' : 'text-text-secondary'}`}>
                       Generous supporters help keep every game free to play and ad-free for
                       everyone. Your support helps cover our servers and keep the games running.
                     </p>
@@ -557,26 +570,26 @@ export default function SidebarMenu({
 
               {/* Tandem Daily CTA & Support - Standalone Only */}
               {isStandaloneAlchemy && (
-                <section className="pt-4 border-t border-border-main space-y-4">
+                <section className={`pt-4 border-t space-y-4 ${highContrast ? 'border-hc-border' : 'border-border-main'}`}>
                   {/* More Games CTA */}
                   <a
                     href="https://tandemdaily.com"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="block p-4 rounded-lg border-2 border-border-main bg-surface-primary dark: hover:transition-all"
+                    className={`block p-4 rounded-lg border-2 transition-all ${highContrast ? 'bg-hc-surface border-hc-border hover:bg-hc-primary hover:text-hc-primary-text' : 'bg-bg-surface dark:bg-bg-card border-border-main hover:bg-gray-200 dark:hover:bg-gray-700'}`}
                   >
-                    <p className="text-sm font-bold text-text-primary mb-1">More Daily Games</p>
-                    <p className="text-xs text-text-secondary leading-relaxed">
+                    <p className={`text-sm font-bold mb-1 ${highContrast ? 'text-hc-text' : 'text-text-primary'}`}>More Daily Games</p>
+                    <p className={`text-xs leading-relaxed ${highContrast ? 'text-hc-text' : 'text-text-secondary'}`}>
                       Find more daily word games, mini crosswords, and movie puzzles at{' '}
-                      <span className="font-semibold text-text-primary underline">
+                      <span className={`font-semibold underline ${highContrast ? 'text-hc-text' : 'text-text-primary'}`}>
                         Tandem Daily games
                       </span>
                     </p>
                   </a>
 
                   {/* Support Section */}
-                  <div className="p-4 rounded-lg border-2 border-border-main bg-surface-primary dark:">
-                    <p className="text-xs text-text-secondary leading-relaxed mb-3">
+                  <div className={`p-4 rounded-lg border-2 ${highContrast ? 'bg-hc-surface border-hc-border' : 'bg-bg-surface dark:bg-bg-card border-border-main'}`}>
+                    <p className={`text-xs leading-relaxed mb-3 ${highContrast ? 'text-hc-text' : 'text-text-secondary'}`}>
                       Generous supporters help keep this game ad-free and the daily puzzle free for
                       everyone. Your support helps cover our servers and keep the games running.
                     </p>
@@ -584,7 +597,7 @@ export default function SidebarMenu({
                       href="https://buymeacoffee.com/jasonbartz"
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center justify-center gap-2 w-full px-4 py-2.5 bg-flat-accent hover:bg-flat-accent-hover text-gray-900 font-semibold rounded-xl transition-all"
+                      className={`flex items-center justify-center gap-2 w-full px-4 py-2.5 font-semibold rounded-xl transition-all ${highContrast ? 'bg-hc-primary text-hc-primary-text border-2 border-hc-border' : 'bg-flat-accent hover:bg-flat-accent-hover text-gray-900'}`}
                     >
                       <Image
                         src="/ui/shared/coffee.png"
@@ -600,28 +613,29 @@ export default function SidebarMenu({
               )}
 
               {/* Footer Links */}
-              <section className="pt-4 border-t border-border-main space-y-1">
+              <section className={`pt-4 border-t space-y-1 ${highContrast ? 'border-hc-border' : 'border-border-main'}`}>
                 {!isStandaloneAlchemy && (
-                  <FooterLink label="Settings" onClick={() => handleModalOpen(onOpenSettings)} />
+                  <FooterLink label="Settings" onClick={() => handleModalOpen(onOpenSettings)} highContrast={highContrast} />
                 )}
-                <FooterLink label="Feedback" onClick={() => handleModalOpen(onOpenFeedback)} />
-                <FooterLink label="Support" onClick={() => handleNavigation('/support')} />
-                <FooterLink label="About" onClick={() => handleNavigation('/about')} />
+                <FooterLink label="Feedback" onClick={() => handleModalOpen(onOpenFeedback)} highContrast={highContrast} />
+                <FooterLink label="Support" onClick={() => handleNavigation('/support')} highContrast={highContrast} />
+                <FooterLink label="About" onClick={() => handleNavigation('/about')} highContrast={highContrast} />
                 <FooterLink
                   label="Privacy Policy"
                   onClick={() => handleNavigation('/privacypolicy')}
+                  highContrast={highContrast}
                 />
-                <FooterLink label="Terms of Service" onClick={() => handleNavigation('/terms')} />
+                <FooterLink label="Terms of Service" onClick={() => handleNavigation('/terms')} highContrast={highContrast} />
               </section>
 
               {/* Copyright and Social Section */}
               <section className="pt-4">
                 <div className="text-center">
-                  <p className="text-xs text-text-secondary mb-2">© 2026 Good Vibes Games</p>
+                  <p className={`text-xs mb-2 ${highContrast ? 'text-hc-text' : 'text-text-secondary'}`}>© 2026 Good Vibes Games</p>
 
                   {/* Social Media Section */}
                   <div>
-                    <p className="text-xs text-text-secondary text-center mb-2">
+                    <p className={`text-xs text-center mb-2 ${highContrast ? 'text-hc-text' : 'text-text-secondary'}`}>
                       Connect with us and watch daily puzzle breakdown videos
                     </p>
                     <div className="flex items-center justify-center gap-4">
@@ -634,7 +648,7 @@ export default function SidebarMenu({
                             window.open('https://www.tiktok.com/@tandem.daily', '_blank');
                           }
                         }}
-                        className="w-10 h-10 rounded-full flex items-center justify-center border-2 border-border-main bg-bg-surface text-text-secondary hover:text-text-primary transition-colors dark:"
+                        className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-colors ${highContrast ? 'border-hc-border bg-hc-surface text-hc-text hover:bg-hc-primary hover:text-hc-primary-text' : 'border-border-main bg-bg-surface text-text-secondary hover:text-text-primary dark:bg-bg-card'}`}
                         aria-label="Follow us on TikTok"
                       >
                         <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
@@ -650,7 +664,7 @@ export default function SidebarMenu({
                             window.open('https://instagram.com/tandem.daily', '_blank');
                           }
                         }}
-                        className="w-10 h-10 rounded-full flex items-center justify-center border-2 border-border-main bg-bg-surface text-text-secondary hover:text-pink-500 dark:hover:text-pink-400 transition-colors dark:"
+                        className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-colors ${highContrast ? 'border-hc-border bg-hc-surface text-hc-text hover:bg-hc-primary hover:text-hc-primary-text' : 'border-border-main bg-bg-surface text-text-secondary hover:text-pink-500 dark:hover:text-pink-400 dark:bg-bg-card'}`}
                         aria-label="Follow us on Instagram"
                       >
                         <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
@@ -666,7 +680,7 @@ export default function SidebarMenu({
                             window.open('https://discord.gg/uSxtYQXtHN', '_blank');
                           }
                         }}
-                        className="w-10 h-10 rounded-full flex items-center justify-center border-2 border-border-main bg-bg-surface text-text-secondary hover:text-[#5865F2] transition-colors dark:"
+                        className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-colors ${highContrast ? 'border-hc-border bg-hc-surface text-hc-text hover:bg-hc-primary hover:text-hc-primary-text' : 'border-border-main bg-bg-surface text-text-secondary hover:text-[#5865F2] dark:bg-bg-card'}`}
                         aria-label="Join us on Discord"
                       >
                         <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
@@ -692,14 +706,14 @@ function MenuButton({ icon, label, onClick, highContrast }) {
   return (
     <button
       onClick={onClick}
-      className={`w-full p-3 rounded-lg border-2 flex items-center gap-3 transition-all ${
+      className={`w-full p-3 rounded-lg flex items-center gap-3 transition-all duration-200 ${
         highContrast
-          ? 'bg-hc-surface border-hc-border hover:bg-hc-primary'
-          : 'bg-ghost-white dark:bg-bg-surface border-border-main dark: hover:'
+          ? 'bg-hc-surface border-2 border-hc-border hover:bg-hc-primary hover:text-hc-primary-text text-hc-text'
+          : 'bg-ghost-white dark:bg-bg-surface hover:bg-gray-200 dark:hover:bg-gray-700'
       }`}
     >
       <img src={icon} alt="" className="w-6 h-6" />
-      <span className="text-base font-medium text-text-primary">{label}</span>
+      <span className={`text-base font-medium ${highContrast ? 'text-hc-text' : 'text-text-primary'}`}>{label}</span>
     </button>
   );
 }
@@ -707,11 +721,11 @@ function MenuButton({ icon, label, onClick, highContrast }) {
 /**
  * FooterLink - Text-only footer link
  */
-function FooterLink({ label, onClick }) {
+function FooterLink({ label, onClick, highContrast }) {
   return (
     <button
       onClick={onClick}
-      className="w-full p-2 text-left text-sm text-text-secondary hover:text-text-primary transition-colors"
+      className={`w-full p-2 text-left text-sm transition-colors ${highContrast ? 'text-hc-text hover:bg-hc-border/20 rounded-md' : 'text-text-secondary hover:text-text-primary'}`}
     >
       {label}
     </button>
@@ -767,21 +781,21 @@ function GameButton({ icon, label, onClick, isActive, gameColor, highContrast, b
             ? 'bg-hc-primary border-l-hc-border'
             : `${colors.activeBg} ${colors.border}`
           : highContrast
-            ? 'bg-hc-surface border-l-hc-border hover:bg-hc-primary'
+            ? 'bg-hc-surface border-l-hc-border hover:bg-hc-primary hover:text-hc-primary-text'
             : `${colors.bg} ${colors.border}`
       }`}
     >
       <img src={iconSrc} alt="" className="w-8 h-8" />
       <div className="flex flex-col items-start">
         <div className="flex items-center gap-2">
-          <span className="text-base font-bold whitespace-nowrap text-text-primary">{label}</span>
+          <span className={`text-base font-bold whitespace-nowrap ${highContrast ? (isActive ? 'text-hc-primary-text' : 'text-hc-text') : 'text-text-primary'}`}>{label}</span>
           {badge && (
-            <span className="px-1.5 py-0.5 bg-accent-yellow text-gray-900 text-[10px] font-black uppercase tracking-wider rounded">
+            <span className={`px-1.5 py-0.5 text-[10px] font-black uppercase tracking-wider rounded ${highContrast ? 'bg-hc-primary text-hc-primary-text border border-hc-border' : 'bg-accent-yellow text-gray-900'}`}>
               {badge}
             </span>
           )}
         </div>
-        {subtitle && <span className="text-[10px] text-text-secondary">{subtitle}</span>}
+        {subtitle && <span className={`text-[10px] ${highContrast ? (isActive ? 'text-hc-primary-text' : 'text-hc-text') : 'text-text-secondary'}`}>{subtitle}</span>}
       </div>
     </button>
   );

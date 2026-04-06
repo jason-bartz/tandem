@@ -27,9 +27,9 @@ export default function AboutSection() {
           highContrast ? 'text-hc-text opacity-80' : 'text-text-secondary'
         }`}
       >
-        In a world of infinite scrolling and attention-stealing algorithms, we wanted to build four
-        daily puzzles that respect your time. Generous supporters help keep every game ad-free and
-        free from subscriptions. Your support helps cover our servers and keep the games running.
+        I&apos;m Jason, the Puzzlemaster behind Tandem Daily Games. I built these four daily puzzles
+        to be a quick, satisfying part of your morning — no ads, no algorithms, no subscriptions.
+        Generous supporters help cover the servers and keep everything free.
       </p>
 
       <div className="mt-4">

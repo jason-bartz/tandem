@@ -89,7 +89,7 @@ export default function LeaderboardModal({
       headerClassName="border-b-0"
       contentClassName="p-0"
       footer={
-        <p className="text-xs text-center text-gray-600 dark:text-gray-400">
+        <p className={`text-xs text-center ${highContrast ? 'text-hc-text' : 'text-gray-600 dark:text-gray-400'}`}>
           {activeTab === 'daily'
             ? 'Rankings based on completion time'
             : 'All-time best streaks • Compete with players worldwide'}
@@ -98,20 +98,24 @@ export default function LeaderboardModal({
     >
       {/* Game Toggle Buttons - hidden on standalone (only one game) */}
       {!isStandaloneAlchemy && (
-        <div className="px-4 py-3 border-b-2 border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50">
+        <div className={`px-4 py-3 ${
+          highContrast
+            ? 'border-b-2 border-hc-border bg-hc-background'
+            : 'bg-bg-surface dark:bg-gray-800/50'
+        }`}>
           <div className="flex gap-2">
             {gameButtons.map((game) => (
               <button
                 key={game.id}
                 onClick={() => handleGameChange(game.id)}
-                className={`flex-1 py-2 px-2 rounded-xl border-2 font-bold text-xs transition-all ${
+                className={`flex-1 py-2 px-2 rounded-md font-bold text-xs transition-all ${
                   activeGame === game.id
                     ? highContrast
                       ? `${game.hcBgColor} text-hc-text`
                       : `${game.bgColor} ${game.textColor}`
                     : highContrast
-                      ? 'bg-hc-surface text-hc-text border-hc-border'
-                      : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600'
+                      ? 'bg-hc-surface text-hc-text border-2 border-hc-border'
+                      : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                 }`}
               >
                 {game.label}
@@ -122,15 +126,21 @@ export default function LeaderboardModal({
       )}
 
       {/* Tab Navigation */}
-      <div className="flex border-b-2 border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50">
+      <div className={`flex ${
+        highContrast
+          ? 'border-b-2 border-hc-border bg-hc-background'
+          : 'bg-bg-surface dark:bg-gray-800/50'
+      }`}>
         <button
           onClick={() => setActiveTab('daily')}
           className={`flex-1 px-6 py-4 font-semibold transition-all ${
             activeTab === 'daily'
               ? highContrast
-                ? 'bg-hc-primary text-white border-b-2 border-hc-border'
+                ? 'bg-hc-primary text-hc-primary-text border-b-2 border-hc-border'
                 : 'bg-ghost-white dark:bg-gray-800 text-sky-600 dark:text-sky-400 border-b-2 border-sky-500'
-              : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700/50'
+              : highContrast
+                ? 'bg-hc-surface text-hc-text border-2 border-hc-border'
+                : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700/50'
           }`}
         >
           Today
@@ -140,9 +150,11 @@ export default function LeaderboardModal({
           className={`flex-1 px-6 py-4 font-semibold transition-all ${
             activeTab === 'streak'
               ? highContrast
-                ? 'bg-hc-primary text-white border-b-2 border-hc-border'
+                ? 'bg-hc-primary text-hc-primary-text border-b-2 border-hc-border'
                 : 'bg-ghost-white dark:bg-gray-800 text-sky-600 dark:text-sky-400 border-b-2 border-sky-500'
-              : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700/50'
+              : highContrast
+                ? 'bg-hc-surface text-hc-text border-2 border-hc-border'
+                : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700/50'
           }`}
         >
           Best Streaks

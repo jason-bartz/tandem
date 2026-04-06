@@ -160,7 +160,7 @@ export default function DeleteAccountModal({
             onClick={handleProceedToConfirmation}
             className={`flex-1 py-3 rounded-lg border-2 font-semibold transition-all ${
               highContrast
-                ? 'bg-hc-error text-white border-hc-border hover:bg-red-700'
+                ? 'bg-hc-error text-hc-error-text border-hc-border hover:bg-red-700'
                 : 'bg-red-600 text-white hover:'
             }`}
           >
@@ -195,7 +195,7 @@ export default function DeleteAccountModal({
                 : ''
             } ${
               highContrast
-                ? 'bg-hc-error text-white border-hc-border hover:bg-red-700'
+                ? 'bg-hc-error text-hc-error-text border-hc-border hover:bg-red-700'
                 : 'bg-red-600 text-white hover:'
             }`}
           >

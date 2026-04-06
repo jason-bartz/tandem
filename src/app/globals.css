@@ -1631,7 +1631,7 @@ body:has(.admin-theme) {
   --hc-surface: #111827;
   --hc-text: #ffffff;
   --hc-border: #93c5fd;
-  --hc-focus: #f472b6;
+  --hc-focus: #f588c0;
   --hc-neutral: #9ca3af;
 }
 
@@ -2048,5 +2048,58 @@ body:has(.admin-theme) {
 /* Ghost white opacity backgrounds → HC surface */
 .high-contrast [class*='bg-ghost-white\/'],
 .high-contrast [class*='bg-white\/'] {
+  background-color: var(--hc-surface) !important;
+}
+
+/* ─── ErrorBoundary high-contrast overrides ─── */
+.high-contrast .error-boundary-icon {
+  color: var(--hc-error) !important;
+}
+
+.high-contrast .error-boundary-details pre {
+  color: var(--hc-error) !important;
+}
+
+.high-contrast .error-boundary-container {
+  background-color: var(--hc-surface) !important;
+  border: 2px solid var(--hc-border) !important;
+  color: var(--hc-text) !important;
+}
+
+.high-contrast .error-boundary-btn-primary {
+  background-color: var(--hc-primary) !important;
+  color: var(--hc-primary-text) !important;
+  border: 2px solid var(--hc-border) !important;
+}
+
+.high-contrast .error-boundary-btn-secondary {
+  background-color: var(--hc-surface) !important;
+  color: var(--hc-text) !important;
+  border: 2px solid var(--hc-border) !important;
+}
+
+/* ─── Semantic color high-contrast overrides ─── */
+.high-contrast .text-red-500,
+.high-contrast .text-red-400,
+.high-contrast .text-accent-red {
+  color: var(--hc-error) !important;
+}
+
+.high-contrast .text-accent-green {
+  color: var(--hc-success) !important;
+}
+
+.high-contrast .border-green-200,
+.high-contrast .border-green-800 {
+  border-color: var(--hc-success) !important;
+}
+
+.high-contrast .border-red-200,
+.high-contrast .border-red-800 {
+  border-color: var(--hc-error) !important;
+}
+
+.high-contrast .dark\:bg-green-900\/20,
+.high-contrast .dark\:bg-red-900\/20 {
   background-color: var(--hc-surface) !important;
 }

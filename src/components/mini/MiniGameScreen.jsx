@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import MiniGrid from './MiniGrid';
 import MiniClueBar from './MiniClueBar';
+import MiniKeyboardShortcutsModal from './MiniKeyboardShortcutsModal';
 import OnScreenKeyboard from '../game/OnScreenKeyboard';
 import HamburgerMenu from '@/components/navigation/HamburgerMenu';
 import SidebarMenu from '@/components/navigation/SidebarMenu';
@@ -14,6 +15,7 @@ import HowToPlayModal from '../game/HowToPlayModal';
 import Settings from '@/components/Settings';
 import FeedbackPane from '@/components/FeedbackPane';
 import LeaderboardModal from '@/components/leaderboard/LeaderboardModal';
+import { cn } from '@/lib/utils';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useHaptics } from '@/hooks/useHaptics';
 import { formatMiniTime, isEditableCell, GRID_SIZE } from '@/lib/miniUtils';
@@ -47,6 +49,7 @@ export default function MiniGameScreen({
   navigateToNextClue,
   navigateToNextClueInSection,
   navigateToPreviousClue,
+  navigateToPreviousClueInSection,
   navigateToClue: _navigateToClue,
   pauseGame: _pauseGame,
   resumeGame: _resumeGame,
@@ -73,6 +76,7 @@ export default function MiniGameScreen({
   const [showSettings, setShowSettings] = useState(false);
   const [showFeedback, setShowFeedback] = useState(false);
   const [showLeaderboard, setShowLeaderboard] = useState(false);
+  const [showShortcuts, setShowShortcuts] = useState(false);
 
   // Handle start button click
   const handleStartClick = () => {
@@ -129,6 +133,43 @@ export default function MiniGameScreen({
   // Physical keyboard support
   useEffect(() => {
     const handlePhysicalKeyboard = (e) => {
+      const isInInput =
+        document.activeElement?.tagName === 'INPUT' ||
+        document.activeElement?.tagName === 'TEXTAREA';
+
+      // ? toggles shortcuts modal (unless typing in an input)
+      // e.key === '?' on US keyboards; also match Shift+Slash by e.code for intl keyboards
+      const isQuestionMark =
+        e.key === '?' || (e.shiftKey && (e.key === '/' || e.code === 'Slash'));
+      if (isQuestionMark && !isInInput) {
+        e.preventDefault();
+        setShowShortcuts((prev) => !prev);
+        return;
+      }
+
+      // When shortcuts modal is open, only Escape/? close it
+      if (showShortcuts) {
+        if (e.key === 'Escape') {
+          e.preventDefault();
+          setShowShortcuts(false);
+        }
+        return;
+      }
+
+      // Escape closes any open modal
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        if (showCheckModal) {
+          setShowCheckModal(false);
+          return;
+        }
+        if (showRevealModal) {
+          setShowRevealModal(false);
+          return;
+        }
+        return;
+      }
+
       // Ignore if game hasn't started
       if (!gameStarted) return;
 
@@ -136,18 +177,42 @@ export default function MiniGameScreen({
       if (showCheckModal || showRevealModal) return;
 
       // Ignore if input/textarea is focused
-      if (
-        document.activeElement?.tagName === 'INPUT' ||
-        document.activeElement?.tagName === 'TEXTAREA'
-      ) {
+      if (isInInput) return;
+
+      // Ctrl+C: Check square / Ctrl+Shift+C: Check word
+      if (e.key === 'c' && (e.ctrlKey || e.metaKey)) {
+        e.preventDefault();
+        if (e.shiftKey) {
+          checkWord();
+        } else {
+          checkCell();
+        }
         return;
       }
 
+      // Ctrl+R: Reveal square / Ctrl+Shift+R: Reveal word
+      if (e.key === 'r' && (e.ctrlKey || e.metaKey)) {
+        e.preventDefault();
+        if (e.shiftKey) {
+          revealWord();
+        } else {
+          revealCell();
+        }
+        return;
+      }
+
+      // Tab / Shift+Tab: next/previous clue in section
       if (e.key === 'Tab') {
         e.preventDefault();
-        // Tab advances to the next clue in the current section
-        navigateToNextClueInSection();
-      } else if (e.key === 'Backspace') {
+        if (e.shiftKey) {
+          navigateToPreviousClueInSection();
+        } else {
+          navigateToNextClueInSection();
+        }
+        return;
+      }
+
+      if (e.key === 'Backspace') {
         e.preventDefault();
         handleBackspace();
       } else if (
@@ -160,9 +225,8 @@ export default function MiniGameScreen({
         handleArrowKey(e.key);
       } else if (e.key === ' ') {
         e.preventDefault();
-        // Space could toggle direction
         selectCell(selectedCell.row, selectedCell.col);
-      } else if (/^[a-zA-Z]$/.test(e.key)) {
+      } else if (/^[a-zA-Z]$/.test(e.key) && !e.ctrlKey && !e.metaKey) {
         e.preventDefault();
         handleLetterInput(e.key);
       }
@@ -174,12 +238,18 @@ export default function MiniGameScreen({
     gameStarted,
     showCheckModal,
     showRevealModal,
+    showShortcuts,
     selectedCell,
     handleLetterInput,
     handleBackspace,
     handleArrowKey,
     navigateToNextClueInSection,
+    navigateToPreviousClueInSection,
     selectCell,
+    checkCell,
+    checkWord,
+    revealCell,
+    revealWord,
   ]);
 
   const handleCheckClick = () => {
@@ -430,7 +500,7 @@ export default function MiniGameScreen({
                       transition-all
                       ${
                         highContrast
-                          ? 'bg-hc-primary text-white'
+                          ? 'bg-hc-primary text-hc-primary-text'
                           : 'bg-accent-yellow dark:bg-accent-yellow text-gray-900'
                       }
                       ${
@@ -458,7 +528,8 @@ export default function MiniGameScreen({
         <OnScreenKeyboard
           onKeyPress={handleKeyPress}
           disabled={!gameStarted}
-          checkButtonColor="#ffce00"
+          checkButtonColor="var(--accent-yellow)"
+          backspaceColor="var(--accent-blue)"
           actionKeyType="tab"
         />
       </div>
@@ -499,6 +570,39 @@ export default function MiniGameScreen({
       />
       <Settings isOpen={showSettings} onClose={() => setShowSettings(false)} />
       <FeedbackPane isOpen={showFeedback} onClose={() => setShowFeedback(false)} />
+
+      {/* Keyboard shortcut hint — desktop only */}
+      {gameStarted && (
+        <div className="hidden lg:block">
+          <button
+            onClick={() => setShowShortcuts(true)}
+            className={cn(
+              'fixed bottom-4 right-4 z-30',
+              'flex items-center gap-1.5 px-2.5 py-1.5',
+              'bg-bg-card dark:bg-gray-800',
+              'rounded-lg',
+              'text-xs text-gray-400 dark:text-gray-500',
+              'hover:text-gray-600 dark:hover:text-gray-300',
+              'transition-colors duration-150'
+            )}
+            aria-label="Show keyboard shortcuts"
+          >
+            <span>
+              Press{' '}
+              <kbd className="px-1 py-0.5 bg-gray-100 dark:bg-gray-700 rounded text-[10px] font-mono font-medium border border-gray-300 dark:border-gray-600">
+                ?
+              </kbd>{' '}
+              for keyboard shortcuts
+            </span>
+          </button>
+        </div>
+      )}
+
+      {/* Keyboard Shortcuts Modal */}
+      <MiniKeyboardShortcutsModal
+        isOpen={showShortcuts}
+        onClose={() => setShowShortcuts(false)}
+      />
 
       {/* Check Pane */}
       {showCheckModal && (

@@ -72,11 +72,11 @@ class ErrorBoundary extends React.Component {
       // Default fallback UI
       return (
         <div className="min-h-screen flex items-center justify-center p-4 bg-bg-primary">
-          <div className="max-w-md w-full bg-bg-surface dark:bg-bg-card rounded-lg p-8">
+          <div className="error-boundary-container max-w-md w-full bg-bg-surface dark:bg-bg-card rounded-lg p-8">
             <div className="text-center">
               <div className="mb-4">
                 <svg
-                  className="mx-auto h-12 w-12 text-red-500"
+                  className="error-boundary-icon mx-auto h-12 w-12 text-red-500"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -99,7 +99,7 @@ class ErrorBoundary extends React.Component {
               </p>
 
               {process.env.NODE_ENV === 'development' && this.state.error && (
-                <details className="text-left mb-6 p-4 bg-bg-surface rounded-lg">
+                <details className="error-boundary-details text-left mb-6 p-4 bg-bg-surface rounded-lg">
                   <summary className="cursor-pointer text-sm font-medium text-text-primary">
                     Error Details (Development Only)
                   </summary>
@@ -113,14 +113,14 @@ class ErrorBoundary extends React.Component {
               <div className="flex gap-3 justify-center">
                 <button
                   onClick={this.handleReset}
-                  className="px-6 py-3 bg-primary hover:bg-primary-hover text-white font-medium rounded-xl transition-colors"
+                  className="error-boundary-btn-primary px-6 py-3 bg-primary hover:bg-primary-hover text-white font-medium rounded-xl transition-colors"
                 >
                   Try Again
                 </button>
 
                 <button
                   onClick={() => window.location.reload()}
-                  className="px-6 py-3 bg-bg-surface hover:bg-gray-300 dark:hover:bg-gray-600 text-text-primary font-medium rounded-xl transition-colors"
+                  className="error-boundary-btn-secondary px-6 py-3 bg-bg-surface hover:bg-gray-300 dark:hover:bg-gray-600 text-text-primary font-medium rounded-xl transition-colors"
                 >
                   Refresh Page
                 </button>

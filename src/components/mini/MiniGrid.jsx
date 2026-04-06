@@ -70,23 +70,23 @@ export default function MiniGrid({
 
     let bgClass = highContrast
       ? 'bg-hc-background text-hc-text border border-hc-border'
-      : 'bg-ghost-white dark:bg-gray-900 text-gray-900 dark:text-gray-100';
+      : 'bg-ghost-white dark:bg-gray-800 text-gray-900 dark:text-gray-100';
 
     if (isSelected) {
-      // Selected cell is always blue (priority over correct)
+      // Selected cell - bold blue, high contrast text
       bgClass = highContrast
-        ? 'bg-hc-primary text-white'
-        : 'bg-accent-blue dark:bg-accent-blue text-gray-900';
+        ? 'bg-hc-primary text-hc-primary-text'
+        : 'bg-blue-400 dark:bg-blue-600 text-gray-900 dark:text-white';
     } else if (isCorrect) {
-      // Correct cells are green
+      // Correct cells - green with high contrast text
       bgClass = highContrast
-        ? 'bg-hc-success text-white'
-        : 'bg-accent-green dark:bg-accent-green text-gray-900';
+        ? 'bg-hc-success text-hc-success-text'
+        : 'bg-emerald-300 dark:bg-emerald-600 text-gray-900 dark:text-white';
     } else if (isHighlighted) {
-      // Highlighted cells (rest of current word) are light blue
+      // Highlighted cells (rest of current word) - subtle word highlight
       bgClass = highContrast
         ? 'bg-blue-200 text-black'
-        : 'bg-blue-100 dark:bg-blue-900/40 text-gray-900 dark:text-gray-100';
+        : 'bg-blue-100 dark:bg-blue-900/60 text-gray-900 dark:text-gray-100';
     }
     // REMOVED: Row/column highlighting that was confusing the visual presentation
     // The word highlighting is sufficient and more clear
@@ -105,17 +105,9 @@ export default function MiniGrid({
     <div
       className={`w-full max-w-md mx-auto ${blur ? 'opacity-10 pointer-events-none select-none' : ''}`}
     >
-      {/* Grid container with neo-brutalist border */}
-      <div
-        className="
-          rounded-md
-         
-         
-          dark:
-          overflow-hidden
-          bg-ghost-white dark:bg-gray-900
-        "
-      >
+      {/* Grid container */}
+      <div className="rounded-md overflow-hidden">
+
         {/* Grid */}
         <div className="grid grid-cols-5 gap-0">
           {Array.from({ length: GRID_SIZE }).map((_, rowIndex) =>
@@ -124,14 +116,16 @@ export default function MiniGrid({
               const clueNumber = clueNumbers[rowIndex]?.[colIndex];
               const isBlack = isBlackSquare(grid[rowIndex][colIndex]);
 
+              const isLastCol = colIndex === GRID_SIZE - 1;
+              const isLastRow = rowIndex === GRID_SIZE - 1;
+
               return (
                 <div
                   key={`${rowIndex}-${colIndex}`}
                   className={`
                     aspect-square
-                    border-r-2 border-b-2
-                    last:border-r-0
-                   
+                    ${isLastCol ? '' : 'border-r'} ${isLastRow ? '' : 'border-b'}
+                    border-gray-300 dark:border-gray-600
                     outline-none focus:outline-none
                     ${getCellClasses(rowIndex, colIndex)}
                   `}

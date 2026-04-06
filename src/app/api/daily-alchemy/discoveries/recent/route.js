@@ -1,6 +1,33 @@
 import { NextResponse } from 'next/server';
 import { createServerClient } from '@/lib/supabase/server';
 import logger from '@/lib/logger';
+import { containsProfanity } from '@/utils/validation/profanityFilter';
+
+const REDACTED_ELEMENT = '█████ REDACTED';
+const REDACTED_EMOJI = '';
+
+const ANONYMOUS_NAMES = [
+  'Anonymous',
+  'Unknown Player',
+  'Bashful Player',
+  'Unnamed Explorer',
+  'Mystery Alchemist',
+  'Secret Scientist',
+  'Hidden Genius',
+  'Incognito Player',
+  'Shy Discoverer',
+  'Nameless Wizard',
+  'Quiet Tinkerer',
+  'Shadow Alchemist',
+  'Elusive Explorer',
+  'Covert Chemist',
+  'Undercover Player',
+  'Masked Inventor',
+  'Enigmatic Explorer',
+  'Humble Alchemist',
+  'Silent Genius',
+  'Mysterious Stranger',
+];
 
 export const dynamic = 'force-dynamic';
 
@@ -27,11 +54,14 @@ export async function GET() {
       return NextResponse.json({ error: 'Database error' }, { status: 500 });
     }
 
-    const discoveries = (data || []).map((d) => ({
-      element: d.result_element,
-      emoji: d.result_emoji || '✨',
-      username: d.username || 'Anonymous',
-    }));
+    const discoveries = (data || []).map((d) => {
+      const flagged = containsProfanity(d.result_element);
+      return {
+        element: flagged ? REDACTED_ELEMENT : d.result_element,
+        emoji: flagged ? REDACTED_EMOJI : d.result_emoji || '✨',
+        username: d.username || ANONYMOUS_NAMES[Math.floor(Math.random() * ANONYMOUS_NAMES.length)],
+      };
+    });
 
     return NextResponse.json({ discoveries });
   } catch (err) {

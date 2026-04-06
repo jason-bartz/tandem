@@ -845,7 +845,7 @@ export function DailyAlchemyGameScreen({
               className={cn(
                 'px-4 py-2.5 rounded-lg flex items-center gap-2',
                 highContrast
-                  ? 'bg-hc-warning border-hc-warning'
+                  ? 'bg-hc-warning border-hc-warning text-hc-warning-text'
                   : 'bg-soup-primary/20 dark:bg-green-900/30'
               )}
             >

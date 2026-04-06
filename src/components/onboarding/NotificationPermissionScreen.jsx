@@ -88,7 +88,7 @@ export default function NotificationPermissionScreen({ onContinue, onSkip }) {
             <div
               className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5 ${
                 highContrast
-                  ? 'bg-hc-primary text-white border-2 border-hc-border'
+                  ? 'bg-hc-primary text-hc-primary-text border-2 border-hc-border'
                   : 'bg-sky-500 text-white'
               }`}
             >
@@ -116,7 +116,7 @@ export default function NotificationPermissionScreen({ onContinue, onSkip }) {
             <div
               className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5 ${
                 highContrast
-                  ? 'bg-hc-primary text-white border-2 border-hc-border'
+                  ? 'bg-hc-primary text-hc-primary-text border-2 border-hc-border'
                   : 'bg-sky-500 text-white'
               }`}
             >
@@ -144,7 +144,7 @@ export default function NotificationPermissionScreen({ onContinue, onSkip }) {
             <div
               className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5 ${
                 highContrast
-                  ? 'bg-hc-primary text-white border-2 border-hc-border'
+                  ? 'bg-hc-primary text-hc-primary-text border-2 border-hc-border'
                   : 'bg-sky-500 text-white'
               }`}
             >
@@ -177,7 +177,7 @@ export default function NotificationPermissionScreen({ onContinue, onSkip }) {
             disabled={requesting}
             className={`w-full py-4 rounded-xl font-bold text-base transition-all ${
               highContrast
-                ? 'bg-hc-primary text-white border-2 border-hc-border hover:bg-hc-focus disabled:opacity-50'
+                ? 'bg-hc-primary text-hc-primary-text border-2 border-hc-border hover:bg-hc-focus disabled:opacity-50'
                 : 'bg-sky-500 text-white hover: disabled:opacity-50'
             }`}
             style={{

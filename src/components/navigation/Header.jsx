@@ -25,10 +25,17 @@ export default function Header({
   onOpenHowToPlay,
   onOpenSettings,
   onOpenLeaderboard,
+  isSidebarOpen: externalSidebarOpen,
+  onSidebarToggle,
+  onOpenFeedback: externalOpenFeedback,
 }) {
   const { isDark, highContrast } = useTheme();
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [internalSidebarOpen, setInternalSidebarOpen] = useState(false);
   const [showFeedback, setShowFeedback] = useState(false);
+
+  // Use external sidebar state if provided, otherwise internal
+  const isSidebarOpen = externalSidebarOpen !== undefined ? externalSidebarOpen : internalSidebarOpen;
+  const setIsSidebarOpen = onSidebarToggle || setInternalSidebarOpen;
 
   const logoSrc = isDark
     ? `/branding/tandem-dark.png?v=${ASSET_VERSION}`
@@ -84,10 +91,10 @@ export default function Header({
         onOpenHowToPlay={onOpenHowToPlay}
         onOpenSettings={onOpenSettings}
         onOpenLeaderboard={onOpenLeaderboard}
-        onOpenFeedback={() => {
+        onOpenFeedback={externalOpenFeedback || (() => {
           setIsSidebarOpen(false);
           setTimeout(() => setShowFeedback(true), 200);
-        }}
+        })}
       />
 
       {/* Feedback Pane */}

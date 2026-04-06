@@ -38,7 +38,7 @@ export default function CompleteScreen({
   puzzle,
   puzzleTheme,
   _onPlayAgain,
-  theme,
+  theme: _theme,
   _isAuto,
   _currentState,
   hintsUsed,
@@ -161,10 +161,10 @@ export default function CompleteScreen({
       <div className="animate-fade-in -mt-16">
         {/* Main completion card */}
         <div
-          className={`rounded-lg border-2 overflow-hidden p-10 text-center relative ${
+          className={`rounded-lg overflow-hidden p-10 text-center relative ${
             highContrast
-              ? 'bg-hc-surface border-hc-border'
-              : 'bg-ghost-white dark:bg-bg-card border-border-main dark:'
+              ? 'bg-hc-surface border-2 border-hc-border'
+              : 'bg-ghost-white dark:bg-bg-card'
           }`}
         >
           {/* Back arrow button at top left */}
@@ -204,7 +204,7 @@ export default function CompleteScreen({
                 title="Return to Welcome Screen"
               >
                 <Image
-                  src={`${theme === 'dark' ? '/ui/games/tandem-dark.png' : '/ui/games/tandem.png'}?v=${ASSET_VERSION}`}
+                  src={`/ui/games/tandem.png?v=${ASSET_VERSION}`}
                   alt="Tandem Logo"
                   width={96}
                   height={96}
@@ -239,9 +239,9 @@ export default function CompleteScreen({
 
             {puzzleTheme && (
               <div
-                className={`rounded-lg p-5 mb-6 relative overflow-hidden border-2 dark:${
+                className={`rounded-lg p-5 mb-6 relative overflow-hidden ${
                   highContrast
-                    ? 'bg-hc-surface border-hc-border'
+                    ? 'bg-hc-surface border-2 border-hc-border'
                     : won
                       ? 'bg-accent-yellow/20 dark:bg-yellow-900/40'
                       : 'bg-gray-100 dark:bg-gray-800'
@@ -262,9 +262,9 @@ export default function CompleteScreen({
 
             <div className="grid grid-cols-3 gap-4 mb-6">
               <div
-                className={`rounded-lg p-4 text-center border-2 dark:animate-scale-fade-in stagger-1 ${
+                className={`rounded-lg p-4 text-center flex flex-col items-center justify-center animate-scale-fade-in stagger-1 ${
                   highContrast
-                    ? 'bg-hc-surface border-hc-border'
+                    ? 'bg-hc-surface border-2 border-hc-border'
                     : isHardMode
                       ? 'bg-accent-red/20 dark:bg-red-900/50'
                       : 'bg-accent-blue/20 dark:bg-sky-900/50'
@@ -272,44 +272,44 @@ export default function CompleteScreen({
               >
                 <div
                   className={`text-lg font-bold ${
-                    highContrast ? 'text-hc-text' : 'text-gray-900 dark:text-gray-100'
+                    highContrast ? 'text-hc-text' : 'text-text-primary'
                   }`}
                 >
                   {formatTime(time)}
                 </div>
-                <div className="text-xs text-gray-600 dark:text-gray-400 mt-1">Time</div>
+                <div className="text-xs text-text-secondary mt-1">Time</div>
               </div>
               <div
-                className={`rounded-lg p-4 text-center border-2 dark:animate-scale-fade-in stagger-2 ${
+                className={`rounded-lg p-4 text-center flex flex-col items-center justify-center animate-scale-fade-in stagger-2 ${
                   highContrast
-                    ? 'bg-hc-surface border-hc-border'
+                    ? 'bg-hc-surface border-2 border-hc-border'
                     : 'bg-accent-orange/20 dark:bg-orange-900/50'
                 }`}
               >
                 <div
                   className={`text-lg font-bold ${
-                    highContrast ? 'text-hc-text' : 'text-gray-900 dark:text-gray-100'
+                    highContrast ? 'text-hc-text' : 'text-text-primary'
                   }`}
                 >
                   {mistakes}/4
                 </div>
-                <div className="text-xs text-gray-600 dark:text-gray-400 mt-1">Mistakes</div>
+                <div className="text-xs text-text-secondary mt-1">Mistakes</div>
               </div>
               <div
-                className={`rounded-lg p-4 text-center border-2 dark:flex flex-col items-center justify-center animate-scale-fade-in stagger-3 ${
+                className={`rounded-lg p-4 text-center flex flex-col items-center justify-center animate-scale-fade-in stagger-3 ${
                   highContrast
-                    ? 'bg-hc-surface border-hc-border'
+                    ? 'bg-hc-surface border-2 border-hc-border'
                     : 'bg-accent-pink/20 dark:bg-pink-900/50'
                 }`}
               >
                 <div
                   className={`text-lg font-bold ${
-                    highContrast ? 'text-hc-text' : 'text-gray-900 dark:text-gray-100'
+                    highContrast ? 'text-hc-text' : 'text-text-primary'
                   }`}
                 >
                   {formatDateShort(puzzleDate)}
                 </div>
-                <div className="text-xs text-gray-600 dark:text-gray-400 mt-1">Date</div>
+                <div className="text-xs text-text-secondary mt-1">Date</div>
               </div>
             </div>
 
@@ -346,10 +346,10 @@ export default function CompleteScreen({
                   lightTap();
                   setShowRevealAnswers(true);
                 }}
-                className={`w-full py-4 rounded-lg font-bold text-white transition-all mb-6 border-2 ${
+                className={`w-full py-4 rounded-md font-bold transition-all duration-200 hover:scale-105 mb-6 ${
                   highContrast
-                    ? 'bg-hc-primary border-hc-border hover:bg-hc-focus'
-                    : 'bg-accent-orange text-white dark: hover:dark:hover:'
+                    ? 'bg-hc-primary text-hc-primary-text border-2 border-hc-border hover:bg-hc-focus'
+                    : 'bg-accent-orange text-white'
                 }`}
               >
                 <span className="flex items-center justify-center gap-2">
@@ -376,7 +376,7 @@ export default function CompleteScreen({
                   ]}
                   accentColor="bg-accent-blue"
                   buttonLabel="Share as Image"
-                  buttonClassName="bg-bg-surface dark:bg-gray-700 text-text-primary border-border-main hover:bg-gray-200 dark:hover:bg-gray-600"
+                  buttonClassName="bg-bg-surface dark:bg-gray-700 text-text-primary hover:bg-gray-200 dark:hover:bg-gray-600"
                 />
               </div>
             )}
@@ -387,10 +387,10 @@ export default function CompleteScreen({
                 lightTap();
                 setShowLeaderboard(true);
               }}
-              className={`w-full py-3 px-4 rounded-lg font-semibold transition-all border-2 animate-fade-in-up delay-300 ${
+              className={`w-full h-14 px-4 rounded-md font-bold transition-all duration-200 hover:scale-105 animate-fade-in-up delay-300 ${
                 highContrast
-                  ? 'bg-hc-primary text-white border-hc-border hover:bg-hc-focus'
-                  : 'bg-accent-blue text-white dark: hover:dark:hover:'
+                  ? 'bg-hc-primary text-hc-primary-text border-2 border-hc-border hover:bg-hc-focus'
+                  : 'bg-bg-surface dark:bg-gray-700 text-text-primary hover:bg-gray-200 dark:hover:bg-gray-600'
               }`}
             >
               Leaderboard
@@ -402,10 +402,10 @@ export default function CompleteScreen({
                 lightTap();
                 setShowArchive(true);
               }}
-              className={`w-full py-3 px-4 rounded-lg font-semibold transition-all border-2 animate-fade-in-up delay-400 ${
+              className={`w-full h-14 px-4 rounded-md font-bold transition-all duration-200 hover:scale-105 animate-fade-in-up delay-400 ${
                 highContrast
-                  ? 'bg-hc-primary text-white border-hc-border hover:bg-hc-focus'
-                  : 'bg-accent-blue text-white dark: hover:dark:hover:'
+                  ? 'bg-hc-primary text-hc-primary-text border-2 border-hc-border hover:bg-hc-focus'
+                  : 'bg-bg-surface dark:bg-gray-700 text-text-primary hover:bg-gray-200 dark:hover:bg-gray-600'
               }`}
             >
               <span>Play from Archive</span>
@@ -435,10 +435,10 @@ export default function CompleteScreen({
               href="https://discord.com/invite/uSxtYQXtHN"
               target="_blank"
               rel="noopener noreferrer"
-              className={`w-full mt-8 p-4 flex items-center gap-3 rounded-xl transition-colors cursor-pointer text-left ${
+              className={`w-full mt-8 p-4 flex items-center gap-3 rounded-lg transition-all duration-200 cursor-pointer text-left ${
                 highContrast
                   ? 'bg-hc-surface border-2 border-hc-border hover:bg-hc-focus'
-                  : 'bg-gray-50 dark:bg-gray-800 border-2 border-gray-300 dark:border-gray-600 dark: hover:bg-gray-100 dark:hover:bg-gray-700 hover:border-gray-400 dark:hover:border-gray-500'
+                  : 'bg-bg-surface dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700'
               }`}
             >
               {/* Discord Logo */}

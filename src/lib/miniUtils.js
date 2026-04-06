@@ -388,6 +388,49 @@ export function getNextClueInSection(
 }
 
 /**
+ * Navigate to previous clue within the same section (Across or Down)
+ * Wraps to the end of the section when reaching the beginning
+ */
+export function getPreviousClueInSection(
+  clues,
+  currentClueNumber,
+  currentDirection,
+  grid = null,
+  clueNumbers = null
+) {
+  // Get clues for the current section only
+  const sectionClues =
+    currentDirection === DIRECTION.ACROSS
+      ? (clues.across || []).map((clue) => ({
+          ...clue,
+          number: parseInt(clue.number, 10),
+          direction: DIRECTION.ACROSS,
+        }))
+      : (clues.down || []).map((clue) => ({
+          ...clue,
+          number: parseInt(clue.number, 10),
+          direction: DIRECTION.DOWN,
+        }));
+
+  if (sectionClues.length === 0) return null;
+
+  const currentIndex = sectionClues.findIndex((clue) => clue.number === currentClueNumber);
+
+  if (currentIndex === -1) return sectionClues[0] || null;
+
+  // Get previous clue (wrap to end of section)
+  const prevIndex = currentIndex === 0 ? sectionClues.length - 1 : currentIndex - 1;
+  const prevClue = sectionClues[prevIndex];
+
+  if (grid && clueNumbers && prevClue) {
+    const cells = getWordCells(grid, clueNumbers, prevClue.number, prevClue.direction);
+    return { ...prevClue, cells };
+  }
+
+  return prevClue;
+}
+
+/**
  * Navigate to previous clue
  */
 export function getPreviousClue(

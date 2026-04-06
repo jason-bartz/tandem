@@ -35,13 +35,13 @@ const PuzzleItem = memo(
     const getStatusIcon = () => {
       switch (puzzle.status) {
         case 'completed':
-          return { icon: '✓', color: 'text-green-500', title: 'Completed' };
+          return { icon: '✓', color: highContrast ? 'text-hc-success-text' : 'text-green-500', title: 'Completed' };
         case 'failed':
-          return { icon: '✗', color: 'text-red-500', title: 'Failed' };
+          return { icon: '✗', color: highContrast ? 'text-hc-error-text' : 'text-red-500', title: 'Failed' };
         case 'attempted':
-          return { icon: '◐', color: 'text-yellow-500', title: 'In Progress' };
+          return { icon: '◐', color: highContrast ? 'text-hc-warning-text' : 'text-yellow-500', title: 'In Progress' };
         default:
-          return { icon: '○', color: 'text-gray-400', title: 'Not Played' };
+          return { icon: '○', color: highContrast ? 'text-hc-text' : 'text-gray-400', title: 'Not Played' };
       }
     };
 
@@ -68,15 +68,15 @@ const PuzzleItem = memo(
       >
         <div className="flex justify-between items-center">
           <div className="flex-1">
-            <div className="font-semibold text-gray-800 dark:text-gray-200">
+            <div className={`font-semibold ${highContrast ? 'text-hc-text' : 'text-gray-800 dark:text-gray-200'}`}>
               Puzzle #{puzzle.number}
             </div>
-            <div className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
+            <div className={`text-sm mt-0.5 ${highContrast ? 'text-hc-text' : 'text-gray-500 dark:text-gray-400'}`}>
               {formatDate(puzzle.date)}
             </div>
             {(puzzle.status === 'completed' || puzzle.status === 'failed') &&
               (puzzle.savedTheme || puzzle.theme) && (
-                <div className="text-sm text-gray-600 dark:text-gray-400 mt-1 truncate">
+                <div className={`text-sm mt-1 truncate ${highContrast ? 'text-hc-text' : 'text-gray-600 dark:text-gray-400'}`}>
                   {puzzle.savedTheme || puzzle.theme}
                 </div>
               )}
@@ -518,7 +518,7 @@ export default function ArchiveModalPaginated({ isOpen, onClose, onSelectPuzzle 
             onClick={onClose}
             className={`w-full py-3 text-white font-semibold text-base sm:text-lg rounded-lg transition-all border-2 ${
               highContrast
-                ? 'bg-hc-primary border-hc-border hover:bg-hc-focus'
+                ? 'bg-hc-primary text-hc-primary-text border-hc-border hover:bg-hc-focus'
                 : 'bg-accent-blue dark: hover:dark:hover:'
             }`}
             style={{
@@ -532,7 +532,9 @@ export default function ArchiveModalPaginated({ isOpen, onClose, onSelectPuzzle 
       >
         {/* Error Message */}
         {error && (
-          <div className="mb-4 p-3 bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300 rounded-lg">
+          <div className={`mb-4 p-3 rounded-lg ${
+            highContrast ? 'bg-hc-error text-hc-error-text border-2 border-hc-border' : 'bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300'
+          }`}>
             {error}
           </div>
         )}
@@ -567,7 +569,7 @@ export default function ArchiveModalPaginated({ isOpen, onClose, onSelectPuzzle 
             <SkeletonLoader count={5} highContrast={highContrast} />
           ) : puzzles.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-12">
-              <p className="text-gray-600 dark:text-gray-400">No puzzles available</p>
+              <p className={highContrast ? 'text-hc-text' : 'text-gray-600 dark:text-gray-400'}>No puzzles available</p>
             </div>
           ) : (
             <div className="space-y-2">
@@ -589,14 +591,14 @@ export default function ArchiveModalPaginated({ isOpen, onClose, onSelectPuzzle 
               {hasMore && (
                 <div ref={sentinelRef} className="h-10 flex items-center justify-center">
                   {!isLoadingMore && (
-                    <div className="text-sm text-gray-500 dark:text-gray-400">Scroll for more</div>
+                    <div className={`text-sm ${highContrast ? 'text-hc-text' : 'text-gray-500 dark:text-gray-400'}`}>Scroll for more</div>
                   )}
                 </div>
               )}
 
               {/* End of list message */}
               {!hasMore && puzzles.length > 0 && (
-                <div className="text-center py-4 text-gray-500 dark:text-gray-400">
+                <div className={`text-center py-4 ${highContrast ? 'text-hc-text' : 'text-gray-500 dark:text-gray-400'}`}>
                   You've reached the beginning!
                 </div>
               )}

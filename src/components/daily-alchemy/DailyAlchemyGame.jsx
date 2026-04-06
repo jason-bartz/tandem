@@ -659,7 +659,7 @@ export function DailyAlchemyGame({ initialDate = null }) {
 
             {/* Content Area - relative/absolute pattern for iOS scroll fix */}
             <div className="relative flex-1 min-h-0">
-              <div className="absolute inset-0 p-4 sm:p-6 overflow-y-auto overflow-x-hidden scrollable">
+              <div className="absolute inset-0 p-4 sm:p-6 overflow-y-auto overflow-x-hidden scrollable alchemy-scroll">
                 {/* Welcome Screen */}
                 {gameState === SOUP_GAME_STATES.WELCOME && !isInCoopLobby && (
                   <DailyAlchemyWelcomeScreen

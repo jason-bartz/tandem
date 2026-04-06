@@ -6,6 +6,7 @@ import { Capacitor } from '@capacitor/core';
 import { generateRandomUsername } from '@/utils/usernameGenerator';
 import { validateUsername } from '@/utils/profanityFilter';
 import Image from 'next/image';
+import { useTheme } from '@/contexts/ThemeContext';
 import ReelConnectionsModal from './ReelConnectionsModal';
 import logger from '@/lib/logger';
 
@@ -35,6 +36,7 @@ export default function ReelConnectionsAuthModal({
   const [error, setError] = useState(null);
   const [successMessage, setSuccessMessage] = useState(null);
 
+  const { highContrast } = useTheme();
   const { signUp, signIn, signInWithApple, signInWithGoogle, signInWithDiscord, resetPassword } =
     useAuth();
   const isIOS = Capacitor.getPlatform() === 'ios';
@@ -255,7 +257,7 @@ export default function ReelConnectionsAuthModal({
         {/* Cinema-themed header message */}
         {mode === 'signup' && (
           <div className="text-center mb-4">
-            <p className="text-white/70 text-sm">
+            <p className={`text-sm ${highContrast ? 'text-hc-text' : 'text-white/70'}`}>
               Create a free account to compete on the leaderboard and track your stats across
               devices
             </p>
@@ -402,7 +404,7 @@ export default function ReelConnectionsAuthModal({
         <form onSubmit={handleSubmit} className="space-y-4">
           {mode === 'signup' && (
             <div>
-              <label htmlFor="username" className="block text-sm font-bold text-white/80 mb-2">
+              <label htmlFor="username" className={`block text-sm font-bold mb-2 ${highContrast ? 'text-hc-text' : 'text-white/80'}`}>
                 Username
               </label>
               <div className="flex gap-2">
@@ -430,14 +432,14 @@ export default function ReelConnectionsAuthModal({
                   <Image src="/ui/shared/dice-dark.png" alt="Generate" width={24} height={24} />
                 </button>
               </div>
-              <p className="mt-1 text-xs text-white/50">
+              <p className={`mt-1 text-xs ${highContrast ? 'text-hc-text' : 'text-white/50'}`}>
                 3-20 characters. Visible on leaderboards.
               </p>
             </div>
           )}
 
           <div>
-            <label htmlFor="email" className="block text-sm font-bold text-white/80 mb-2">
+            <label htmlFor="email" className={`block text-sm font-bold mb-2 ${highContrast ? 'text-hc-text' : 'text-white/80'}`}>
               Email
             </label>
             <input
@@ -454,7 +456,7 @@ export default function ReelConnectionsAuthModal({
           {mode !== 'reset' && (
             <div>
               <div className="flex items-center justify-between mb-2">
-                <label htmlFor="password" className="block text-sm font-bold text-white/80">
+                <label htmlFor="password" className={`block text-sm font-bold ${highContrast ? 'text-hc-text' : 'text-white/80'}`}>
                   Password
                 </label>
                 {mode === 'login' && (
@@ -483,13 +485,13 @@ export default function ReelConnectionsAuthModal({
                 required
               />
               {mode === 'signup' && (
-                <p className="mt-1 text-xs text-white/50">Must be at least 6 characters</p>
+                <p className={`mt-1 text-xs ${highContrast ? 'text-hc-text' : 'text-white/50'}`}>Must be at least 6 characters</p>
               )}
             </div>
           )}
 
           {mode === 'reset' && (
-            <p className="text-sm text-white/60">
+            <p className={`text-sm ${highContrast ? 'text-hc-text' : 'text-white/60'}`}>
               Enter your email address and we'll send you a link to reset your password.
             </p>
           )}
@@ -518,14 +520,14 @@ export default function ReelConnectionsAuthModal({
                 setError(null);
                 setSuccessMessage(null);
               }}
-              className="text-sm font-semibold text-white/70 hover:text-accent-yellow transition-colors"
+              className={`text-sm font-semibold transition-colors ${highContrast ? 'text-hc-text hover:text-hc-warning-text' : 'text-white/70 hover:text-accent-yellow'}`}
             >
               Back to sign in
             </button>
           ) : (
             <button
               onClick={toggleMode}
-              className="text-sm font-semibold text-white/70 hover:text-accent-yellow transition-colors"
+              className={`text-sm font-semibold transition-colors ${highContrast ? 'text-hc-text hover:text-hc-warning-text' : 'text-white/70 hover:text-accent-yellow'}`}
             >
               {mode === 'signup'
                 ? 'Already have an account? Sign in'

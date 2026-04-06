@@ -15,7 +15,7 @@ const LOADING_MESSAGES = [
 ];
 
 export default function AnimatedLoadingMessage() {
-  const { reduceMotion } = useTheme();
+  const { reduceMotion, highContrast } = useTheme();
   const [messages, setMessages] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isVisible, setIsVisible] = useState(true);
@@ -60,9 +60,9 @@ export default function AnimatedLoadingMessage() {
   return (
     <div className="text-center">
       <p
-        className={`text-lg text-gray-700 dark:text-gray-300 font-medium transition-opacity duration-300 ${
-          isVisible ? 'opacity-100' : 'opacity-0'
-        }`}
+        className={`text-lg font-medium transition-opacity duration-300 ${
+          highContrast ? 'text-hc-text' : 'text-gray-700 dark:text-gray-300'
+        } ${isVisible ? 'opacity-100' : 'opacity-0'}`}
       >
         {messages[currentIndex] || ''}
       </p>

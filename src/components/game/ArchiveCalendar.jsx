@@ -480,7 +480,7 @@ export default function ArchiveCalendar({ isOpen, onClose, onSelectPuzzle }) {
               transition-all
               ${
                 highContrast
-                  ? 'bg-hc-primary border-hc-border hover:bg-hc-focus'
+                  ? 'bg-hc-primary text-hc-primary-text border-hc-border hover:bg-hc-focus'
                   : 'bg-accent-blue hover:'
               }
             `}

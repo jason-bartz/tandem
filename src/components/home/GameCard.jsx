@@ -105,15 +105,19 @@ export default function GameCard({
     >
       {/* Loading overlay when navigating */}
       {isNavigating && (
-        <div className="absolute inset-0 z-20 flex items-center justify-center bg-ghost-white/60 dark:bg-bg-card/60 rounded-lg">
-          <div className="w-5 h-5 border-2 border-gray-400 border-t-gray-900 dark:border-gray-500 dark:border-t-white rounded-full animate-spin" />
+        <div className={`absolute inset-0 z-20 flex items-center justify-center rounded-lg ${
+          highContrast ? 'bg-hc-surface/60' : 'bg-ghost-white/60 dark:bg-bg-card/60'
+        }`}>
+          <div className={`w-5 h-5 border-2 rounded-full animate-spin ${
+            highContrast ? 'border-hc-border border-t-hc-text' : 'border-gray-400 border-t-gray-900 dark:border-gray-500 dark:border-t-white'
+          }`} />
         </div>
       )}
 
       {/* Completed Badge */}
       {completed && !showNewBadge && (
         <motion.span
-          className={`absolute top-2 right-2 w-7 h-7 flex items-center justify-center rounded-full z-10 ${
+          className={`absolute top-2 right-2 w-6 h-6 flex items-center justify-center rounded-full z-10 ${
             highContrast ? 'bg-hc-text text-hc-background' : 'bg-green-500 text-white'
           }`}
           initial={reduceMotion ? false : { scale: 0, rotate: -90 }}
@@ -121,7 +125,7 @@ export default function GameCard({
           transition={{ type: 'spring', stiffness: 300, damping: 20, delay: animationDelay + 0.2 }}
         >
           <svg
-            className="w-4 h-4"
+            className="w-3.5 h-3.5"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -183,14 +187,14 @@ export default function GameCard({
             }`}
           >
             {unavailable ? (
-              <span className="text-amber-600 dark:text-amber-400">Will be ready shortly!</span>
+              <span className={highContrast ? 'text-hc-warning-text' : 'text-amber-600 dark:text-amber-400'}>Will be ready shortly!</span>
             ) : completed ? (
-              <span className="text-green-600 dark:text-green-400">{completedMessage}</span>
+              <span className={highContrast ? 'text-hc-success-text' : 'text-green-600 dark:text-green-400'}>{completedMessage}</span>
             ) : (
               <>
                 <span className="block">{`Puzzle #${puzzleNumber}`}</span>
                 {creator && (
-                  <span className="block text-xs text-accent-blue dark:text-accent-blue">
+                  <span className={`block text-xs ${highContrast ? 'text-hc-text' : 'text-accent-blue dark:text-accent-blue'}`}>
                     By {creator}
                   </span>
                 )}

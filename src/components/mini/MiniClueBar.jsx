@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { useTheme } from '@/contexts/ThemeContext';
 
 /**
  * MiniClueBar Component
@@ -21,6 +22,8 @@ export default function MiniClueBar({
   onNavigatePrevious,
   onClueClick,
 }) {
+  const { highContrast } = useTheme();
+
   if (!currentClue || !puzzle) {
     return (
       <div className="w-full py-1 px-2">
@@ -45,19 +48,18 @@ export default function MiniClueBar({
         {/* Previous button */}
         <button
           onClick={onNavigatePrevious}
-          className="
+          className={`
               flex-shrink-0
               w-10 h-10
               rounded-md
               bg-transparent
               flex items-center justify-center
-              hover:bg-gray-100 dark:hover:bg-gray-700
-              active:bg-gray-200 dark:active:bg-gray-600
+              ${highContrast ? 'hover:bg-hc-surface active:bg-hc-background border-2 border-hc-border' : 'hover:bg-gray-100 dark:hover:bg-gray-700 active:bg-gray-200 dark:active:bg-gray-600'}
               transition-colors
-            "
+            `}
           aria-label="Previous clue"
         >
-          <span className="text-xl text-text-primary">‹</span>
+          <span className={`text-xl ${highContrast ? 'text-hc-text' : 'text-text-primary'}`}>‹</span>
         </button>
 
         {/* Clue content */}
@@ -75,8 +77,8 @@ export default function MiniClueBar({
           role="status"
         >
           {/* Clue text - centered, allows wrapping */}
-          <p className="text-sm sm:text-base font-medium text-text-primary line-clamp-2">
-            <span className="inline-flex items-center justify-center w-5 h-5 text-[10px] font-black rounded bg-accent-blue text-white mr-1.5 align-middle">
+          <p className={`text-sm sm:text-base font-medium ${highContrast ? 'text-hc-text' : 'text-text-primary'} line-clamp-2`}>
+            <span className={`inline-flex items-center justify-center w-5 h-5 text-[10px] font-black rounded mr-1.5 align-middle ${highContrast ? 'bg-hc-primary text-hc-primary-text border-2 border-hc-border' : 'bg-accent-blue text-white'}`}>
               {clueNumber}
               {direction === 'across' ? 'A' : 'D'}
             </span>
@@ -87,19 +89,18 @@ export default function MiniClueBar({
         {/* Next button */}
         <button
           onClick={onNavigateNext}
-          className="
+          className={`
               flex-shrink-0
               w-10 h-10
               rounded-md
               bg-transparent
               flex items-center justify-center
-              hover:bg-gray-100 dark:hover:bg-gray-700
-              active:bg-gray-200 dark:active:bg-gray-600
+              ${highContrast ? 'hover:bg-hc-surface active:bg-hc-background border-2 border-hc-border' : 'hover:bg-gray-100 dark:hover:bg-gray-700 active:bg-gray-200 dark:active:bg-gray-600'}
               transition-colors
-            "
+            `}
           aria-label="Next clue"
         >
-          <span className="text-xl text-text-primary">›</span>
+          <span className={`text-xl ${highContrast ? 'text-hc-text' : 'text-text-primary'}`}>›</span>
         </button>
       </div>
     </div>

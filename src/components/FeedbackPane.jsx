@@ -200,7 +200,7 @@ export default function FeedbackPane({ isOpen, onClose }) {
                       className={`w-full text-left px-4 py-3 rounded-xl border-2 font-semibold text-sm transition-all flex items-center gap-3 ${
                         formData.category === category.value
                           ? highContrast
-                            ? 'bg-hc-primary border-hc-border text-black'
+                            ? 'bg-hc-primary border-hc-border text-hc-primary-text'
                             : 'bg-accent-blue border-border-main text-white'
                           : highContrast
                             ? 'bg-hc-surface border-hc-border text-gray-700 hover:bg-hc-primary/20'
@@ -311,7 +311,7 @@ export default function FeedbackPane({ isOpen, onClose }) {
                 disabled={!canSubmit || submitting}
                 className={`w-full py-4 rounded-lg border-2 font-bold text-base transition-all focus:outline-none focus:ring-4 ${
                   highContrast
-                    ? 'bg-hc-primary border-hc-border text-black hover:bg-hc-focus focus:ring-hc-focus/30'
+                    ? 'bg-hc-primary border-hc-border text-hc-primary-text hover:bg-hc-focus focus:ring-hc-focus/30'
                     : canSubmit && !submitting
                       ? 'bg-accent-blue border-border-main text-white hover: focus:ring-accent-blue/30'
                       : 'bg-gray-300 dark:bg-gray-600 border-border-main text-gray-500 dark:text-gray-400 cursor-not-allowed'

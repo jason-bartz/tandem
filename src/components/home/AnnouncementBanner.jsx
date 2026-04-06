@@ -65,7 +65,7 @@ export default function AnnouncementBanner() {
           ? { opacity: showBanner ? 1 : 0 }
           : {
               height: showBanner ? 'auto' : 0,
-              marginBottom: showBanner ? 16 : 0,
+              marginBottom: showBanner ? 24 : 0,
               opacity: showBanner ? 1 : 0,
             }
       }

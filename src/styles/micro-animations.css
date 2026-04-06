@@ -285,6 +285,32 @@ button[aria-label='Close']:not(.no-animation)::before {
 }
 
 /* ===========================================
+   HIGH CONTRAST OVERRIDES
+   =========================================== */
+
+/* In HC mode, replace shadow-based hover with border outlines */
+.high-contrast button:not(:disabled):not(.no-animation):hover {
+  box-shadow: none;
+  outline: 3px solid var(--hc-focus);
+  outline-offset: 2px;
+}
+
+.high-contrast button:not(:disabled):not(.no-animation):active {
+  box-shadow: none;
+}
+
+/* Share button: disable shine overlay in HC mode */
+.high-contrast .share-button::after {
+  display: none;
+}
+
+/* Share button: use solid border pulse instead of scale pulse */
+.high-contrast .share-button:not(:disabled):not(.no-animation) {
+  animation: none;
+  border: 2px solid var(--hc-border);
+}
+
+/* ===========================================
    UTILITY CLASSES
    =========================================== */
 

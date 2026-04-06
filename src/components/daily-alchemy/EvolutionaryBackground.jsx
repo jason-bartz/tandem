@@ -51,12 +51,17 @@ function createParticleConfigs() {
       size: layer.sizeMin + Math.random() * (layer.sizeMax - layer.sizeMin),
       baseOpacity: (BASE_OPACITY + Math.random() * OPACITY_RANGE) * layer.opacityMult,
       blur: layer.blur,
-      driftXDur: (30 + Math.random() * 50) / layer.speedMult,
-      driftYDur: (25 + Math.random() * 45) / layer.speedMult,
+      driftXDur: (40 + Math.random() * 60) / layer.speedMult,
+      driftYDur: (35 + Math.random() * 55) / layer.speedMult,
       driftXDelay: Math.random() * -60,
       driftYDelay: Math.random() * -60,
-      driftXPx: (15 + Math.random() * 30) * layer.driftMult,
-      driftYPx: (10 + Math.random() * 25) * layer.driftMult,
+      driftXPx: (20 + Math.random() * 35) * layer.driftMult,
+      driftYPx: (15 + Math.random() * 30) * layer.driftMult,
+      rotDur: 50 + Math.random() * 70,
+      rotDelay: Math.random() * -80,
+      rotDeg: 8 + Math.random() * 14,
+      // Each particle gets a random keyframe variant for organic variety
+      driftVariant: Math.floor(Math.random() * 3),
       tierOffset: (Math.random() - 0.5) * 0.1,
     };
   });
@@ -267,13 +272,59 @@ export function EvolutionaryBackground({ mode = 'daily', progress = 0, recentEmo
   return (
     <>
       <style>{`
-        @keyframes evo-drift-x {
-          0%, 100% { transform: translateX(calc(var(--dx) * 1px)); }
-          50% { transform: translateX(calc(var(--dx) * -1px)); }
+        .alchemy-scroll::-webkit-scrollbar {
+          display: none;
         }
-        @keyframes evo-drift-y {
-          0%, 100% { transform: translateY(calc(var(--dy) * 1px)); }
-          50% { transform: translateY(calc(var(--dy) * -1px)); }
+        .alchemy-scroll {
+          -ms-overflow-style: none;
+          scrollbar-width: none;
+        }
+        @keyframes evo-drift-x-0 {
+          0% { transform: translateX(calc(var(--dx) * 1px)); }
+          25% { transform: translateX(calc(var(--dx) * -0.4px)); }
+          50% { transform: translateX(calc(var(--dx) * -0.9px)); }
+          75% { transform: translateX(calc(var(--dx) * 0.3px)); }
+          100% { transform: translateX(calc(var(--dx) * 1px)); }
+        }
+        @keyframes evo-drift-x-1 {
+          0% { transform: translateX(calc(var(--dx) * -0.7px)); }
+          30% { transform: translateX(calc(var(--dx) * 0.8px)); }
+          60% { transform: translateX(calc(var(--dx) * -0.3px)); }
+          85% { transform: translateX(calc(var(--dx) * 1px)); }
+          100% { transform: translateX(calc(var(--dx) * -0.7px)); }
+        }
+        @keyframes evo-drift-x-2 {
+          0% { transform: translateX(calc(var(--dx) * 0.5px)); }
+          20% { transform: translateX(calc(var(--dx) * -1px)); }
+          55% { transform: translateX(calc(var(--dx) * 0.7px)); }
+          80% { transform: translateX(calc(var(--dx) * -0.2px)); }
+          100% { transform: translateX(calc(var(--dx) * 0.5px)); }
+        }
+        @keyframes evo-drift-y-0 {
+          0% { transform: translateY(calc(var(--dy) * 1px)); }
+          30% { transform: translateY(calc(var(--dy) * -0.6px)); }
+          60% { transform: translateY(calc(var(--dy) * -0.8px)); }
+          80% { transform: translateY(calc(var(--dy) * 0.5px)); }
+          100% { transform: translateY(calc(var(--dy) * 1px)); }
+        }
+        @keyframes evo-drift-y-1 {
+          0% { transform: translateY(calc(var(--dy) * -0.5px)); }
+          25% { transform: translateY(calc(var(--dy) * 0.9px)); }
+          50% { transform: translateY(calc(var(--dy) * -0.2px)); }
+          75% { transform: translateY(calc(var(--dy) * -1px)); }
+          100% { transform: translateY(calc(var(--dy) * -0.5px)); }
+        }
+        @keyframes evo-drift-y-2 {
+          0% { transform: translateY(calc(var(--dy) * 0.3px)); }
+          35% { transform: translateY(calc(var(--dy) * -0.8px)); }
+          65% { transform: translateY(calc(var(--dy) * 1px)); }
+          90% { transform: translateY(calc(var(--dy) * -0.4px)); }
+          100% { transform: translateY(calc(var(--dy) * 0.3px)); }
+        }
+        @keyframes evo-rotate {
+          0% { transform: rotate(calc(var(--rot) * 1deg)); }
+          50% { transform: rotate(calc(var(--rot) * -1deg)); }
+          100% { transform: rotate(calc(var(--rot) * 1deg)); }
         }
         @keyframes evo-pulse {
           0% { opacity: 0; transform: scale(1.3); }
@@ -345,7 +396,7 @@ export function EvolutionaryBackground({ mode = 'daily', progress = 0, recentEmo
                   '--dx': c.driftXPx,
                   animation: reduceMotion
                     ? 'none'
-                    : `evo-drift-x ${c.driftXDur}s ease-in-out ${c.driftXDelay}s infinite`,
+                    : `evo-drift-x-${c.driftVariant} ${c.driftXDur}s ease-in-out ${c.driftXDelay}s infinite`,
                 }}
               >
                 <div
@@ -353,10 +404,19 @@ export function EvolutionaryBackground({ mode = 'daily', progress = 0, recentEmo
                     '--dy': c.driftYPx,
                     animation: reduceMotion
                       ? 'none'
-                      : `evo-drift-y ${c.driftYDur}s ease-in-out ${c.driftYDelay}s infinite`,
+                      : `evo-drift-y-${c.driftVariant} ${c.driftYDur}s ease-in-out ${c.driftYDelay}s infinite`,
                   }}
                 >
-                  <span style={spanStyle}>{ps.emoji}</span>
+                  <div
+                    style={{
+                      '--rot': c.rotDeg,
+                      animation: reduceMotion
+                        ? 'none'
+                        : `evo-rotate ${c.rotDur}s ease-in-out ${c.rotDelay}s infinite`,
+                    }}
+                  >
+                    <span style={spanStyle}>{ps.emoji}</span>
+                  </div>
                 </div>
               </div>
             </div>

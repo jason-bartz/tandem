@@ -189,7 +189,7 @@ export default function ShareImageCard({
       <button
         onClick={handleShareImage}
         disabled={isGenerating}
-        className={`w-full py-3 px-4 rounded-xl font-bold transition-all flex items-center justify-center gap-2 disabled:opacity-50 ${buttonClassName}`}
+        className={`w-full h-14 px-4 rounded-md font-bold transition-all duration-200 hover:scale-105 flex items-center justify-center gap-2 disabled:opacity-50 ${buttonClassName}`}
       >
         {isGenerating ? (
           <>

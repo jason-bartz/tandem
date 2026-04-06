@@ -229,17 +229,8 @@ export default function MiniCompleteScreen({
           <div className="max-w-md mx-auto mb-8">
             <div className="grid grid-cols-2 gap-4">
               {/* Time box */}
-              <div
-                className="
-                  rounded-md
-                 
-                 
-                  dark:
-                  bg-accent-yellow/20 dark:bg-accent-yellow/10
-                  p-4
-                "
-              >
-                <div className="text-sm font-bold text-text-tertiary uppercase tracking-wide mb-2">
+              <div className="rounded-md bg-accent-yellow/20 dark:bg-accent-yellow/10 p-4">
+                <div className="text-sm font-bold text-text-secondary uppercase tracking-wide mb-2">
                   Time
                 </div>
                 <div className="text-2xl font-black text-text-primary">
@@ -248,16 +239,8 @@ export default function MiniCompleteScreen({
               </div>
 
               {/* Best Time box */}
-              <div
-                className="
-                  rounded-md
-                 
-                 
-                  dark:
-                  bg-accent-yellow/20 dark:bg-accent-yellow/10
-                  p-4
-                "
-              >
+              <div className="rounded-md bg-accent-yellow/20 dark:bg-accent-yellow/10 p-4">
+
                 <div className="text-sm font-bold text-text-tertiary uppercase tracking-wide mb-2">
                   Best
                 </div>
@@ -292,7 +275,7 @@ export default function MiniCompleteScreen({
               ]}
               accentColor="bg-accent-yellow"
               buttonLabel="Share as Image"
-              buttonClassName="bg-bg-surface dark:bg-gray-700 text-text-primary border-border-main hover:bg-gray-200 dark:hover:bg-gray-600"
+              buttonClassName="bg-bg-surface dark:bg-gray-700 text-text-primary hover:bg-gray-200 dark:hover:bg-gray-600"
             />
           </div>
 
@@ -304,18 +287,11 @@ export default function MiniCompleteScreen({
               className="
                 w-full h-14
                 rounded-md
-               
-               
-                dark:
-                bg-accent-yellow dark:bg-accent-yellow
+                bg-accent-yellow
                 text-gray-900
-                font-black
-                tracking-wider
-               
-                hover:
-               
-               
-                transition-all
+                font-bold
+                transition-all duration-200
+                hover:scale-105
               "
             >
               Leaderboard
@@ -324,22 +300,18 @@ export default function MiniCompleteScreen({
             {/* Play Archive Button */}
             <button
               onClick={() => setShowArchive(true)}
-              className={`
+              className="
                 w-full h-12
                 rounded-md
-               
-               
-                dark:
+                bg-bg-surface dark:bg-gray-700
+                text-text-primary
                 font-bold
-               
-                hover:
-               
-               
-                transition-all
-                bg-accent-yellow dark:bg-accent-yellow text-gray-900
-              `}
+                transition-all duration-200
+                hover:scale-105
+                hover:bg-gray-200 dark:hover:bg-gray-600
+              "
             >
-              <span>Play Archive</span>
+              Play Archive
             </button>
           </div>
 
@@ -368,14 +340,10 @@ export default function MiniCompleteScreen({
               w-full mt-6 p-4
               flex items-center gap-3
               text-left
-              bg-gray-50 dark:bg-gray-700
-              border-2 border-gray-300 dark:border-gray-600
-              rounded-xl
-             
-              dark:
-              hover:bg-gray-100 dark:hover:bg-gray-600
-              hover:border-gray-400 dark:hover:border-gray-500
-              transition-colors cursor-pointer
+              bg-bg-surface dark:bg-gray-700
+              rounded-lg
+              hover:bg-gray-200 dark:hover:bg-gray-600
+              transition-all duration-200 cursor-pointer
             "
           >
             {/* Discord Logo */}

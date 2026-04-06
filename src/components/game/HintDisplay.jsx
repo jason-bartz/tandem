@@ -97,7 +97,7 @@ export default function HintDisplay({
                 border-2
                 ${
                   highContrast
-                    ? 'bg-hc-warning border-hc-warning'
+                    ? 'bg-hc-warning border-hc-warning text-hc-warning-text'
                     : 'bg-accent-yellow dark:bg-yellow-600 border-accent-yellow dark:border-yellow-700 dark:'
                 }
               `}

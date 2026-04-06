@@ -255,7 +255,7 @@ export default function MiniWelcomeCard({ currentStreak = 0 }) {
         className={`w-full h-14 text-white rounded-md text-base font-bold cursor-pointer transition-all tracking-wider disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none
           ${
             highContrast
-              ? 'bg-hc-primary border-2 border-hc-border hover:bg-hc-focus'
+              ? 'bg-hc-primary text-hc-primary-text border-2 border-hc-border hover:bg-hc-focus'
               : 'dark: hover:dark:hover:'
           }
         `}

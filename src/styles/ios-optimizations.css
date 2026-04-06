@@ -166,11 +166,27 @@
   }
 }
 
-/* High contrast mode */
+/* High contrast mode - system preference */
 @media (prefers-contrast: high) {
   .ios-focusable:focus-visible {
     outline-width: 3px;
   }
+}
+
+/* High contrast mode - app toggle */
+.high-contrast .ios-modal-backdrop {
+  background-color: rgba(0, 0, 0, 0.7);
+}
+
+.high-contrast .ios-focusable:focus-visible {
+  outline: 3px solid var(--hc-focus);
+  outline-offset: 2px;
+}
+
+.high-contrast .ios-skeleton {
+  background: var(--hc-surface);
+  border: 2px solid var(--hc-border);
+  animation: none;
 }
 
 /* Landscape optimizations for iPhone */

@@ -1,5 +1,6 @@
 'use client';
 
+import { useTheme } from '@/contexts/ThemeContext';
 import ReelConnectionsModal from './ReelConnectionsModal';
 
 /**
@@ -7,12 +8,14 @@ import ReelConnectionsModal from './ReelConnectionsModal';
  * Styled with cinematic theme matching the game
  */
 export default function HowToPlayModal({ isOpen, onClose }) {
+  const { highContrast } = useTheme();
+
   return (
     <ReelConnectionsModal isOpen={isOpen} onClose={onClose} title="How to Play">
-      <div className="space-y-5 text-white/90">
+      <div className={`space-y-5 ${highContrast ? 'text-hc-text' : 'text-white/90'}`}>
         {/* Main Description */}
         <div className="text-center">
-          <p className="text-lg font-semibold text-[#ffce00]">
+          <p className={`text-lg font-semibold ${highContrast ? 'text-hc-warning-text' : 'text-[#ffce00]'}`}>
             Find groups of four movies that share something in common.
           </p>
         </div>
@@ -37,7 +40,7 @@ export default function HowToPlayModal({ isOpen, onClose }) {
 
         {/* Tips Section */}
         <div className="bg-ghost-white/5 rounded-xl p-4 border border-white/10">
-          <p className="text-sm text-white/70 mb-2 font-medium">Tip:</p>
+          <p className={`text-sm mb-2 font-medium ${highContrast ? 'text-hc-text' : 'text-white/70'}`}>Tip:</p>
           <p className="text-sm">
             Hold any poster, then tap the banner to enlarge it for a better view.
           </p>
@@ -45,7 +48,7 @@ export default function HowToPlayModal({ isOpen, onClose }) {
 
         {/* Difficulty Colors */}
         <div className="bg-ghost-white/5 rounded-xl p-4 border border-white/10">
-          <p className="text-sm text-white/70 mb-3">Categories are color-coded by difficulty:</p>
+          <p className={`text-sm mb-3 ${highContrast ? 'text-hc-text' : 'text-white/70'}`}>Categories are color-coded by difficulty:</p>
           <div className="space-y-2">
             <div className="flex items-center gap-3">
               <div className="w-4 h-4 rounded bg-yellow-300" />
@@ -68,7 +71,7 @@ export default function HowToPlayModal({ isOpen, onClose }) {
 
         {/* Daily Reset */}
         <div className="text-center pt-2">
-          <p className="text-sm text-white/60">A new puzzle is available every day at midnight.</p>
+          <p className={`text-sm ${highContrast ? 'text-hc-text' : 'text-white/60'}`}>A new puzzle is available every day at midnight.</p>
         </div>
       </div>
     </ReelConnectionsModal>

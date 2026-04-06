@@ -17,7 +17,7 @@ export default function RulesModal({ isOpen, onClose }) {
           onClick={onClose}
           className={`w-full py-3 font-semibold rounded-xl transition-all border-2 ${
             highContrast
-              ? 'bg-hc-primary text-white border-hc-border hover:bg-hc-focus'
+              ? 'bg-hc-primary text-hc-primary-text border-hc-border hover:bg-hc-focus'
               : 'bg-primary text-white border-transparent hover:scale-105'
           }`}
         >

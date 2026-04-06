@@ -114,9 +114,9 @@ function MovieSearchInput({ value, onChange, groupColor, onShuffle, shuffleLoadi
   return (
     <div ref={containerRef} className="relative">
       {value ? (
-        <div className={`${groupColor} rounded-xl p-3`}>
-          <div className="flex items-center gap-3">
-            <div className="w-16 h-24 rounded-lg overflow-hidden border-2 flex-shrink-0">
+        <div className={`${groupColor} rounded-xl p-2 sm:p-3`}>
+          <div className="flex items-center gap-2 sm:gap-3">
+            <div className="w-12 h-18 sm:w-16 sm:h-24 rounded-lg overflow-hidden border-2 flex-shrink-0">
               <img src={value.poster} alt={value.title} className="w-full h-full object-cover" />
             </div>
             <div className="flex-1 min-w-0">
@@ -580,105 +580,105 @@ export default function ReelConnectionsPuzzleEditor({
   };
 
   return (
-    <div className="bg-bg-surface rounded-lg p-3 sm:p-4">
-      <div className="flex justify-between items-start mb-4">
-        <div className="flex-1">
-          <div className="flex items-center gap-3 mb-1">
-            <h3 className="text-lg font-bold text-text-primary">
-              {puzzle ? 'Edit Puzzle' : 'Create New Puzzle'}
-            </h3>
-          </div>
-          {selectedDate ? (
-            <div className="flex items-center gap-2">
-              <p className="text-sm text-text-secondary font-medium">
-                {new Date(selectedDate + 'T00:00:00').toLocaleDateString('en-US', {
-                  weekday: 'long',
-                  year: 'numeric',
-                  month: 'long',
-                  day: 'numeric',
-                })}
-              </p>
-              {!date && (
-                <button
-                  onClick={() => setSelectedDate('')}
-                  className="text-xs text-accent-blue hover:underline font-medium"
-                >
-                  Change
-                </button>
+    <div className="bg-bg-surface rounded-lg p-2.5 sm:p-4">
+      <div className="mb-3 sm:mb-4">
+        <div className="flex justify-between items-center gap-2 mb-1">
+          <h3 className="text-base sm:text-lg font-bold text-text-primary whitespace-nowrap">
+            {puzzle ? 'Edit Puzzle' : 'Create New Puzzle'}
+          </h3>
+          <div className="flex gap-1.5 sm:gap-2 flex-shrink-0">
+            <button
+              onClick={handleGenerateAll}
+              disabled={loading || generatingAll || generatingForGroup !== null}
+              className="px-2 py-1 bg-accent-green text-white font-bold rounded-lg transition-transform text-xs flex items-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
+            >
+              {generatingAll ? (
+                <>
+                  <svg className="w-3.5 h-3.5 animate-spin" fill="none" viewBox="0 0 24 24">
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    />
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    />
+                  </svg>
+                  <span className="hidden sm:inline">Generating...</span>
+                  <span className="sm:hidden">...</span>
+                </>
+              ) : (
+                <>
+                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M13 10V3L4 14h7v7l9-11h-7z"
+                    />
+                  </svg>
+                  <span className="hidden sm:inline">Generate All</span>
+                  <span className="sm:hidden">Generate</span>
+                </>
               )}
-            </div>
-          ) : (
-            <div className="flex items-center gap-2">
-              <label className="text-sm text-text-secondary font-medium">Select date:</label>
-              <input
-                type="date"
-                value={selectedDate}
-                onChange={(e) => setSelectedDate(e.target.value)}
-                className="px-3 py-1 rounded-lg bg-bg-card text-text-primary font-medium text-sm"
-              />
-            </div>
-          )}
-        </div>
-        <div className="flex gap-2 flex-shrink-0">
-          <button
-            onClick={handleGenerateAll}
-            disabled={loading || generatingAll || generatingForGroup !== null}
-            className="px-2 py-1 bg-accent-green text-white font-bold rounded-lg transition-transform text-xs flex items-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {generatingAll ? (
-              <>
-                <svg className="w-3.5 h-3.5 animate-spin" fill="none" viewBox="0 0 24 24">
-                  <circle
-                    className="opacity-25"
-                    cx="12"
-                    cy="12"
-                    r="10"
-                    stroke="currentColor"
-                    strokeWidth="4"
-                  />
-                  <path
-                    className="opacity-75"
-                    fill="currentColor"
-                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                  />
-                </svg>
-                Generating...
-              </>
-            ) : (
-              <>
+            </button>
+            {onShowConnections && (
+              <button
+                onClick={onShowConnections}
+                className="px-2 py-1 bg-accent-blue text-white font-bold rounded-lg transition-transform text-xs flex items-center gap-1.5 flex-shrink-0 whitespace-nowrap"
+              >
                 <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
                     strokeWidth={2}
-                    d="M13 10V3L4 14h7v7l9-11h-7z"
+                    d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"
                   />
                 </svg>
-                Generate All
-              </>
+                Tracker
+              </button>
             )}
-          </button>
-          {onShowConnections && (
-            <button
-              onClick={onShowConnections}
-              className="px-2 py-1 bg-accent-blue text-white font-bold rounded-lg transition-transform text-xs flex items-center gap-1.5 flex-shrink-0"
-            >
-              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"
-                />
-              </svg>
-              Tracker
-            </button>
-          )}
+          </div>
         </div>
+        {selectedDate ? (
+          <div className="flex items-center gap-2">
+            <p className="text-xs sm:text-sm text-text-secondary font-medium">
+              {new Date(selectedDate + 'T00:00:00').toLocaleDateString('en-US', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+              })}
+            </p>
+            {!date && (
+              <button
+                onClick={() => setSelectedDate('')}
+                className="text-xs text-accent-blue hover:underline font-medium"
+              >
+                Change
+              </button>
+            )}
+          </div>
+        ) : (
+          <div className="flex items-center gap-2">
+            <label className="text-sm text-text-secondary font-medium">Select date:</label>
+            <input
+              type="date"
+              value={selectedDate}
+              onChange={(e) => setSelectedDate(e.target.value)}
+              className="px-3 py-1 rounded-lg bg-bg-card text-text-primary font-medium text-sm"
+            />
+          </div>
+        )}
       </div>
 
       {/* Generate All context input */}
-      <div className="mt-3 mb-4">
+      <div className="mb-3 sm:mb-4">
         <label className="block text-xs font-bold text-text-secondary mb-1">
           Generate All Context (optional)
         </label>
@@ -700,7 +700,7 @@ export default function ReelConnectionsPuzzleEditor({
           const isSuggestionsLoading = suggestionsLoading[groupIndex];
 
           return (
-            <div key={levelInfo.id} className={`${levelInfo.color} rounded-xl p-4`}>
+            <div key={levelInfo.id} className={`${levelInfo.color} rounded-xl p-2.5 sm:p-4`}>
               <div className="mb-3">
                 <div className="flex items-center justify-between mb-1.5">
                   <label className={`block text-xs font-bold ${levelInfo.textColor}`}>
@@ -710,7 +710,7 @@ export default function ReelConnectionsPuzzleEditor({
                     type="button"
                     onClick={() => handleSuggestIdeas(groupIndex)}
                     disabled={loading || isSuggestionsLoading || isGenerating}
-                    className="flex items-center gap-1 px-2 py-0.5 bg-ghost-white text-text-primary rounded-lg transition-transform disabled:opacity-50 disabled:cursor-not-allowed text-xs font-bold"
+                    className="flex items-center gap-1 px-2 py-0.5 bg-ghost-white text-text-primary rounded-lg transition-transform disabled:opacity-50 disabled:cursor-not-allowed text-xs font-bold whitespace-nowrap"
                   >
                     {isSuggestionsLoading ? (
                       <>
@@ -849,7 +849,7 @@ export default function ReelConnectionsPuzzleEditor({
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
                 {group.movies.map((movie, movieIndex) => {
                   const shuffleKey = `${groupIndex}-${movieIndex}`;
                   const isShuffling = shuffleLoading[shuffleKey];

@@ -1,5 +1,6 @@
 'use client';
 import { useState } from 'react';
+import { useTheme } from '@/contexts/ThemeContext';
 
 /**
  * AchievementToast - Display achievement unlock notifications
@@ -9,7 +10,8 @@ import { useState } from 'react';
  */
 
 // Map achievement game type to accent color
-function getToastColors(achievement) {
+function getToastColors(achievement, highContrast) {
+  if (highContrast) return 'bg-hc-surface text-hc-text border-2 border-hc-border';
   const id = achievement?.id || '';
   if (id.includes('mini')) return 'bg-accent-yellow text-black';
   if (id.includes('reel')) return 'bg-red-500 text-white';
@@ -18,6 +20,7 @@ function getToastColors(achievement) {
 }
 
 export default function AchievementToast() {
+  const { highContrast } = useTheme();
   const [achievement, setAchievement] = useState(null);
   const [visible, setVisible] = useState(false);
 
@@ -41,7 +44,7 @@ export default function AchievementToast() {
     return null;
   }
 
-  const colorClasses = getToastColors(achievement);
+  const colorClasses = getToastColors(achievement, highContrast);
 
   return (
     <div
@@ -54,7 +57,7 @@ export default function AchievementToast() {
       aria-live="polite"
     >
       <div
-        className={`${colorClasses} px-5 py-3.5 rounded-2xl flex items-center gap-3 max-w-sm border-2 border-black/10`}
+        className={`${colorClasses} px-5 py-3.5 rounded-2xl flex items-center gap-3 max-w-sm ${highContrast ? '' : 'border-2 border-black/10'}`}
       >
         <span className="text-4xl">{achievement.emoji}</span>
         <div className="flex-1">

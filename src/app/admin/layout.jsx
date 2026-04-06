@@ -168,20 +168,20 @@ export default function AdminLayout({ children }) {
   return (
     <div className="admin-theme min-h-screen bg-ghost-white">
       <nav className="bg-bg-surface border-b-[1.5px]">
-        <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
+        <div className="w-full max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-14 sm:h-16">
             {/* Left: Greeting */}
             <div className="flex-1 min-w-0">
               {currentUser && (
-                <p className="text-sm font-semibold text-text-secondary truncate">
+                <p className="text-xs sm:text-sm font-semibold text-text-secondary truncate">
                   {getGreeting()}, <span className="text-text-primary">{getDisplayName()}</span>
                 </p>
               )}
             </div>
 
             {/* Center: Logo */}
-            <div className="flex items-center justify-center px-4">
-              <Image src="/branding/admin-logo.png" alt="Tandem Admin" width={120} height={40} />
+            <div className="flex items-center justify-center px-2 sm:px-4">
+              <Image src="/branding/admin-logo.png" alt="Tandem Admin" width={120} height={40} className="w-[90px] sm:w-[120px] h-auto" />
             </div>
 
             {/* Right: Actions + User Menu */}
@@ -282,8 +282,8 @@ export default function AdminLayout({ children }) {
           </div>
         </div>
       </nav>
-      <main className="py-4 px-4 sm:py-6 sm:px-6 lg:px-8">
-        <div className="p-4 sm:p-6 min-h-[600px] w-full max-w-7xl mx-auto overflow-visible">
+      <main className="py-2 px-2 sm:py-6 sm:px-6 lg:px-8">
+        <div className="p-1 sm:p-6 min-h-[600px] w-full max-w-7xl mx-auto overflow-visible">
           {children}
         </div>
       </main>

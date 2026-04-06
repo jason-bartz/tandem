@@ -31,6 +31,7 @@ export default function OnScreenKeyboard({
   isSmallPhone = false,
   isMobilePhone = false,
   checkButtonColor = 'var(--primary)', // Default blue for Daily Tandem
+  backspaceColor = null, // Optional themed color for backspace key
   actionKeyType = 'check', // 'check' for checkmark (ENTER), 'tab' for tab arrow (TAB)
   keyPosition = 0, // Current position in the row (for pitch escalation)
   rowLength = 5, // Total letters in the row
@@ -130,10 +131,9 @@ export default function OnScreenKeyboard({
       select-none cursor-pointer touch-manipulation font-bold
       rounded-xl
       flex items-center justify-center
-      dark:
       transition-all duration-150 ease-out
       ${isSpecialKey ? 'text-sm sm:text-base px-1 sm:px-2' : 'text-lg sm:text-xl'}
-      ${isPressed ? 'translate-x-[2px] translate-y-[2px]' : ' active:'}
+      ${isPressed ? 'translate-x-[2px] translate-y-[2px]' : ''}
     `;
 
     if (highContrast) {
@@ -155,7 +155,7 @@ export default function OnScreenKeyboard({
             isEnterKey
               ? 'bg-hc-primary text-hc-primary-text border-hc-border'
               : isBackspaceKey
-                ? 'bg-hc-warning text-hc-text border-hc-border'
+                ? 'bg-hc-warning text-hc-warning-text border-hc-border'
                 : 'bg-hc-surface text-hc-text border-hc-border'
           }
           ${!disabled && '@media (hover: hover) { hover:bg-hc-focus hover:text-hc-primary-text }'}
@@ -164,17 +164,19 @@ export default function OnScreenKeyboard({
       }
     } else {
       // Regular styling - neo-brutalist
+      // When backspaceColor is set, backspace key gets inline styles instead
+      const useInlineBackspace = isBackspaceKey && backspaceColor;
       if (isDark) {
         baseClasses += `
-          ${isBackspaceKey ? 'bg-gray-600 text-gray-100' : 'bg-gray-700 text-gray-200'}
-          ${!disabled && !isEnterKey && 'md:hover:bg-gray-600'}
-          ${isPressed && !isEnterKey && 'bg-gray-600'}
+          ${useInlineBackspace ? '' : isBackspaceKey ? 'bg-gray-500 text-white' : 'bg-gray-700 text-gray-200'}
+          ${!disabled && !isEnterKey && !useInlineBackspace && 'md:hover:bg-gray-600'}
+          ${isPressed && !isEnterKey && !useInlineBackspace && 'bg-gray-600'}
         `;
       } else {
         baseClasses += `
-          ${isBackspaceKey ? 'bg-gray-300 text-gray-800' : 'bg-gray-100 text-gray-800'}
-          ${!disabled && !isEnterKey && 'md:hover:bg-gray-200'}
-          ${isPressed && !isEnterKey && 'bg-gray-200'}
+          ${useInlineBackspace ? '' : isBackspaceKey ? 'bg-gray-400 text-gray-900' : 'bg-gray-100 text-gray-800'}
+          ${!disabled && !isEnterKey && !useInlineBackspace && 'md:hover:bg-gray-200'}
+          ${isPressed && !isEnterKey && !useInlineBackspace && 'bg-gray-200'}
         `;
       }
     }
@@ -368,10 +370,16 @@ export default function OnScreenKeyboard({
                     key === 'ENTER' && !highContrast
                       ? {
                           backgroundColor: checkButtonColor,
-                          color: isDark ? 'var(--text-primary)' : 'var(--text-primary)',
+                          color: 'white',
                           borderColor: isDark ? 'transparent' : 'var(--border-main)',
                         }
-                      : {}
+                      : key === 'BACKSPACE' && backspaceColor && !highContrast
+                        ? {
+                            backgroundColor: backspaceColor,
+                            color: 'white',
+                            borderColor: isDark ? 'transparent' : 'var(--border-main)',
+                          }
+                        : {}
                   }
                   aria-label={
                     key === 'BACKSPACE'

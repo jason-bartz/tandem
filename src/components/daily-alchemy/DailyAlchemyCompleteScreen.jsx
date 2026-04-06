@@ -588,28 +588,27 @@ export function DailyAlchemyCompleteScreen({
             </motion.div>
           )}
 
-          {/* Creative Mode Button */}
-          <motion.button
-            onClick={handleFreePlayClick}
-            className={cn(
-              'w-full max-w-sm flex items-center justify-center gap-2 py-3',
-              'bg-gray-200 dark:bg-gray-700',
-              'text-gray-800 dark:text-gray-200',
-              'dark:border-gray-600',
-              'rounded-xl font-bold',
-              'dark:',
-              'hover:bg-gray-300 dark:hover:bg-gray-600',
-              ' hover:',
-              '',
-              'transition-all duration-150',
-              highContrast && 'border-2 border-hc-border'
-            )}
-            initial={!reduceMotion ? { opacity: 0, y: 10 } : false}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.65 }}
-          >
-            <span>Play Creative Mode</span>
-          </motion.button>
+          {/* Creative Mode Button — only show if Continue Discovering is not available */}
+          {!onContinueDiscovering && (
+            <motion.button
+              onClick={handleFreePlayClick}
+              className={cn(
+                'w-full max-w-sm flex items-center justify-center gap-2 py-3',
+                'bg-gray-200 dark:bg-gray-700',
+                'text-gray-800 dark:text-gray-200',
+                'dark:border-gray-600',
+                'rounded-xl font-bold',
+                'hover:bg-gray-300 dark:hover:bg-gray-600',
+                'transition-all duration-150',
+                highContrast && 'border-2 border-hc-border'
+              )}
+              initial={!reduceMotion ? { opacity: 0, y: 10 } : false}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.65 }}
+            >
+              <span>Play Creative Mode</span>
+            </motion.button>
+          )}
 
           {/* Discord Link */}
           <motion.a

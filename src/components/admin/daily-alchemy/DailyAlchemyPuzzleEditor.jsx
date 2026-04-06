@@ -432,7 +432,7 @@ export default function DailyAlchemyPuzzleEditor({ puzzle, date, onSave, onCance
   const exactMatch = searchResults.some((el) => el.name.toLowerCase() === searchText.toLowerCase());
 
   return (
-    <div className="bg-ghost-white dark:bg-gray-800 rounded-lg p-3 sm:p-4 overflow-visible">
+    <div className="bg-ghost-white dark:bg-gray-800 rounded-lg p-2.5 sm:p-4 overflow-visible">
       <div className="mb-4">
         <h2 className="text-lg font-black text-text-primary">
           {puzzle ? 'Edit puzzle' : 'Create new puzzle'}

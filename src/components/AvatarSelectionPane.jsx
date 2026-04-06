@@ -285,7 +285,7 @@ export default function AvatarSelectionPane({
                 saving ? 'opacity-50 cursor-not-allowed' : ''
               } ${
                 highContrast
-                  ? 'bg-hc-primary text-white border-hc-border hover:bg-hc-focus'
+                  ? 'bg-hc-primary text-hc-primary-text border-hc-border hover:bg-hc-focus'
                   : 'bg-purple-500 text-white hover:'
               }`}
             >
@@ -310,7 +310,7 @@ export default function AvatarSelectionPane({
             onClick={loadAvatars}
             className={`py-2 px-4 rounded-xl border-2 font-medium text-sm transition-all ${
               highContrast
-                ? 'bg-hc-primary text-white border-hc-border hover:bg-hc-focus'
+                ? 'bg-hc-primary text-hc-primary-text border-hc-border hover:bg-hc-focus'
                 : 'bg-sky-500 text-white'
             }`}
           >

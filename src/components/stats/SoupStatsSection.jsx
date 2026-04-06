@@ -97,7 +97,7 @@ export default function SoupStatsSection({ stats, animationKey }) {
             }}
             className={`w-full py-3 px-4 rounded-md font-semibold text-sm transition-all duration-200 flex items-center justify-center hover:scale-105 ${
               highContrast
-                ? 'bg-hc-primary text-hc-text hover:bg-hc-focus'
+                ? 'bg-hc-primary text-hc-primary-text hover:bg-hc-focus'
                 : 'bg-soup-primary dark:bg-soup-hover text-white'
             }`}
           >
@@ -149,7 +149,7 @@ export default function SoupStatsSection({ stats, animationKey }) {
               }}
               className={`w-full py-3 px-4 rounded-md font-semibold text-sm transition-all duration-200 flex items-center justify-center hover:scale-105 ${
                 highContrast
-                  ? 'bg-hc-primary text-hc-text hover:bg-hc-focus'
+                  ? 'bg-hc-primary text-hc-primary-text hover:bg-hc-focus'
                   : 'bg-soup-primary dark:bg-soup-hover text-white'
               }`}
             >

@@ -12,7 +12,7 @@ export default function StatsBar({
   hardModeTimeLimit = 120,
   hasActiveHint = false,
 }) {
-  const { reduceMotion } = useTheme();
+  const { reduceMotion, highContrast } = useTheme();
   const [bounceTimer, setBounceTimer] = useState(false);
   const [bounceMistakes, setBounceMistakes] = useState(false);
   const [bounceSolved, setBounceSolved] = useState(false);
@@ -73,13 +73,13 @@ export default function StatsBar({
             : isMobilePhone
               ? 'gap-3 mb-4 p-3'
               : 'gap-4 sm:gap-6 md:gap-8 mb-6 p-4'
-      } ${isHardMode ? 'bg-gradient-to-r from-red-50 to-orange-50 dark:from-gray-800 dark:to-gray-800 border-2 border-red-200 dark:border-red-800' : 'bg-bg-surface dark:bg-gray-800'} rounded-lg score-display max-w-md mx-auto transition-all duration-300 ${reduceMotion ? '' : 'animate-slide-down'}`}
+      } ${highContrast ? 'bg-hc-surface border-2' + (isHardMode ? ' border-hc-warning' : ' border-hc-border') : isHardMode ? 'bg-gradient-to-r from-red-50 to-orange-50 dark:from-gray-800 dark:to-gray-800 border-2 border-red-200 dark:border-red-800' : 'bg-bg-surface dark:bg-gray-800'} rounded-lg score-display max-w-md mx-auto transition-all duration-300 ${reduceMotion ? '' : 'animate-slide-down'}`}
     >
       <div className="text-center flex-1 sm:flex-initial">
         <div
           className={`${
             isSmallPhone ? 'text-base' : isMobilePhone ? 'text-lg' : 'text-xl'
-          } font-bold ${isHardMode && isTimeCritical ? 'text-red-600 dark:text-red-400 animate-pulse' : 'text-text-primary dark:text-gray-200'} ${
+          } font-bold ${highContrast ? 'text-hc-text' : isHardMode && isTimeCritical ? 'text-red-600 dark:text-red-400 animate-pulse' : 'text-text-primary dark:text-gray-200'} ${
             bounceTimer && !reduceMotion ? 'animate-timer-bounce' : ''
           }`}
         >
@@ -88,7 +88,7 @@ export default function StatsBar({
         <div
           className={`${
             isSmallPhone ? 'text-[10px]' : 'text-xs'
-          } ${isHardMode && isTimeCritical ? 'text-red-600 dark:text-red-400' : 'text-text-secondary dark:text-gray-400'} mt-1`}
+          } ${highContrast ? 'text-hc-text' : isHardMode && isTimeCritical ? 'text-red-600 dark:text-red-400' : 'text-text-secondary dark:text-gray-400'} mt-1`}
         >
           {isHardMode ? 'Time Left' : 'Time'}
         </div>
@@ -97,7 +97,7 @@ export default function StatsBar({
         <div
           className={`${
             isSmallPhone ? 'text-base' : isMobilePhone ? 'text-lg' : 'text-xl'
-          } font-bold text-text-primary dark:text-gray-200 ${
+          } font-bold ${highContrast ? 'text-hc-text' : 'text-text-primary dark:text-gray-200'} ${
             bounceMistakes && !reduceMotion ? 'animate-timer-bounce' : ''
           }`}
         >
@@ -106,7 +106,7 @@ export default function StatsBar({
         <div
           className={`${
             isSmallPhone ? 'text-[10px]' : 'text-xs'
-          } text-text-secondary dark:text-gray-400 mt-1`}
+          } ${highContrast ? 'text-hc-text' : 'text-text-secondary dark:text-gray-400'} mt-1`}
         >
           Mistakes
         </div>
@@ -115,7 +115,7 @@ export default function StatsBar({
         <div
           className={`${
             isSmallPhone ? 'text-base' : isMobilePhone ? 'text-lg' : 'text-xl'
-          } font-bold text-text-primary dark:text-gray-200 ${
+          } font-bold ${highContrast ? 'text-hc-text' : 'text-text-primary dark:text-gray-200'} ${
             bounceSolved && !reduceMotion ? 'animate-timer-bounce' : ''
           }`}
         >
@@ -124,7 +124,7 @@ export default function StatsBar({
         <div
           className={`${
             isSmallPhone ? 'text-[10px]' : 'text-xs'
-          } text-text-secondary dark:text-gray-400 mt-1`}
+          } ${highContrast ? 'text-hc-text' : 'text-text-secondary dark:text-gray-400'} mt-1`}
         >
           Solved
         </div>

@@ -18,6 +18,7 @@ import {
   getNextCell,
   getNextClue,
   getNextClueInSection,
+  getPreviousClueInSection,
   getPreviousClue,
   isCellCorrect,
   isWordCorrect,
@@ -504,6 +505,26 @@ export function useMiniGame(providedDate = null) {
   }, [puzzle, currentClue, solutionGrid, clueNumbers]);
 
   /**
+   * Navigate to previous clue within the same section (Across or Down)
+   * Used for Shift+Tab key navigation
+   */
+  const navigateToPreviousClueInSection = useCallback(() => {
+    if (!puzzle || !currentClue || !solutionGrid || !clueNumbers) return;
+
+    const prevClue = getPreviousClueInSection(
+      puzzle.clues,
+      currentClue.clueNumber,
+      currentClue.direction,
+      solutionGrid,
+      clueNumbers
+    );
+    if (prevClue && prevClue.cells && prevClue.cells.length > 0) {
+      setSelectedCell(prevClue.cells[0]);
+      setDirection(prevClue.direction);
+    }
+  }, [puzzle, currentClue, solutionGrid, clueNumbers]);
+
+  /**
    * Navigate to previous clue
    */
   const navigateToPreviousClue = useCallback(() => {
@@ -901,6 +922,7 @@ export function useMiniGame(providedDate = null) {
     selectCell,
     navigateToNextClue,
     navigateToNextClueInSection,
+    navigateToPreviousClueInSection,
     navigateToPreviousClue,
     navigateToClue,
     checkCell,

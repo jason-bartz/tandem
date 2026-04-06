@@ -418,7 +418,7 @@ export default function PuzzleEditor({ initialPuzzle, onClose, onShowBulkImport,
   };
 
   return (
-    <div className="bg-bg-surface rounded-lg p-3 sm:p-6 h-full w-full overflow-x-auto">
+    <div className="bg-bg-surface rounded-lg p-2 sm:p-6 h-full w-full overflow-x-auto">
       {/* Header with date and Themes button */}
       <div className="flex justify-between items-start mb-4">
         <div className="flex-1">
@@ -460,7 +460,7 @@ export default function PuzzleEditor({ initialPuzzle, onClose, onShowBulkImport,
               type="button"
               onClick={handleGenerateWithAI}
               disabled={generating || loading || suggestingThemes}
-              className="px-2.5 sm:px-3 py-1.5 text-xs sm:text-sm bg-accent-green text-white rounded-md sm:rounded-lg font-bold transition-transform disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-2.5 sm:px-3 py-1.5 text-xs sm:text-sm bg-accent-green text-white rounded-md sm:rounded-lg font-bold transition-transform disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
               title="Generate puzzle with AI"
             >
               {generating ? (
@@ -491,7 +491,7 @@ export default function PuzzleEditor({ initialPuzzle, onClose, onShowBulkImport,
               type="button"
               onClick={handleSuggestThemes}
               disabled={suggestingThemes || generating || loading}
-              className="px-2.5 sm:px-3 py-1.5 text-xs sm:text-sm bg-accent-yellow text-text-primary rounded-md sm:rounded-lg font-bold transition-transform disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-2.5 sm:px-3 py-1.5 text-xs sm:text-sm bg-accent-yellow text-text-primary rounded-md sm:rounded-lg font-bold transition-transform disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
               title="Get theme suggestions"
             >
               {suggestingThemes ? (
@@ -712,7 +712,7 @@ export default function PuzzleEditor({ initialPuzzle, onClose, onShowBulkImport,
                   type="button"
                   onClick={handleAssessDifficulty}
                   disabled={assessingDifficulty || generating || loading}
-                  className="w-full sm:w-auto px-2.5 sm:px-3 py-1.5 text-xs sm:text-sm bg-accent-orange text-white rounded-md sm:rounded-lg font-bold transition-transform disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full sm:w-auto px-2.5 sm:px-3 py-1.5 text-xs sm:text-sm bg-accent-orange text-white rounded-md sm:rounded-lg font-bold transition-transform disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
                   title="Assess difficulty using AI"
                 >
                   {assessingDifficulty ? (

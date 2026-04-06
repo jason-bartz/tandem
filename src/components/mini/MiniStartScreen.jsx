@@ -80,7 +80,7 @@ export default function MiniStartScreen({ puzzle, onStart }) {
                 transition-all
                 ${
                   highContrast
-                    ? 'bg-hc-primary text-white'
+                    ? 'bg-hc-primary text-hc-primary-text'
                     : 'bg-accent-yellow dark:bg-accent-yellow text-gray-900'
                 }
                 ${

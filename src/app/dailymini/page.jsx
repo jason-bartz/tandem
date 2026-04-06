@@ -155,6 +155,7 @@ export default function DailyMiniPage() {
           navigateToNextClue={game.navigateToNextClue}
           navigateToNextClueInSection={game.navigateToNextClueInSection}
           navigateToPreviousClue={game.navigateToPreviousClue}
+          navigateToPreviousClueInSection={game.navigateToPreviousClueInSection}
           navigateToClue={game.navigateToClue}
           pauseGame={game.pauseGame}
           resumeGame={game.resumeGame}

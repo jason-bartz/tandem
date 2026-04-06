@@ -155,7 +155,7 @@ export default function AchievementsModal({ isOpen, onClose }) {
           <div
             className={`rounded-lg border-2 p-4 mb-4 ${
               highContrast
-                ? 'bg-hc-primary text-white border-hc-border'
+                ? 'bg-hc-primary text-hc-primary-text border-hc-border'
                 : 'bg-accent-blue text-white dark:'
             }`}
           >
@@ -190,7 +190,7 @@ export default function AchievementsModal({ isOpen, onClose }) {
               className={`flex-1 py-2 px-2 rounded-xl border-2 font-bold text-xs transition-all ${
                 activeTab === 'tandem'
                   ? highContrast
-                    ? 'bg-hc-primary text-hc-text border-hc-border'
+                    ? 'bg-hc-primary text-hc-primary-text border-hc-border'
                     : 'bg-accent-blue text-white dark:'
                   : highContrast
                     ? 'bg-hc-surface text-hc-text border-hc-border hover:bg-hc-surface/80'
@@ -204,7 +204,7 @@ export default function AchievementsModal({ isOpen, onClose }) {
               className={`flex-1 py-2 px-2 rounded-xl border-2 font-bold text-xs transition-all ${
                 activeTab === 'mini'
                   ? highContrast
-                    ? 'bg-hc-primary text-hc-text border-hc-border'
+                    ? 'bg-hc-primary text-hc-primary-text border-hc-border'
                     : 'bg-accent-yellow text-black dark:'
                   : highContrast
                     ? 'bg-hc-surface text-hc-text border-hc-border hover:bg-hc-surface/80'
@@ -218,7 +218,7 @@ export default function AchievementsModal({ isOpen, onClose }) {
               className={`flex-1 py-2 px-2 rounded-xl border-2 font-bold text-xs transition-all ${
                 activeTab === 'reel'
                   ? highContrast
-                    ? 'bg-hc-primary text-hc-text border-hc-border'
+                    ? 'bg-hc-primary text-hc-primary-text border-hc-border'
                     : 'bg-red-500 text-white dark:'
                   : highContrast
                     ? 'bg-hc-surface text-hc-text border-hc-border hover:bg-hc-surface/80'
@@ -232,7 +232,7 @@ export default function AchievementsModal({ isOpen, onClose }) {
               className={`flex-1 py-2 px-2 rounded-xl border-2 font-bold text-xs transition-all ${
                 activeTab === 'alchemy'
                   ? highContrast
-                    ? 'bg-hc-primary text-hc-text border-hc-border'
+                    ? 'bg-hc-primary text-hc-primary-text border-hc-border'
                     : 'bg-soup-primary text-white dark:'
                   : highContrast
                     ? 'bg-hc-surface text-hc-text border-hc-border hover:bg-hc-surface/80'

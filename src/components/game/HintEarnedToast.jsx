@@ -86,7 +86,7 @@ export default function HintEarnedToast({ isSmallPhone = false, isMobilePhone = 
               ${isSmallPhone ? 'max-w-[280px]' : isMobilePhone ? 'max-w-xs' : 'max-w-sm'}
               ${
                 highContrast
-                  ? 'bg-hc-warning text-white border-2 border-hc-border'
+                  ? 'bg-hc-warning text-hc-warning-text border-2 border-hc-border'
                   : 'bg-gradient-to-r from-yellow-400 to-amber-500 dark:from-yellow-500 dark:to-amber-600 text-gray-900 dark:text-gray-900'
               }
             `}

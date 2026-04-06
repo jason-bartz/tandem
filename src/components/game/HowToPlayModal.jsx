@@ -39,10 +39,14 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
               setActiveGame('tandem');
               setExpandedSection(null);
             }}
-            className={`flex-1 px-2 py-3 rounded-lg border-2 font-bold text-xs transition-all ${
-              activeGame === 'tandem'
-                ? 'bg-[#38b6ff] text-white'
-                : 'bg-ghost-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600'
+            className={`flex-1 px-2 py-3 rounded-md font-bold text-xs transition-all ${
+              highContrast
+                ? activeGame === 'tandem'
+                  ? 'bg-hc-primary text-hc-primary-text'
+                  : 'bg-hc-surface text-hc-text'
+                : activeGame === 'tandem'
+                  ? 'bg-accent-blue text-white'
+                  : 'bg-bg-surface dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
             }`}
           >
             Tandem
@@ -52,10 +56,14 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
               setActiveGame('mini');
               setExpandedSection(null);
             }}
-            className={`flex-1 px-2 py-3 rounded-lg border-2 font-bold text-xs transition-all ${
-              activeGame === 'mini'
-                ? 'bg-[#FFEB3B] text-gray-900'
-                : 'bg-ghost-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600'
+            className={`flex-1 px-2 py-3 rounded-md font-bold text-xs transition-all ${
+              highContrast
+                ? activeGame === 'mini'
+                  ? 'bg-hc-primary text-hc-primary-text'
+                  : 'bg-hc-surface text-hc-text'
+                : activeGame === 'mini'
+                  ? 'bg-accent-yellow text-gray-900'
+                  : 'bg-bg-surface dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
             }`}
           >
             Mini
@@ -65,10 +73,14 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
               setActiveGame('soup');
               setExpandedSection(null);
             }}
-            className={`flex-1 px-2 py-3 rounded-lg border-2 font-bold text-xs transition-all ${
-              activeGame === 'soup'
-                ? 'bg-green-500 text-white'
-                : 'bg-ghost-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600'
+            className={`flex-1 px-2 py-3 rounded-md font-bold text-xs transition-all ${
+              highContrast
+                ? activeGame === 'soup'
+                  ? 'bg-hc-primary text-hc-primary-text'
+                  : 'bg-hc-surface text-hc-text'
+                : activeGame === 'soup'
+                  ? 'bg-soup-primary text-white'
+                  : 'bg-bg-surface dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
             }`}
           >
             Alchemy
@@ -78,10 +90,14 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
               setActiveGame('reel');
               setExpandedSection(null);
             }}
-            className={`flex-1 px-2 py-3 rounded-lg border-2 font-bold text-xs transition-all ${
-              activeGame === 'reel'
-                ? 'bg-red-500 text-white'
-                : 'bg-ghost-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600'
+            className={`flex-1 px-2 py-3 rounded-md font-bold text-xs transition-all ${
+              highContrast
+                ? activeGame === 'reel'
+                  ? 'bg-hc-primary text-hc-primary-text'
+                  : 'bg-hc-surface text-hc-text'
+                : activeGame === 'reel'
+                  ? 'bg-accent-red text-white'
+                  : 'bg-bg-surface dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
             }`}
           >
             Reel
@@ -91,18 +107,18 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
 
       {/* Daily Tandem Content */}
       {activeGame === 'tandem' && (
-        <div className="space-y-4 text-gray-600 dark:text-gray-400">
+        <div className={`space-y-4 ${highContrast ? 'text-hc-text' : 'text-gray-600 dark:text-gray-400'}`}>
           <div
-            className={`rounded-lg p-4 border-2 ${
+            className={`rounded-lg p-4 ${
               highContrast
-                ? 'bg-hc-surface text-hc-text border-hc-border'
-                : 'bg-gray-50 dark:bg-gray-800 border-gray-300 dark:border-gray-600'
+                ? 'bg-hc-surface text-hc-text border-2 border-hc-border'
+                : 'bg-bg-surface dark:bg-gray-800'
             }`}
           >
-            <h4 className="font-semibold text-gray-800 dark:text-gray-200 mb-3">The Basics</h4>
+            <h4 className={`font-semibold mb-3 ${highContrast ? 'text-hc-text' : 'text-gray-800 dark:text-gray-200'}`}>The Basics</h4>
             <ul className="space-y-3 text-sm">
               <li className="flex items-start gap-3">
-                <span className="flex-shrink-0 w-6 h-6 bg-[#38b6ff] text-white rounded-full flex items-center justify-center text-xs font-bold">
+                <span className="flex-shrink-0 w-6 h-6 bg-accent-blue text-white rounded-full flex items-center justify-center text-xs font-bold">
                   1
                 </span>
                 <span>
@@ -111,13 +127,13 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
                 </span>
               </li>
               <li className="flex items-start gap-3">
-                <span className="flex-shrink-0 w-6 h-6 bg-[#38b6ff] text-white rounded-full flex items-center justify-center text-xs font-bold">
+                <span className="flex-shrink-0 w-6 h-6 bg-accent-blue text-white rounded-full flex items-center justify-center text-xs font-bold">
                   2
                 </span>
                 <span>Type your guess and tap Check to submit.</span>
               </li>
               <li className="flex items-start gap-3">
-                <span className="flex-shrink-0 w-6 h-6 bg-[#38b6ff] text-white rounded-full flex items-center justify-center text-xs font-bold">
+                <span className="flex-shrink-0 w-6 h-6 bg-accent-blue text-white rounded-full flex items-center justify-center text-xs font-bold">
                   3
                 </span>
                 <span>Solve all 4 puzzles within 4 mistakes to win!</span>
@@ -131,41 +147,41 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
           </div>
 
           <div
-            className={`rounded-lg p-4 border-2 ${
+            className={`rounded-lg p-4 ${
               highContrast
-                ? 'bg-hc-surface text-hc-text border-hc-border'
-                : 'bg-sky-50 dark:bg-sky-900/20 border-sky-300 dark:border-sky-700'
+                ? 'bg-hc-surface text-hc-text border-2 border-hc-border'
+                : 'bg-sky-50 dark:bg-sky-900/20'
             }`}
           >
-            <h4 className="font-semibold text-gray-800 dark:text-gray-200 mb-3">Example Round</h4>
+            <h4 className={`font-semibold mb-3 ${highContrast ? 'text-hc-text' : 'text-gray-800 dark:text-gray-200'}`}>Example Round</h4>
             <div className="space-y-3">
               <div className="flex items-center gap-3">
                 <span className="text-2xl">🌅☀️</span>
-                <span className="font-mono text-sm font-semibold text-gray-700 dark:text-gray-300">
+                <span className={`font-mono text-sm font-semibold ${highContrast ? 'text-hc-text' : 'text-gray-700 dark:text-gray-300'}`}>
                   SUN
                 </span>
               </div>
               <div className="flex items-center gap-3">
                 <span className="text-2xl">🍞🔥</span>
-                <span className="font-mono text-sm font-semibold text-gray-700 dark:text-gray-300">
+                <span className={`font-mono text-sm font-semibold ${highContrast ? 'text-hc-text' : 'text-gray-700 dark:text-gray-300'}`}>
                   DOUGH
                 </span>
               </div>
               <div className="flex items-center gap-3">
                 <span className="text-2xl">📈💹</span>
-                <span className="font-mono text-sm font-semibold text-gray-700 dark:text-gray-300">
+                <span className={`font-mono text-sm font-semibold ${highContrast ? 'text-hc-text' : 'text-gray-700 dark:text-gray-300'}`}>
                   STOCKS
                 </span>
               </div>
               <div className="flex items-center gap-3">
                 <span className="text-2xl">🎈🎉</span>
-                <span className="font-mono text-sm font-semibold text-gray-700 dark:text-gray-300">
+                <span className={`font-mono text-sm font-semibold ${highContrast ? 'text-hc-text' : 'text-gray-700 dark:text-gray-300'}`}>
                   BALLOONS
                 </span>
               </div>
 
               <div className="mt-2 pt-3 border-t border-sky-200 dark:border-sky-800">
-                <p className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                <p className={`text-sm font-semibold ${highContrast ? 'text-hc-text' : 'text-gray-700 dark:text-gray-300'}`}>
                   Theme: Things That Rise
                 </p>
               </div>
@@ -173,10 +189,10 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
           </div>
 
           <div
-            className={`rounded-lg p-4 border-2 ${
+            className={`rounded-lg p-4 ${
               highContrast
-                ? 'bg-hc-success text-white border-hc-border'
-                : 'bg-accent-green/20 dark:bg-green-900/20 border-accent-green'
+                ? 'bg-hc-success text-hc-success-text border-2 border-hc-border'
+                : 'bg-accent-green/20 dark:bg-green-900/20'
             }`}
           >
             <h4
@@ -231,13 +247,13 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
           </div>
 
           <div
-            className={`rounded-lg p-4 border-2 ${
+            className={`rounded-lg p-4 ${
               highContrast
-                ? 'bg-hc-surface text-hc-text border-hc-border'
-                : 'bg-gray-50 dark:bg-gray-800 border-gray-300 dark:border-gray-600'
+                ? 'bg-hc-surface text-hc-text border-2 border-hc-border'
+                : 'bg-bg-surface dark:bg-gray-800'
             }`}
           >
-            <h4 className="font-semibold text-gray-800 dark:text-gray-200 mb-2">
+            <h4 className={`font-semibold mb-2 ${highContrast ? 'text-hc-text' : 'text-gray-800 dark:text-gray-200'}`}>
               Difficulty Ratings
             </h4>
             <p className="text-sm mb-3">
@@ -269,10 +285,10 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
           </div>
 
           <div
-            className={`rounded-lg p-4 border-2 ${
+            className={`rounded-lg p-4 ${
               highContrast
-                ? 'bg-hc-error text-white border-hc-border'
-                : 'bg-red-50 dark:bg-red-900/20 border-red-400 dark:border-red-600'
+                ? 'bg-hc-error text-hc-error-text border-2 border-hc-border'
+                : 'bg-red-50 dark:bg-red-900/20'
             }`}
           >
             <h4
@@ -299,7 +315,7 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
           </div>
 
           <div className="text-center py-2">
-            <p className="text-sm text-gray-500 dark:text-gray-400">
+            <p className={`text-sm ${highContrast ? 'text-hc-text' : 'text-gray-500 dark:text-gray-400'}`}>
               A new puzzle is available every day at midnight. Come back tomorrow!
             </p>
           </div>
@@ -308,30 +324,30 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
 
       {/* Daily Mini Content */}
       {activeGame === 'mini' && (
-        <div className="space-y-4 text-gray-600 dark:text-gray-400">
+        <div className={`space-y-4 ${highContrast ? 'text-hc-text' : 'text-gray-600 dark:text-gray-400'}`}>
           <div
-            className={`rounded-lg p-4 border-2 ${
+            className={`rounded-lg p-4 ${
               highContrast
-                ? 'bg-hc-surface text-hc-text border-hc-border'
-                : 'bg-gray-50 dark:bg-gray-800 border-gray-300 dark:border-gray-600'
+                ? 'bg-hc-surface text-hc-text border-2 border-hc-border'
+                : 'bg-bg-surface dark:bg-gray-800'
             }`}
           >
-            <h4 className="font-semibold text-gray-800 dark:text-gray-200 mb-3">The Basics</h4>
+            <h4 className={`font-semibold mb-3 ${highContrast ? 'text-hc-text' : 'text-gray-800 dark:text-gray-200'}`}>The Basics</h4>
             <ul className="space-y-3 text-sm">
               <li className="flex items-start gap-3">
-                <span className="flex-shrink-0 w-6 h-6 bg-[#FFEB3B] text-gray-900 rounded-full flex items-center justify-center text-xs font-bold">
+                <span className="flex-shrink-0 w-6 h-6 bg-accent-yellow text-gray-900 rounded-full flex items-center justify-center text-xs font-bold">
                   1
                 </span>
                 <span>Tap a cell and type to fill in letters. Tap again to switch direction.</span>
               </li>
               <li className="flex items-start gap-3">
-                <span className="flex-shrink-0 w-6 h-6 bg-[#FFEB3B] text-gray-900 rounded-full flex items-center justify-center text-xs font-bold">
+                <span className="flex-shrink-0 w-6 h-6 bg-accent-yellow text-gray-900 rounded-full flex items-center justify-center text-xs font-bold">
                   2
                 </span>
                 <span>Read the clue above the keyboard and fill in your answer.</span>
               </li>
               <li className="flex items-start gap-3">
-                <span className="flex-shrink-0 w-6 h-6 bg-[#FFEB3B] text-gray-900 rounded-full flex items-center justify-center text-xs font-bold">
+                <span className="flex-shrink-0 w-6 h-6 bg-accent-yellow text-gray-900 rounded-full flex items-center justify-center text-xs font-bold">
                   3
                 </span>
                 <span>Complete all squares correctly to finish the puzzle!</span>
@@ -345,21 +361,21 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
           </div>
 
           <div
-            className={`rounded-lg p-4 border-2 ${
+            className={`rounded-lg p-4 ${
               highContrast
-                ? 'bg-hc-warning text-black border-hc-border'
-                : 'bg-yellow-50 dark:bg-yellow-900/20 border-yellow-500'
+                ? 'bg-hc-warning text-hc-warning-text border-2 border-hc-border'
+                : 'bg-yellow-50 dark:bg-yellow-900/20'
             }`}
           >
             <h4
-              className={`font-semibold mb-2 ${highContrast ? 'text-black' : 'text-gray-800 dark:text-gray-200'}`}
+              className={`font-semibold mb-2 ${highContrast ? 'text-hc-text' : 'text-gray-800 dark:text-gray-200'}`}
             >
               Check & Reveal
             </h4>
-            <p className={`text-sm mb-2 ${highContrast ? 'text-black' : ''}`}>
+            <p className={`text-sm mb-2 ${highContrast ? 'text-hc-text' : ''}`}>
               Need help? Use the menu button to access check and reveal options:
             </p>
-            <ul className={`text-sm space-y-1 ml-4 ${highContrast ? 'text-black' : ''}`}>
+            <ul className={`text-sm space-y-1 ml-4 ${highContrast ? 'text-hc-text' : ''}`}>
               <li>
                 • <strong>Check Square/Word/Puzzle:</strong> Verify your answers
               </li>
@@ -373,7 +389,7 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
           </div>
 
           <div className="text-center py-2">
-            <p className="text-sm text-gray-500 dark:text-gray-400">
+            <p className={`text-sm ${highContrast ? 'text-hc-text' : 'text-gray-500 dark:text-gray-400'}`}>
               A new puzzle is available every day at midnight. Come back tomorrow!
             </p>
           </div>
@@ -382,15 +398,15 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
 
       {/* Daily Alchemy Content */}
       {activeGame === 'soup' && (
-        <div className="space-y-4 text-gray-600 dark:text-gray-400">
+        <div className={`space-y-4 ${highContrast ? 'text-hc-text' : 'text-gray-600 dark:text-gray-400'}`}>
           <div
-            className={`rounded-lg p-4 border-2 ${
+            className={`rounded-lg p-4 ${
               highContrast
-                ? 'bg-hc-surface text-hc-text border-hc-border'
-                : 'bg-gray-50 dark:bg-gray-800 border-gray-300 dark:border-gray-600'
+                ? 'bg-hc-surface text-hc-text border-2 border-hc-border'
+                : 'bg-bg-surface dark:bg-gray-800'
             }`}
           >
-            <h4 className="font-semibold text-gray-800 dark:text-gray-200 mb-3">The Basics</h4>
+            <h4 className={`font-semibold mb-3 ${highContrast ? 'text-hc-text' : 'text-gray-800 dark:text-gray-200'}`}>The Basics</h4>
             <p className="text-sm mb-3">
               Daily Alchemy is a daily element combination puzzle inspired by alchemy and crafting
               games. Combine elements to discover new ones and reach the daily target!
@@ -448,7 +464,7 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
           </div>
 
           <div>
-            <h3 className="font-semibold text-gray-800 dark:text-gray-200 mb-3">
+            <h3 className={`font-semibold mb-3 ${highContrast ? 'text-hc-text' : 'text-gray-800 dark:text-gray-200'}`}>
               Example Combinations
             </h3>
             <div
@@ -460,31 +476,31 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
             >
               <div className="flex items-center gap-3">
                 <span className="text-xl">🔥</span>
-                <span className="text-gray-400">+</span>
+                <span className={highContrast ? 'text-hc-text' : 'text-gray-400'}>+</span>
                 <span className="text-xl">💧</span>
-                <span className="text-gray-400">=</span>
+                <span className={highContrast ? 'text-hc-text' : 'text-gray-400'}>=</span>
                 <span className="text-xl">♨️</span>
-                <span className="font-mono text-sm font-semibold text-gray-700 dark:text-gray-300">
+                <span className={`font-mono text-sm font-semibold ${highContrast ? 'text-hc-text' : 'text-gray-700 dark:text-gray-300'}`}>
                   Steam
                 </span>
               </div>
               <div className="flex items-center gap-3">
                 <span className="text-xl">🌍</span>
-                <span className="text-gray-400">+</span>
+                <span className={highContrast ? 'text-hc-text' : 'text-gray-400'}>+</span>
                 <span className="text-xl">💧</span>
-                <span className="text-gray-400">=</span>
+                <span className={highContrast ? 'text-hc-text' : 'text-gray-400'}>=</span>
                 <span className="text-xl">🌱</span>
-                <span className="font-mono text-sm font-semibold text-gray-700 dark:text-gray-300">
+                <span className={`font-mono text-sm font-semibold ${highContrast ? 'text-hc-text' : 'text-gray-700 dark:text-gray-300'}`}>
                   Plant
                 </span>
               </div>
               <div className="flex items-center gap-3">
                 <span className="text-xl">🔥</span>
-                <span className="text-gray-400">+</span>
+                <span className={highContrast ? 'text-hc-text' : 'text-gray-400'}>+</span>
                 <span className="text-xl">🌍</span>
-                <span className="text-gray-400">=</span>
+                <span className={highContrast ? 'text-hc-text' : 'text-gray-400'}>=</span>
                 <span className="text-xl">🌋</span>
-                <span className="font-mono text-sm font-semibold text-gray-700 dark:text-gray-300">
+                <span className={`font-mono text-sm font-semibold ${highContrast ? 'text-hc-text' : 'text-gray-700 dark:text-gray-300'}`}>
                   Lava
                 </span>
               </div>
@@ -492,10 +508,10 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
           </div>
 
           <div
-            className={`rounded-lg p-4 border-2 ${
+            className={`rounded-lg p-4 ${
               highContrast
-                ? 'bg-hc-surface text-hc-text border-hc-border'
-                : 'bg-purple-50 dark:bg-purple-900/20 border-purple-400 dark:border-purple-600'
+                ? 'bg-hc-surface text-hc-text border-2 border-hc-border'
+                : 'bg-purple-50 dark:bg-purple-900/20'
             }`}
           >
             <h4
@@ -516,10 +532,10 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
           </div>
 
           <div
-            className={`rounded-lg p-4 border-2 ${
+            className={`rounded-lg p-4 ${
               highContrast
-                ? 'bg-hc-surface text-hc-text border-hc-border'
-                : 'bg-red-50 dark:bg-red-900/20 border-red-300 dark:border-red-600'
+                ? 'bg-hc-surface text-hc-text border-2 border-hc-border'
+                : 'bg-red-50 dark:bg-red-900/20'
             }`}
           >
             <h4
@@ -553,11 +569,11 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
               </p>
               <div className="flex items-center gap-3 text-sm">
                 <span className="text-xl">♨️</span>
-                <span className="text-red-400 font-bold">-</span>
+                <span className={`font-bold ${highContrast ? 'text-hc-text' : 'text-red-400'}`}>-</span>
                 <span className="text-xl">🔥</span>
-                <span className="text-gray-400">=</span>
+                <span className={highContrast ? 'text-hc-text' : 'text-gray-400'}>=</span>
                 <span className="text-xl">💧</span>
-                <span className="font-mono font-semibold text-gray-700 dark:text-gray-300">
+                <span className={`font-mono font-semibold ${highContrast ? 'text-hc-text' : 'text-gray-700 dark:text-gray-300'}`}>
                   Water
                 </span>
               </div>
@@ -565,10 +581,10 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
           </div>
 
           <div
-            className={`rounded-lg p-4 border-2 ${
+            className={`rounded-lg p-4 ${
               highContrast
-                ? 'bg-hc-success text-white border-hc-border'
-                : 'bg-green-50 dark:bg-green-900/20 border-green-500'
+                ? 'bg-hc-success text-hc-success-text border-2 border-hc-border'
+                : 'bg-green-50 dark:bg-green-900/20'
             }`}
           >
             <h4
@@ -589,10 +605,10 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
           </div>
 
           <div
-            className={`rounded-lg p-4 border-2 ${
+            className={`rounded-lg p-4 ${
               highContrast
-                ? 'bg-hc-success text-white border-hc-border'
-                : 'bg-amber-50 dark:bg-amber-900/20 border-amber-400 dark:border-amber-600'
+                ? 'bg-hc-success text-hc-success-text border-2 border-hc-border'
+                : 'bg-amber-50 dark:bg-amber-900/20'
             }`}
           >
             <h4
@@ -618,23 +634,23 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
           </div>
 
           <div
-            className={`rounded-lg p-4 border-2 ${
+            className={`rounded-lg p-4 ${
               highContrast
-                ? 'bg-hc-warning text-black border-hc-border'
-                : 'bg-amber-50 dark:bg-amber-900/20 border-amber-400 dark:border-amber-600'
+                ? 'bg-hc-warning text-hc-warning-text border-2 border-hc-border'
+                : 'bg-amber-50 dark:bg-amber-900/20'
             }`}
           >
             <h4
-              className={`font-semibold mb-2 flex items-center gap-2 ${highContrast ? 'text-black' : 'text-gray-800 dark:text-gray-200'}`}
+              className={`font-semibold mb-2 flex items-center gap-2 ${highContrast ? 'text-hc-text' : 'text-gray-800 dark:text-gray-200'}`}
             >
               <Image src="/ui/stats/par.png" alt="" width={20} height={20} className="w-5 h-5" />
               Par System
             </h4>
-            <p className={`text-sm mb-2 ${highContrast ? 'text-black' : ''}`}>
+            <p className={`text-sm mb-2 ${highContrast ? 'text-hc-text' : ''}`}>
               Each puzzle has a <strong>par value</strong> — the minimum number of moves needed to
               reach the target.
             </p>
-            <ul className={`text-sm space-y-1 ml-4 ${highContrast ? 'text-black' : ''}`}>
+            <ul className={`text-sm space-y-1 ml-4 ${highContrast ? 'text-hc-text' : ''}`}>
               <li>
                 • <strong>Under par:</strong> Excellent! You found an efficient path
               </li>
@@ -652,13 +668,13 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
           </div>
 
           <div
-            className={`rounded-lg p-4 border-2 ${
+            className={`rounded-lg p-4 ${
               highContrast
-                ? 'bg-hc-surface text-hc-text border-hc-border'
-                : 'bg-gray-50 dark:bg-gray-800 border-gray-300 dark:border-gray-600'
+                ? 'bg-hc-surface text-hc-text border-2 border-hc-border'
+                : 'bg-bg-surface dark:bg-gray-800'
             }`}
           >
-            <h4 className="font-semibold text-gray-800 dark:text-gray-200 mb-2">Tips</h4>
+            <h4 className={`font-semibold mb-2 ${highContrast ? 'text-hc-text' : 'text-gray-800 dark:text-gray-200'}`}>Tips</h4>
             <ul className="text-sm space-y-1">
               <li>• Use the search bar to find elements quickly</li>
               <li>• Combine the same element with itself for interesting results</li>
@@ -667,10 +683,10 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
           </div>
 
           <div
-            className={`rounded-lg p-4 border-2 ${
+            className={`rounded-lg p-4 ${
               highContrast
-                ? 'bg-hc-surface text-hc-text border-hc-border'
-                : 'bg-sky-50 dark:bg-sky-900/20 border-sky-400 dark:border-sky-600'
+                ? 'bg-hc-surface text-hc-text border-2 border-hc-border'
+                : 'bg-sky-50 dark:bg-sky-900/20'
             }`}
           >
             <h4
@@ -690,10 +706,10 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
           </div>
 
           <div
-            className={`rounded-lg p-4 border-2 ${
+            className={`rounded-lg p-4 ${
               highContrast
-                ? 'bg-hc-surface text-hc-text border-hc-border'
-                : 'bg-purple-50 dark:bg-purple-900/20 border-purple-400 dark:border-purple-600'
+                ? 'bg-hc-surface text-hc-text border-2 border-hc-border'
+                : 'bg-purple-50 dark:bg-purple-900/20'
             }`}
           >
             <h4
@@ -728,10 +744,10 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
           </div>
 
           <div
-            className={`rounded-lg p-4 border-2 ${
+            className={`rounded-lg p-4 ${
               highContrast
-                ? 'bg-hc-surface text-hc-text border-hc-border'
-                : 'bg-indigo-50 dark:bg-indigo-900/20 border-indigo-400 dark:border-indigo-600'
+                ? 'bg-hc-surface text-hc-text border-2 border-hc-border'
+                : 'bg-indigo-50 dark:bg-indigo-900/20'
             }`}
           >
             <h4
@@ -773,7 +789,7 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
           </div>
 
           <div className="text-center py-2">
-            <p className="text-sm text-gray-500 dark:text-gray-400">
+            <p className={`text-sm ${highContrast ? 'text-hc-text' : 'text-gray-500 dark:text-gray-400'}`}>
               A new puzzle is available every day at midnight. Come back tomorrow!
             </p>
           </div>
@@ -782,15 +798,15 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
 
       {/* Reel Connections Content */}
       {activeGame === 'reel' && (
-        <div className="space-y-4 text-gray-600 dark:text-gray-400">
+        <div className={`space-y-4 ${highContrast ? 'text-hc-text' : 'text-gray-600 dark:text-gray-400'}`}>
           <div
-            className={`rounded-lg p-4 border-2 ${
+            className={`rounded-lg p-4 ${
               highContrast
-                ? 'bg-hc-surface text-hc-text border-hc-border'
-                : 'bg-gray-50 dark:bg-gray-800 border-gray-300 dark:border-gray-600'
+                ? 'bg-hc-surface text-hc-text border-2 border-hc-border'
+                : 'bg-bg-surface dark:bg-gray-800'
             }`}
           >
-            <h4 className="font-semibold text-gray-800 dark:text-gray-200 mb-3">The Basics</h4>
+            <h4 className={`font-semibold mb-3 ${highContrast ? 'text-hc-text' : 'text-gray-800 dark:text-gray-200'}`}>The Basics</h4>
             <ul className="space-y-3 text-sm">
               <li className="flex items-start gap-3">
                 <span className="flex-shrink-0 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center text-xs font-bold">
@@ -819,10 +835,10 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
           </div>
 
           <div
-            className={`rounded-lg p-4 border-2 ${
+            className={`rounded-lg p-4 ${
               highContrast
-                ? 'bg-hc-success text-white border-hc-border'
-                : 'bg-amber-50 dark:bg-amber-900/20 border-amber-400 dark:border-amber-600'
+                ? 'bg-hc-success text-hc-success-text border-2 border-hc-border'
+                : 'bg-amber-50 dark:bg-amber-900/20'
             }`}
           >
             <h4
@@ -848,13 +864,13 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
           </div>
 
           <div
-            className={`rounded-lg p-4 border-2 ${
+            className={`rounded-lg p-4 ${
               highContrast
-                ? 'bg-hc-surface text-hc-text border-hc-border'
-                : 'bg-red-50 dark:bg-red-900/20 border-red-300 dark:border-red-700'
+                ? 'bg-hc-surface text-hc-text border-2 border-hc-border'
+                : 'bg-red-50 dark:bg-red-900/20'
             }`}
           >
-            <h4 className="font-semibold text-gray-800 dark:text-gray-200 mb-3">
+            <h4 className={`font-semibold mb-3 ${highContrast ? 'text-hc-text' : 'text-gray-800 dark:text-gray-200'}`}>
               Example Connections
             </h4>
             <ul className="space-y-2 text-sm">
@@ -878,13 +894,13 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
           </div>
 
           <div
-            className={`rounded-lg p-4 border-2 ${
+            className={`rounded-lg p-4 ${
               highContrast
-                ? 'bg-hc-surface text-hc-text border-hc-border'
-                : 'bg-gray-50 dark:bg-gray-800 border-gray-300 dark:border-gray-600'
+                ? 'bg-hc-surface text-hc-text border-2 border-hc-border'
+                : 'bg-bg-surface dark:bg-gray-800'
             }`}
           >
-            <h4 className="font-semibold text-gray-800 dark:text-gray-200 mb-3">
+            <h4 className={`font-semibold mb-3 ${highContrast ? 'text-hc-text' : 'text-gray-800 dark:text-gray-200'}`}>
               Difficulty Levels
             </h4>
             <p className="text-sm mb-3">Categories are color-coded by difficulty:</p>
@@ -892,41 +908,41 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
               <div className="flex items-center gap-3">
                 <div className="w-4 h-4 rounded bg-yellow-300" />
                 <span className="text-sm font-medium">MATINEE</span>
-                <span className="text-sm text-gray-500 dark:text-gray-400">— Easiest</span>
+                <span className={`text-sm ${highContrast ? 'text-hc-text' : 'text-gray-500 dark:text-gray-400'}`}>— Easiest</span>
               </div>
               <div className="flex items-center gap-3">
                 <div className="w-4 h-4 rounded bg-blue-400" />
                 <span className="text-sm font-medium">FEATURE</span>
-                <span className="text-sm text-gray-500 dark:text-gray-400">— Easy</span>
+                <span className={`text-sm ${highContrast ? 'text-hc-text' : 'text-gray-500 dark:text-gray-400'}`}>— Easy</span>
               </div>
               <div className="flex items-center gap-3">
                 <div className="w-4 h-4 rounded bg-purple-400" />
                 <span className="text-sm font-medium">PREMIERE</span>
-                <span className="text-sm text-gray-500 dark:text-gray-400">— Medium</span>
+                <span className={`text-sm ${highContrast ? 'text-hc-text' : 'text-gray-500 dark:text-gray-400'}`}>— Medium</span>
               </div>
               <div className="flex items-center gap-3">
                 <div className="w-4 h-4 rounded bg-red-500" />
                 <span className="text-sm font-medium">GALA</span>
-                <span className="text-sm text-gray-500 dark:text-gray-400">— Hardest</span>
+                <span className={`text-sm ${highContrast ? 'text-hc-text' : 'text-gray-500 dark:text-gray-400'}`}>— Hardest</span>
               </div>
             </div>
           </div>
 
           <div
-            className={`rounded-lg p-4 border-2 ${
+            className={`rounded-lg p-4 ${
               highContrast
-                ? 'bg-hc-surface text-hc-text border-hc-border'
-                : 'bg-gray-50 dark:bg-gray-800 border-gray-300 dark:border-gray-600'
+                ? 'bg-hc-surface text-hc-text border-2 border-hc-border'
+                : 'bg-bg-surface dark:bg-gray-800'
             }`}
           >
-            <h4 className="font-semibold text-gray-800 dark:text-gray-200 mb-2">Tip</h4>
+            <h4 className={`font-semibold mb-2 ${highContrast ? 'text-hc-text' : 'text-gray-800 dark:text-gray-200'}`}>Tip</h4>
             <p className="text-sm">
               Hold any poster, then tap the banner to enlarge it for a better view.
             </p>
           </div>
 
           <div className="text-center py-2">
-            <p className="text-sm text-gray-500 dark:text-gray-400">
+            <p className={`text-sm ${highContrast ? 'text-hc-text' : 'text-gray-500 dark:text-gray-400'}`}>
               A new puzzle is available every day at midnight. Come back tomorrow!
             </p>
           </div>

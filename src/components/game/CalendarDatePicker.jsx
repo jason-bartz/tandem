@@ -177,7 +177,7 @@ export default function CalendarDatePicker({
               transition-all
               ${
                 highContrast
-                  ? 'bg-hc-primary text-white hover:bg-hc-focus'
+                  ? 'bg-hc-primary text-hc-primary-text hover:bg-hc-focus'
                   : 'bg-accent-blue text-white hover:bg-blue-600'
               }
             `}

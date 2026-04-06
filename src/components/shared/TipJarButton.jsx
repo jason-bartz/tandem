@@ -5,6 +5,7 @@ import { Capacitor } from '@capacitor/core';
 import Image from 'next/image';
 import subscriptionService from '@/services/subscriptionService';
 import { useHaptics } from '@/hooks/useHaptics';
+import { useTheme } from '@/contexts/ThemeContext';
 import logger from '@/lib/logger';
 
 /**
@@ -19,6 +20,7 @@ export default function TipJarButton({ className = '' }) {
   const [showThankYou, setShowThankYou] = useState(false);
   const [error, setError] = useState(null);
   const { correctAnswer: successHaptic, lightTap } = useHaptics();
+  const { highContrast } = useTheme();
   const isNative = Capacitor.isNativePlatform();
 
   useEffect(() => {
@@ -70,7 +72,11 @@ export default function TipJarButton({ className = '' }) {
   if (showThankYou) {
     return (
       <div
-        className={`flex items-center justify-center gap-2 w-full px-4 py-2.5 bg-accent-green text-white font-semibold rounded-xl transition-all ${className}`}
+        className={`flex items-center justify-center gap-2 w-full px-4 py-2.5 font-semibold rounded-xl transition-all ${
+          highContrast
+            ? 'bg-hc-success text-hc-success-text border-2 border-hc-border'
+            : 'bg-accent-green text-white'
+        } ${className}`}
       >
         Thank you!
       </div>
@@ -82,7 +88,11 @@ export default function TipJarButton({ className = '' }) {
       <button
         onClick={handleTip}
         disabled={purchasing}
-        className={`flex items-center justify-center gap-2 w-full px-4 py-2.5 bg-flat-accent hover:bg-flat-accent-hover text-gray-900 font-semibold rounded-xl transition-all disabled:opacity-50 ${className}`}
+        className={`flex items-center justify-center gap-2 w-full px-4 py-2.5 font-semibold rounded-xl transition-all disabled:opacity-50 ${
+          highContrast
+            ? 'bg-hc-warning text-hc-warning-text border-2 border-hc-border'
+            : 'bg-flat-accent hover:bg-flat-accent-hover text-gray-900'
+        } ${className}`}
       >
         {purchasing ? (
           'Processing...'
@@ -100,7 +110,15 @@ export default function TipJarButton({ className = '' }) {
           </>
         )}
       </button>
-      {error && <p className="text-xs text-red-500 dark:text-red-400 text-center mt-1">{error}</p>}
+      {error && (
+        <p
+          className={`text-xs text-center mt-1 ${
+            highContrast ? 'text-hc-error' : 'text-red-500 dark:text-red-400'
+          }`}
+        >
+          {error}
+        </p>
+      )}
     </div>
   );
 }

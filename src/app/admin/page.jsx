@@ -364,15 +364,15 @@ export default function AdminDashboard() {
       case 'tandem':
         return (
           <div className="bg-bg-surface rounded-lg">
-            <div className="px-3 sm:px-6 py-3 sm:py-4 border-b border-border-light">
-              <div className="flex items-center gap-3">
+            <div className="px-3 sm:px-6 py-2.5 sm:py-4 border-b border-border-light">
+              <div className="flex items-center gap-2 sm:gap-3">
                 <Image src="/ui/games/tandem.png" alt="" width={24} height={24} />
-                <h3 className="text-base sm:text-lg font-bold text-text-primary">
+                <h3 className="text-sm sm:text-lg font-bold text-text-primary">
                   {editingPuzzle ? 'Edit' : 'Create'} Daily Tandem Puzzle
                 </h3>
               </div>
             </div>
-            <div className="p-3 sm:p-6">
+            <div className="p-2 sm:p-6">
               <PuzzleEditor
                 initialPuzzle={tandemInitialPuzzle}
                 onClose={handleCloseEditor}
@@ -387,9 +387,9 @@ export default function AdminDashboard() {
 
       case 'mini':
         return (
-          <div className="space-y-4">
+          <div className="space-y-3 sm:space-y-4">
             <div className="flex items-center justify-between gap-2">
-              <div className="flex items-center gap-3 min-w-0">
+              <div className="flex items-center gap-2 sm:gap-3 min-w-0">
                 <Image
                   src="/ui/games/mini.png"
                   alt=""
@@ -397,7 +397,7 @@ export default function AdminDashboard() {
                   height={24}
                   className="flex-shrink-0"
                 />
-                <h3 className="text-base sm:text-lg font-bold text-text-primary truncate">
+                <h3 className="text-sm sm:text-lg font-bold text-text-primary truncate">
                   {editingPuzzle ? 'Edit' : 'Create'} Daily Mini Puzzle
                 </h3>
               </div>
@@ -422,9 +422,9 @@ export default function AdminDashboard() {
 
       case 'reel':
         return (
-          <div className="space-y-4">
+          <div className="space-y-3 sm:space-y-4">
             <div className="flex items-center justify-between gap-2">
-              <div className="flex items-center gap-3 min-w-0">
+              <div className="flex items-center gap-2 sm:gap-3 min-w-0">
                 <Image
                   src="/ui/games/movie.png"
                   alt=""
@@ -432,7 +432,7 @@ export default function AdminDashboard() {
                   height={24}
                   className="flex-shrink-0"
                 />
-                <h3 className="text-base sm:text-lg font-bold text-text-primary truncate">
+                <h3 className="text-sm sm:text-lg font-bold text-text-primary truncate">
                   {editingPuzzle ? 'Edit' : 'Create'} Reel Connections Puzzle
                 </h3>
               </div>
@@ -458,9 +458,9 @@ export default function AdminDashboard() {
 
       case 'soup':
         return (
-          <div className="space-y-4 overflow-visible">
+          <div className="space-y-3 sm:space-y-4 overflow-visible">
             <div className="flex items-center justify-between gap-2">
-              <div className="flex items-center gap-3 min-w-0">
+              <div className="flex items-center gap-2 sm:gap-3 min-w-0">
                 <Image
                   src={`/ui/games/daily-alchemy.png?v=${ASSET_VERSION}`}
                   alt=""
@@ -468,7 +468,7 @@ export default function AdminDashboard() {
                   height={24}
                   className="flex-shrink-0"
                 />
-                <h3 className="text-base sm:text-lg font-bold text-text-primary truncate">
+                <h3 className="text-sm sm:text-lg font-bold text-text-primary truncate">
                   {editingPuzzle ? 'Edit' : 'Create'} Daily Alchemy Puzzle
                 </h3>
               </div>
@@ -583,7 +583,7 @@ export default function AdminDashboard() {
       </aside>
 
       {/* Content */}
-      <div className="flex-1 min-w-0 px-2 py-3 sm:px-4 sm:py-4 md:px-6 md:py-5 min-h-[500px]">
+      <div className="flex-1 min-w-0 px-1.5 py-2 sm:px-4 sm:py-4 md:px-6 md:py-5 min-h-[500px]">
         {activeTab === 'calendar' && (
           <>
             {activeEditor ? (

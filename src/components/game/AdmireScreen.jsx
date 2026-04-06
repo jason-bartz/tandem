@@ -20,7 +20,7 @@ export default function AdmireScreen({
   onReplay,
   onSelectPuzzle,
   onReturnToWelcome,
-  theme,
+  theme: _theme,
 }) {
   const [showPlayerStats, setShowPlayerStats] = useState(false);
   const [showArchive, setShowArchive] = useState(false);
@@ -60,10 +60,10 @@ export default function AdmireScreen({
       <div className="animate-fade-in -mt-16">
         {/* Main admire card */}
         <div
-          className={`rounded-lg border-2 overflow-hidden p-10 text-center relative ${
+          className={`rounded-lg overflow-hidden p-10 text-center relative ${
             highContrast
-              ? 'bg-hc-surface border-hc-border'
-              : 'bg-ghost-white dark:bg-bg-card border-border-main dark:'
+              ? 'bg-hc-surface border-2 border-hc-border'
+              : 'bg-ghost-white dark:bg-bg-card'
           }`}
         >
           {/* Back arrow button at top left */}
@@ -103,7 +103,7 @@ export default function AdmireScreen({
                 title="Return to Welcome Screen"
               >
                 <Image
-                  src={`${theme === 'dark' ? '/ui/games/tandem-dark.png' : '/ui/games/tandem.png'}?v=${ASSET_VERSION}`}
+                  src={`/ui/games/tandem.png?v=${ASSET_VERSION}`}
                   alt="Tandem Logo"
                   width={96}
                   height={96}
@@ -124,16 +124,16 @@ export default function AdmireScreen({
             {/* Theme Display */}
             {(admireData?.theme || puzzle?.theme) && (
               <div
-                className={`rounded-lg p-5 mb-6 relative overflow-hidden border-2 dark:${
+                className={`rounded-lg p-5 mb-6 relative overflow-hidden ${
                   highContrast
-                    ? 'bg-hc-surface border-hc-border'
+                    ? 'bg-hc-surface border-2 border-hc-border'
                     : 'bg-accent-yellow/20 dark:bg-yellow-900/40'
                 }`}
               >
-                <p className="text-sm text-gray-600 dark:text-gray-400 mb-2 font-medium">Theme:</p>
+                <p className="text-sm text-text-secondary mb-2 font-medium">Theme:</p>
                 <p
                   className={`text-2xl font-bold ${
-                    highContrast ? 'text-hc-text' : 'text-black dark:text-black'
+                    highContrast ? 'text-hc-text' : 'text-text-primary'
                   }`}
                 >
                   {admireData?.theme || puzzle?.theme}
@@ -146,9 +146,9 @@ export default function AdmireScreen({
               {puzzle?.puzzles?.map((puzzleItem, index) => (
                 <div
                   key={index}
-                  className={`rounded-lg px-4 py-3 border-2 dark:${
+                  className={`rounded-lg px-4 py-3 ${
                     highContrast
-                      ? 'bg-hc-surface border-hc-border'
+                      ? 'bg-hc-surface border-2 border-hc-border'
                       : 'bg-green-100 dark:bg-green-900/30'
                   }`}
                 >
@@ -169,52 +169,52 @@ export default function AdmireScreen({
             {/* Stats Grid */}
             <div className="grid grid-cols-3 gap-4 mb-6">
               <div
-                className={`rounded-lg p-4 text-center border-2 dark:${
+                className={`rounded-lg p-4 text-center flex flex-col items-center justify-center ${
                   highContrast
-                    ? 'bg-hc-surface border-hc-border'
+                    ? 'bg-hc-surface border-2 border-hc-border'
                     : 'bg-accent-blue/20 dark:bg-sky-900/50'
                 }`}
               >
                 <div
                   className={`text-lg font-bold ${
-                    highContrast ? 'text-hc-text' : 'text-black dark:text-black'
+                    highContrast ? 'text-hc-text' : 'text-text-primary'
                   }`}
                 >
                   {formatTime(admireData?.time || 0)}
                 </div>
-                <div className="text-xs text-gray-600 dark:text-gray-400 mt-1">Time</div>
+                <div className="text-xs text-text-secondary mt-1">Time</div>
               </div>
               <div
-                className={`rounded-lg p-4 text-center border-2 dark:${
+                className={`rounded-lg p-4 text-center flex flex-col items-center justify-center ${
                   highContrast
-                    ? 'bg-hc-surface border-hc-border'
+                    ? 'bg-hc-surface border-2 border-hc-border'
                     : 'bg-accent-orange/20 dark:bg-orange-900/50'
                 }`}
               >
                 <div
                   className={`text-lg font-bold ${
-                    highContrast ? 'text-hc-text' : 'text-black dark:text-black'
+                    highContrast ? 'text-hc-text' : 'text-text-primary'
                   }`}
                 >
                   {admireData?.mistakes || 0}/4
                 </div>
-                <div className="text-xs text-gray-600 dark:text-gray-400 mt-1">Mistakes</div>
+                <div className="text-xs text-text-secondary mt-1">Mistakes</div>
               </div>
               <div
-                className={`rounded-lg p-4 text-center border-2 dark:flex flex-col items-center justify-center ${
+                className={`rounded-lg p-4 text-center flex flex-col items-center justify-center ${
                   highContrast
-                    ? 'bg-hc-surface border-hc-border'
+                    ? 'bg-hc-surface border-2 border-hc-border'
                     : 'bg-accent-pink/20 dark:bg-pink-900/50'
                 }`}
               >
                 <div
                   className={`text-lg font-bold ${
-                    highContrast ? 'text-hc-text' : 'text-black dark:text-black'
+                    highContrast ? 'text-hc-text' : 'text-text-primary'
                   }`}
                 >
                   {formatDateShort(puzzleDate)}
                 </div>
-                <div className="text-xs text-gray-600 dark:text-gray-400 mt-1">Date</div>
+                <div className="text-xs text-text-secondary mt-1">Date</div>
               </div>
             </div>
 
@@ -242,10 +242,10 @@ export default function AdmireScreen({
                 mediumTap();
                 onReplay();
               }}
-              className={`w-full py-3 px-4 rounded-lg font-semibold transition-all border-2 ${
+              className={`w-full py-3 px-4 rounded-md font-semibold transition-all duration-200 hover:scale-105 ${
                 highContrast
-                  ? 'bg-hc-surface text-hc-text border-hc-border hover:bg-hc-primary hover:text-white'
-                  : 'bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 dark: hover:dark:hover:'
+                  ? 'bg-hc-surface text-hc-text border-2 border-hc-border hover:bg-hc-primary hover:text-white'
+                  : 'bg-bg-surface dark:bg-gray-700 text-text-primary hover:bg-gray-200 dark:hover:bg-gray-600'
               }`}
             >
               Replay Puzzle
@@ -256,10 +256,10 @@ export default function AdmireScreen({
                 lightTap();
                 setShowArchive(true);
               }}
-              className={`w-full py-3 px-4 rounded-lg font-semibold transition-all border-2 ${
+              className={`w-full py-3 px-4 rounded-md font-semibold transition-all duration-200 hover:scale-105 ${
                 highContrast
-                  ? 'bg-hc-surface text-hc-text border-hc-border hover:bg-hc-primary hover:text-white'
-                  : 'bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 dark: hover:dark:hover:'
+                  ? 'bg-hc-surface text-hc-text border-2 border-hc-border hover:bg-hc-primary hover:text-white'
+                  : 'bg-bg-surface dark:bg-gray-700 text-text-primary hover:bg-gray-200 dark:hover:bg-gray-600'
               }`}
             >
               Browse Archive
@@ -270,10 +270,10 @@ export default function AdmireScreen({
                 lightTap();
                 setShowLeaderboard(true);
               }}
-              className={`w-full py-3 px-4 rounded-lg font-semibold transition-all border-2 ${
+              className={`w-full py-3 px-4 rounded-md font-semibold transition-all duration-200 hover:scale-105 ${
                 highContrast
-                  ? 'bg-hc-surface text-hc-text border-hc-border hover:bg-hc-primary hover:text-white'
-                  : 'bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 dark: hover:dark:hover:'
+                  ? 'bg-hc-surface text-hc-text border-2 border-hc-border hover:bg-hc-primary hover:text-white'
+                  : 'bg-bg-surface dark:bg-gray-700 text-text-primary hover:bg-gray-200 dark:hover:bg-gray-600'
               }`}
             >
               Leaderboard

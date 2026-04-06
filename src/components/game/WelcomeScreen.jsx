@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { getCurrentPuzzleNumber } from '@/lib/puzzleNumber';
@@ -21,6 +21,9 @@ import AnnouncementBanner from '@/components/home/AnnouncementBanner';
 import ErrorBoundary from '@/components/shared/ErrorBoundary';
 import { useHaptics } from '@/hooks/useHaptics';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useHomeKeyboard } from '@/hooks/useHomeKeyboard';
+import HomeKeyboardShortcutsModal from '@/components/home/HomeKeyboardShortcutsModal';
+import FeedbackPane from '@/components/FeedbackPane';
 import { Capacitor } from '@capacitor/core';
 import { getPuzzleResult } from '@/lib/storage';
 import { loadMiniPuzzleProgress } from '@/lib/miniStorage';
@@ -52,6 +55,8 @@ export default function WelcomeScreen({
   const [showSettings, setShowSettings] = useState(false);
   const [showLeaderboard, setShowLeaderboard] = useState(false);
   const [showTandemUnavailable, setShowTandemUnavailable] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [showFeedback, setShowFeedback] = useState(false);
   const { welcomeMelody } = useHaptics();
   const { highContrast } = useTheme();
 
@@ -190,24 +195,6 @@ export default function WelcomeScreen({
     }
   }, [welcomeMelody]);
 
-  // Handle keyboard shortcut (only when not typing in an input/form/modal)
-  useEffect(() => {
-    const handleKeyDown = (e) => {
-      if (e.key === 'Enter') {
-        // Ignore Enter presses inside inputs, forms, textareas, or modals
-        const tag = e.target.tagName;
-        if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'BUTTON' || tag === 'SELECT') return;
-        if (e.target.closest('[role="dialog"]') || e.target.closest('form')) return;
-
-        e.preventDefault();
-        handleTandemClick();
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [onStart, tandemCompleted, puzzle]); // eslint-disable-line react-hooks/exhaustive-deps
-
   const handleTandemClick = () => {
     if (tandemError) {
       setShowTandemUnavailable(true);
@@ -232,6 +219,32 @@ export default function WelcomeScreen({
     router.push('/reel-connections');
   };
 
+  const handleOpenFeedback = useCallback(() => {
+    setIsSidebarOpen(false);
+    setTimeout(() => setShowFeedback(true), 200);
+  }, []);
+
+  // Check if any modal is open (to suppress game shortcuts while a modal is visible)
+  const hasOpenModal =
+    showStats || showArchive || showHowToPlay || showSettings || showLeaderboard || showTandemUnavailable || showFeedback;
+
+  const { showShortcuts: showHomeShortcuts, setShowShortcuts: setShowHomeShortcuts } =
+    useHomeKeyboard({
+      onTandemClick: handleTandemClick,
+      onMiniClick: handleMiniClick,
+      onAlchemyClick: handleSoupClick,
+      onReelClick: handleReelClick,
+      isSidebarOpen,
+      setIsSidebarOpen,
+      onOpenStats: () => setShowStats(true),
+      onOpenArchive: () => setShowArchive(true),
+      onOpenHowToPlay: () => setShowHowToPlay(true),
+      onOpenSettings: () => setShowSettings(true),
+      onOpenLeaderboard: () => setShowLeaderboard(true),
+      onOpenFeedback: handleOpenFeedback,
+      hasOpenModal,
+    });
+
   return (
     <>
       <Header
@@ -240,6 +253,9 @@ export default function WelcomeScreen({
         onOpenHowToPlay={() => setShowHowToPlay(true)}
         onOpenSettings={() => setShowSettings(true)}
         onOpenLeaderboard={() => setShowLeaderboard(true)}
+        isSidebarOpen={isSidebarOpen}
+        onSidebarToggle={setIsSidebarOpen}
+        onOpenFeedback={handleOpenFeedback}
       />
 
       {/* Main content with padding for fixed header */}
@@ -370,6 +386,32 @@ export default function WelcomeScreen({
       />
       <HowToPlayModal isOpen={showHowToPlay} onClose={() => setShowHowToPlay(false)} />
       <Settings isOpen={showSettings} onClose={() => setShowSettings(false)} />
+      {/* Feedback Pane */}
+      <FeedbackPane isOpen={showFeedback} onClose={() => setShowFeedback(false)} />
+
+      {/* Keyboard shortcut hint — desktop only */}
+      <div className="hidden lg:block">
+        <button
+          onClick={() => setShowHomeShortcuts(true)}
+          className="fixed bottom-4 right-4 z-30 flex items-center gap-1.5 px-2.5 py-1.5 bg-bg-card dark:bg-gray-800 rounded-lg text-xs text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition-colors duration-150"
+          aria-label="Show keyboard shortcuts"
+        >
+          <span>
+            Press{' '}
+            <kbd className="px-1 py-0.5 bg-gray-100 dark:bg-gray-700 rounded text-[10px] font-mono font-medium border border-gray-300 dark:border-gray-600">
+              ?
+            </kbd>{' '}
+            for keyboard shortcuts
+          </span>
+        </button>
+      </div>
+
+      {/* Home Keyboard Shortcuts Modal */}
+      <HomeKeyboardShortcutsModal
+        isOpen={showHomeShortcuts}
+        onClose={() => setShowHomeShortcuts(false)}
+      />
+
       {/* Tandem Unavailable Modal */}
       {showTandemUnavailable && (
         <div
