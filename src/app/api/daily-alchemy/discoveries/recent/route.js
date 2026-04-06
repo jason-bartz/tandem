@@ -37,6 +37,8 @@ const DISCOVERY_LIMIT = 50;
  * Returns the most recent first discoveries for the welcome-screen marquee.
  * Queries element_soup_first_discoveries directly (indexed on discovered_at DESC).
  */
+export const dynamic = process.env.BUILD_TARGET === 'capacitor' ? 'auto' : 'force-dynamic';
+
 export async function GET() {
   try {
     const supabase = createServerClient();
