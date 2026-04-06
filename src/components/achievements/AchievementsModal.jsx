@@ -98,13 +98,13 @@ export default function AchievementsModal({ isOpen, onClose }) {
           className={`p-6 rounded-lg border-2 text-center ${
             highContrast
               ? 'bg-hc-surface border-hc-border'
-              : 'bg-amber-50 dark:bg-amber-900/20 border-amber-500'
+              : 'bg-bg-surface dark:bg-gray-800 border-flat-accent'
           }`}
         >
           <div className="flex justify-center mb-4">
             <LockKeyholeIcon
               className={`w-12 h-12 ${
-                highContrast ? 'text-hc-text' : 'text-amber-600 dark:text-amber-400'
+                highContrast ? 'text-hc-text' : 'text-flat-accent dark:text-flat-accent'
               }`}
             />
           </div>
@@ -135,7 +135,7 @@ export default function AchievementsModal({ isOpen, onClose }) {
           className={`p-4 rounded-lg border-2 mb-4 ${
             highContrast
               ? 'bg-hc-surface border-hc-border'
-              : 'bg-red-50 dark:bg-red-900/20 border-red-500'
+              : 'bg-bg-surface dark:bg-gray-800 border-accent-red'
           }`}
         >
           <p
@@ -156,7 +156,7 @@ export default function AchievementsModal({ isOpen, onClose }) {
             className={`rounded-lg border-2 p-4 mb-4 ${
               highContrast
                 ? 'bg-hc-primary text-hc-primary-text border-hc-border'
-                : 'bg-accent-blue text-white dark:'
+                : 'bg-accent-blue text-white border-accent-blue'
             }`}
           >
             <div className="flex justify-around items-center">
@@ -191,10 +191,10 @@ export default function AchievementsModal({ isOpen, onClose }) {
                 activeTab === 'tandem'
                   ? highContrast
                     ? 'bg-hc-primary text-hc-primary-text border-hc-border'
-                    : 'bg-accent-blue text-white dark:'
+                    : 'bg-accent-blue text-white border-accent-blue'
                   : highContrast
                     ? 'bg-hc-surface text-hc-text border-hc-border hover:bg-hc-surface/80'
-                    : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 dark:hover:bg-gray-200 dark:hover:bg-gray-700'
+                    : 'bg-bg-surface dark:bg-gray-800 text-text-secondary border-border-main dark:border-gray-700 hover:bg-gray-200 dark:hover:bg-gray-700'
               }`}
             >
               Tandem
@@ -205,10 +205,10 @@ export default function AchievementsModal({ isOpen, onClose }) {
                 activeTab === 'mini'
                   ? highContrast
                     ? 'bg-hc-primary text-hc-primary-text border-hc-border'
-                    : 'bg-accent-yellow text-black dark:'
+                    : 'bg-accent-yellow text-gray-900 border-accent-yellow'
                   : highContrast
                     ? 'bg-hc-surface text-hc-text border-hc-border hover:bg-hc-surface/80'
-                    : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 dark:hover:bg-gray-200 dark:hover:bg-gray-700'
+                    : 'bg-bg-surface dark:bg-gray-800 text-text-secondary border-border-main dark:border-gray-700 hover:bg-gray-200 dark:hover:bg-gray-700'
               }`}
             >
               Mini
@@ -219,10 +219,10 @@ export default function AchievementsModal({ isOpen, onClose }) {
                 activeTab === 'reel'
                   ? highContrast
                     ? 'bg-hc-primary text-hc-primary-text border-hc-border'
-                    : 'bg-red-500 text-white dark:'
+                    : 'bg-accent-red text-white border-accent-red'
                   : highContrast
                     ? 'bg-hc-surface text-hc-text border-hc-border hover:bg-hc-surface/80'
-                    : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 dark:hover:bg-gray-200 dark:hover:bg-gray-700'
+                    : 'bg-bg-surface dark:bg-gray-800 text-text-secondary border-border-main dark:border-gray-700 hover:bg-gray-200 dark:hover:bg-gray-700'
               }`}
             >
               Reel
@@ -233,10 +233,10 @@ export default function AchievementsModal({ isOpen, onClose }) {
                 activeTab === 'alchemy'
                   ? highContrast
                     ? 'bg-hc-primary text-hc-primary-text border-hc-border'
-                    : 'bg-soup-primary text-white dark:'
+                    : 'bg-soup-primary text-white border-soup-primary'
                   : highContrast
                     ? 'bg-hc-surface text-hc-text border-hc-border hover:bg-hc-surface/80'
-                    : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 dark:hover:bg-gray-200 dark:hover:bg-gray-700'
+                    : 'bg-bg-surface dark:bg-gray-800 text-text-secondary border-border-main dark:border-gray-700 hover:bg-gray-200 dark:hover:bg-gray-700'
               }`}
             >
               Alchemy
@@ -246,7 +246,7 @@ export default function AchievementsModal({ isOpen, onClose }) {
           {/* Achievement Grid */}
           <div className="space-y-3">
             {displayData.allAchievements.length === 0 ? (
-              <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+              <div className={`text-center py-8 ${highContrast ? 'text-hc-text' : 'text-text-muted'}`}>
                 No achievements in this category yet.
               </div>
             ) : (

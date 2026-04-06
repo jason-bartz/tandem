@@ -49,15 +49,15 @@ export default function AchievementCard({ achievement, index = 0 }) {
         isUnlocked
           ? highContrast
             ? 'bg-hc-surface border-hc-border'
-            : 'bg-ghost-white dark:bg-bg-card dark:'
+            : 'bg-bg-card dark:bg-bg-card border-border-main dark:border-gray-700'
           : highContrast
             ? 'bg-hc-surface/40 border-hc-border/40'
-            : 'bg-gray-100 dark:bg-gray-800/50 dark:'
+            : 'bg-bg-surface dark:bg-gray-800/50 border-border-main dark:border-gray-700'
       }`}
     >
       {/* Locked Overlay */}
       {!isUnlocked && (
-        <div className="absolute inset-0 rounded-lg bg-black/20 dark:bg-black/40 z-10 flex items-center justify-center">
+        <div className="absolute inset-0 rounded-lg bg-gray-900/15 dark:bg-gray-900/40 z-10 flex items-center justify-center">
           <img src="/ui/shared/lock.png" alt="Locked" className="w-8 h-8 opacity-60" />
         </div>
       )}
@@ -70,7 +70,7 @@ export default function AchievementCard({ achievement, index = 0 }) {
               isUnlocked
                 ? highContrast
                   ? 'border-hc-border bg-hc-surface'
-                  : 'border-border-main bg-gradient-to-br from-amber-100 to-amber-200 dark:from-amber-900/30 dark:to-amber-800/30'
+                  : 'border-border-main bg-flat-accent/20 dark:bg-flat-accent/15'
                 : 'border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-800 opacity-50'
             }`}
           >
@@ -158,7 +158,7 @@ export default function AchievementCard({ achievement, index = 0 }) {
                 highContrast ? 'text-hc-primary' : 'text-green-600 dark:text-green-400'
               }`}
             >
-              ✓ Unlocked
+              Unlocked
             </div>
           )}
         </div>

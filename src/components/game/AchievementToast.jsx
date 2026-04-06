@@ -14,7 +14,7 @@ function getToastColors(achievement, highContrast) {
   if (highContrast) return 'bg-hc-surface text-hc-text border-2 border-hc-border';
   const id = achievement?.id || '';
   if (id.includes('mini')) return 'bg-accent-yellow text-black';
-  if (id.includes('reel')) return 'bg-red-500 text-white';
+  if (id.includes('reel')) return 'bg-accent-red text-white';
   if (id.includes('soup') || id.includes('alchemy')) return 'bg-accent-green text-black';
   return 'bg-accent-blue text-white'; // Tandem default
 }
@@ -57,7 +57,7 @@ export default function AchievementToast() {
       aria-live="polite"
     >
       <div
-        className={`${colorClasses} px-5 py-3.5 rounded-2xl flex items-center gap-3 max-w-sm ${highContrast ? '' : 'border-2 border-black/10'}`}
+        className={`${colorClasses} px-5 py-3.5 rounded-2xl flex items-center gap-3 max-w-sm ${highContrast ? '' : 'border-2 border-border-main'}`}
       >
         <span className="text-4xl">{achievement.emoji}</span>
         <div className="flex-1">
@@ -66,7 +66,6 @@ export default function AchievementToast() {
           </div>
           <div className="font-bold text-sm mt-0.5">{achievement.name}</div>
         </div>
-        <span className="text-3xl">🏆</span>
       </div>
     </div>
   );
