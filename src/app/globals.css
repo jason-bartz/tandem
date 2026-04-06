@@ -60,8 +60,8 @@
 }
 
 [data-theme='dark'] {
-  /* Game identity colors - lightened for dark backgrounds */
-  --accent-green: #86efac;
+  /* Game identity colors - balanced for dark backgrounds */
+  --accent-green: #22c55e;
   --accent-yellow: #fde68a;
   --accent-pink: #f9a8d4;
   --accent-blue: #93c5fd;

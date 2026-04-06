@@ -144,6 +144,10 @@ export default function CharacterBlockGrid({
 
       const key = e.key;
 
+      // Let Shift+H (hint) and ? (shortcuts) bubble up to the global keyboard handler
+      if (key === '?' || (key === '/' && e.shiftKey)) return;
+      if (key === 'H' && e.shiftKey) return;
+
       if (/^[a-zA-Z]$/.test(key)) {
         e.preventDefault();
 
