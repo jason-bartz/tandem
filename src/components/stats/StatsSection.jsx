@@ -40,8 +40,10 @@ export default function StatsSection({ title, emoji, icon, themeColor, children 
 
   return (
     <div
-      className={`rounded-lg overflow-hidden mb-4 border-l-4 ${getAccentBorder()} ${
-        highContrast ? 'bg-hc-surface' : 'bg-bg-surface dark:bg-gray-800'
+      className={`rounded-lg overflow-hidden mb-4 border-l-4 border ${getAccentBorder()} ${
+        highContrast
+          ? 'bg-hc-surface border-hc-border'
+          : 'bg-bg-card dark:bg-gray-800 border-border-main dark:border-gray-700'
       }`}
     >
       {/* Section Header - hidden when title is null (standalone) */}
