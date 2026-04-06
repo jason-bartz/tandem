@@ -1,7 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Lightbulb, Sparkles } from 'lucide-react';
+import { Lightbulb } from 'lucide-react';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useHaptics } from '@/hooks/useHaptics';
 
@@ -34,12 +34,14 @@ export default function HintEarnedToast({ isSmallPhone = false, isMobilePhone = 
     hidden: {
       opacity: 0,
       y: -20,
+      x: '-50%',
       scale: reduceMotion ? 1 : 0.95,
       transition: { duration: reduceMotion ? 0 : 0.3, ease: [0.4, 0.0, 0.2, 1] },
     },
     visible: {
       opacity: 1,
       y: 0,
+      x: '-50%',
       scale: 1,
       transition: { duration: reduceMotion ? 0 : 0.3, ease: [0.4, 0.0, 0.2, 1] },
     },
@@ -54,7 +56,7 @@ export default function HintEarnedToast({ isSmallPhone = false, isMobilePhone = 
           animate="visible"
           exit="hidden"
           className={`
-            fixed left-1/2 -translate-x-1/2 z-[9998]
+            fixed left-1/2 z-[9998]
             ${isSmallPhone ? 'top-16' : isMobilePhone ? 'top-20' : 'top-24'}
           `}
           role="alert"
@@ -64,8 +66,7 @@ export default function HintEarnedToast({ isSmallPhone = false, isMobilePhone = 
           <div
             className={`
               ${isSmallPhone ? 'px-4 py-2.5' : isMobilePhone ? 'px-5 py-3' : 'px-6 py-3'}
-              rounded-2xl flex items-center gap-3
-              ${isSmallPhone ? 'max-w-[280px]' : isMobilePhone ? 'max-w-xs' : 'max-w-sm'}
+              rounded-2xl flex items-center gap-3 w-[90vw] max-w-md
               ${
                 highContrast
                   ? 'bg-hc-warning text-hc-warning-text border-2 border-hc-border'
@@ -77,22 +78,9 @@ export default function HintEarnedToast({ isSmallPhone = false, isMobilePhone = 
               className={isSmallPhone ? 'w-5 h-5 flex-shrink-0' : 'w-6 h-6 flex-shrink-0'}
             />
 
-            <div className="flex-1">
-              <div
-                className={`font-bold ${isSmallPhone ? 'text-xs' : 'text-sm'}`}
-              >
-                Hint Earned!
-              </div>
-              <div
-                className={`opacity-90 ${isSmallPhone ? 'text-[10px]' : 'text-xs'}`}
-              >
-                You unlocked an extra hint
-              </div>
+            <div className={`font-bold ${isSmallPhone ? 'text-xs' : 'text-sm'}`}>
+              Hint Earned! You unlocked an extra hint
             </div>
-
-            <Sparkles
-              className={isSmallPhone ? 'w-4 h-4 flex-shrink-0' : 'w-5 h-5 flex-shrink-0'}
-            />
           </div>
         </motion.div>
       )}

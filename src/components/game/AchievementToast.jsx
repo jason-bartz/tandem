@@ -52,12 +52,14 @@ export default function AchievementToast() {
     hidden: {
       opacity: 0,
       y: -20,
+      x: '-50%',
       scale: reduceMotion ? 1 : 0.95,
       transition: { duration: reduceMotion ? 0 : 0.3, ease: [0.4, 0.0, 0.2, 1] },
     },
     visible: {
       opacity: 1,
       y: 0,
+      x: '-50%',
       scale: 1,
       transition: { duration: reduceMotion ? 0 : 0.3, ease: [0.4, 0.0, 0.2, 1] },
     },
@@ -67,7 +69,7 @@ export default function AchievementToast() {
     <AnimatePresence>
       {visible && (
         <motion.div
-          className="fixed top-20 left-1/2 -translate-x-1/2 z-[9999]"
+          className="fixed top-20 left-1/2 z-[9999]"
           variants={variants}
           initial="hidden"
           animate="visible"
@@ -76,14 +78,12 @@ export default function AchievementToast() {
           aria-live="polite"
         >
           <div
-            className={`${colorClasses} px-5 py-3.5 rounded-2xl flex items-center gap-3 max-w-sm`}
+            className={`${colorClasses} px-5 py-3.5 rounded-2xl flex items-center gap-3 w-[90vw] max-w-md`}
           >
-            <span className="text-4xl">{achievement.emoji}</span>
-            <div className="flex-1">
-              <div className="font-black text-[10px] uppercase tracking-widest opacity-80">
-                Achievement Unlocked
-              </div>
-              <div className="font-bold text-sm mt-0.5">{achievement.name}</div>
+            <span className="text-3xl">{achievement.emoji}</span>
+            <div className="font-bold text-sm">
+              <span className="uppercase tracking-wide opacity-80">Achievement:</span>{' '}
+              {achievement.name}
             </div>
           </div>
         </motion.div>
