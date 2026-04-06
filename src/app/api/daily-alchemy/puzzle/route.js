@@ -2,11 +2,6 @@ import { NextResponse } from 'next/server';
 import { createServerClient } from '@/lib/supabase/server';
 import logger from '@/lib/logger';
 import { STARTER_ELEMENTS, normalizeKey } from '@/lib/daily-alchemy.constants';
-import {
-  loadCombinations,
-  findAllReachable,
-  reconstructPath,
-} from '@/lib/server/alchemyPathfinder';
 
 /**
  * Get today's date in YYYY-MM-DD format based on ET timezone
@@ -79,27 +74,152 @@ async function validateSolutionPath(solutionPath, supabase) {
 }
 
 /**
- * Check if a solution path is complete — every non-starter input must be
- * produced by an earlier step in the path.
+ * Complete a solution path by filling in missing intermediate steps.
+ * Walks the path and for any step whose inputs aren't yet available,
+ * recursively looks up those elements in the DB and inserts prerequisite steps.
+ * Returns null if the path cannot be completed (missing DB combos).
  */
-function isPathComplete(solutionPath) {
-  if (!solutionPath || solutionPath.length === 0) return false;
+async function completeSolutionPath(solutionPath, supabase) {
+  if (!solutionPath || solutionPath.length === 0) return null;
 
   const starterNames = new Set(STARTER_ELEMENTS.map((s) => s.name.toLowerCase()));
   const available = new Set(starterNames);
 
+  // Check if path is already complete
+  let isComplete = true;
   for (const step of solutionPath) {
-    const aLower = step.elementA.toLowerCase();
-    const bLower = step.elementB.toLowerCase();
-
-    if (!available.has(aLower) || !available.has(bLower)) {
-      return false;
+    if (
+      !available.has(step.elementA.toLowerCase()) ||
+      !available.has(step.elementB.toLowerCase())
+    ) {
+      isComplete = false;
+      break;
     }
-
     available.add(step.result.toLowerCase());
   }
 
-  return true;
+  if (isComplete) return solutionPath;
+
+  // Collect all missing elements we need to look up
+  available.clear();
+  for (const name of starterNames) available.add(name);
+
+  const missing = new Set();
+  for (const step of solutionPath) {
+    const aLower = step.elementA.toLowerCase();
+    const bLower = step.elementB.toLowerCase();
+    if (!available.has(aLower)) missing.add(aLower);
+    if (!available.has(bLower)) missing.add(bLower);
+    available.add(step.result.toLowerCase());
+  }
+
+  if (missing.size === 0) return solutionPath;
+
+  // Collect original-case names for missing elements from the path steps
+  const missingOriginalCase = new Set();
+  for (const step of solutionPath) {
+    if (missing.has(step.elementA.toLowerCase())) missingOriginalCase.add(step.elementA);
+    if (missing.has(step.elementB.toLowerCase())) missingOriginalCase.add(step.elementB);
+  }
+
+  // Look up how to make each missing element from the DB
+  const { data: combos, error } = await supabase
+    .from('element_combinations')
+    .select('element_a, element_b, result_element, result_emoji')
+    .in('result_element', Array.from(missingOriginalCase));
+
+  if (error || !combos || combos.length === 0) {
+    logger.warn('[API] Could not look up missing intermediate elements', {
+      missing: Array.from(missingOriginalCase),
+      error: error?.message,
+    });
+    return null;
+  }
+
+  // Build map of result_element_lower -> [combos] (all matches)
+  const combosByResult = new Map();
+  for (const combo of combos) {
+    const key = combo.result_element.toLowerCase();
+    if (!combosByResult.has(key)) combosByResult.set(key, []);
+    combosByResult.get(key).push(combo);
+  }
+
+  // Elements already produced by the stored path
+  const pathProduces = new Set(solutionPath.map((s) => s.result.toLowerCase()));
+
+  // Recursively resolve prerequisites for a missing element.
+  // Prefers combos whose inputs are starters or already in the stored path.
+  const resolved = new Map(); // elementLower -> step object
+  const resolving = new Set(); // cycle detection
+
+  function resolve(elementLower) {
+    if (starterNames.has(elementLower)) return true;
+    if (resolved.has(elementLower)) return true;
+    if (pathProduces.has(elementLower)) return true;
+    if (resolving.has(elementLower)) return false;
+
+    const candidates = combosByResult.get(elementLower);
+    if (!candidates || candidates.length === 0) return false;
+
+    resolving.add(elementLower);
+
+    // Try each candidate combo, prefer ones whose inputs are already available
+    for (const combo of candidates) {
+      const aLower = combo.element_a.toLowerCase();
+      const bLower = combo.element_b.toLowerCase();
+
+      if (resolve(aLower) && resolve(bLower)) {
+        resolved.set(elementLower, {
+          elementA: combo.element_a,
+          elementB: combo.element_b,
+          result: combo.result_element,
+          emoji: combo.result_emoji,
+        });
+        resolving.delete(elementLower);
+        return true;
+      }
+    }
+
+    resolving.delete(elementLower);
+    return false;
+  }
+
+  // Resolve all missing elements
+  for (const m of missing) {
+    if (!resolve(m)) {
+      logger.warn('[API] Could not resolve prerequisite chain for missing element', { element: m });
+      return null;
+    }
+  }
+
+  // Build the completed path: insert prerequisite steps before the step that needs them
+  const completedPath = [];
+  const added = new Set(starterNames);
+
+  function ensureAvailable(elementLower) {
+    if (added.has(elementLower)) return;
+    const step = resolved.get(elementLower);
+    if (!step) return;
+
+    ensureAvailable(step.elementA.toLowerCase());
+    ensureAvailable(step.elementB.toLowerCase());
+
+    completedPath.push(step);
+    added.add(elementLower);
+  }
+
+  for (const step of solutionPath) {
+    ensureAvailable(step.elementA.toLowerCase());
+    ensureAvailable(step.elementB.toLowerCase());
+
+    if (!added.has(step.result.toLowerCase())) {
+      completedPath.push(step);
+      added.add(step.result.toLowerCase());
+    }
+  }
+
+  // Re-number steps
+  return completedPath.map((step, i) => ({ ...step, step: i + 1 }));
 }
 
 /**
@@ -199,40 +319,17 @@ export async function GET(request) {
     // Validate solution path against actual DB combinations to fix stale/incorrect hints
     let solutionPath = await validateSolutionPath(data.solution_path || [], supabase);
 
-    // If the path has gaps (missing intermediate steps), recompute from scratch
-    if (!isPathComplete(solutionPath)) {
-      logger.warn('[API] Solution path incomplete, recomputing via pathfinder', {
+    // If the path has gaps (missing intermediate steps), fill them in
+    // by looking up the actual DB combinations for each missing element
+    const completedPath = await completeSolutionPath(solutionPath, supabase);
+    if (completedPath && completedPath.length > solutionPath.length) {
+      logger.warn('[API] Solution path had gaps, filled in missing steps', {
         date: data.date,
         target: data.target_element,
-        storedSteps: solutionPath.length,
+        originalSteps: solutionPath.length,
+        completedSteps: completedPath.length,
       });
-
-      try {
-        const { combosByInput } = await loadCombinations(supabase);
-        const elementInfo = findAllReachable(combosByInput);
-        const targetLower = data.target_element.toLowerCase();
-
-        if (elementInfo.has(targetLower)) {
-          const rawPath = reconstructPath(targetLower, elementInfo);
-          solutionPath = rawPath.map((step, index) => ({
-            step: index + 1,
-            elementA: step.element_a,
-            elementB: step.element_b,
-            result: step.result_element,
-            emoji: step.result_emoji,
-          }));
-
-          logger.info('[API] Recomputed solution path', {
-            date: data.date,
-            target: data.target_element,
-            newSteps: solutionPath.length,
-          });
-        }
-      } catch (pathError) {
-        logger.error('[API] Failed to recompute solution path', {
-          error: pathError.message,
-        });
-      }
+      solutionPath = completedPath;
     }
 
     return NextResponse.json({
