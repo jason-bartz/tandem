@@ -52,7 +52,7 @@ export async function POST(request) {
     const supabase = createServerClient();
 
     // Load all combinations and build indexes
-    const { combosByInput } = await loadCombinations(supabase);
+    const { combosByInput, pairToResult } = await loadCombinations(supabase);
 
     if (combosByInput.size === 0) {
       return NextResponse.json(
@@ -62,7 +62,7 @@ export async function POST(request) {
     }
 
     // Forward BFS to find all reachable elements from starters
-    const elementInfo = findAllReachable(combosByInput);
+    const elementInfo = findAllReachable(combosByInput, pairToResult);
 
     // Fetch ALL past puzzle targets (no date limit)
     const pastTargets = await fetchAllPastTargets(supabase);

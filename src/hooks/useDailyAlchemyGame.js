@@ -6,7 +6,7 @@ import { useHaptics } from '@/hooks/useHaptics';
 import logger from '@/lib/logger';
 import { getApiUrl, capacitorFetch } from '@/lib/api-config';
 import {
-  playCombineSound,
+  playCombineSoundSpatial,
   playCombineButtonSound,
   playFailureSound,
   playFirstDiscoverySound,
@@ -17,6 +17,7 @@ import {
   playSoupWinSound,
   playFavoriteAddSound,
   playFavoriteClearSound,
+  stopAmbientTexture,
 } from '@/lib/sounds';
 import {
   SOUP_GAME_STATES,
@@ -530,8 +531,23 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
           setSolutionPath(data.puzzle.solutionPath);
         }
 
-        // Check for saved progress
-        const savedState = loadSavedState(targetDate);
+        // Check for saved progress — discard if target element changed (puzzle was replaced)
+        let savedState = loadSavedState(targetDate);
+        if (
+          savedState?.targetElement &&
+          savedState.targetElement.toLowerCase() !== data.puzzle.targetElement.toLowerCase()
+        ) {
+          logger.info('[ElementSoup] Discarding saved state — target element changed', {
+            saved: savedState.targetElement,
+            current: data.puzzle.targetElement,
+          });
+          try {
+            localStorage.removeItem(`${SOUP_STORAGE_KEYS.PUZZLE_PROGRESS}${targetDate}`);
+          } catch {
+            // Ignore
+          }
+          savedState = null;
+        }
         if (savedState && !savedState.completed) {
           // Store saved state but don't restore yet - show welcome screen with Continue option
           pendingSavedState.current = savedState;
@@ -688,6 +704,7 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
       });
 
       const state = {
+        targetElement: puzzle?.targetElement,
         elementBank: elementBank.map((el) => el.name),
         elementEmojis,
         combinationPath,
@@ -1884,7 +1901,7 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
         playFirstDiscoverySound();
       } else if (isNew) {
         soupNewElement();
-        playCombineSound(); // Wondrous magical sound for new discoveries
+        playCombineSoundSpatial(); // Spatial magical sound for new discoveries
       } else {
         soupCombine();
         playNewElementSound(); // Simple chime for existing elements
@@ -2021,7 +2038,8 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
 
     logger.info('[ElementSoup] Puzzle completed!');
 
-    // Play victory sound and celebration haptic
+    // Stop ambient and play victory sound
+    stopAmbientTexture();
     playSoupWinSound();
     celebration();
 
@@ -2037,6 +2055,7 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
       });
 
       const completionState = {
+        targetElement: puzzle?.targetElement,
         elementBank: elementBank.map((el) => el.name),
         elementEmojis,
         combinationPath,

@@ -7,7 +7,7 @@ import html2canvas from 'html2canvas';
 import { cn } from '@/lib/utils';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useHaptics } from '@/hooks/useHaptics';
-import { playPlunkSound, startAmbientTexture, stopAmbientTexture } from '@/lib/sounds';
+import { playPlunkSound } from '@/lib/sounds';
 import { StatsAndTargetRow } from './TargetDisplay';
 import { CombinationArea } from './CombinationArea';
 import { ElementBank } from './ElementBank';
@@ -662,12 +662,6 @@ export function DailyAlchemyGameScreen({
     onUseHint,
     hintCooldown,
   });
-
-  // Start ambient texture when playing, stop on unmount
-  useEffect(() => {
-    startAmbientTexture('alchemy');
-    return () => stopAmbientTexture();
-  }, []);
 
   // Handle drag and drop to combination slots
   const handleDropElement = useCallback(

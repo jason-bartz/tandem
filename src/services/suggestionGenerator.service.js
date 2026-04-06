@@ -263,7 +263,7 @@ async function generateAlchemyOptions(targetDate) {
   try {
     const combos = await loadCombinations(supabase);
     combosByInput = combos.combosByInput;
-    elementInfo = findAllReachable(combosByInput);
+    elementInfo = findAllReachable(combosByInput, combos.pairToResult);
 
     const pastTargets = await fetchAllPastTargets(supabase);
     pastTargetSet = new Set([...pastTargets].map((t) => t.toLowerCase()));

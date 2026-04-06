@@ -28,8 +28,8 @@ export async function POST(request) {
     const supabase = createServerClient();
 
     // Load all combinations and build indexes for pathfinding
-    const { combosByInput } = await loadCombinations(supabase);
-    const elementInfo = findAllReachable(combosByInput);
+    const { combosByInput, pairToResult } = await loadCombinations(supabase);
+    const elementInfo = findAllReachable(combosByInput, pairToResult);
 
     // Fetch puzzles to recompute
     let query = supabase

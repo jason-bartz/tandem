@@ -20,8 +20,9 @@ export async function loadCombinations(supabase) {
   while (hasMore) {
     const { data: combinations, error } = await supabase
       .from('element_combinations')
-      .select('element_a, element_b, result_element, result_emoji')
+      .select('element_a, element_b, result_element, result_emoji, combination_key')
       .not('element_a', 'eq', '_ADMIN')
+      .not('combination_key', 'like', '%-minus-%')
       .order('id', { ascending: true })
       .range(page * pageSize, (page + 1) * pageSize - 1);
 
@@ -84,7 +85,7 @@ export async function loadCombinations(supabase) {
  * @param {Map} combosByInput - Map of elementNameLower -> combos using that element as input
  * @returns {Map<string, {name: string, emoji: string, depth: number, producedBy: object|null}>}
  */
-export function findAllReachable(combosByInput) {
+export function findAllReachable(combosByInput, pairToResult) {
   const elementInfo = new Map();
 
   // Initialize starters at depth 0
@@ -117,6 +118,15 @@ export function findAllReachable(combosByInput) {
 
         // Only process if result is new
         if (elementInfo.has(resultLower)) continue;
+
+        // Verify this is the canonical result for this input pair.
+        // The combosByInput index may contain stale/duplicate combos
+        // that don't match the actual game result for a given pair.
+        if (pairToResult) {
+          const pair = [aLower, bLower].sort().join('|');
+          const canonical = pairToResult.get(pair);
+          if (canonical && canonical.result_element.toLowerCase() !== resultLower) continue;
+        }
 
         elementInfo.set(resultLower, {
           name: combo.result_element,

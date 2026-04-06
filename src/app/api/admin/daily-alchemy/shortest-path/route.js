@@ -43,10 +43,10 @@ export async function GET(request) {
     const supabase = createServerClient();
 
     // Load all combinations and build indexes
-    const { combosByInput } = await loadCombinations(supabase);
+    const { combosByInput, pairToResult } = await loadCombinations(supabase);
 
     // Use forward BFS from starters to find all reachable elements with shortest paths
-    const elementInfo = findAllReachable(combosByInput);
+    const elementInfo = findAllReachable(combosByInput, pairToResult);
 
     // Check if target is reachable
     if (!elementInfo.has(targetLower)) {
