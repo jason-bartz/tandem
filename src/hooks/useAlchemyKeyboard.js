@@ -20,7 +20,8 @@ export const KEYBOARD_SHORTCUTS = [
     category: 'Combination',
     shortcuts: [
       { keys: ['Tab'], description: 'Switch active slot' },
-      { keys: ['C', '\u2318 Enter'], description: 'Combine / Subtract' },
+      { keys: ['Enter'], description: 'Combine / Subtract' },
+      { keys: ['Esc'], description: 'Deselect last element' },
       { keys: ['X'], description: 'Clear both slots' },
       { keys: ['Backspace'], description: 'Clear active slot' },
       { keys: ['+', '-'], description: 'Toggle combine / subtract' },
@@ -63,6 +64,7 @@ export const KEYBOARD_SHORTCUTS = [
  * @param {Function} params.setActiveSlot - Set active slot
  * @param {Function} params.combineElements - Fire combination
  * @param {Function} params.clearSelections - Clear both slots
+ * @param {Function} params.deselectLastSelected - Deselect most recently selected element
  * @param {boolean} params.isCombining - API in-flight
  * @param {boolean} params.isAnimating - Animation in-flight
  * @param {Object} params.lastResult - Current result card, if showing
@@ -93,6 +95,7 @@ export function useAlchemyKeyboard({
   setActiveSlot,
   combineElements,
   clearSelections,
+  deselectLastSelected,
   isCombining,
   isAnimating,
   lastResult,
@@ -220,7 +223,7 @@ export function useAlchemyKeyboard({
       // ─── Disabled state ───
       if (disabled || (isComplete && !freePlayMode)) return;
 
-      // ─── Cmd/Ctrl+Enter: combine ───
+      // ─── Cmd/Ctrl+Enter: combine (legacy, still supported) ───
       if (key === 'Enter' && (e.metaKey || e.ctrlKey)) {
         e.preventDefault();
         if (selectedA && selectedB && !isCombining && !isAnimating) {
@@ -285,15 +288,6 @@ export function useAlchemyKeyboard({
         return;
       }
 
-      // ─── Combine ───
-      if (key === 'c' || key === 'C') {
-        e.preventDefault();
-        if (selectedA && selectedB && !isCombining && !isAnimating) {
-          combineElements?.();
-        }
-        return;
-      }
-
       // ─── Clear ───
       if (key === 'x' || key === 'X') {
         e.preventDefault();
@@ -316,13 +310,15 @@ export function useAlchemyKeyboard({
         return;
       }
 
-      // ─── Escape: close favorites or clear search ───
+      // ─── Escape: deselect element, close favorites, or clear search ───
       if (key === 'Escape') {
         e.preventDefault();
         if (showFavoritesPanel) {
           onToggleFavoritesPanel?.();
         } else if (searchQuery) {
           setSearchQuery?.('');
+        } else if (selectedA || selectedB) {
+          deselectLastSelected?.();
         }
         return;
       }
@@ -371,11 +367,13 @@ export function useAlchemyKeyboard({
         return;
       }
 
-      // ─── Enter / Space: select focused element ───
+      // ─── Enter / Space: select focused element, or combine if both slots filled ───
       if (key === 'Enter' || key === ' ') {
         e.preventDefault();
         if (focusIndex >= 0 && focusIndex < sortedElementBank.length) {
           selectElement?.(sortedElementBank[focusIndex]);
+        } else if (key === 'Enter' && selectedA && selectedB && !isCombining && !isAnimating) {
+          combineElements?.();
         }
         return;
       }
@@ -412,6 +410,7 @@ export function useAlchemyKeyboard({
       setActiveSlot,
       combineElements,
       clearSelections,
+      deselectLastSelected,
       clearLastResult,
       selectResultElement,
       toggleOperatorMode,

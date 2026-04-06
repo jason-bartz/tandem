@@ -120,6 +120,7 @@ export function DailyAlchemyGame({ initialDate = null }) {
     selectElement,
     selectResultElement,
     clearSelections,
+    deselectLastSelected,
     activeSlot,
     setActiveSlot,
 
@@ -685,6 +686,7 @@ export function DailyAlchemyGame({ initialDate = null }) {
                       selectElement={selectElement}
                       selectResultElement={selectResultElement}
                       clearSelections={clearSelections}
+                      deselectLastSelected={deselectLastSelected}
                       activeSlot={activeSlot}
                       setActiveSlot={setActiveSlot}
                       isSubtractMode={isSubtractMode}

@@ -554,6 +554,7 @@ export function DailyAlchemyGameScreen({
   selectElement,
   selectResultElement,
   clearSelections,
+  deselectLastSelected,
   activeSlot,
   setActiveSlot,
 
@@ -641,6 +642,7 @@ export function DailyAlchemyGameScreen({
     setActiveSlot,
     combineElements,
     clearSelections,
+    deselectLastSelected,
     isCombining,
     isAnimating,
     lastResult,

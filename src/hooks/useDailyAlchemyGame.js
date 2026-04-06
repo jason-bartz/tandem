@@ -1771,6 +1771,19 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
   }, []);
 
   /**
+   * Deselect the most recently selected element (B first, then A)
+   */
+  const deselectLastSelected = useCallback(() => {
+    if (selectedBRef.current) {
+      setSelectedB(null);
+      setActiveSlot('second');
+    } else if (selectedARef.current) {
+      setSelectedA(null);
+      setActiveSlot(null);
+    }
+  }, []);
+
+  /**
    * Select a result element into the first slot (called when user swipes up the result popup)
    */
   const selectResultElement = useCallback((element) => {
@@ -2517,6 +2530,7 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
     selectElement,
     selectResultElement,
     clearSelections,
+    deselectLastSelected,
     activeSlot,
     setActiveSlot,
 
