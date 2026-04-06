@@ -12,8 +12,9 @@ import {
   Tooltip,
   Legend,
   Filler,
+  ArcElement,
 } from 'chart.js';
-import { Line, Bar } from 'react-chartjs-2';
+import { Line, Bar, Doughnut } from 'react-chartjs-2';
 import adminService from '@/services/admin.service';
 import logger from '@/lib/logger';
 
@@ -23,6 +24,7 @@ ChartJS.register(
   PointElement,
   LineElement,
   BarElement,
+  ArcElement,
   Title,
   Tooltip,
   Legend,
@@ -354,6 +356,71 @@ function GameBreakdownChart({ totals }) {
   );
 }
 
+function PlatformBreakdownChart({ platform }) {
+  const known = platform.web + platform.ios;
+  const hasData = known > 0;
+
+  const chartData = {
+    labels: ['Web', 'iOS', 'Unknown'],
+    datasets: [
+      {
+        data: [platform.web, platform.ios, platform.unknown],
+        backgroundColor: ['rgb(56, 182, 255)', 'rgb(255, 87, 87)', 'rgb(156, 163, 175)'],
+        borderWidth: 0,
+      },
+    ],
+  };
+
+  const options = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        position: 'bottom',
+        labels: { usePointStyle: true, padding: 12, font: { size: 11 } },
+      },
+      tooltip: {
+        callbacks: {
+          label: (ctx) => {
+            const value = ctx.parsed;
+            const pct = platform.total > 0 ? ((value / platform.total) * 100).toFixed(1) : 0;
+            return `${ctx.label}: ${value.toLocaleString()} (${pct}%)`;
+          },
+        },
+      },
+    },
+  };
+
+  return (
+    <div>
+      {hasData ? (
+        <div className="flex flex-col items-center gap-3">
+          <div style={{ height: '180px', width: '180px' }}>
+            <Doughnut options={options} data={chartData} />
+          </div>
+          <div className="flex gap-4 text-xs font-bold text-text-secondary">
+            <span>
+              Web: {platform.web.toLocaleString()} ({platform.total > 0 ? ((platform.web / platform.total) * 100).toFixed(1) : 0}%)
+            </span>
+            <span>
+              iOS: {platform.ios.toLocaleString()} ({platform.total > 0 ? ((platform.ios / platform.total) * 100).toFixed(1) : 0}%)
+            </span>
+          </div>
+          {platform.unknown > 0 && (
+            <p className="text-[10px] text-text-muted">
+              {platform.unknown.toLocaleString()} users haven&apos;t signed in since tracking began
+            </p>
+          )}
+        </div>
+      ) : (
+        <p className="text-sm text-text-muted text-center py-8">
+          No platform data yet. Data populates as users sign in.
+        </p>
+      )}
+    </div>
+  );
+}
+
 export default function AnalyticsDashboard() {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -384,6 +451,7 @@ export default function AnalyticsDashboard() {
 
   const periodData = data?.[period] || [];
   const totals = data?.totals || {};
+  const platform = data?.platform || { web: 0, ios: 0, unknown: 0, total: 0 };
 
   if (loading) {
     return (
@@ -489,6 +557,11 @@ export default function AnalyticsDashboard() {
             <GameBreakdownChart totals={totals} />
           </ChartCard>
         </div>
+
+        {/* Platform Breakdown */}
+        <ChartCard title="Platform Breakdown">
+          <PlatformBreakdownChart platform={platform} />
+        </ChartCard>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* First Discoveries */}

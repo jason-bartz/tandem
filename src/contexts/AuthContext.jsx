@@ -173,6 +173,29 @@ export function AuthProvider({ children }) {
         setUser(session?.user ?? null);
         setLoading(false);
 
+        // Sync platform (web/ios) to user record on every session restore (non-blocking)
+        if (session?.user) {
+          (async () => {
+            try {
+              const { getApiUrl, capacitorFetch } = await import('@/lib/api-config');
+              const { Capacitor } = await import('@capacitor/core');
+              const platform = Capacitor.getPlatform() === 'ios' ? 'ios' : 'web';
+              await capacitorFetch(
+                getApiUrl('/api/account/platform'),
+                {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ platform }),
+                },
+                true
+              );
+            } catch (error) {
+              // Non-critical — platform will be updated on next session
+              logger.debug('[AuthProvider] Platform sync failed', error);
+            }
+          })();
+        }
+
         // Load user profile if session exists (skip for anonymous users)
         if (session?.user && !session.user.is_anonymous) {
           loadUserProfile(session.user.id);

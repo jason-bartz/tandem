@@ -70,7 +70,7 @@ export async function GET(request) {
     const supabase = createServerClient();
 
     // Fetch all data sources in parallel, paginating past the 1000-row limit
-    const [miniRows, alchemyRows, leaderboardRows, userRows, discoveryRows] = await Promise.all([
+    const [miniRows, alchemyRows, leaderboardRows, userRows, discoveryRows, platformRows] = await Promise.all([
       fetchAll(() =>
         supabase
           .from('mini_stats')
@@ -112,6 +112,13 @@ export async function GET(request) {
           .select('id, discovered_at, user_id')
           .gte('discovered_at', startDate)
           .order('discovered_at', { ascending: true })
+      ),
+
+      // Platform breakdown (all users, not filtered by date range)
+      fetchAll(() =>
+        supabase
+          .from('users')
+          .select('id, platform')
       ),
     ]);
 
@@ -247,6 +254,15 @@ export async function GET(request) {
         firstDiscoveries: entries.reduce((s, e) => s + e.firstDiscoveries, 0),
       }));
 
+    // Platform breakdown (across all users)
+    const platformCounts = { web: 0, ios: 0, unknown: 0 };
+    for (const row of platformRows) {
+      if (row.platform === 'web') platformCounts.web++;
+      else if (row.platform === 'ios') platformCounts.ios++;
+      else platformCounts.unknown++;
+    }
+    const platformTotal = platformRows.length;
+
     // Summary totals
     const totals = {
       totalCompletions: dailyData.reduce((s, d) => s + d.mini + d.alchemy + d.tandem + d.reel, 0),
@@ -267,6 +283,12 @@ export async function GET(request) {
         weekly,
         monthly,
         totals,
+        platform: {
+          web: platformCounts.web,
+          ios: platformCounts.ios,
+          unknown: platformCounts.unknown,
+          total: platformTotal,
+        },
         range: { startDate, days },
       },
     });
