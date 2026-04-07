@@ -5,34 +5,19 @@
   ],
   "products" : [
     {
-      "displayPrice" : "29.99",
+      "displayPrice" : "4.99",
       "familyShareable" : false,
       "internalID" : "6738654321",
       "localizations" : [
         {
-          "description" : "Lifetime access to all puzzles in the archive. Support indie development!",
-          "displayName" : "Lifetime Membership",
+          "description" : "Support the developer! A one-time tip to help keep the games free and ad-free.",
+          "displayName" : "Tip the Developer",
           "locale" : "en_US"
         }
       ],
       "productID" : "com.tandemdaily.app.soulmates",
-      "referenceName" : "Lifetime Membership",
+      "referenceName" : "Tip to the Developer",
       "type" : "NonConsumable"
-    },
-    {
-      "displayPrice" : "4.99",
-      "familyShareable" : false,
-      "internalID" : "6738655555",
-      "localizations" : [
-        {
-          "description" : "Support the developer! A one-time tip to help keep the games free and ad-free.",
-          "displayName" : "Leave a Tip",
-          "locale" : "en_US"
-        }
-      ],
-      "productID" : "com.tandemdaily.app.tip",
-      "referenceName" : "Tip",
-      "type" : "Consumable"
     }
   ],
   "settings" : {

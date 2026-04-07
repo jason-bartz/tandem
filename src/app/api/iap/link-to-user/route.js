@@ -52,7 +52,6 @@ export async function POST(request) {
     const validProductIds = [
       'com.tandemdaily.app.buddypass',
       'com.tandemdaily.app.bestfriends',
-      'com.tandemdaily.app.soulmates',
     ];
 
     if (!validProductIds.includes(productId)) {
@@ -63,8 +62,6 @@ export async function POST(request) {
     let tier = 'buddypass';
     if (productId === 'com.tandemdaily.app.bestfriends') {
       tier = 'bestfriends';
-    } else if (productId === 'com.tandemdaily.app.soulmates') {
-      tier = 'soulmates';
     }
 
     const { data: existingSubscription } = await supabase
@@ -92,10 +89,7 @@ export async function POST(request) {
     let calculatedExpiryDate = expiryDate;
     if (!calculatedExpiryDate) {
       const now = new Date();
-      if (productId === 'com.tandemdaily.app.soulmates') {
-        // Lifetime - set expiry far in future
-        calculatedExpiryDate = new Date('2099-12-31').toISOString();
-      } else if (productId === 'com.tandemdaily.app.bestfriends') {
+      if (productId === 'com.tandemdaily.app.bestfriends') {
         // Yearly
         now.setFullYear(now.getFullYear() + 1);
         calculatedExpiryDate = now.toISOString();

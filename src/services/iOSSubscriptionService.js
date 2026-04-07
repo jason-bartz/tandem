@@ -8,8 +8,7 @@ import logger from '@/lib/logger';
 const PRODUCTS = {
   BUDDY_MONTHLY: 'com.tandemdaily.app.buddypass',
   BEST_FRIENDS_YEARLY: 'com.tandemdaily.app.bestfriends',
-  SOULMATES_LIFETIME: 'com.tandemdaily.app.soulmates',
-  TIP: 'com.tandemdaily.app.tip',
+  TIP: 'com.tandemdaily.app.soulmates',
 };
 
 // Storage keys - using Capacitor Preferences for iOS persistence
@@ -113,7 +112,6 @@ class SubscriptionService {
         if (
           product.id === PRODUCTS.BUDDY_MONTHLY ||
           product.id === PRODUCTS.BEST_FRIENDS_YEARLY ||
-          product.id === PRODUCTS.SOULMATES_LIFETIME ||
           product.id === PRODUCTS.TIP
         ) {
           this.products[product.id] = product;
@@ -174,13 +172,8 @@ class SubscriptionService {
           platform: window.CdvPurchase.Platform.APPLE_APPSTORE,
         },
         {
-          id: PRODUCTS.SOULMATES_LIFETIME,
-          type: window.CdvPurchase.ProductType.NON_CONSUMABLE,
-          platform: window.CdvPurchase.Platform.APPLE_APPSTORE,
-        },
-        {
           id: PRODUCTS.TIP,
-          type: window.CdvPurchase.ProductType.CONSUMABLE,
+          type: window.CdvPurchase.ProductType.NON_CONSUMABLE,
           platform: window.CdvPurchase.Platform.APPLE_APPSTORE,
         },
       ]);
@@ -199,7 +192,6 @@ class SubscriptionService {
         if (
           product.id === PRODUCTS.BUDDY_MONTHLY ||
           product.id === PRODUCTS.BEST_FRIENDS_YEARLY ||
-          product.id === PRODUCTS.SOULMATES_LIFETIME ||
           product.id === PRODUCTS.TIP
         ) {
           this.products[product.id] = product;
@@ -323,21 +315,13 @@ class SubscriptionService {
       }
     }
 
-    let expiryDate;
-    if (product.id === PRODUCTS.SOULMATES_LIFETIME) {
-      // Lifetime purchase - set expiry far in future
-      expiryDate = new Date();
-      expiryDate.setFullYear(expiryDate.getFullYear() + 100);
-      await storage.set({ key: STORAGE_KEYS.EXPIRY_DATE, value: expiryDate.toISOString() });
-    } else {
-      expiryDate = new Date();
-      if (product.id === PRODUCTS.BUDDY_MONTHLY) {
-        expiryDate.setMonth(expiryDate.getMonth() + 1);
-      } else if (product.id === PRODUCTS.BEST_FRIENDS_YEARLY) {
-        expiryDate.setFullYear(expiryDate.getFullYear() + 1);
-      }
-      await storage.set({ key: STORAGE_KEYS.EXPIRY_DATE, value: expiryDate.toISOString() });
+    const expiryDate = new Date();
+    if (product.id === PRODUCTS.BUDDY_MONTHLY) {
+      expiryDate.setMonth(expiryDate.getMonth() + 1);
+    } else if (product.id === PRODUCTS.BEST_FRIENDS_YEARLY) {
+      expiryDate.setFullYear(expiryDate.getFullYear() + 1);
     }
+    await storage.set({ key: STORAGE_KEYS.EXPIRY_DATE, value: expiryDate.toISOString() });
 
     // If user is authenticated, link purchase to their account
     await this.linkPurchaseToAccount(originalTransactionId, product.id, expiryDate);
@@ -407,22 +391,14 @@ class SubscriptionService {
     if (this.store && this.store.ready) {
       const monthly = this.store.get(PRODUCTS.BUDDY_MONTHLY);
       const yearly = this.store.get(PRODUCTS.BEST_FRIENDS_YEARLY);
-      const lifetime = this.store.get(PRODUCTS.SOULMATES_LIFETIME);
 
       // Determine which subscription is actually active using priority:
-      // 1. Lifetime Membership (lifetime) - highest priority
-      // 2. Annual Membership (yearly) - mid priority
-      // 3. Monthly Membership (monthly) - lowest priority
+      // 1. Annual Membership (yearly) - higher priority
+      // 2. Monthly Membership (monthly) - lower priority
       let activeProduct = null;
       let activeProductId = null;
 
-      // Check lifetime first (highest priority)
-      if (lifetime?.owned) {
-        activeProduct = lifetime;
-        activeProductId = PRODUCTS.SOULMATES_LIFETIME;
-      }
-      // Then check yearly (only if no lifetime)
-      else if (yearly?.owned) {
+      if (yearly?.owned) {
         // For subscriptions in the same group, check which is actually active
         // by looking at expiry dates
         if (monthly?.owned) {
@@ -450,9 +426,7 @@ class SubscriptionService {
           activeProduct = yearly;
           activeProductId = PRODUCTS.BEST_FRIENDS_YEARLY;
         }
-      }
-      // Finally check monthly (only if no lifetime or yearly)
-      else if (monthly?.owned) {
+      } else if (monthly?.owned) {
         activeProduct = monthly;
         activeProductId = PRODUCTS.BUDDY_MONTHLY;
       }
@@ -559,7 +533,6 @@ class SubscriptionService {
         const tierToProductId = {
           buddypass: PRODUCTS.BUDDY_MONTHLY,
           bestfriends: PRODUCTS.BEST_FRIENDS_YEARLY,
-          soulmates: PRODUCTS.SOULMATES_LIFETIME,
         };
 
         const productId = tierToProductId[data.tier] || data.tier;
