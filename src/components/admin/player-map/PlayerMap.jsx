@@ -57,7 +57,6 @@ const NUMERIC_TO_ALPHA2 = {
   '832': 'JE', '833': 'IM', '834': 'TZ', '840': 'US', '850': 'VI', '854': 'BF',
   '858': 'UY', '860': 'UZ', '862': 'VE', '876': 'WF', '882': 'WS', '887': 'YE',
   '894': 'ZM',
-  // Also support string name-based IDs from some TopoJSON variants
 };
 
 // Approximate centroid coordinates for placing flag markers
@@ -82,7 +81,7 @@ const COUNTRY_CENTROIDS = {
   TH: [101, 15], TN: [9, 34], TR: [35, 39], UA: [32, 49], AE: [54, 24],
   GB: [-2, 54], US: [-98, 39], UY: [-56, -33], UZ: [64, 41], VE: [-67, 8],
   VN: [106, 16], ZW: [30, -20], TZ: [35, -6], UG: [32, 1.5], KH: [105, 13],
-  LK: [81, 8], CR: [-84, 10], EC: [-78, -2], PR: [-66.5, 18.2],
+  LK: [81, 8], CR: [-84, 10], PR: [-66.5, 18.2],
   TT: [-61, 10.5], BS: [-77, 25], BB: [-59.5, 13.2], GY: [-59, 5],
   SR: [-56, 4], BZ: [-88.5, 17.2], NI: [-85, 13], HT: [-72, 19], CY: [33, 35],
   GE: [44, 42], AM: [45, 40], AZ: [49, 40.5], BA: [18, 44], MK: [21.5, 41.5],
@@ -131,7 +130,7 @@ export default function PlayerMap() {
     fetchData();
   }, []);
 
-  // Build lookup: country_code → { flag, count }
+  // Build lookup: country_code → { flag }
   const countryLookup = useMemo(() => {
     if (!data?.countries) return {};
     const map = {};
@@ -141,49 +140,21 @@ export default function PlayerMap() {
     return map;
   }, [data]);
 
-  // Max player count for color scaling
-  const maxCount = useMemo(() => {
-    if (!data?.countries?.length) return 1;
-    return Math.max(...data.countries.map((c) => c.count));
-  }, [data]);
-
   // Get alpha-2 from TopoJSON geography ID
   function getAlpha2(geo) {
     const id = geo.id || geo.properties?.['ISO_A2'];
-    // Try direct numeric lookup
     if (NUMERIC_TO_ALPHA2[id]) return NUMERIC_TO_ALPHA2[id];
-    // Try string padded
     const padded = String(id).padStart(3, '0');
     if (NUMERIC_TO_ALPHA2[padded]) return NUMERIC_TO_ALPHA2[padded];
-    // Try ISO_A2 property
     const a2 = geo.properties?.['ISO_A2'];
     if (a2 && a2 !== '-99') return a2;
     return null;
   }
 
-  // Read CSS custom properties for theme-aware SVG fills
-  const cssVar = (name) =>
-    typeof window !== 'undefined'
-      ? getComputedStyle(document.documentElement).getPropertyValue(name).trim()
-      : '';
-
   function getCountryFill(geo) {
     const code = getAlpha2(geo);
-    if (!code || !countryLookup[code]) return cssVar('--border-color') || 'var(--border-color)';
-    const count = countryLookup[code].count;
-    const intensity = Math.min(count / maxCount, 1);
-    // Scale opacity of accent-blue based on player count
-    const accentBlue = cssVar('--accent-blue') || '56, 182, 255';
-    // Parse the hex value to RGB for interpolation
-    const hex = accentBlue.replace('#', '');
-    const br = parseInt(hex.substring(0, 2), 16);
-    const bg = parseInt(hex.substring(2, 4), 16);
-    const bb = parseInt(hex.substring(4, 6), 16);
-    // Interpolate from near-white to the accent-blue color
-    const r = Math.round(br + (240 - br) * (1 - intensity));
-    const g = Math.round(bg + (240 - bg) * (1 - intensity));
-    const b = Math.round(bb + (240 - bb) * (1 - intensity));
-    return `rgb(${r}, ${g}, ${b})`;
+    if (!code || !countryLookup[code]) return 'var(--border-color)';
+    return 'var(--accent-blue)';
   }
 
   function handleMouseMove(e) {
@@ -192,46 +163,36 @@ export default function PlayerMap() {
 
   if (loading) {
     return (
-      <div className="space-y-4">
-        <div className={`${shimmer} h-8 w-48 bg-gray-200 dark:bg-gray-700 rounded`} />
-        <div className={`${shimmer} h-[400px] bg-gray-200 dark:bg-gray-700 rounded-lg`} />
-        <div className="flex gap-3">
-          {[1, 2, 3].map((i) => (
-            <div key={i} className={`${shimmer} h-20 w-32 bg-gray-200 dark:bg-gray-700 rounded-lg`} />
-          ))}
-        </div>
+      <div className="space-y-3">
+        <div className={`${shimmer} h-6 w-40 bg-gray-200 dark:bg-gray-700 rounded`} />
+        <div className={`${shimmer} h-[350px] bg-gray-200 dark:bg-gray-700 rounded-lg`} />
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="bg-bg-surface rounded-lg p-6 text-center">
-        <p className="text-accent-red font-semibold">{error}</p>
+      <div className="rounded-lg p-4 text-center">
+        <p className="text-accent-red font-semibold text-sm">{error}</p>
       </div>
     );
   }
 
   return (
-    <div className="space-y-4">
-      {/* Header metrics */}
+    <div className="space-y-2">
+      {/* Header */}
       <div className="flex items-center justify-between">
-        <h2 className="text-lg font-bold text-text-primary">Player Map</h2>
-        <div className="flex gap-3">
-          <div className="bg-bg-surface rounded-lg px-4 py-2 text-center">
-            <p className="text-2xl font-bold text-accent-blue">{data.totalCountries}</p>
-            <p className="text-xs text-text-secondary">Countries</p>
-          </div>
-          <div className="bg-bg-surface rounded-lg px-4 py-2 text-center">
-            <p className="text-2xl font-bold text-accent-green">{data.totalPlayers.toLocaleString()}</p>
-            <p className="text-xs text-text-secondary">Players Tracked</p>
-          </div>
-        </div>
+        <h3 className="text-sm font-bold text-text-primary">
+          Player Map
+          <span className="ml-2 text-text-secondary font-normal">
+            {data.totalCountries} {data.totalCountries === 1 ? 'country' : 'countries'}
+          </span>
+        </h3>
       </div>
 
       {/* Map */}
       <div
-        className="bg-bg-surface rounded-lg p-2 relative overflow-hidden"
+        className="rounded-lg relative overflow-hidden"
         onMouseMove={handleMouseMove}
       >
         <ComposableMap
@@ -257,9 +218,7 @@ export default function PlayerMap() {
                         if (countryData) {
                           setHoveredCountry({
                             name: geo.properties.name,
-                            code,
                             flag: countryData.flag,
-                            count: countryData.count,
                           });
                         }
                       }}
@@ -288,7 +247,7 @@ export default function PlayerMap() {
                   <text
                     textAnchor="middle"
                     dominantBaseline="central"
-                    fontSize={country.count >= maxCount * 0.5 ? 16 : 12}
+                    fontSize={12}
                     style={{ pointerEvents: 'none' }}
                   >
                     {country.flag || countryCodeToFlag(country.code)}
@@ -310,45 +269,8 @@ export default function PlayerMap() {
           >
             <span className="mr-1.5">{hoveredCountry.flag}</span>
             {hoveredCountry.name}
-            <span className="ml-2 text-accent-blue font-bold">
-              {hoveredCountry.count.toLocaleString()} {hoveredCountry.count === 1 ? 'player' : 'players'}
-            </span>
           </div>
         )}
-      </div>
-
-      {/* Color scale legend */}
-      <div className="flex items-center gap-2 text-xs text-text-secondary">
-        <span>Fewer players</span>
-        <div className="flex h-3 rounded-full overflow-hidden flex-1 max-w-[200px]">
-          <div className="flex-1 bg-accent-blue/20" />
-          <div className="flex-1 bg-accent-blue/45" />
-          <div className="flex-1 bg-accent-blue/70" />
-          <div className="flex-1 bg-accent-blue" />
-        </div>
-        <span>More players</span>
-      </div>
-
-      {/* Country leaderboard */}
-      <div className="bg-bg-surface rounded-lg p-4">
-        <h3 className="text-sm font-bold text-text-primary mb-3">Top Countries</h3>
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2">
-          {data.countries.slice(0, 20).map((country, i) => (
-            <div
-              key={country.code}
-              className="flex items-center gap-2 bg-bg-card rounded-lg px-3 py-2"
-            >
-              <span className="text-sm text-text-muted font-mono w-5">{i + 1}</span>
-              <span className="text-lg">{country.flag}</span>
-              <div className="min-w-0 flex-1">
-                <p className="text-sm font-semibold text-text-primary truncate">{country.code}</p>
-                <p className="text-xs text-text-secondary">
-                  {country.count.toLocaleString()} {country.count === 1 ? 'player' : 'players'}
-                </p>
-              </div>
-            </div>
-          ))}
-        </div>
       </div>
     </div>
   );

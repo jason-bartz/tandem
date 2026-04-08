@@ -16,6 +16,7 @@ import {
 } from 'chart.js';
 import { Line, Bar, Doughnut } from 'react-chartjs-2';
 import adminService from '@/services/admin.service';
+import PlayerMap from '@/components/admin/player-map/PlayerMap';
 import logger from '@/lib/logger';
 
 ChartJS.register(
@@ -513,6 +514,9 @@ export default function AnalyticsDashboard() {
       )}
 
       <div className="p-4 space-y-6">
+        {/* Player Map */}
+        <PlayerMap />
+
         {/* Summary Metrics */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           <MetricCard
