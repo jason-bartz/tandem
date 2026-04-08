@@ -19,6 +19,7 @@ import EmailBlastManager from '@/components/admin/email/EmailBlastManager';
 import AnalyticsDashboard from '@/components/admin/AnalyticsDashboard';
 import TeamManager from '@/components/admin/team/TeamManager';
 import PuzzleAlertSettings from '@/components/admin/PuzzleAlertSettings';
+import PlayerMap from '@/components/admin/player-map/PlayerMap';
 import ProfileModal from '@/components/admin/team/ProfileModal';
 import authService from '@/services/auth.service';
 import logger from '@/lib/logger';
@@ -39,6 +40,7 @@ import {
   BarChart3,
   ShieldCheck,
   BellRing,
+  Globe,
 } from 'lucide-react';
 
 // Tab definitions with minimum role required
@@ -50,6 +52,7 @@ const ALL_TABS = [
   { id: 'announcements', label: 'Announce', icon: Megaphone, minRole: 'admin' },
   { id: 'email', label: 'Email', icon: Mail, minRole: 'admin' },
   { id: 'milestones', label: 'Milestones', icon: Flag, minRole: 'admin' },
+  { id: 'map', label: 'Map', icon: Globe, minRole: 'admin' },
   { id: 'analytics', label: 'Analytics', icon: BarChart3, minRole: 'editor' },
   { id: 'alerts', label: 'Alerts', icon: BellRing, minRole: 'admin' },
   { id: 'team', label: 'Team', icon: ShieldCheck, minRole: 'admin' },
@@ -631,6 +634,7 @@ export default function AdminDashboard() {
         {activeTab === 'announcements' && <AnnouncementManager />}
         {activeTab === 'email' && <EmailBlastManager />}
         {activeTab === 'milestones' && <MilestoneTracker />}
+        {activeTab === 'map' && <PlayerMap />}
         {activeTab === 'analytics' && <AnalyticsDashboard />}
         {activeTab === 'alerts' && <PuzzleAlertSettings />}
         {activeTab === 'team' && <TeamManager />}
