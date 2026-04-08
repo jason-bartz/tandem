@@ -514,9 +514,6 @@ export default function AnalyticsDashboard() {
       )}
 
       <div className="p-4 space-y-6">
-        {/* Player Map */}
-        <PlayerMap />
-
         {/* Summary Metrics */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           <MetricCard
@@ -561,6 +558,9 @@ export default function AnalyticsDashboard() {
             <GameBreakdownChart totals={totals} />
           </ChartCard>
         </div>
+
+        {/* Player Map */}
+        <PlayerMap />
 
         {/* Platform Breakdown */}
         <ChartCard title="Platform Breakdown">
