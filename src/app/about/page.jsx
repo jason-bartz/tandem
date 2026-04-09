@@ -6,7 +6,6 @@ import Link from 'next/link';
 import Image from 'next/image';
 import HamburgerMenu from '@/components/navigation/HamburgerMenu';
 import SidebarMenu from '@/components/navigation/SidebarMenu';
-import AnimatedLoadingMessage from '@/components/shared/AnimatedLoadingMessage';
 import AboutPageSkeleton from '@/components/shared/AboutPageSkeleton';
 import UnifiedStatsModal from '@/components/stats/UnifiedStatsModal';
 import UnifiedArchiveCalendar from '@/components/game/UnifiedArchiveCalendar';
@@ -59,14 +58,7 @@ export default function AboutPage() {
         <div className="min-h-screen flex items-center justify-center pt-safe pb-6">
           <div className="w-full max-w-xl mx-auto p-6 relative z-10 my-auto">
             {isLoading ? (
-              <>
-                {/* Loading skeleton */}
-                <AboutPageSkeleton />
-                {/* Animated loading messages */}
-                <div className="mt-6">
-                  <AnimatedLoadingMessage />
-                </div>
-              </>
+              <AboutPageSkeleton />
             ) : (
               <>
                 {/* Main content card */}
@@ -163,7 +155,7 @@ export default function AboutPage() {
                               href="https://www.jason-bartz.com"
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="hover:text-[#38b6ff] transition-colors"
+                              className="hover:text-accent-blue transition-colors"
                             >
                               Jason Bartz
                             </a>
@@ -190,7 +182,7 @@ export default function AboutPage() {
                       <div className={isWeb ? 'mt-4' : 'mt-8 pt-6 border-t border-border-light'}>
                         <Link
                           href={homePath}
-                          className="block w-full text-center px-6 py-3 bg-[#38b6ff] hover:bg-[#38b6ff]/90 text-white font-semibold rounded-lg transition-all"
+                          className="block w-full text-center px-6 py-3 bg-accent-blue hover:bg-accent-blue/90 text-white font-semibold rounded-lg transition-all"
                         >
                           {isStandaloneAlchemy ? 'Back to Puzzle' : 'Back to the puzzles'}
                         </Link>

@@ -5,28 +5,10 @@ import { Capacitor } from '@capacitor/core';
 import { useTheme } from '@/contexts/ThemeContext';
 import { ASSET_VERSION } from '@/lib/constants';
 
-const loadingMessages = [
-  'Calibrating cryptic coefficients...',
-  'Syncing synonyms...',
-  'Balancing tandem handlebars...',
-  'Herding metaphorical cats...',
-  'Brewing fresh vocabulary...',
-  'Untangling thematic threads...',
-  'Optimizing wordplay algorithms...',
-  'Reticulating syllables...',
-  'Consulting the emoji oracle...',
-];
-
 /**
  * Skeleton card component for game cards
  */
-function GameCardSkeleton({
-  reduceMotion,
-  highContrast,
-  animationDelay = 0,
-  loadingText = null,
-  isTextVisible = true,
-}) {
+function GameCardSkeleton({ reduceMotion, highContrast, animationDelay = 0 }) {
   return (
     <div
       className={`w-full rounded-lg overflow-hidden p-5 relative ${
@@ -34,24 +16,7 @@ function GameCardSkeleton({
       }`}
       style={{ animationDelay: !reduceMotion ? `${animationDelay}ms` : '0ms' }}
     >
-      {/* Loading text overlay - centered within this card */}
-      {loadingText && (
-        <div
-          className={`absolute inset-0 flex items-center justify-center z-10 transition-opacity duration-300 ${
-            isTextVisible ? 'opacity-100' : 'opacity-0'
-          }`}
-        >
-          <p
-            className={`text-base font-bold text-center px-4 ${
-              highContrast ? 'text-hc-text' : 'text-gray-800 dark:text-gray-200'
-            }`}
-          >
-            {loadingText}
-          </p>
-        </div>
-      )}
-
-      <div className={`flex items-center gap-4 ${loadingText ? 'opacity-30' : ''}`}>
+      <div className="flex items-center gap-4">
         {/* Icon skeleton */}
         <div
           className={`w-[52px] h-[52px] flex-shrink-0 rounded-xl ${
@@ -111,8 +76,6 @@ function GameCardSkeleton({
 
 export default function WelcomeScreenSkeleton() {
   const { reduceMotion, highContrast, isDark } = useTheme();
-  const [loadingText, setLoadingText] = useState(loadingMessages[0]);
-  const [isVisible, setIsVisible] = useState(true);
   const [isNative, setIsNative] = useState(false);
 
   useEffect(() => {
@@ -122,24 +85,6 @@ export default function WelcomeScreenSkeleton() {
   const logoSrc = isDark
     ? `/branding/tandem-dark.png?v=${ASSET_VERSION}`
     : `/branding/tandem-light.png?v=${ASSET_VERSION}`;
-
-  useEffect(() => {
-    let timeoutId = null;
-
-    // Rotate through loading messages
-    const interval = setInterval(() => {
-      setIsVisible(false);
-      timeoutId = setTimeout(() => {
-        setLoadingText(loadingMessages[Math.floor(Math.random() * loadingMessages.length)]);
-        setIsVisible(true);
-      }, 300);
-    }, 2000);
-
-    return () => {
-      clearInterval(interval);
-      if (timeoutId) clearTimeout(timeoutId);
-    };
-  }, []);
 
   return (
     <>
@@ -198,7 +143,7 @@ export default function WelcomeScreenSkeleton() {
           highContrast ? 'bg-hc-background' : 'bg-bg-primary dark:bg-bg-primary'
         }`}
       >
-        <div className="flex-1 max-w-2xl w-full mx-auto px-4 py-6 animate-fade-in">
+        <div className="flex-1 max-w-2xl w-full mx-auto px-4 py-6">
           {/* Greeting Skeleton - matches text-2xl (h-8), text-base (h-6) */}
           <div className="text-center mb-6">
             <div
@@ -239,8 +184,6 @@ export default function WelcomeScreenSkeleton() {
               reduceMotion={reduceMotion}
               highContrast={highContrast}
               animationDelay={0}
-              loadingText={loadingText}
-              isTextVisible={isVisible}
             />
             <GameCardSkeleton
               reduceMotion={reduceMotion}

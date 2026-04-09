@@ -20,13 +20,23 @@ const config: CapacitorConfig = {
     CapacitorHttp: {
       enabled: true, // This bypasses CORS on iOS by using native HTTP
     },
-StatusBar: {
+    StatusBar: {
       style: 'dark',
       backgroundColor: '#F4F5F9',
     },
     Keyboard: {
       resize: 'body',
       resizeOnFullScreen: true,
+    },
+    SplashScreen: {
+      // Keep the native launch screen visible until React has mounted and
+      // calls SplashScreen.hide() — eliminates the white flash between the
+      // native splash and the React skeleton.
+      launchAutoHide: false,
+      backgroundColor: '#F4F5F9',
+      androidScaleType: 'CENTER_CROP',
+      splashFullScreen: true,
+      splashImmersive: true,
     },
   },
 };

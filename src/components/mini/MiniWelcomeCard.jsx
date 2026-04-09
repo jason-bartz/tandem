@@ -12,14 +12,6 @@ import { playButtonTone } from '@/lib/sounds';
 import { useHaptics } from '@/hooks/useHaptics';
 import { loadMiniPuzzleProgress } from '@/lib/miniStorage';
 
-const loadingMessages = [
-  'Crafting crossword clues...',
-  'Aligning grid squares...',
-  'Sharpening pencils...',
-  'Consulting dictionary...',
-  'Brewing coffee...',
-];
-
 /**
  * Preview card for Daily Mini on the main Tandem welcome screen
  * Shows today's puzzle info and links to the full game
@@ -31,45 +23,11 @@ export default function MiniWelcomeCard({ currentStreak = 0 }) {
   const [puzzle, setPuzzle] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [loadingText, setLoadingText] = useState(loadingMessages[0]);
-  const [isVisible, setIsVisible] = useState(true);
   const [todayCompleted, setTodayCompleted] = useState(false);
-  const [, setMessageQueue] = useState(() => {
-    const shuffled = [...loadingMessages].sort(() => Math.random() - 0.5);
-    return shuffled.slice(1);
-  });
 
   useEffect(() => {
     loadPuzzlePreview();
   }, []);
-
-  useEffect(() => {
-    if (!loading) return;
-
-    let timeoutId = null;
-
-    const interval = setInterval(() => {
-      setIsVisible(false);
-      timeoutId = setTimeout(() => {
-        setMessageQueue((prevQueue) => {
-          if (prevQueue.length === 0) {
-            const shuffled = [...loadingMessages].sort(() => Math.random() - 0.5);
-            setLoadingText(shuffled[0]);
-            return shuffled.slice(1);
-          }
-          const [nextMessage, ...remaining] = prevQueue;
-          setLoadingText(nextMessage);
-          return remaining;
-        });
-        setIsVisible(true);
-      }, 300);
-    }, 2000); // Increased to 2 seconds for better readability
-
-    return () => {
-      clearInterval(interval);
-      if (timeoutId) clearTimeout(timeoutId);
-    };
-  }, [loading]);
 
   const loadPuzzlePreview = async () => {
     try {
@@ -130,16 +88,6 @@ export default function MiniWelcomeCard({ currentStreak = 0 }) {
             : 'bg-bg-card dark:bg-bg-card border-border-main dark:'
         }`}
       >
-        <div className="absolute inset-0 flex items-center justify-center z-10">
-          <div
-            className={`transition-opacity duration-300 ${isVisible ? 'opacity-100' : 'opacity-0'}`}
-          >
-            <p className="text-base font-bold text-gray-800 dark:text-gray-200 text-center">
-              {loadingText}
-            </p>
-          </div>
-        </div>
-
         {/* Logo */}
         <div className="w-20 h-20 mx-auto mb-5">
           <Image
@@ -147,7 +95,7 @@ export default function MiniWelcomeCard({ currentStreak = 0 }) {
             alt="Daily Mini"
             width={80}
             height={80}
-            className="rounded-xl opacity-30"
+            className="rounded-xl"
             priority
           />
         </div>
@@ -256,10 +204,9 @@ export default function MiniWelcomeCard({ currentStreak = 0 }) {
           ${
             highContrast
               ? 'bg-hc-primary text-hc-primary-text border-2 border-hc-border hover:bg-hc-focus'
-              : 'dark: hover:dark:hover:'
+              : 'bg-accent-yellow'
           }
         `}
-        style={!highContrast ? { backgroundColor: '#ffce00' } : {}}
       >
         <span className="text-gray-900">
           {todayCompleted ? 'You solved it!' : "Play Today's Mini"}

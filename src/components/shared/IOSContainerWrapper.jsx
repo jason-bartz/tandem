@@ -23,7 +23,24 @@ export default function IOSContainerWrapper({ children }) {
       if (typeof window !== 'undefined') {
         try {
           const { Capacitor } = await import('@capacitor/core');
-          setIsIOS(Capacitor.isNativePlatform());
+          const isNative = Capacitor.isNativePlatform();
+          setIsIOS(isNative);
+
+          // Hide the native splash screen after React has had a chance to
+          // paint its first frame. This eliminates the white flash between
+          // the iOS launch screen and the React skeleton.
+          if (isNative) {
+            try {
+              const { SplashScreen } = await import('@capacitor/splash-screen');
+              requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+                  SplashScreen.hide({ fadeOutDuration: 200 }).catch(() => {});
+                });
+              });
+            } catch {
+              // Splash screen plugin not available; ignore.
+            }
+          }
         } catch (error) {
           // Capacitor not available, we're on web
           setIsIOS(false);
