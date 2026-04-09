@@ -27,6 +27,7 @@ import FeedbackPane from '@/components/FeedbackPane';
 import { Capacitor } from '@capacitor/core';
 import { getPuzzleResult } from '@/lib/storage';
 import { loadMiniPuzzleProgress } from '@/lib/miniStorage';
+import { loadReelStats } from '@/lib/reelStorage';
 import miniService from '@/services/mini.service';
 import storageService from '@/core/storage/storageService';
 import logger from '@/lib/logger';
@@ -104,7 +105,9 @@ export default function WelcomeScreen({
             {},
             false
           ).then((res) => res.json()),
-          storageService.get('reel-connections-stats'),
+          // Use canonical loader so signed-in users hit the per-user namespaced
+          // key, and so we get the up-to-date merged stats from the database.
+          loadReelStats({ skipDbFetch: true }),
           capacitorFetch(
             getApiUrl(`/api/reel-connections/puzzle?date=${getLocalDateString()}`),
             {},
@@ -142,7 +145,8 @@ export default function WelcomeScreen({
 
         // Process Reel Connections completion and puzzle data
         if (reelStatsResult.status === 'fulfilled' && reelStatsResult.value) {
-          const parsed = JSON.parse(reelStatsResult.value);
+          // loadReelStats() always returns an object (never a JSON string).
+          const parsed = reelStatsResult.value;
           const today = getLocalDateString();
           const todayGame = parsed.gameHistory?.find((g) => g.date === today);
           setReelPlayed(!!todayGame);
@@ -226,7 +230,13 @@ export default function WelcomeScreen({
 
   // Check if any modal is open (to suppress game shortcuts while a modal is visible)
   const hasOpenModal =
-    showStats || showArchive || showHowToPlay || showSettings || showLeaderboard || showTandemUnavailable || showFeedback;
+    showStats ||
+    showArchive ||
+    showHowToPlay ||
+    showSettings ||
+    showLeaderboard ||
+    showTandemUnavailable ||
+    showFeedback;
 
   const { showShortcuts: showHomeShortcuts, setShowShortcuts: setShowHomeShortcuts } =
     useHomeKeyboard({

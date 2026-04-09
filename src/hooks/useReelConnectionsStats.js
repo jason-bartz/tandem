@@ -1,142 +1,27 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import { API_ENDPOINTS } from '@/lib/constants';
-import storageService from '@/core/storage/storageService';
-import { capacitorFetch, getApiUrl } from '@/lib/api-config';
 import logger from '@/lib/logger';
-
-const STORAGE_KEY = 'reel-connections-stats';
-const USER_STORAGE_KEY_PREFIX = 'reel-connections-stats-user-';
-
-const DEFAULT_STATS = {
-  gamesPlayed: 0,
-  gamesWon: 0,
-  totalTimeMs: 0,
-  currentStreak: 0,
-  bestStreak: 0,
-  lastPlayedDate: null,
-  gameHistory: [], // Array of { date, won, timeMs, mistakes }
-};
+import {
+  DEFAULT_REEL_STATS as DEFAULT_STATS,
+  loadReelStats,
+  saveReelStats,
+} from '@/lib/reelStorage';
 
 /**
- * Get storage key for the current user
- * Ensures stats are separated per user account to prevent cross-account leakage
+ * Check for achievement unlocks (non-blocking, fire-and-forget).
+ *
+ * Passes both the updated stats and the previous stats so the notifier can
+ * compute exactly which achievements were crossed by THIS game (avoids any
+ * race with the post-sign-in backfill, which could otherwise inundate the
+ * user with toasts for historical achievements).
+ *
+ * @param {Object} updatedStats - The stats AFTER the game was recorded
+ * @param {Object} previousStats - The stats BEFORE the game was recorded
  */
-function getStorageKey(userId) {
-  if (userId) {
-    return `${USER_STORAGE_KEY_PREFIX}${userId}`;
-  }
-  return STORAGE_KEY;
-}
-
-/**
- * Fetch user reel stats from database
- * Uses capacitorFetch for iOS compatibility (proper auth headers)
- * @private
- */
-async function fetchUserReelStatsFromDatabase() {
-  try {
-    const response = await capacitorFetch(getApiUrl(API_ENDPOINTS.USER_REEL_STATS), {
-      method: 'GET',
-    });
-
-    if (!response.ok) {
-      if (response.status === 401) {
-        return null;
-      }
-      throw new Error(`Failed to fetch user reel stats: ${response.status}`);
-    }
-
-    const data = await response.json();
-    return data.stats || null;
-  } catch (error) {
-    logger.error('[ReelConnectionsStats] Failed to fetch stats from database', error);
-    return null;
-  }
-}
-
-/**
- * Save user reel stats to database
- * Uses capacitorFetch for iOS compatibility (proper auth headers)
- * @private
- */
-async function saveUserReelStatsToDatabase(stats) {
-  try {
-    const response = await capacitorFetch(getApiUrl(API_ENDPOINTS.USER_REEL_STATS), {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        gamesPlayed: stats.gamesPlayed || 0,
-        gamesWon: stats.gamesWon || 0,
-        totalTimeMs: stats.totalTimeMs || 0,
-        currentStreak: stats.currentStreak || 0,
-        bestStreak: stats.bestStreak || 0,
-        lastPlayedDate: stats.lastPlayedDate || null,
-        gameHistory: stats.gameHistory || [],
-      }),
-    });
-
-    if (!response.ok) {
-      if (response.status === 401) {
-        return null;
-      }
-      throw new Error(`Failed to save user reel stats: ${response.status}`);
-    }
-
-    const data = await response.json();
-    return data.stats || null;
-  } catch (error) {
-    logger.error('[ReelConnectionsStats] Failed to save stats to database', error);
-    return null;
-  }
-}
-
-/**
- * Merge local stats with database stats
- * Takes the higher values for cumulative stats
- * @private
- */
-function mergeReelStats(localStats, dbStats) {
-  // Merge game history - combine and dedupe by date
-  const historyMap = new Map();
-
-  // Add local history first
-  (localStats.gameHistory || []).forEach((game) => {
-    historyMap.set(game.date, game);
-  });
-
-  // Add db history (overwrites if same date - db is authoritative)
-  (dbStats.gameHistory || []).forEach((game) => {
-    historyMap.set(game.date, game);
-  });
-
-  // Sort by date descending and keep last 30
-  const mergedHistory = Array.from(historyMap.values())
-    .sort((a, b) => b.date.localeCompare(a.date))
-    .slice(0, 30);
-
-  return {
-    gamesPlayed: Math.max(localStats.gamesPlayed || 0, dbStats.gamesPlayed || 0),
-    gamesWon: Math.max(localStats.gamesWon || 0, dbStats.gamesWon || 0),
-    totalTimeMs: Math.max(localStats.totalTimeMs || 0, dbStats.totalTimeMs || 0),
-    currentStreak: Math.max(localStats.currentStreak || 0, dbStats.currentStreak || 0),
-    bestStreak: Math.max(localStats.bestStreak || 0, dbStats.bestStreak || 0),
-    lastPlayedDate: localStats.lastPlayedDate || dbStats.lastPlayedDate || null,
-    gameHistory: mergedHistory,
-  };
-}
-
-/**
- * Check for achievement unlocks (non-blocking, fire-and-forget)
- * Called after game completion to trigger achievement notifications
- * @param {Object} updatedStats - The updated stats after game completion
- */
-async function triggerAchievementCheck(updatedStats) {
+async function triggerAchievementCheck(updatedStats, previousStats) {
   try {
     const { checkAndNotifyReelAchievements } = await import('@/lib/achievementNotifier');
-    await checkAndNotifyReelAchievements(updatedStats);
+    await checkAndNotifyReelAchievements(updatedStats, { previousStats });
   } catch (error) {
     logger.error('[ReelConnectionsStats] Failed to check achievements', error);
   }
@@ -170,7 +55,6 @@ export function useReelConnectionsStats() {
   const [stats, setStats] = useState(DEFAULT_STATS);
   const [isLoaded, setIsLoaded] = useState(false);
   const prevUserIdRef = useRef(null);
-  const currentStorageKeyRef = useRef(STORAGE_KEY);
   const isSyncingRef = useRef(false);
 
   // Load stats from localStorage and database on mount and when user changes
@@ -178,8 +62,6 @@ export function useReelConnectionsStats() {
     if (typeof window === 'undefined') return;
 
     const userId = user?.id;
-    const storageKey = getStorageKey(userId);
-    currentStorageKeyRef.current = storageKey;
 
     // Check if we need to reload (first load or user changed)
     const userChanged = prevUserIdRef.current !== userId;
@@ -189,62 +71,10 @@ export function useReelConnectionsStats() {
 
     prevUserIdRef.current = userId;
 
-    const loadStats = async () => {
+    const loadStatsAsync = async () => {
       try {
-        // Load local stats first (uses storageService with IndexedDB fallback)
-        let localStats = DEFAULT_STATS;
-        const stored = await storageService.get(storageKey);
-        if (stored) {
-          localStats = { ...DEFAULT_STATS, ...JSON.parse(stored) };
-        } else if (userId) {
-          // User is logged in but no user-specific stats exist
-          // Try to migrate from anonymous stats
-          const anonymousStats = await storageService.get(STORAGE_KEY);
-          if (anonymousStats) {
-            localStats = { ...DEFAULT_STATS, ...JSON.parse(anonymousStats) };
-            // Save to user-specific key
-            await storageService.set(storageKey, anonymousStats);
-          }
-        } else {
-          // Anonymous user - load from default key
-          const anonymousStats = await storageService.get(STORAGE_KEY);
-          if (anonymousStats) {
-            localStats = { ...DEFAULT_STATS, ...JSON.parse(anonymousStats) };
-          }
-        }
-
-        // DATABASE-FIRST: If user is authenticated, sync with database
-        if (userId) {
-          const dbStats = await fetchUserReelStatsFromDatabase();
-
-          if (dbStats) {
-            // Merge local and database stats
-            const mergedStats = mergeReelStats(localStats, dbStats);
-
-            // Save merged stats locally (with quota handling and IndexedDB fallback)
-            // NOTE: Only save to user-namespaced key to prevent cross-account contamination
-            await storageService.set(storageKey, JSON.stringify(mergedStats));
-
-            // Save merged stats to database (fire-and-forget)
-            saveUserReelStatsToDatabase(mergedStats).catch((err) => {
-              logger.error('[ReelConnectionsStats] Failed to save merged stats to db', err);
-            });
-
-            setStats(mergedStats);
-          } else {
-            // No database stats, use local and sync to database
-            setStats(localStats);
-
-            // Sync local stats to database if we have any data
-            if (localStats.gamesPlayed > 0) {
-              saveUserReelStatsToDatabase(localStats).catch((err) => {
-                logger.error('[ReelConnectionsStats] Failed to sync local stats to db', err);
-              });
-            }
-          }
-        } else {
-          setStats(localStats);
-        }
+        const merged = await loadReelStats();
+        setStats(merged);
       } catch (error) {
         logger.error('[ReelConnectionsStats] Error loading stats', error);
         setStats(DEFAULT_STATS);
@@ -252,7 +82,7 @@ export function useReelConnectionsStats() {
       setIsLoaded(true);
     };
 
-    loadStats();
+    loadStatsAsync();
   }, [user?.id, isLoaded]);
 
   // Save stats to localStorage and database whenever they change
@@ -260,31 +90,18 @@ export function useReelConnectionsStats() {
     if (!isLoaded || typeof window === 'undefined') return;
     if (isSyncingRef.current) return; // Prevent sync loops
 
-    const saveStats = async () => {
+    const persistStats = async () => {
       try {
-        const storageKey = currentStorageKeyRef.current;
-        // Use storageService with quota handling and IndexedDB fallback
-        // NOTE: Only save to user-namespaced key (or anonymous key for non-auth users)
-        // to prevent cross-account contamination on shared devices
-        await storageService.set(storageKey, JSON.stringify(stats));
-
-        // If user is authenticated, sync to database (fire-and-forget)
-        if (user?.id && stats.gamesPlayed > 0) {
-          isSyncingRef.current = true;
-          saveUserReelStatsToDatabase(stats)
-            .catch((err) => {
-              logger.error('[ReelConnectionsStats] Failed to sync stats to database', err);
-            })
-            .finally(() => {
-              isSyncingRef.current = false;
-            });
-        }
+        isSyncingRef.current = true;
+        await saveReelStats(stats);
       } catch (error) {
         logger.error('[ReelConnectionsStats] Error saving stats', error);
+      } finally {
+        isSyncingRef.current = false;
       }
     };
 
-    saveStats();
+    persistStats();
   }, [stats, isLoaded, user?.id]);
 
   /**
@@ -365,6 +182,15 @@ export function useReelConnectionsStats() {
         gameHistory: newHistory,
       };
 
+      // Snapshot the previous achievement-relevant fields BEFORE updating
+      // state. The notifier uses these to compute exactly which achievements
+      // were crossed by THIS game — robust against any race with the
+      // post-sign-in backfill.
+      const previousStatsForAchievements = {
+        bestStreak: stats.bestStreak,
+        gamesWon: stats.gamesWon,
+      };
+
       // Update state (this triggers the save effect)
       setStats(newStats);
 
@@ -376,7 +202,7 @@ export function useReelConnectionsStats() {
 
       // Always check for achievements on game completion (not just wins)
       // First win achievement needs to trigger for gamesWon >= 1
-      triggerAchievementCheck(newStats);
+      triggerAchievementCheck(newStats, previousStatsForAchievements);
     },
     [stats, getTodayDateString]
   );
@@ -409,14 +235,12 @@ export function useReelConnectionsStats() {
   const resetStats = useCallback(async () => {
     setStats(DEFAULT_STATS);
     if (typeof window !== 'undefined') {
-      const storageKey = currentStorageKeyRef.current;
-      // Use storageService to remove from all storage layers
-      await storageService.remove(storageKey);
-      await storageService.remove(STORAGE_KEY);
+      const { clearReelStats } = await import('@/lib/reelStorage');
+      await clearReelStats(user?.id || null);
     }
-    // Also clear from database if user is authenticated
+    // Persist the empty stats to the database too if authenticated
     if (user?.id) {
-      saveUserReelStatsToDatabase(DEFAULT_STATS).catch((err) => {
+      saveReelStats(DEFAULT_STATS).catch((err) => {
         logger.error('[ReelConnectionsStats] Failed to reset stats in database', err);
       });
     }

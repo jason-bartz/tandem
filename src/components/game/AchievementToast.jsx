@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTheme } from '@/contexts/ThemeContext';
 
@@ -8,6 +8,11 @@ import { useTheme } from '@/contexts/ThemeContext';
  *
  * Shows toast notifications when players unlock achievements.
  * Called via window.__showAchievementToast by the achievementNotifier module.
+ *
+ * Maintains an internal queue so that crossing multiple thresholds in one
+ * action (e.g. completing several archive puzzles back-to-back, or signing
+ * in for the first time and backfilling many achievements) shows each toast
+ * sequentially instead of dropping all but the first.
  */
 
 // Map achievement game type to accent color
@@ -21,26 +26,68 @@ function getToastColors(achievement, highContrast) {
   return 'bg-accent-blue text-white border-2 border-accent-blue'; // Tandem default
 }
 
+const TOAST_VISIBLE_MS = 3000;
+const TOAST_EXIT_MS = 300;
+const TOAST_BETWEEN_MS = 200;
+
 export default function AchievementToast() {
   const { highContrast, reduceMotion } = useTheme();
   const [achievement, setAchievement] = useState(null);
   const [visible, setVisible] = useState(false);
 
-  const showAchievement = (ach) => {
-    setAchievement(ach);
+  const queueRef = useRef([]);
+  const isShowingRef = useRef(false);
+  const timeoutsRef = useRef([]);
+
+  // Process the next item in the queue, if any.
+  const processQueue = () => {
+    if (isShowingRef.current) return;
+    if (queueRef.current.length === 0) return;
+
+    const next = queueRef.current.shift();
+    isShowingRef.current = true;
+    setAchievement(next);
     setVisible(true);
 
-    setTimeout(() => {
+    const visibleTimer = setTimeout(() => {
       setVisible(false);
-
-      setTimeout(() => setAchievement(null), 300);
-    }, 3000);
+      const exitTimer = setTimeout(() => {
+        setAchievement(null);
+        const gapTimer = setTimeout(() => {
+          isShowingRef.current = false;
+          processQueue();
+        }, TOAST_BETWEEN_MS);
+        timeoutsRef.current.push(gapTimer);
+      }, TOAST_EXIT_MS);
+      timeoutsRef.current.push(exitTimer);
+    }, TOAST_VISIBLE_MS);
+    timeoutsRef.current.push(visibleTimer);
   };
 
-  // Expose showAchievement globally for the achievementNotifier module
-  if (typeof window !== 'undefined') {
-    window.__showAchievementToast = showAchievement;
-  }
+  // Public enqueue: callable from anywhere via the window global.
+  const enqueue = (ach) => {
+    if (!ach) return;
+    queueRef.current.push(ach);
+    processQueue();
+  };
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      window.__showAchievementToast = enqueue;
+    }
+    return () => {
+      // Clean up any pending timeouts on unmount
+      timeoutsRef.current.forEach(clearTimeout);
+      timeoutsRef.current = [];
+      if (typeof window !== 'undefined') {
+        // Only clear the global if it still points at our handler
+        if (window.__showAchievementToast === enqueue) {
+          delete window.__showAchievementToast;
+        }
+      }
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   if (!achievement) {
     return null;

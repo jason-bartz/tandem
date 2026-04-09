@@ -496,6 +496,14 @@ export async function updateMiniStatsAfterCompletion(
   try {
     const stats = await loadMiniStats();
 
+    // Snapshot the achievement-relevant stats BEFORE we mutate `stats` so
+    // the notifier can compute exactly which achievements were crossed by
+    // THIS update (precise path, robust against post-sign-in backfill races).
+    const previousStatsForAchievements = {
+      longestStreak: stats.longestStreak || 0,
+      totalCompleted: stats.totalCompleted || 0,
+    };
+
     // Check if this is the first attempt (hasn't been completed before)
     const isFirstAttempt = !stats.completedPuzzles[date];
 
@@ -578,10 +586,14 @@ export async function updateMiniStatsAfterCompletion(
       }
     }
 
-    // Check and notify for mini achievements (fire-and-forget)
+    // Check and notify for mini achievements (fire-and-forget).
+    // Pass previousStats so the notifier can compute exactly which
+    // achievements were crossed by THIS update.
     try {
       const { checkAndNotifyMiniAchievements } = await import('@/lib/achievementNotifier');
-      checkAndNotifyMiniAchievements(stats).catch((error) => {
+      checkAndNotifyMiniAchievements(stats, {
+        previousStats: previousStatsForAchievements,
+      }).catch((error) => {
         logger.error('[miniStorage] Failed to check achievements:', error);
       });
     } catch (error) {

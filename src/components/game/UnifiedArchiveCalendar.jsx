@@ -11,13 +11,11 @@ import { getGameHistory } from '@/lib/storage';
 import { getPuzzleRangeForMonth } from '@/lib/puzzleNumber';
 import { getApiUrl, capacitorFetch } from '@/lib/api-config';
 import { getCompletedMiniPuzzles } from '@/lib/miniStorage';
-import storageService from '@/core/storage/storageService';
+import { loadReelStats } from '@/lib/reelStorage';
 import logger from '@/lib/logger';
 import { SOUP_STORAGE_KEYS } from '@/lib/daily-alchemy.constants';
 import { ASSET_VERSION } from '@/lib/constants';
 import { isStandaloneAlchemy } from '@/lib/standalone';
-
-const REEL_STORAGE_KEY = 'reel-connections-stats';
 
 /**
  * UnifiedArchiveCalendar Component
@@ -263,18 +261,13 @@ export default function UnifiedArchiveCalendar({
         signal: abortControllerRef.current?.signal,
       });
 
-      // Load completed puzzles from storage
-      // Uses storageService which checks localStorage → IndexedDB → in-memory
+      // Load completed puzzles via the canonical reel storage loader
+      // (per-user namespacing + storageService fallback chain).
       try {
-        const stored = await storageService.get(REEL_STORAGE_KEY);
-        if (stored) {
-          const parsed = JSON.parse(stored);
-          if (parsed.gameHistory && Array.isArray(parsed.gameHistory)) {
-            const completed = new Set(parsed.gameHistory.filter((g) => g.won).map((g) => g.date));
-            setCompletedReelPuzzles(completed);
-          } else {
-            setCompletedReelPuzzles(new Set());
-          }
+        const reelStats = await loadReelStats({ skipDbFetch: true });
+        if (Array.isArray(reelStats.gameHistory)) {
+          const completed = new Set(reelStats.gameHistory.filter((g) => g.won).map((g) => g.date));
+          setCompletedReelPuzzles(completed);
         } else {
           setCompletedReelPuzzles(new Set());
         }

@@ -2163,6 +2163,30 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
     if (user && !statsRecorded && !isArchive && !coopMode) {
       setStatsRecorded(true);
 
+      // Snapshot the achievement-relevant stats BEFORE the API call so the
+      // notifier can compute exactly which achievements were crossed by
+      // THIS update (precise path, robust against post-sign-in backfill races).
+      let previousStatsForAchievements = null;
+      try {
+        const stored = localStorage.getItem(SOUP_STORAGE_KEYS.STATS);
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          previousStatsForAchievements = {
+            longestStreak: parsed.longestStreak || 0,
+            totalCompleted: parsed.totalCompleted || 0,
+            firstDiscoveries: parsed.firstDiscoveries || 0,
+          };
+        } else {
+          previousStatsForAchievements = {
+            longestStreak: 0,
+            totalCompleted: 0,
+            firstDiscoveries: 0,
+          };
+        }
+      } catch (prevErr) {
+        logger.warn('[ElementSoup] Failed to snapshot previous stats', { error: prevErr.message });
+      }
+
       try {
         const url = getApiUrl(SOUP_API.COMPLETE);
         const response = await capacitorFetch(
@@ -2211,14 +2235,19 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
             };
             localStorage.setItem(SOUP_STORAGE_KEYS.STATS, JSON.stringify(statsToSave));
 
-            // Check for achievement unlocks (fire-and-forget)
+            // Check for achievement unlocks (fire-and-forget).
+            // Pass previousStats so the notifier can compute exactly which
+            // achievements were crossed by THIS update.
             import('@/lib/achievementNotifier')
               .then(({ checkAndNotifyAlchemyAchievements }) => {
-                checkAndNotifyAlchemyAchievements({
-                  longestStreak: statsToSave.longestStreak,
-                  totalCompleted: statsToSave.totalCompleted,
-                  firstDiscoveries: statsToSave.firstDiscoveries,
-                }).catch((achErr) => {
+                checkAndNotifyAlchemyAchievements(
+                  {
+                    longestStreak: statsToSave.longestStreak,
+                    totalCompleted: statsToSave.totalCompleted,
+                    firstDiscoveries: statsToSave.firstDiscoveries,
+                  },
+                  { previousStats: previousStatsForAchievements }
+                ).catch((achErr) => {
                   logger.error('[ElementSoup] Failed to check achievements', {
                     error: achErr.message,
                   });

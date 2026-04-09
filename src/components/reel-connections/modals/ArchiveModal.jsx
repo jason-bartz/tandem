@@ -3,11 +3,9 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import ReelConnectionsModal from './ReelConnectionsModal';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import storageService from '@/core/storage/storageService';
+import { loadReelStats } from '@/lib/reelStorage';
 import { useTheme } from '@/contexts/ThemeContext';
 import logger from '@/lib/logger';
-
-const STORAGE_KEY = 'reel-connections-stats';
 
 /**
  * ArchiveModal - Calendar-based archive for Reel Connections puzzles
@@ -62,16 +60,11 @@ export default function ArchiveModal({ isOpen, onClose, onSelectDate }) {
     // Small delay to ensure any pending stats saves have completed
     const timer = setTimeout(async () => {
       try {
-        // Use storageService to check all storage layers (localStorage, IndexedDB, memory)
-        const stored = await storageService.get(STORAGE_KEY);
-        if (stored) {
-          const parsed = JSON.parse(stored);
-          if (parsed.gameHistory && Array.isArray(parsed.gameHistory)) {
-            const completed = new Set(parsed.gameHistory.filter((g) => g.won).map((g) => g.date));
-            setCompletedDates(completed);
-          } else {
-            setCompletedDates(new Set());
-          }
+        // Canonical loader: per-user namespacing + storageService fallback chain.
+        const reelStats = await loadReelStats({ skipDbFetch: true });
+        if (Array.isArray(reelStats.gameHistory)) {
+          const completed = new Set(reelStats.gameHistory.filter((g) => g.won).map((g) => g.date));
+          setCompletedDates(completed);
         } else {
           setCompletedDates(new Set());
         }
@@ -241,7 +234,7 @@ export default function ArchiveModal({ isOpen, onClose, onSelectDate }) {
                                 ? 'text-hc-text hover:bg-hc-surface active:scale-95 cursor-pointer'
                                 : 'text-hc-text/40 cursor-not-allowed'
                             : isToday
-                              ? 'bg-[#ffce00] text-[#0f0f1e] font-bold border-2 border-white'
+                              ? 'bg-accent-yellow text-gray-900 font-bold border-2 border-white'
                               : isInteractive
                                 ? 'text-white/90 hover:bg-ghost-white/10 active:scale-95 cursor-pointer'
                                 : 'text-white/30 cursor-not-allowed'
@@ -274,7 +267,11 @@ export default function ArchiveModal({ isOpen, onClose, onSelectDate }) {
           )}
 
           {/* Grey dot for no puzzle */}
-          {!hasPuzzle && <div className={`w-2 h-2 rounded-full ${highContrast ? 'bg-hc-surface' : 'bg-ghost-white/20'}`} />}
+          {!hasPuzzle && (
+            <div
+              className={`w-2 h-2 rounded-full ${highContrast ? 'bg-hc-surface' : 'bg-ghost-white/20'}`}
+            />
+          )}
         </button>
       );
     }
@@ -337,7 +334,10 @@ export default function ArchiveModal({ isOpen, onClose, onSelectDate }) {
         {/* Day Names */}
         <div className="grid grid-cols-7 gap-1">
           {dayNames.map((name) => (
-            <div key={name} className={`text-center text-xs font-semibold py-2 ${highContrast ? 'text-hc-text' : 'text-white/50'}`}>
+            <div
+              key={name}
+              className={`text-center text-xs font-semibold py-2 ${highContrast ? 'text-hc-text' : 'text-white/50'}`}
+            >
               {name}
             </div>
           ))}
@@ -358,17 +358,25 @@ export default function ArchiveModal({ isOpen, onClose, onSelectDate }) {
         )}
 
         {/* Legend */}
-        <div className={`flex flex-wrap gap-4 text-xs pt-4 border-t ${highContrast ? 'border-hc-border' : 'border-white/10'}`}>
+        <div
+          className={`flex flex-wrap gap-4 text-xs pt-4 border-t ${highContrast ? 'border-hc-border' : 'border-white/10'}`}
+        >
           <div className="flex items-center gap-1.5">
-            <div className={`w-2.5 h-2.5 rounded-full ${highContrast ? 'bg-hc-success' : 'bg-green-400'}`} />
+            <div
+              className={`w-2.5 h-2.5 rounded-full ${highContrast ? 'bg-hc-success' : 'bg-green-400'}`}
+            />
             <span className={highContrast ? 'text-hc-text' : 'text-white/60'}>Completed</span>
           </div>
           <div className="flex items-center gap-1.5">
-            <div className={`w-2.5 h-2.5 rounded-full border-2 bg-transparent ${highContrast ? 'border-hc-border' : 'border-white/50'}`} />
+            <div
+              className={`w-2.5 h-2.5 rounded-full border-2 bg-transparent ${highContrast ? 'border-hc-border' : 'border-white/50'}`}
+            />
             <span className={highContrast ? 'text-hc-text' : 'text-white/60'}>Not Played</span>
           </div>
           <div className="flex items-center gap-1.5">
-            <div className={`w-2 h-2 rounded-full ${highContrast ? 'bg-hc-surface' : 'bg-ghost-white/20'}`} />
+            <div
+              className={`w-2 h-2 rounded-full ${highContrast ? 'bg-hc-surface' : 'bg-ghost-white/20'}`}
+            />
             <span className={highContrast ? 'text-hc-text' : 'text-white/60'}>Unavailable</span>
           </div>
         </div>

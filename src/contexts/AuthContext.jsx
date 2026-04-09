@@ -341,13 +341,22 @@ export function AuthProvider({ children }) {
         // from individual game hooks (useGameWithInitialData, useMiniGame, etc.)
         // after a win that matches/exceeds the best streak.
 
-        // Sync achievements when user signs in (non-blocking)
-        // This merges local achievements with database for cross-device persistence
+        // Sync achievements when user signs in (non-blocking).
+        // This first merges any local + database unlocked IDs, then runs a
+        // retroactive backfill: it loads each game's stats from the canonical
+        // loaders (which now hit the user-namespaced storage key + database)
+        // and adds any qualifying-but-not-yet-persisted achievements to both
+        // local storage and the database. This catches achievements earned
+        // offline as a guest before sign-in, and any achievements earned on
+        // another device before the new sync system was wired up.
         (async () => {
           try {
-            const { syncAllAchievements } = await import('@/services/achievementSync.service');
+            const { syncAllAchievements, backfillAllAchievements } = await import(
+              '@/services/achievementSync.service'
+            );
             await syncAllAchievements();
-            logger.debug('[AuthProvider] Achievement sync completed');
+            await backfillAllAchievements();
+            logger.debug('[AuthProvider] Achievement sync + backfill completed');
           } catch (error) {
             logger.error('[AuthProvider] Achievement sync failed', error);
           }
@@ -843,18 +852,28 @@ export function AuthProvider({ children }) {
         const storageServiceInst = storageServiceModule.default;
         const { SOUP_STORAGE_KEYS } = await import('@/lib/daily-alchemy.constants');
         const { STORAGE_KEYS, MINI_STORAGE_KEYS } = await import('@/lib/constants');
+        const { REEL_ANON_STORAGE_KEY } = await import('@/lib/reelStorage');
+        const { clearUnlockedAchievements } = await import('@/services/achievementSync.service');
 
-        // Clear anonymous stats keys that could leak to new accounts
-        // NOTE: User-namespaced keys (e.g., tandem_stats_user_{id}) are kept
-        // so users can sign back in and recover their data
+        // Clear anonymous stats keys that could leak to new accounts.
+        // NOTE: User-namespaced keys (e.g., tandem_stats_user_{id},
+        // reel-connections-stats-user-{id}) are kept so users can sign back
+        // in and recover their data.
+        //
+        // Also clear the global `tandem_unlocked_achievements` set — it has
+        // no per-user namespacing, so leaving it would leak the previous
+        // user's achievements to the next sign-in. The next sign-in
+        // re-populates it from the user's database row + a backfill against
+        // their stats.
         await Promise.allSettled([
-          storageServiceInst.remove('reel-connections-stats'),
+          storageServiceInst.remove(REEL_ANON_STORAGE_KEY),
           storageServiceInst.remove(SOUP_STORAGE_KEYS.STATS),
           storageServiceInst.remove(STORAGE_KEYS.STATS), // tandem_stats (anonymous key)
           storageServiceInst.remove(MINI_STORAGE_KEYS.STATS), // mini_stats (anonymous key)
+          clearUnlockedAchievements(),
         ]);
 
-        logger.debug('[Auth] Cleared anonymous stats keys on sign-out');
+        logger.debug('[Auth] Cleared anonymous stats and unlocked achievements on sign-out');
       } catch (clearStatsError) {
         // Non-critical - continue with sign out
         logger.warn('[Auth] Could not clear anonymous stats', clearStatsError);

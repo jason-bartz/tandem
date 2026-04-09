@@ -1,5 +1,5 @@
 import { API_ENDPOINTS, STORAGE_KEYS } from '@/lib/constants';
-import { updateGameStats, saveTodayResult, hasPlayedPuzzle } from '@/lib/storage';
+import { updateGameStats, saveTodayResult, hasPlayedPuzzle, loadStats } from '@/lib/storage';
 import { Capacitor } from '@capacitor/core';
 import { Preferences } from '@capacitor/preferences';
 import { capacitorFetch, getApiUrl } from '@/lib/api-config';
@@ -68,6 +68,20 @@ class StatsService {
       const isFirstAttempt =
         gameResult.isFirstAttempt !== undefined ? gameResult.isFirstAttempt : true; // Default to true if not provided
 
+      // Snapshot the achievement-relevant stats BEFORE the update so the
+      // notifier can compute exactly which achievements were crossed by
+      // THIS game (precise path, robust against post-sign-in backfill races).
+      let previousStatsForAchievements = null;
+      try {
+        const prev = await loadStats();
+        previousStatsForAchievements = {
+          bestStreak: prev?.bestStreak || 0,
+          wins: prev?.wins || 0,
+        };
+      } catch (prevErr) {
+        logger.warn('StatsService: Failed to snapshot previous stats', prevErr);
+      }
+
       const localStats = await updateGameStats(
         gameResult.completed,
         isFirstAttempt,
@@ -109,10 +123,14 @@ class StatsService {
         }
       }
 
-      // Check and notify for Tandem achievements (fire-and-forget)
+      // Check and notify for Tandem achievements (fire-and-forget).
+      // Pass previousStats so the notifier can compute exactly which
+      // achievements were crossed by THIS game.
       try {
         const { checkAndNotifyTandemAchievements } = await import('@/lib/achievementNotifier');
-        checkAndNotifyTandemAchievements(localStats).catch((error) => {
+        checkAndNotifyTandemAchievements(localStats, {
+          previousStats: previousStatsForAchievements,
+        }).catch((error) => {
           logger.error('StatsService: Failed to check achievements', error);
         });
       } catch (error) {

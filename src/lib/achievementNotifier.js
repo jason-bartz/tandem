@@ -1,11 +1,15 @@
 /**
  * Achievement Notification System
- * Triggers in-app toast notifications when new achievements are unlocked
- * Works on both web and iOS platforms
+ *
+ * Triggers in-app toast notifications when new achievements are unlocked.
+ * Works on both web and iOS platforms.
  *
  * Achievements are:
- * 1. Stored locally for offline access
- * 2. Synced to database for cross-device persistence (authenticated users)
+ *   1. Stored locally for offline access (works for guests too)
+ *   2. Synced to the database for cross-device persistence (authenticated users)
+ *
+ * Toasts are queued by `AchievementToast`, so crossing multiple thresholds in
+ * one action will display each newly unlocked achievement in sequence.
  */
 
 import {
@@ -20,7 +24,7 @@ import logger from '@/lib/logger';
 const UNLOCKED_ACHIEVEMENTS_KEY = 'tandem_unlocked_achievements';
 
 /**
- * Check if user is authenticated
+ * Check if user is authenticated (non-anonymous).
  * @private
  */
 async function isAuthenticated() {
@@ -31,14 +35,14 @@ async function isAuthenticated() {
     const {
       data: { session },
     } = await supabase.auth.getSession();
-    return !!session?.user;
+    return !!session?.user && !session.user.is_anonymous;
   } catch {
     return false;
   }
 }
 
 /**
- * Fetch achievements from database for authenticated users
+ * Fetch achievements from database for authenticated users.
  * @private
  */
 async function fetchAchievementsFromDb() {
@@ -64,30 +68,47 @@ async function fetchAchievementsFromDb() {
 }
 
 /**
- * Sync achievements to database (fire-and-forget)
- * Non-blocking - failures are logged but don't affect local storage
+ * Sync achievements to database (fire-and-forget, non-blocking).
  * @private
  */
 async function syncAchievementsToDb(achievementIds) {
   try {
-    // Dynamic import to avoid circular dependencies and reduce initial bundle
     const { syncAchievementToDatabase } = await import('@/services/achievementSync.service');
-
-    // Sync each achievement (fire-and-forget, non-blocking)
     for (const id of achievementIds) {
       syncAchievementToDatabase(id).catch((err) => {
         logger.warn('[AchievementNotifier] DB sync failed for:', id, err);
       });
     }
   } catch (error) {
-    // Non-critical - local storage already saved
     logger.warn('[AchievementNotifier] Failed to sync to database:', error);
   }
 }
 
 /**
- * Get the set of already-unlocked achievement IDs
- * For authenticated users, merges local + database (DB is source of truth)
+ * Wait for any in-flight `backfillAllAchievements` to complete.
+ *
+ * The achievement notifier calls this before reading the persisted unlocked
+ * set so that a game completion which races with the post-sign-in backfill
+ * doesn't toast a flood of "newly unlocked" achievements that backfill is
+ * about to silently persist. No-op if no backfill is in flight.
+ * @private
+ */
+async function waitForInFlightBackfill() {
+  try {
+    const { getInFlightBackfill } = await import('@/services/achievementSync.service');
+    const inFlight = getInFlightBackfill();
+    if (inFlight) {
+      await inFlight;
+    }
+  } catch (err) {
+    // Non-critical: we'll just read whatever's currently in the persisted set
+    logger.warn('[AchievementNotifier] waitForInFlightBackfill failed', err);
+  }
+}
+
+/**
+ * Get the set of already-unlocked achievement IDs.
+ * For authenticated users, merges local + database (DB is source of truth).
  * @private
  */
 async function getUnlockedAchievements() {
@@ -101,10 +122,7 @@ async function getUnlockedAchievements() {
     if (authenticated) {
       const dbAchievements = await fetchAchievementsFromDb();
       if (dbAchievements && dbAchievements.length > 0) {
-        // Merge DB achievements into local set
         const mergedSet = new Set([...localSet, ...dbAchievements]);
-
-        // If DB had achievements not in local, update local storage
         if (mergedSet.size > localSet.size) {
           logger.info(
             '[AchievementNotifier] Syncing',
@@ -113,7 +131,6 @@ async function getUnlockedAchievements() {
           );
           await saveUnlockedAchievements(mergedSet);
         }
-
         return mergedSet;
       }
     }
@@ -126,7 +143,54 @@ async function getUnlockedAchievements() {
 }
 
 /**
- * Save the set of unlocked achievement IDs to storage
+ * Build the `lastSubmitted` baseline used by `getNewlyUnlocked*` checkers.
+ *
+ * If `previousStats` is provided, the baseline reflects what the player's
+ * stats looked like BEFORE the current update — so the checker returns
+ * exactly the achievements crossed by THIS update. This is the precise path
+ * and is robust to a stale persisted set.
+ *
+ * If no previousStats is provided, the baseline is `{0,0[,0]}` which means
+ * "all currently qualifying achievements". The legacy path then filters by
+ * the persisted unlocked set, awaiting any in-flight backfill first.
+ *
+ * @private
+ */
+function getReelBaseline(previousStats) {
+  if (!previousStats) return { streak: 0, wins: 0 };
+  return {
+    streak: previousStats.bestStreak || 0,
+    wins: previousStats.gamesWon || 0,
+  };
+}
+
+function getMiniBaseline(previousStats) {
+  if (!previousStats) return { streak: 0, wins: 0 };
+  return {
+    streak: previousStats.longestStreak || 0,
+    wins: previousStats.totalCompleted || 0,
+  };
+}
+
+function getTandemBaseline(previousStats) {
+  if (!previousStats) return { streak: 0, wins: 0 };
+  return {
+    streak: previousStats.bestStreak || 0,
+    wins: previousStats.wins || 0,
+  };
+}
+
+function getAlchemyBaseline(previousStats) {
+  if (!previousStats) return { streak: 0, wins: 0, firstDiscoveries: 0 };
+  return {
+    streak: previousStats.longestStreak || 0,
+    wins: previousStats.totalCompleted || 0,
+    firstDiscoveries: previousStats.firstDiscoveries || 0,
+  };
+}
+
+/**
+ * Save the set of unlocked achievement IDs to storage.
  * @private
  */
 async function saveUnlockedAchievements(unlockedSet) {
@@ -138,13 +202,14 @@ async function saveUnlockedAchievements(unlockedSet) {
 }
 
 /**
- * Show achievement toast notification
- * Uses the global __showAchievementToast function exposed by AchievementToast component
+ * Show an achievement toast notification by enqueueing it on the global
+ * `__showAchievementToast` queue exposed by AchievementToast.
  * @private
  */
 function showAchievementToast(achievement) {
   if (typeof window !== 'undefined' && window.__showAchievementToast) {
     window.__showAchievementToast({
+      id: achievement.id,
       name: achievement.name,
       emoji: achievement.emoji,
       description: achievement.description,
@@ -155,50 +220,95 @@ function showAchievementToast(achievement) {
 }
 
 /**
- * Check and notify for Tandem Daily achievements
- * @param {Object} stats - Player stats { bestStreak, wins }
+ * Internal: persist newly-unlocked achievements and enqueue toasts for them.
+ *
+ * Works for both guests (local-only) and authenticated users (local + DB).
+ *
+ * @param {Array} newAchievements - Already filtered to "not yet unlocked"
+ * @param {Set<string>} unlockedSet - Current unlocked set (will be mutated)
+ * @param {Object} [opts]
+ * @param {boolean} [opts.silent=false] - If true, persist without showing toasts
+ * @returns {Promise<Array>} The achievements that were newly persisted
+ * @private
+ */
+async function persistAndAnnounce(newAchievements, unlockedSet, opts = {}) {
+  if (newAchievements.length === 0) return [];
+
+  const { silent = false } = opts;
+
+  // Enqueue toasts for ALL new achievements (not just the first). The toast
+  // component handles the display queue so they appear sequentially.
+  if (!silent) {
+    for (const ach of newAchievements) {
+      showAchievementToast(ach);
+    }
+  }
+
+  // Mark all as unlocked locally
+  for (const ach of newAchievements) {
+    unlockedSet.add(ach.id);
+  }
+  await saveUnlockedAchievements(unlockedSet);
+
+  // Sync to database for cross-device persistence (fire-and-forget).
+  // Only authenticated users have a database row.
+  if (await isAuthenticated()) {
+    const newIds = newAchievements.map((ach) => ach.id);
+    syncAchievementsToDb(newIds);
+  }
+
+  return newAchievements;
+}
+
+/**
+ * Check and notify for Tandem Daily achievements.
+ *
+ * Tracks achievements locally for ALL users (guests included). Authenticated
+ * users additionally sync to the database for cross-device persistence.
+ *
+ * If `opts.previousStats` is provided, computes "newly crossed by THIS
+ * update" mathematically (qualifying under newStats minus qualifying under
+ * previousStats). This is the precise path and is robust to a stale
+ * persisted set — the post-sign-in race that could otherwise cause popup
+ * floods is impossible.
+ *
+ * Without `previousStats`, the function falls back to filtering "all
+ * currently qualifying" by the persisted unlocked set, awaiting any in-flight
+ * backfill first so it doesn't toast achievements backfill is about to add.
+ *
+ * @param {Object} stats - Current player stats { bestStreak, wins }
+ * @param {Object} [opts]
+ * @param {Object} [opts.previousStats] - Stats BEFORE this update (precise path)
+ * @param {boolean} [opts.silent=false] - Persist without showing toasts
  * @returns {Promise<Array>} Array of newly unlocked achievements
  */
-export async function checkAndNotifyTandemAchievements(stats) {
+export async function checkAndNotifyTandemAchievements(stats, opts = {}) {
   try {
-    // Only track achievements for authenticated users
-    const authenticated = await isAuthenticated();
-    if (!authenticated) {
-      logger.debug('[AchievementNotifier] Skipping Tandem achievements - user not authenticated');
-      return [];
+    const baseline = getTandemBaseline(opts.previousStats);
+
+    // If no previousStats was provided, await backfill so the persisted set
+    // is current before we use it as the filter.
+    if (!opts.previousStats) {
+      await waitForInFlightBackfill();
     }
 
     const unlockedSet = await getUnlockedAchievements();
 
-    // Get all qualifying achievements
-    const newAchievements = getNewlyUnlockedAchievements(
-      stats,
-      { streak: 0, wins: 0 } // Compare against 0 to get all qualifying
-    ).filter((ach) => !unlockedSet.has(ach.id));
+    // With previousStats: `getNewlyUnlocked*` returns exactly the
+    //   achievements crossed by this update (precise).
+    // Without previousStats: returns all currently qualifying — the
+    //   `unlockedSet` filter then excludes historical ones.
+    const newAchievements = getNewlyUnlockedAchievements(stats, baseline).filter(
+      (ach) => !unlockedSet.has(ach.id)
+    );
 
-    if (newAchievements.length === 0) {
-      return [];
+    const persisted = await persistAndAnnounce(newAchievements, unlockedSet, opts);
+
+    if (persisted.length > 0 && !opts.silent) {
+      logger.info('[AchievementNotifier] Tandem achievements unlocked:', persisted.length);
     }
 
-    // Show toast for the first new achievement (one at a time to avoid spam)
-    const achievementToShow = newAchievements[0];
-    const shown = showAchievementToast(achievementToShow);
-
-    // Mark all as unlocked even if toast didn't show (to prevent re-checking)
-    for (const ach of newAchievements) {
-      unlockedSet.add(ach.id);
-    }
-    await saveUnlockedAchievements(unlockedSet);
-
-    // Sync to database for cross-device persistence (fire-and-forget)
-    const newIds = newAchievements.map((ach) => ach.id);
-    syncAchievementsToDb(newIds);
-
-    if (shown) {
-      logger.info('[AchievementNotifier] Tandem achievement unlocked:', achievementToShow.name);
-    }
-
-    return newAchievements;
+    return persisted;
   } catch (error) {
     logger.error('[AchievementNotifier] Failed to check Tandem achievements:', error);
     return [];
@@ -206,50 +316,35 @@ export async function checkAndNotifyTandemAchievements(stats) {
 }
 
 /**
- * Check and notify for Daily Mini achievements
+ * Check and notify for Daily Mini achievements.
+ *
  * @param {Object} stats - Mini stats { longestStreak, totalCompleted }
+ * @param {Object} [opts]
+ * @param {Object} [opts.previousStats] - Stats BEFORE this update (precise path)
+ * @param {boolean} [opts.silent=false] - Persist without showing toasts
  * @returns {Promise<Array>} Array of newly unlocked achievements
  */
-export async function checkAndNotifyMiniAchievements(stats) {
+export async function checkAndNotifyMiniAchievements(stats, opts = {}) {
   try {
-    // Only track achievements for authenticated users
-    const authenticated = await isAuthenticated();
-    if (!authenticated) {
-      logger.debug('[AchievementNotifier] Skipping Mini achievements - user not authenticated');
-      return [];
+    const baseline = getMiniBaseline(opts.previousStats);
+
+    if (!opts.previousStats) {
+      await waitForInFlightBackfill();
     }
 
     const unlockedSet = await getUnlockedAchievements();
 
-    // Get all qualifying achievements
-    const newAchievements = getNewlyUnlockedMiniAchievements(
-      stats,
-      { streak: 0, wins: 0 } // Compare against 0 to get all qualifying
-    ).filter((ach) => !unlockedSet.has(ach.id));
+    const newAchievements = getNewlyUnlockedMiniAchievements(stats, baseline).filter(
+      (ach) => !unlockedSet.has(ach.id)
+    );
 
-    if (newAchievements.length === 0) {
-      return [];
+    const persisted = await persistAndAnnounce(newAchievements, unlockedSet, opts);
+
+    if (persisted.length > 0 && !opts.silent) {
+      logger.info('[AchievementNotifier] Mini achievements unlocked:', persisted.length);
     }
 
-    // Show toast for the first new achievement
-    const achievementToShow = newAchievements[0];
-    const shown = showAchievementToast(achievementToShow);
-
-    // Mark all as unlocked
-    for (const ach of newAchievements) {
-      unlockedSet.add(ach.id);
-    }
-    await saveUnlockedAchievements(unlockedSet);
-
-    // Sync to database for cross-device persistence (fire-and-forget)
-    const newIds = newAchievements.map((ach) => ach.id);
-    syncAchievementsToDb(newIds);
-
-    if (shown) {
-      logger.info('[AchievementNotifier] Mini achievement unlocked:', achievementToShow.name);
-    }
-
-    return newAchievements;
+    return persisted;
   } catch (error) {
     logger.error('[AchievementNotifier] Failed to check Mini achievements:', error);
     return [];
@@ -257,50 +352,35 @@ export async function checkAndNotifyMiniAchievements(stats) {
 }
 
 /**
- * Check and notify for Reel Connections achievements
+ * Check and notify for Reel Connections achievements.
+ *
  * @param {Object} stats - Reel stats { bestStreak, gamesWon }
+ * @param {Object} [opts]
+ * @param {Object} [opts.previousStats] - Stats BEFORE this update (precise path)
+ * @param {boolean} [opts.silent=false] - Persist without showing toasts
  * @returns {Promise<Array>} Array of newly unlocked achievements
  */
-export async function checkAndNotifyReelAchievements(stats) {
+export async function checkAndNotifyReelAchievements(stats, opts = {}) {
   try {
-    // Only track achievements for authenticated users
-    const authenticated = await isAuthenticated();
-    if (!authenticated) {
-      logger.debug('[AchievementNotifier] Skipping Reel achievements - user not authenticated');
-      return [];
+    const baseline = getReelBaseline(opts.previousStats);
+
+    if (!opts.previousStats) {
+      await waitForInFlightBackfill();
     }
 
     const unlockedSet = await getUnlockedAchievements();
 
-    // Get all qualifying achievements
-    const newAchievements = getNewlyUnlockedReelAchievements(
-      stats,
-      { streak: 0, wins: 0 } // Compare against 0 to get all qualifying
-    ).filter((ach) => !unlockedSet.has(ach.id));
+    const newAchievements = getNewlyUnlockedReelAchievements(stats, baseline).filter(
+      (ach) => !unlockedSet.has(ach.id)
+    );
 
-    if (newAchievements.length === 0) {
-      return [];
+    const persisted = await persistAndAnnounce(newAchievements, unlockedSet, opts);
+
+    if (persisted.length > 0 && !opts.silent) {
+      logger.info('[AchievementNotifier] Reel achievements unlocked:', persisted.length);
     }
 
-    // Show toast for the first new achievement
-    const achievementToShow = newAchievements[0];
-    const shown = showAchievementToast(achievementToShow);
-
-    // Mark all as unlocked
-    for (const ach of newAchievements) {
-      unlockedSet.add(ach.id);
-    }
-    await saveUnlockedAchievements(unlockedSet);
-
-    // Sync to database for cross-device persistence (fire-and-forget)
-    const newIds = newAchievements.map((ach) => ach.id);
-    syncAchievementsToDb(newIds);
-
-    if (shown) {
-      logger.info('[AchievementNotifier] Reel achievement unlocked:', achievementToShow.name);
-    }
-
-    return newAchievements;
+    return persisted;
   } catch (error) {
     logger.error('[AchievementNotifier] Failed to check Reel achievements:', error);
     return [];
@@ -308,50 +388,35 @@ export async function checkAndNotifyReelAchievements(stats) {
 }
 
 /**
- * Check and notify for Daily Alchemy achievements
+ * Check and notify for Daily Alchemy achievements.
+ *
  * @param {Object} stats - Alchemy stats { longestStreak, totalCompleted, firstDiscoveries }
+ * @param {Object} [opts]
+ * @param {Object} [opts.previousStats] - Stats BEFORE this update (precise path)
+ * @param {boolean} [opts.silent=false] - Persist without showing toasts
  * @returns {Promise<Array>} Array of newly unlocked achievements
  */
-export async function checkAndNotifyAlchemyAchievements(stats) {
+export async function checkAndNotifyAlchemyAchievements(stats, opts = {}) {
   try {
-    // Only track achievements for authenticated users
-    const authenticated = await isAuthenticated();
-    if (!authenticated) {
-      logger.debug('[AchievementNotifier] Skipping Alchemy achievements - user not authenticated');
-      return [];
+    const baseline = getAlchemyBaseline(opts.previousStats);
+
+    if (!opts.previousStats) {
+      await waitForInFlightBackfill();
     }
 
     const unlockedSet = await getUnlockedAchievements();
 
-    // Get all qualifying achievements (streaks, wins, and first discoveries)
-    const newAchievements = getNewlyUnlockedAlchemyAchievements(
-      stats,
-      { streak: 0, wins: 0, firstDiscoveries: 0 } // Compare against 0 to get all qualifying
-    ).filter((ach) => !unlockedSet.has(ach.id));
+    const newAchievements = getNewlyUnlockedAlchemyAchievements(stats, baseline).filter(
+      (ach) => !unlockedSet.has(ach.id)
+    );
 
-    if (newAchievements.length === 0) {
-      return [];
+    const persisted = await persistAndAnnounce(newAchievements, unlockedSet, opts);
+
+    if (persisted.length > 0 && !opts.silent) {
+      logger.info('[AchievementNotifier] Alchemy achievements unlocked:', persisted.length);
     }
 
-    // Show toast for the first new achievement
-    const achievementToShow = newAchievements[0];
-    const shown = showAchievementToast(achievementToShow);
-
-    // Mark all as unlocked
-    for (const ach of newAchievements) {
-      unlockedSet.add(ach.id);
-    }
-    await saveUnlockedAchievements(unlockedSet);
-
-    // Sync to database for cross-device persistence (fire-and-forget)
-    const newIds = newAchievements.map((ach) => ach.id);
-    syncAchievementsToDb(newIds);
-
-    if (shown) {
-      logger.info('[AchievementNotifier] Alchemy achievement unlocked:', achievementToShow.name);
-    }
-
-    return newAchievements;
+    return persisted;
   } catch (error) {
     logger.error('[AchievementNotifier] Failed to check Alchemy achievements:', error);
     return [];
@@ -359,8 +424,8 @@ export async function checkAndNotifyAlchemyAchievements(stats) {
 }
 
 /**
- * Get count of unlocked achievements for each game type
- * @returns {Promise<Object>} { tandem: number, mini: number, reel: number, alchemy: number, total: number }
+ * Get count of unlocked achievements for each game type.
+ * @returns {Promise<Object>} { tandem, mini, reel, alchemy, total }
  */
 export async function getUnlockedAchievementCounts() {
   try {
@@ -391,7 +456,7 @@ export async function getUnlockedAchievementCounts() {
 }
 
 /**
- * Reset unlocked achievements (for testing)
+ * Reset unlocked achievements (for testing).
  */
 export async function resetUnlockedAchievements() {
   try {
