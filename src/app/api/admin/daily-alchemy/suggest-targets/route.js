@@ -70,15 +70,21 @@ export async function POST(request) {
 
     logger.info('[SuggestTargets] Fetched past targets', { count: pastTargetSet.size });
 
-    // Build available elements list (exclude starters AND past targets)
+    // Build available elements list (exclude starters, past targets, and paths > 50 steps).
+    // pathLength must be the actual reconstructed path length — BFS depth undercounts
+    // dramatically because reconstructPath pulls in every prerequisite subtree.
+    const MAX_PATH_STEPS = 50;
     const availableElements = [];
     for (const [key, value] of elementInfo.entries()) {
       if (value.depth > 0 && !pastTargetSet.has(key)) {
-        availableElements.push({
-          name: value.name,
-          emoji: value.emoji,
-          pathLength: value.depth,
-        });
+        const path = reconstructPath(key, elementInfo);
+        if (path.length > 0 && path.length <= MAX_PATH_STEPS) {
+          availableElements.push({
+            name: value.name,
+            emoji: value.emoji,
+            pathLength: path.length,
+          });
+        }
       }
     }
 
