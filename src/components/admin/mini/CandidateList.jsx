@@ -56,26 +56,19 @@ export default memo(function CandidateList({
 
   return (
     <div className="flex flex-col h-full">
-      {/* Header */}
-      <div className="mb-2">
-        <div className="flex items-center gap-2">
-          <span className="text-xs font-bold uppercase text-text-primary">
-            {slot.direction} {slot.length}
-          </span>
-        </div>
-        <div className="text-[11px] font-medium text-text-secondary mt-0.5">
-          {totalCandidates > 0 ? (
-            <>
-              <span className="font-bold text-text-primary">{viableCandidates}</span>
-              {' of '}
-              {totalCandidates.toLocaleString()}
-              {' viable'}
-              {filter && ` (${sortedCandidates.length} shown)`}
-            </>
-          ) : (
-            'No matches'
-          )}
-        </div>
+      {/* Viable count */}
+      <div className="text-[11px] font-medium text-text-secondary mb-2">
+        {totalCandidates > 0 ? (
+          <>
+            <span className="font-bold text-text-primary">{viableCandidates}</span>
+            {' of '}
+            {totalCandidates.toLocaleString()}
+            {' viable'}
+            {filter && ` (${sortedCandidates.length} shown)`}
+          </>
+        ) : (
+          'No matches'
+        )}
       </div>
 
       {/* Filter */}

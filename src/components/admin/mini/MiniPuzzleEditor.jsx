@@ -1169,148 +1169,155 @@ export default function MiniPuzzleEditor({ puzzle, date, onSave, onCancel, loadi
       )}
 
       <form onSubmit={handleSubmit} className="space-y-4">
+        {/* Meta Row: Date + Difficulty */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          <div>
+            <label className="block text-[11px] font-bold text-text-secondary uppercase tracking-wide mb-1">
+              Date *
+            </label>
+            <input
+              type="date"
+              value={formData.date}
+              onChange={(e) => handleChange('date', e.target.value)}
+              className="w-full h-9 px-2.5 text-sm rounded-lg bg-ghost-white dark:bg-gray-700 text-text-primary"
+              disabled={loading}
+            />
+            {errors.date && <p className="text-red-500 text-xs mt-1">{errors.date}</p>}
+          </div>
+
+          <div>
+            <label className="block text-[11px] font-bold text-text-secondary uppercase tracking-wide mb-1">
+              Difficulty
+            </label>
+            <select
+              value={formData.difficulty}
+              onChange={(e) => handleChange('difficulty', e.target.value)}
+              className="w-full h-9 px-2.5 text-sm rounded-lg bg-ghost-white dark:bg-gray-700 text-text-primary"
+              disabled={loading}
+            >
+              <option value="easy">Easy</option>
+              <option value="medium">Medium</option>
+              <option value="hard">Hard</option>
+            </select>
+          </div>
+        </div>
+
         {/* Main 3-column layout: Grid | Clues | Candidates */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-6">
-          {/* LEFT COLUMN: Date/Difficulty + Grid */}
-          <div className="lg:col-span-5 xl:col-span-6 flex flex-col gap-3">
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <label className="block text-xs font-bold text-text-primary mb-1">Date *</label>
-                <input
-                  type="date"
-                  value={formData.date}
-                  onChange={(e) => handleChange('date', e.target.value)}
-                  className="w-full px-2 py-1.5 text-sm rounded-lg bg-ghost-white dark:bg-gray-700 text-text-primary"
-                  disabled={loading}
-                />
-                {errors.date && <p className="text-red-500 text-xs mt-1">{errors.date}</p>}
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold text-text-primary mb-1">Difficulty</label>
-                <select
-                  value={formData.difficulty}
-                  onChange={(e) => handleChange('difficulty', e.target.value)}
-                  className="w-full px-2 py-1.5 text-sm rounded-lg bg-ghost-white dark:bg-gray-700 text-text-primary"
-                  disabled={loading}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
+          {/* LEFT COLUMN: Grid */}
+          <div className="lg:col-span-5 flex flex-col">
+            {/* Header row (aligned across columns) */}
+            <div className="flex items-center justify-between h-9 mb-2">
+              <h3 className="text-sm font-bold text-text-primary">
+                5x5 Grid <span className="text-red-500">*</span>
+              </h3>
+              <div className="flex gap-1.5">
+                <button
+                  type="button"
+                  onClick={() => setCurrentDirection('across')}
+                  className={`px-2.5 py-1 text-xs font-bold rounded border ${
+                    currentDirection === 'across'
+                      ? 'bg-accent-yellow text-gray-900 border-gray-900'
+                      : 'bg-ghost-white dark:bg-gray-700 text-text-primary border-border-main'
+                  }`}
                 >
-                  <option value="easy">Easy</option>
-                  <option value="medium">Medium</option>
-                  <option value="hard">Hard</option>
-                </select>
+                  Across
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setCurrentDirection('down')}
+                  className={`px-2.5 py-1 text-xs font-bold rounded border ${
+                    currentDirection === 'down'
+                      ? 'bg-accent-yellow text-gray-900 border-gray-900'
+                      : 'bg-ghost-white dark:bg-gray-700 text-text-primary border-border-main'
+                  }`}
+                >
+                  Down
+                </button>
               </div>
             </div>
 
-            <div>
-              <div className="flex items-center justify-between mb-1.5">
-                <label className="text-xs font-bold text-text-primary">5x5 Grid *</label>
-                <div className="flex gap-1.5">
-                  <button
-                    type="button"
-                    onClick={() => setCurrentDirection('across')}
-                    className={`px-2 py-0.5 text-xs font-bold rounded border ${
-                      currentDirection === 'across'
-                        ? 'bg-accent-yellow text-gray-900'
-                        : 'bg-ghost-white dark:bg-gray-700 text-text-primary border-border-main'
-                    }`}
-                  >
-                    Across
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setCurrentDirection('down')}
-                    className={`px-2 py-0.5 text-xs font-bold rounded border ${
-                      currentDirection === 'down'
-                        ? 'bg-accent-yellow text-gray-900'
-                        : 'bg-ghost-white dark:bg-gray-700 text-text-primary border-border-main'
-                    }`}
-                  >
-                    Down
-                  </button>
-                </div>
-              </div>
+            {/* Grid with Preview Support */}
+            <div className="inline-block rounded-lg overflow-hidden border-2 border-gray-400 dark:border-gray-500 self-start">
+              <div className="grid grid-cols-5">
+                {formData.grid.map((row, rowIndex) =>
+                  row.map((cell, colIndex) => {
+                    const cellKey = `${rowIndex},${colIndex}`;
+                    const previewLetter = previewCells.get(cellKey);
+                    const isSelected =
+                      selectedCell?.row === rowIndex && selectedCell?.col === colIndex;
+                    const isInWord = currentWordCellsSet.has(cellKey);
 
-              {/* Grid with Preview Support */}
-              <div className="inline-block rounded-lg overflow-hidden border-2 border-gray-400 dark:border-gray-500 shadow-[4px_4px_0_0_rgba(0,0,0,0.1)]">
-                <div className="grid grid-cols-5">
-                  {formData.grid.map((row, rowIndex) =>
-                    row.map((cell, colIndex) => {
-                      const cellKey = `${rowIndex},${colIndex}`;
-                      const previewLetter = previewCells.get(cellKey);
-                      const isSelected =
-                        selectedCell?.row === rowIndex && selectedCell?.col === colIndex;
-                      const isInWord = currentWordCellsSet.has(cellKey);
-
-                      return (
-                        <div key={cellKey} className="relative">
-                          <input
-                            type="text"
-                            maxLength="1"
-                            value={cell === '■' ? '■' : cell}
-                            onChange={(e) => {
-                              let newValue = e.target.value.toUpperCase();
-                              if (newValue === '.') newValue = '■';
-                              if (newValue === '' || /^[A-Z■]$/.test(newValue)) {
-                                handleGridChange(rowIndex, colIndex, newValue);
-                                if (/^[A-Z■]$/.test(newValue)) {
-                                  setTimeout(() => advanceToNextCell(), 0);
-                                }
+                    return (
+                      <div key={cellKey} className="relative">
+                        <input
+                          type="text"
+                          maxLength="1"
+                          value={cell === '■' ? '■' : cell}
+                          onChange={(e) => {
+                            let newValue = e.target.value.toUpperCase();
+                            if (newValue === '.') newValue = '■';
+                            if (newValue === '' || /^[A-Z■]$/.test(newValue)) {
+                              handleGridChange(rowIndex, colIndex, newValue);
+                              if (/^[A-Z■]$/.test(newValue)) {
+                                setTimeout(() => advanceToNextCell(), 0);
                               }
-                            }}
-                            onKeyDown={(e) => {
-                              if (
-                                e.key === 'ArrowUp' ||
-                                e.key === 'ArrowDown' ||
-                                e.key === 'ArrowLeft' ||
-                                e.key === 'ArrowRight' ||
-                                e.key === ' '
-                              ) {
-                                e.preventDefault();
-                              }
-                            }}
-                            onDoubleClick={() =>
-                              setCurrentDirection((d) => (d === 'across' ? 'down' : 'across'))
                             }
-                            onClick={() => setSelectedCell({ row: rowIndex, col: colIndex })}
-                            onFocus={() => setSelectedCell({ row: rowIndex, col: colIndex })}
-                            className={`grid-cell w-10 h-10 sm:w-12 sm:h-12 lg:w-[68px] lg:h-[68px] xl:w-20 xl:h-20 text-center text-base sm:text-lg lg:text-2xl xl:text-3xl font-bold uppercase border-r border-b border-gray-400 dark:border-gray-500 ${
-                              colIndex === 4 ? 'border-r-0' : ''
-                            } ${rowIndex === 4 ? 'border-b-0' : ''} ${
-                              cell === '■'
-                                ? 'bg-black text-white'
-                                : isSelected
-                                  ? 'bg-accent-blue text-white ring-2 ring-yellow-400 ring-inset'
-                                  : isInWord
-                                    ? 'bg-blue-100 dark:bg-blue-900/40'
-                                    : 'bg-bg-card dark:bg-gray-800'
-                            }`}
-                            style={previewLetter && !cell ? { color: 'transparent' } : undefined}
-                            disabled={loading}
-                          />
-                          {/* Preview overlay for gray letters */}
-                          {previewLetter && (!cell || cell === '') && (
-                            <span className="absolute inset-0 flex items-center justify-center text-base sm:text-lg lg:text-2xl xl:text-3xl font-bold text-gray-400 dark:text-gray-500 pointer-events-none">
-                              {previewLetter}
-                            </span>
-                          )}
-                        </div>
-                      );
-                    })
-                  )}
-                </div>
+                          }}
+                          onKeyDown={(e) => {
+                            if (
+                              e.key === 'ArrowUp' ||
+                              e.key === 'ArrowDown' ||
+                              e.key === 'ArrowLeft' ||
+                              e.key === 'ArrowRight' ||
+                              e.key === ' '
+                            ) {
+                              e.preventDefault();
+                            }
+                          }}
+                          onDoubleClick={() =>
+                            setCurrentDirection((d) => (d === 'across' ? 'down' : 'across'))
+                          }
+                          onClick={() => setSelectedCell({ row: rowIndex, col: colIndex })}
+                          onFocus={() => setSelectedCell({ row: rowIndex, col: colIndex })}
+                          className={`grid-cell w-10 h-10 sm:w-12 sm:h-12 lg:w-14 lg:h-14 xl:w-16 xl:h-16 text-center text-base sm:text-lg lg:text-xl xl:text-2xl font-bold uppercase border-r border-b border-gray-400 dark:border-gray-500 ${
+                            colIndex === 4 ? 'border-r-0' : ''
+                          } ${rowIndex === 4 ? 'border-b-0' : ''} ${
+                            cell === '■'
+                              ? 'bg-black text-white'
+                              : isSelected
+                                ? 'bg-accent-blue text-white ring-2 ring-yellow-400 ring-inset'
+                                : isInWord
+                                  ? 'bg-blue-100 dark:bg-blue-900/40'
+                                  : 'bg-bg-card dark:bg-gray-800'
+                          }`}
+                          style={previewLetter && !cell ? { color: 'transparent' } : undefined}
+                          disabled={loading}
+                        />
+                        {/* Preview overlay for gray letters */}
+                        {previewLetter && (!cell || cell === '') && (
+                          <span className="absolute inset-0 flex items-center justify-center text-base sm:text-lg lg:text-xl xl:text-2xl font-bold text-gray-400 dark:text-gray-500 pointer-events-none">
+                            {previewLetter}
+                          </span>
+                        )}
+                      </div>
+                    );
+                  })
+                )}
               </div>
-
-              <p className="text-xs text-text-secondary mt-2">
-                Type letters to auto-advance. <strong>.</strong> for black squares. Space to toggle
-                direction. Arrows to navigate.
-              </p>
-              {errors.grid && <p className="text-red-500 text-xs mt-1">{errors.grid}</p>}
             </div>
+
+            <p className="text-xs text-text-secondary mt-2 leading-relaxed">
+              Type letters to auto-advance. <strong>.</strong> for black squares. Space to toggle
+              direction. Arrows to navigate.
+            </p>
+            {errors.grid && <p className="text-red-500 text-xs mt-1">{errors.grid}</p>}
           </div>
 
           {/* MIDDLE COLUMN: Clues */}
-          <div className="lg:col-span-4 xl:col-span-3 flex flex-col gap-2">
-            <div className="flex justify-between items-center">
+          <div className="lg:col-span-4 flex flex-col">
+            {/* Header row (matches Grid header height) */}
+            <div className="flex justify-between items-center h-9 mb-2">
               <h3 className="text-sm font-bold text-text-primary">
                 Clues ({gridWords.across.length + gridWords.down.length})
               </h3>
@@ -1327,73 +1334,86 @@ export default function MiniPuzzleEditor({ puzzle, date, onSave, onCancel, loadi
                 {isGeneratingClues ? 'Generating...' : 'Generate Clues'}
               </button>
             </div>
-            {errors.clues && <p className="text-red-500 text-xs">{errors.clues}</p>}
+            {errors.clues && <p className="text-red-500 text-xs mb-2">{errors.clues}</p>}
 
-            <div>
-              <label className="text-xs font-bold text-text-primary mb-1.5 block">
-                Across ({formData.clues.across.length})
-              </label>
-              <div className="space-y-1.5">
-                {formData.clues.across.length === 0 ? (
-                  <p className="text-xs text-text-secondary italic">No across words yet.</p>
-                ) : (
-                  formData.clues.across.map((clue, index) => (
-                    <div key={index} className="flex gap-1 items-center">
-                      <span className="px-1 py-1 text-[10px] font-bold text-text-secondary min-w-[20px] text-center">
-                        {clue.number}
-                      </span>
-                      <input
-                        type="text"
-                        placeholder="Enter clue..."
-                        value={clue.clue || ''}
-                        onChange={(e) => handleClueChange('across', index, 'clue', e.target.value)}
-                        className="flex-1 min-w-0 px-2 py-1 rounded border border-gray-300 dark:border-gray-600 text-xs bg-ghost-white dark:bg-gray-800"
-                        disabled={loading}
-                      />
-                      <span className="px-1 py-1 text-[10px] font-mono font-bold text-text-secondary">
-                        {clue.answer}
-                      </span>
-                    </div>
-                  ))
-                )}
+            <div className="flex flex-col gap-3">
+              <div>
+                <label className="text-[11px] font-bold text-text-secondary uppercase tracking-wide mb-1.5 block">
+                  Across ({formData.clues.across.length})
+                </label>
+                <div className="space-y-1">
+                  {formData.clues.across.length === 0 ? (
+                    <p className="text-xs text-text-secondary italic py-1">No across words yet.</p>
+                  ) : (
+                    formData.clues.across.map((clue, index) => (
+                      <div key={index} className="flex gap-1.5 items-center">
+                        <span className="text-[11px] font-bold text-text-secondary w-5 text-right shrink-0">
+                          {clue.number}
+                        </span>
+                        <input
+                          type="text"
+                          placeholder="Enter clue..."
+                          value={clue.clue || ''}
+                          onChange={(e) =>
+                            handleClueChange('across', index, 'clue', e.target.value)
+                          }
+                          className="flex-1 min-w-0 h-9 px-2.5 text-sm rounded-lg bg-ghost-white dark:bg-gray-700 text-text-primary"
+                          disabled={loading}
+                        />
+                        <span className="text-[10px] font-mono font-bold text-text-secondary shrink-0">
+                          {clue.answer}
+                        </span>
+                      </div>
+                    ))
+                  )}
+                </div>
               </div>
-            </div>
 
-            <div>
-              <label className="text-xs font-bold text-text-primary mb-1.5 block mt-2">
-                Down ({formData.clues.down.length})
-              </label>
-              <div className="space-y-1.5">
-                {formData.clues.down.length === 0 ? (
-                  <p className="text-xs text-text-secondary italic">No down words yet.</p>
-                ) : (
-                  formData.clues.down.map((clue, index) => (
-                    <div key={index} className="flex gap-1 items-center">
-                      <span className="px-1 py-1 text-[10px] font-bold text-text-secondary min-w-[20px] text-center">
-                        {clue.number}
-                      </span>
-                      <input
-                        type="text"
-                        placeholder="Enter clue..."
-                        value={clue.clue || ''}
-                        onChange={(e) => handleClueChange('down', index, 'clue', e.target.value)}
-                        className="flex-1 min-w-0 px-2 py-1 rounded border border-gray-300 dark:border-gray-600 text-xs bg-ghost-white dark:bg-gray-800"
-                        disabled={loading}
-                      />
-                      <span className="px-1 py-1 text-[10px] font-mono font-bold text-text-secondary">
-                        {clue.answer}
-                      </span>
-                    </div>
-                  ))
-                )}
+              <div>
+                <label className="text-[11px] font-bold text-text-secondary uppercase tracking-wide mb-1.5 block">
+                  Down ({formData.clues.down.length})
+                </label>
+                <div className="space-y-1">
+                  {formData.clues.down.length === 0 ? (
+                    <p className="text-xs text-text-secondary italic py-1">No down words yet.</p>
+                  ) : (
+                    formData.clues.down.map((clue, index) => (
+                      <div key={index} className="flex gap-1.5 items-center">
+                        <span className="text-[11px] font-bold text-text-secondary w-5 text-right shrink-0">
+                          {clue.number}
+                        </span>
+                        <input
+                          type="text"
+                          placeholder="Enter clue..."
+                          value={clue.clue || ''}
+                          onChange={(e) => handleClueChange('down', index, 'clue', e.target.value)}
+                          className="flex-1 min-w-0 h-9 px-2.5 text-sm rounded-lg bg-ghost-white dark:bg-gray-700 text-text-primary"
+                          disabled={loading}
+                        />
+                        <span className="text-[10px] font-mono font-bold text-text-secondary shrink-0">
+                          {clue.answer}
+                        </span>
+                      </div>
+                    ))
+                  )}
+                </div>
               </div>
             </div>
           </div>
 
           {/* RIGHT COLUMN: Candidates + Letter Counts (sticky on desktop) */}
-          <div className="lg:col-span-3 xl:col-span-3">
-            <div className="lg:sticky lg:top-4 flex flex-col gap-3">
-              <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-3 min-h-[300px] max-h-[520px] flex flex-col">
+          <div className="lg:col-span-3 flex flex-col">
+            {/* Header row (matches Grid/Clues header height) */}
+            <div className="flex items-center h-9 mb-2">
+              <h3 className="text-sm font-bold text-text-primary">
+                {candidateSlot
+                  ? `Candidates · ${candidateSlot.direction.toUpperCase()} ${candidateSlot.length}`
+                  : 'Candidates'}
+              </h3>
+            </div>
+
+            <div className="lg:sticky lg:top-4 flex flex-col gap-2">
+              <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-3 max-h-[480px] flex flex-col">
                 <CandidateList
                   candidates={candidates}
                   totalCandidates={totalCandidates}
